@@ -1,0 +1,67 @@
+name: Daily USD/IRR Reference
+
+on:
+  schedule:
+    # Starts at 13:45 UTC, samples through 14:15, publishes at 14:20.
+    - cron: "45 13 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: daily-usd-irr-reference
+  cancel-in-progress: false
+
+jobs:
+  build_publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run pipeline
+        env:
+          BONBAST_USERNAME: ${{ secrets.BONBAST_USERNAME }}
+          BONBAST_HASH: ${{ secrets.BONBAST_HASH }}
+          NAVASAN_API_KEY: ${{ secrets.NAVASAN_API_KEY }}
+          ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
+          BONBAST_API_URL: ${{ secrets.BONBAST_API_URL }}
+          NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
+          ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
+        run: |
+          python3 scripts/pipeline.py --site-dir site --templates-dir templates
+
+      - name: Commit generated site
+        run: |
+          if [ -z "$(git status --porcelain site)" ]; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site
+          git commit -m "publish: daily USD/IRR reference"
+          git push
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

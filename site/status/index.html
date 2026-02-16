@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Status</title>
+  <style>
+    :root {
+      --bg: #f8f7f3;
+      --ink: #11283a;
+      --muted: #4f6473;
+      --line: #d7dfde;
+      --card: #ffffff;
+      --ok: #1d8240;
+      --warn: #a66a00;
+      --bad: #9e2d2d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 15% 0%, #fffefb, #f3f2eb 55%, #ecece5 100%);
+      line-height: 1.5;
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 28px 20px 50px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 14px;
+      margin-bottom: 24px;
+    }
+    nav a {
+      margin-right: 14px;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    nav a:last-child { margin-right: 0; }
+    nav a:hover { text-decoration: underline; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 24px rgba(16, 40, 58, 0.05);
+    }
+    h1, h2, h3 {
+      margin-top: 0;
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+    }
+    .metric {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 6px 0;
+    }
+    .muted {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border-top: 1px solid var(--line);
+      padding: 8px 6px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .status-Green { color: var(--ok); font-weight: 700; }
+    .status-Amber { color: var(--warn); font-weight: 700; }
+    .status-Red { color: var(--bad); font-weight: 700; }
+    .status-WITHHOLD, .status-CONFIG-NEEDED { color: var(--bad); font-weight: 700; }
+    footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      border-top: 1px solid var(--line);
+      padding-top: 10px;
+    }
+    code {
+      background: #f0f2ef;
+      border: 1px solid #e0e5e2;
+      border-radius: 4px;
+      padding: 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <strong>USD/IRR Open Market Reference</strong>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/archive/">Archive</a>
+        <a href="/status/">Status</a>
+        <a href="/methodology/">Methodology</a>
+      </nav>
+    </header>
+
+    <section class="card">
+  <h1>Status</h1>
+  <p class="metric status-CONFIG-NEEDED">CONFIG NEEDED</p>
+  <p>Required API secrets are missing. No daily rate has been published.</p>
+  <ul><li><code>BONBAST_USERNAME</code></li><li><code>BONBAST_HASH</code></li><li><code>NAVASAN_API_KEY</code></li><li><code>ALANCHAND_API_KEY</code></li></ul>
+</section>
+
+
+    <footer>
+      Generated at 2026-02-16T00:31:06Z (UTC)
+    </footer>
+  </div>
+</body>
+</html>

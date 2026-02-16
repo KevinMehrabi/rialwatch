@@ -1,0 +1,14 @@
+<section class="card">
+  <h1>Methodology</h1>
+  <ul>
+    <li>Observation window: <code>13:45-14:15 UTC</code>.</li>
+    <li>Each source is sampled 3 times in the window.</li>
+    <li>Per-source value = median of that source's 3 samples.</li>
+    <li>Headline FIX = median of source medians.</li>
+    <li>BAND = 25th-75th percentile of source medians.</li>
+    <li>DISPERSION = (p75 - p25) / FIX.</li>
+    <li>Status: Green <= 1.5%, Amber <= 3.5%, Red <= 5%.</li>
+    <li>WITHHOLD when fewer than 2 valid sources, dispersion > 5%, or inputs are invalid/stale.</li>
+    <li>No backfills. Historical outputs are immutable once written.</li>
+  </ul>
+</section>
