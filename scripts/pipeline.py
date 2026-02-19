@@ -397,16 +397,12 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
 
     invalid_or_stale = False
     for source, entries in samples.items():
-        valid_values = [s.value for s in entries if s.ok and s.value is not None]
-        if len(entries) < 3:
-            invalid_or_stale = True
-            source_notes[source] = "fewer than 3 samples"
-            continue
-        if len(valid_values) < 3:
-            invalid_or_stale = True
-            source_notes[source] = "invalid or stale samples"
+        valid_values = [s.value for s in entries if s.value is not None]
+        if not valid_values:
+            source_notes[source] = "no valid samples"
             continue
         source_medians[source] = median(valid_values)
+
 
     medians = list(source_medians.values())
     reasons: List[str] = []
