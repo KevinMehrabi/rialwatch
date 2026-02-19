@@ -40,7 +40,11 @@ jobs:
           NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
-          python3 scripts/pipeline.py --site-dir site --templates-dir templates
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            python3 scripts/pipeline.py --site-dir site --templates-dir templates --skip-waits --allow-outside-window
+          else
+            python3 scripts/pipeline.py --site-dir site --templates-dir templates
+          fi
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
