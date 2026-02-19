@@ -408,9 +408,9 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
     reasons: List[str] = []
     withheld = False
 
-    if len(medians) < 2:
+    if len(medians) < 1:
         withheld = True
-        reasons.append("fewer than 2 sources available")
+        reasons.append("no valid sources available")
 
     fix_value: Optional[float] = None
     p25: Optional[float] = None
