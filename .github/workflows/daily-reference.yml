@@ -36,9 +36,6 @@ jobs:
           BONBAST_HASH: ${{ secrets.BONBAST_HASH }}
           NAVASAN_API_KEY: ${{ secrets.NAVASAN_API_KEY }}
           ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
-          BONBAST_API_URL: ${{ secrets.BONBAST_API_URL }}
-          NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
-          ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             python3 scripts/pipeline.py --site-dir site --templates-dir templates --skip-waits --allow-outside-window
