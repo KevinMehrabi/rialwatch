@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """USD/IRR Open Market Reference pipeline.
 
-This script samples configured sources within the observation window,
+Samples configured sources within the observation window,
 computes the daily reference, and renders a static site under /site.
 """
 
@@ -13,6 +13,7 @@ import json
 import math
 import os
 import re
+import shutil
 import statistics
 import time
 import urllib.error
@@ -90,7 +91,6 @@ def parse_number(value: Any) -> Optional[float]:
 def try_parse_datetime(value: Any) -> Optional[dt.datetime]:
     if isinstance(value, (int, float)):
         iv = int(value)
-        # Handle milliseconds epoch.
         if iv > 10_000_000_000:
             iv = iv // 1000
         try:
@@ -105,7 +105,6 @@ def try_parse_datetime(value: Any) -> Optional[dt.datetime]:
     if not text:
         return None
 
-    # ISO-ish forms.
     if text.endswith("Z"):
         text = text[:-1] + "+00:00"
     for candidate in (text, text.replace(" ", "T", 1)):
@@ -117,7 +116,6 @@ def try_parse_datetime(value: Any) -> Optional[dt.datetime]:
         except ValueError:
             pass
 
-    # Plain epoch in string form.
     if re.fullmatch(r"\d{10,13}", text):
         return try_parse_datetime(int(text))
 
@@ -185,8 +183,6 @@ def extract_usd_irr(payload: Any) -> Optional[float]:
             score += 1
         if "buy" in path_l:
             score -= 1
-
-        # Keep plausible ranges while still allowing future shifts.
         if 150_000 <= num <= 2_500_000:
             score += 2
 
@@ -240,7 +236,7 @@ def write_text(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
-def write_json(path: Path, payload: Dict[str, Any]) -> None:
+def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
 
@@ -297,7 +293,7 @@ def build_request(config: SourceConfig) -> urllib.request.Request:
     url = config.url
     headers = {
         "Accept": "application/json",
-        "User-Agent": "rialwatch-pipeline/0.1",
+        "User-Agent": "rialwatch-pipeline/0.2",
     }
 
     if config.auth_mode == "query_user_hash":
@@ -348,9 +344,8 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     quote_time = extract_quote_time(payload)
 
     stale = False
-    if quote_time is not None:
-        if quote_time < window_start_dt or quote_time > window_end_dt:
-            stale = True
+    if quote_time is not None and (quote_time < window_start_dt or quote_time > window_end_dt):
+        stale = True
 
     if value is None:
         return Sample(config.name, sampled_at, None, quote_time, ok=False, stale=stale, error="unable to parse USD/IRR")
@@ -365,7 +360,6 @@ def collect_samples(
     allow_outside_window: bool,
 ) -> Dict[str, List[Sample]]:
     samples: Dict[str, List[Sample]] = {cfg.name: [] for cfg in source_configs}
-
     window_start_dt = dt.datetime.combine(day, WINDOW_START, tzinfo=UTC)
     window_end_dt = dt.datetime.combine(day, WINDOW_END, tzinfo=UTC)
 
@@ -374,18 +368,17 @@ def collect_samples(
         if not allow_outside_window:
             now = utc_now()
             if now > window_end_dt + dt.timedelta(minutes=5):
-                # Too late to satisfy observation-window guarantees.
                 break
+
         should_sleep_until(target, skip_waits=skip_waits)
         sampled_at = utc_now()
 
         for cfg in source_configs:
             sample = fetch_one(cfg, sampled_at, window_start_dt, window_end_dt)
-            if not allow_outside_window:
-                if sampled_at < window_start_dt or sampled_at > window_end_dt:
-                    sample.ok = False
-                    sample.stale = True
-                    sample.error = "sample outside observation window"
+            if not allow_outside_window and (sampled_at < window_start_dt or sampled_at > window_end_dt):
+                sample.ok = False
+                sample.stale = True
+                sample.error = "sample outside observation window"
             samples[cfg.name].append(sample)
 
     return samples
@@ -394,15 +387,14 @@ def collect_samples(
 def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, Any]:
     source_medians: Dict[str, float] = {}
     source_notes: Dict[str, str] = {}
-
     invalid_or_stale = False
+
     for source, entries in samples.items():
         valid_values = [s.value for s in entries if s.value is not None]
         if not valid_values:
             source_notes[source] = "no valid samples"
             continue
         source_medians[source] = median(valid_values)
-
 
     medians = list(source_medians.values())
     reasons: List[str] = []
@@ -441,7 +433,7 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
         else:
             status = "WITHHOLD"
 
-    payload = {
+    return {
         "date": iso_date(day),
         "as_of": iso_ts(utc_now()),
         "window_utc": {
@@ -477,29 +469,70 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
             "source_medians": source_medians,
         },
     }
-    return payload
 
 
 def load_existing_days(site_dir: Path) -> List[str]:
     fix_dir = site_dir / "fix"
     if not fix_dir.exists():
         return []
-    dates = []
+
+    dates: List[str] = []
     for path in sorted(fix_dir.glob("*.json")):
-        name = path.stem
-        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", name):
-            dates.append(name)
+        if re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
+            dates.append(path.stem)
     return dates
+
+
+def load_series_rows(site_dir: Path) -> List[Dict[str, Any]]:
+    rows: List[Dict[str, Any]] = []
+    fix_dir = site_dir / "fix"
+    if not fix_dir.exists():
+        return rows
+
+    for path in sorted(fix_dir.glob("*.json")):
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
+            continue
+
+        try:
+            daily = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+
+        computed = daily.get("computed", {})
+        band = computed.get("band", {})
+        rows.append(
+            {
+                "date": daily.get("date", path.stem),
+                "fix": computed.get("fix"),
+                "p25": band.get("p25"),
+                "p75": band.get("p75"),
+                "status": computed.get("status"),
+                "withheld": bool(computed.get("withheld", False)),
+            }
+        )
+
+    rows.sort(key=lambda r: r.get("date") or "")
+    return rows
+
+
+def copy_static_assets(assets_dir: Path, site_dir: Path) -> None:
+    if not assets_dir.exists():
+        return
+
+    target_root = site_dir / "assets"
+    for path in assets_dir.rglob("*"):
+        if not path.is_file():
+            continue
+        rel = path.relative_to(assets_dir)
+        dest = target_root / rel
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, dest)
 
 
 def render_page(templates_dir: Path, page_template: str, title: str, generated_at: str, **kwargs: Any) -> str:
     layout = read_template(templates_dir, "layout.html")
     content = read_template(templates_dir, page_template).safe_substitute(**kwargs)
-    return layout.safe_substitute(
-        title=title,
-        content=content,
-        generated_at=generated_at,
-    )
+    return layout.safe_substitute(title=title, content=content, generated_at=generated_at)
 
 
 def publish_methodology(site_dir: Path, templates_dir: Path, generated_at: str) -> None:
@@ -510,6 +543,16 @@ def publish_methodology(site_dir: Path, templates_dir: Path, generated_at: str) 
         generated_at=generated_at,
     )
     write_text(site_dir / "methodology" / "index.html", html)
+
+
+def publish_governance(site_dir: Path, templates_dir: Path, generated_at: str) -> None:
+    html = render_page(
+        templates_dir,
+        "governance.html",
+        title="Governance",
+        generated_at=generated_at,
+    )
+    write_text(site_dir / "governance" / "index.html", html)
 
 
 def publish_status(
@@ -539,19 +582,22 @@ def publish_status(
 
 def publish_archive(site_dir: Path, templates_dir: Path, generated_at: str, days: List[str]) -> None:
     if days:
-        items = "\n".join(
-            f'<li><a href="/fix/{d}/">{d}</a> <span class="muted">(<a href="/fix/{d}.json">json</a>)</span></li>'
+        rows = "\n".join(
+            "<tr>"
+            f"<td><a href=\"/fix/{d}/\">{d}</a></td>"
+            f"<td><a href=\"/fix/{d}.json\">JSON</a></td>"
+            "</tr>"
             for d in sorted(days, reverse=True)
         )
     else:
-        items = "<li>No published references yet.</li>"
+        rows = '<tr><td colspan="2" class="text-secondary">No published references yet.</td></tr>'
 
     html = render_page(
         templates_dir,
         "archive.html",
         title="Archive",
         generated_at=generated_at,
-        archive_items=items,
+        archive_rows=rows,
     )
     write_text(site_dir / "archive" / "index.html", html)
 
@@ -561,18 +607,18 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     fix = c.get("fix")
     p25 = c.get("band", {}).get("p25")
     p75 = c.get("band", {}).get("p75")
-    status = c.get("status", "N/A")
-    withheld = c.get("withheld", True)
+    status = str(c.get("status", "N/A"))
+    withheld = bool(c.get("withheld", True))
     reasons = c.get("withhold_reasons", [])
 
     reasons_html = ""
     if withheld and reasons:
-        reasons_html = "<ul>" + "".join(f"<li>{r}</li>" for r in reasons) + "</ul>"
+        reasons_html = '<ul class="mb-0">' + "".join(f"<li>{r}</li>" for r in reasons) + "</ul>"
 
     html = render_page(
         templates_dir,
         "index.html",
-        title="USD/IRR Open Market Reference",
+        title="USD/IRR Dashboard",
         generated_at=generated_at,
         date=latest.get("date", "N/A"),
         as_of=latest.get("as_of", "N/A"),
@@ -580,7 +626,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         p25=fmt_rate(p25),
         p75=fmt_rate(p75),
         status=status,
-        status_class=css_class(str(status)),
+        status_class=css_class(status),
         withheld="Yes" if withheld else "No",
         reasons=reasons_html,
     )
@@ -590,11 +636,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
 def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, daily: Dict[str, Any]) -> None:
     day = daily["date"]
     c = daily.get("computed", {})
-
     reasons = c.get("withhold_reasons", [])
+
     reasons_html = ""
     if reasons:
-        reasons_html = "<ul>" + "".join(f"<li>{r}</li>" for r in reasons) + "</ul>"
+        reasons_html = '<ul class="mb-0">' + "".join(f"<li>{r}</li>" for r in reasons) + "</ul>"
 
     html = render_page(
         templates_dir,
@@ -614,9 +660,7 @@ def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, da
         source_rows=render_source_table(daily),
     )
 
-    # /fix/YYYY-MM-DD route
     write_text(site_dir / "fix" / day / "index.html", html)
-    # /fix/YYYY-MM-DD.json
     write_json(site_dir / "fix" / f"{day}.json", daily)
 
 
@@ -641,6 +685,11 @@ def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
     write_json(site_dir / "api" / "latest.json", daily)
 
 
+def publish_series(site_dir: Path) -> None:
+    rows = load_series_rows(site_dir)
+    write_json(site_dir / "api" / "series.json", rows)
+
+
 def immutable_day_exists(site_dir: Path, day: str) -> bool:
     return (site_dir / "fix" / f"{day}.json").exists() or (site_dir / "fix" / day / "index.html").exists()
 
@@ -648,13 +697,17 @@ def immutable_day_exists(site_dir: Path, day: str) -> bool:
 def run(args: argparse.Namespace) -> int:
     site_dir = Path(args.site_dir)
     templates_dir = Path(args.templates_dir)
+    assets_dir = Path(args.assets_dir)
+
     site_dir.mkdir(parents=True, exist_ok=True)
+    copy_static_assets(assets_dir, site_dir)
 
     now = utc_now()
     day = now.date()
     generated_at = iso_ts(now)
 
     publish_methodology(site_dir, templates_dir, generated_at)
+    publish_governance(site_dir, templates_dir, generated_at)
 
     missing = missing_secrets()
     if missing:
@@ -681,14 +734,13 @@ def run(args: argparse.Namespace) -> int:
         }
         publish_home(site_dir, templates_dir, generated_at, placeholder)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
-        # Keep latest as null object rather than fake price.
         publish_latest(site_dir, placeholder)
+        publish_series(site_dir)
         return 0
 
     source_configs = build_source_configs()
-
-    # Immutability: if today's reference exists, do not rewrite it.
     day_s = iso_date(day)
+
     if immutable_day_exists(site_dir, day_s):
         publish_status(
             site_dir,
@@ -703,6 +755,7 @@ def run(args: argparse.Namespace) -> int:
             latest = json.loads(latest_path.read_text(encoding="utf-8"))
             publish_home(site_dir, templates_dir, generated_at, latest)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
+        publish_series(site_dir)
         return 0
 
     window_start_dt = dt.datetime.combine(day, WINDOW_START, tzinfo=UTC)
@@ -722,6 +775,7 @@ def run(args: argparse.Namespace) -> int:
     daily = summarize_day(samples, day)
     publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
     publish_latest(site_dir, daily)
+    publish_series(site_dir)
 
     publish_status(
         site_dir,
@@ -733,7 +787,6 @@ def run(args: argparse.Namespace) -> int:
 
     publish_home(site_dir, templates_dir, generated_at=iso_ts(utc_now()), latest=daily)
     publish_archive(site_dir, templates_dir, generated_at=iso_ts(utc_now()), days=load_existing_days(site_dir))
-
     return 0
 
 
@@ -741,6 +794,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="USD/IRR Open Market Reference pipeline")
     parser.add_argument("--site-dir", default="site", help="Output directory for static site")
     parser.add_argument("--templates-dir", default="templates", help="Template directory")
+    parser.add_argument("--assets-dir", default="assets", help="Static assets copied to /site/assets")
     parser.add_argument(
         "--skip-waits",
         action="store_true",

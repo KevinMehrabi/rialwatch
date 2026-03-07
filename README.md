@@ -1,82 +1,69 @@
-# RialWatch v0: USD/IRR Open Market Reference
+# RialWatch: USD/IRR Open Market Reference
 
-Static site generator for a daily USD/IRR open-market reference.
+Static daily USD/IRR reference site with an institutional dashboard UI and deterministic Python publishing pipeline.
 
 ## Architecture
 
-- Static output directory: `/site`
-- Python pipeline: `/scripts/pipeline.py`
+- Static output: `/site`
+- Pipeline: `/scripts/pipeline.py`
 - Templates: `/templates`
-- Scheduled publishing: `.github/workflows/daily-reference.yml`
+- Static assets copied by pipeline: `/assets` -> `/site/assets`
+- Scheduled workflow: `/Users/kevinmehrabi/Projects/rialwatch/.github/workflows/daily-reference.yml`
 
-## Daily rules implemented
+## Key Outputs
 
-- One daily reference publication at `14:20 UTC`
-- Observation window `13:45-14:15 UTC`
-- Three samples per source in the window
-- Source medians -> headline FIX
-- BAND = p25-p75 of source medians
-- DISPERSION = `(p75 - p25) / FIX`
-- Status thresholds:
-  - Green <= 1.5%
-  - Amber <= 3.5%
-  - Red <= 5%
-- WITHHOLD when:
-  - fewer than 2 sources are valid
-  - dispersion > 5%
-  - invalid/stale inputs
-- Governance:
-  - no backfills
-  - no rewriting historical files
-  - immutable daily files once written
+- `/` dashboard homepage
+- `/fix/YYYY-MM-DD/` daily permalink page
+- `/fix/YYYY-MM-DD.json` daily JSON payload
+- `/api/latest.json` latest payload
+- `/api/series.json` ordered historical rows built from `/site/fix/*.json`
+- `/archive/`, `/status/`, `/methodology/`, `/governance/`
 
 ## Required GitHub Secrets
 
-Repository Settings -> Secrets and variables -> Actions -> New repository secret:
+Add these in **Settings -> Secrets and variables -> Actions**:
 
 - `BONBAST_USERNAME`
 - `BONBAST_HASH`
 - `NAVASAN_API_KEY`
 - `ALANCHAND_API_KEY`
 
-Optional endpoint override secrets (if provider URLs differ):
+Optional endpoint overrides:
 
 - `BONBAST_API_URL`
 - `NAVASAN_API_URL`
 - `ALANCHAND_API_URL`
 
-If required secrets are missing, the pipeline publishes `CONFIG NEEDED` on `/status` and does not publish a fake rate.
+If required secrets are missing, `/status/` is published as `CONFIG NEEDED` and no fake rate is emitted.
 
-## Local run
-
-```bash
-python scripts/pipeline.py --site-dir site --templates-dir templates
-```
-
-For quick local verification (no waiting for UTC window):
+## Local Run
 
 ```bash
-python scripts/pipeline.py --site-dir site --templates-dir templates --skip-waits --allow-outside-window
+python scripts/pipeline.py --site-dir site --templates-dir templates --assets-dir assets
 ```
 
-## Enable GitHub Pages
+Quick local verification (no waiting for UTC window):
 
-1. Open repository **Settings -> Pages**.
-2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+```bash
+python scripts/pipeline.py --site-dir site --templates-dir templates --assets-dir assets --skip-waits --allow-outside-window
+```
+
+## GitHub Pages Setup
+
+1. Open **Settings -> Pages**.
+2. Set **Source** to **GitHub Actions**.
 3. Save.
 
-The scheduled workflow commits generated files into `/site` daily and deploys `/site` with the Pages deploy action.
+The workflow publishes `/site` daily.
 
-## Set a custom domain
+## Custom Domain
 
-1. In **Settings -> Pages**, set **Custom domain**.
-2. Add DNS records at your DNS provider:
-   - `A`/`AAAA` for apex domain, or
-   - `CNAME` for subdomain
-3. Add a file at `/site/CNAME` containing your domain (single line), for example:
+1. In **Settings -> Pages**, set your **Custom domain**.
+2. Add DNS records (`A/AAAA` for apex or `CNAME` for subdomain).
+3. Add `/site/CNAME` with your domain, e.g.:
 
 ```text
 fx.example.com
 ```
 
-4. Re-run workflow and verify HTTPS is enabled in Pages settings.
+4. Re-run workflow and verify HTTPS is enabled.

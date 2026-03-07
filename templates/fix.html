@@ -1,46 +1,64 @@
-<section class="card">
-  <h1>Reference for $date</h1>
-  <p class="muted">As of: $as_of</p>
-  <p class="metric">$fix IRR</p>
-  <div class="grid">
-    <div>
-      <h3>Band (P25-P75)</h3>
-      <p>$p25 - $p75</p>
-    </div>
-    <div>
-      <h3>Dispersion</h3>
-      <p>$dispersion</p>
-    </div>
-    <div>
-      <h3>Status</h3>
-      <p class="status-$status_class">$status</p>
-    </div>
-    <div>
-      <h3>Withheld</h3>
-      <p>$withheld</p>
-    </div>
-  </div>
-</section>
+<div class="mb-3">
+  <h1 class="page-title">Reference Day $date</h1>
+  <p class="text-secondary mb-0">Immutable daily snapshot.</p>
+</div>
 
-<section class="card">
-  <h2>Source Summary</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Source</th>
-        <th>Median</th>
-        <th>Valid Samples</th>
-        <th>Notes</th>
-      </tr>
-    </thead>
-    <tbody>
-      $source_rows
-    </tbody>
-  </table>
-</section>
+<div class="terminal-grid">
+  <section class="card span-8">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <div class="text-secondary text-uppercase small">Daily Fix</div>
+          <div class="metric-value">$fix <span class="fs-5">IRR</span></div>
+          <div class="metric-sub">As of $as_of</div>
+        </div>
+        <span class="status-pill status-$status_class">$status</span>
+      </div>
 
-<section class="card">
-  <h2>Withhold Notes</h2>
-  $reasons
-  <p><a href="/fix/$date.json">View JSON</a></p>
-</section>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Band</div>
+          <div class="fw-semibold">$p25 - $p75</div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Dispersion</div>
+          <div class="fw-semibold">$dispersion</div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Withheld</div>
+          <div class="fw-semibold">$withheld</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card span-4">
+    <div class="card-body">
+      <h3 class="card-title">Daily JSON</h3>
+      <a href="/fix/$date.json">/fix/$date.json</a>
+      <div class="mt-3 text-secondary small">Withhold reasons</div>
+      <div class="small">$reasons</div>
+    </div>
+  </section>
+
+  <section class="card span-12">
+    <div class="card-body">
+      <h3 class="card-title">Source Summary</h3>
+      <div class="table-responsive">
+        <table class="table table-sm table-vcenter">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Median</th>
+              <th>Valid Samples</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            $source_rows
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>

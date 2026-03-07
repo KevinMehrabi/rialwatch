@@ -1,24 +1,88 @@
-<section class="card">
-  <h1>Today's Reference</h1>
-  <p class="muted">Date: $date | As of: $as_of</p>
-  <p class="metric">$fix IRR</p>
-  <div class="grid">
-    <div>
-      <h3>Band (P25-P75)</h3>
-      <p>$p25 - $p75</p>
-    </div>
-    <div>
-      <h3>Status</h3>
-      <p class="status-$status_class">$status</p>
-    </div>
-    <div>
-      <h3>Withheld</h3>
-      <p>$withheld</p>
-    </div>
-  </div>
-</section>
+<div class="mb-3">
+  <h1 class="page-title">USD/IRR Institutional Reference Dashboard</h1>
+  <p class="text-secondary mb-0">Static daily reference, produced by deterministic pipeline logic.</p>
+</div>
 
-<section class="card">
-  <h2>Withhold Notes</h2>
-  $reasons
-</section>
+<div class="terminal-grid">
+  <section class="card span-8">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <div class="text-secondary text-uppercase small">Latest Fix</div>
+          <div class="metric-value">$fix <span class="fs-5">IRR</span></div>
+          <div class="metric-sub">Date $date | As of $as_of</div>
+        </div>
+        <span class="status-pill status-$status_class">$status</span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Band (P25-P75)</div>
+          <div class="fw-semibold">$p25 - $p75</div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Withheld</div>
+          <div class="fw-semibold">$withheld</div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Micro Trend</div>
+          <svg id="sparkline" class="sparkline" viewBox="0 0 360 56" role="img" aria-label="sparkline"></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card span-4">
+    <div class="card-body">
+      <h3 class="card-title">Operational Links</h3>
+      <div class="list-group list-group-flush">
+        <a class="list-group-item bg-transparent px-0" href="/api/latest.json">Latest JSON</a>
+        <a class="list-group-item bg-transparent px-0" href="/api/series.json">Historical Series JSON</a>
+        <a class="list-group-item bg-transparent px-0" href="/archive/">Archive</a>
+      </div>
+      <div class="mt-3 text-secondary small">WITHHOLD notes</div>
+      <div class="small">$reasons</div>
+    </div>
+  </section>
+
+  <section class="card span-12">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3 class="card-title mb-0">Historical Daily Fix (from /api/series.json)</h3>
+        <span class="text-secondary small">Ordered daily time series</span>
+      </div>
+      <div class="chart-shell">
+        <svg id="history-chart-svg" role="img" aria-label="historical chart"></svg>
+        <div id="history-chart-empty" class="chart-empty">No chart data yet.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card span-12">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3 class="card-title mb-0">Recent Daily Tape (Last 30)</h3>
+        <span class="text-secondary small">Loaded client-side from /api/series.json</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-vcenter">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Fix</th>
+              <th>P25</th>
+              <th>P75</th>
+              <th>Status</th>
+              <th>Withheld</th>
+            </tr>
+          </thead>
+          <tbody id="history-table-body">
+            <tr><td colspan="6" class="text-secondary">Loading series...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="/assets/js/home-dashboard.js" defer></script>

@@ -1,6 +1,15 @@
+<div class="mb-3">
+  <h1 class="page-title">System Status</h1>
+  <p class="text-secondary mb-0">Publishing and data-quality posture.</p>
+</div>
+
 <section class="card">
-  <h1>Status</h1>
-  <p class="metric status-$status_class">$status_title</p>
-  <p>$status_detail</p>
-  $missing_list
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h3 class="card-title mb-0">Current State</h3>
+      <span class="status-pill status-$status_class">$status_title</span>
+    </div>
+    <p class="mb-3">$status_detail</p>
+    $missing_list
+  </div>
 </section>
