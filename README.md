@@ -18,7 +18,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/fix/YYYY-MM-DD/` daily permalink page
 - `/fix/YYYY-MM-DD.json` daily JSON payload
 - `/api/latest.json` latest payload
-- `/api/series.json` ordered historical rows built from `/site/fix/*.json`
+- `/api/series.json` ordered historical rows (merged from `/site/fix/*.json` and any existing `series.json` rows)
 - `/archive/`, `/status/`, `/methodology/`, `/governance/`
 
 ## Required GitHub Secrets
@@ -57,6 +57,22 @@ python scripts/pipeline.py --site-dir site --templates-dir templates --assets-di
 3. Save.
 
 The workflow publishes `/site` daily.
+
+## History Preservation
+
+- Scheduled runs now commit new `/site/fix/YYYY-MM-DD.json` and `/site/fix/YYYY-MM-DD/index.html` snapshots back to `main`.
+- This keeps `/api/series.json` cumulative across days instead of resetting to only the current run output.
+- Push/manual runs still deploy immediately but do not auto-commit generated files.
+
+## One-Time Backfill (If Early Days Were Lost)
+
+If snapshots were not persisted in earlier runs, recover whatever dates exist in repo history:
+
+```bash
+python scripts/backfill_series_from_git.py
+```
+
+This rebuilds `/site/api/series.json` from historical versions of `/site/api/latest.json` in git.
 
 ## Custom Domain
 

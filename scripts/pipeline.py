@@ -490,31 +490,88 @@ def load_existing_days(site_dir: Path) -> List[str]:
     return dates
 
 
-def load_series_rows(site_dir: Path) -> List[Dict[str, Any]]:
+def normalize_series_row(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    date = row.get("date")
+    if not isinstance(date, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+        return None
+
+    fix = parse_number(row.get("fix"))
+    p25 = parse_number(row.get("p25"))
+    p75 = parse_number(row.get("p75"))
+    status = row.get("status")
+    withheld = row.get("withheld")
+    if isinstance(withheld, str):
+        withheld = withheld.strip().lower() in {"1", "true", "yes"}
+    elif not isinstance(withheld, bool):
+        withheld = None
+
+    return {
+        "date": date,
+        "fix": fix,
+        "p25": p25,
+        "p75": p75,
+        "status": str(status) if status is not None else None,
+        "withheld": withheld,
+    }
+
+
+def load_existing_series_rows(site_dir: Path) -> List[Dict[str, Any]]:
+    series_path = site_dir / "api" / "series.json"
+    if not series_path.exists():
+        return []
+
+    try:
+        payload = json.loads(series_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+
+    items = payload.get("rows")
+    if not isinstance(items, list):
+        return []
+
     rows: List[Dict[str, Any]] = []
+    for raw in items:
+        if not isinstance(raw, dict):
+            continue
+        normalized = normalize_series_row(raw)
+        if normalized is not None:
+            rows.append(normalized)
+    return rows
+
+
+def load_series_rows(site_dir: Path) -> List[Dict[str, Any]]:
+    # Keep previously published rows and let immutable per-day files override them.
+    rows_by_date: Dict[str, Dict[str, Any]] = {}
+    for row in load_existing_series_rows(site_dir):
+        rows_by_date[row["date"]] = row
+
     fix_dir = site_dir / "fix"
-    if not fix_dir.exists():
-        return rows
+    if fix_dir.exists():
+        for path in sorted(fix_dir.glob("*.json")):
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
+                continue
 
-    for path in sorted(fix_dir.glob("*.json")):
-        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
-            continue
+            try:
+                daily = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                continue
 
-        try:
-            daily = json.loads(path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            continue
+            computed = daily.get("computed", {})
+            normalized = normalize_series_row(
+                {
+                    "date": daily.get("date", path.stem),
+                    "fix": computed.get("fix"),
+                    "p25": computed.get("band", {}).get("p25"),
+                    "p75": computed.get("band", {}).get("p75"),
+                    "status": computed.get("status"),
+                    "withheld": computed.get("withheld"),
+                }
+            )
+            if normalized is None:
+                continue
+            rows_by_date[normalized["date"]] = normalized
 
-        computed = daily.get("computed", {})
-        rows.append(
-            {
-                "date": daily.get("date", path.stem),
-                "fix": computed.get("fix"),
-                "status": computed.get("status"),
-            }
-        )
-
-    rows.sort(key=lambda r: r.get("date") or "")
+    rows = sorted(rows_by_date.values(), key=lambda r: r["date"])
     return rows
 
 
