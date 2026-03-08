@@ -110,6 +110,32 @@
     "withhold_reasons": [],
     "source_medians": {
       "navasan": 153500.0
+    },
+    "benchmarks": {
+      "open_market": {
+        "label": "Open Market / Street Rate",
+        "value": 153500.0,
+        "available": true,
+        "is_primary": true
+      },
+      "retail_seller": {
+        "label": "Retail Seller Rate",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      },
+      "retail_buyer": {
+        "label": "Retail Buyer Rate",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      },
+      "retail_mid_composite": {
+        "label": "Retail Mid-Market Composite",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      }
     }
   }
 }
