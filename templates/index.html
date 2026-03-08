@@ -61,6 +61,9 @@ async function loadSeries() {
   const res = await fetch(seriesUrl.toString());
   const data = await res.json();
   const rows = data.rows || [];
+  const numericRows = rows
+    .map(r => ({ ...r, fixNum: Number(r.fix) }))
+    .filter(r => Number.isFinite(r.fixNum));
 
   const tbody = document.getElementById('recent-days');
   tbody.innerHTML = rows.slice(-30).reverse().map(r => `
@@ -71,14 +74,28 @@ async function loadSeries() {
     </tr>
   `).join('');
 
-  const ctx = document.getElementById('historyChart').getContext('2d');
+  const canvas = document.getElementById('historyChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  if (!numericRows.length) {
+    const holder = canvas.parentElement;
+    if (holder && !holder.querySelector('.no-series-note')) {
+      const note = document.createElement('div');
+      note.className = 'text-secondary mt-2 no-series-note';
+      note.textContent = 'No numeric IRR values available in series.json yet.';
+      holder.appendChild(note);
+    }
+    return;
+  }
+
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: rows.map(r => r.date),
+      labels: numericRows.map(r => r.date),
       datasets: [{
         label: 'USD/IRR',
-        data: rows.map(r => r.fix),
+        data: numericRows.map(r => r.fixNum),
         borderColor: '#3b82f6',
         backgroundColor: 'rgba(59,130,246,0.15)',
         tension: 0.2,
