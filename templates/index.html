@@ -57,7 +57,8 @@
 
 <script>
 async function loadSeries() {
-  const res = await fetch('/api/series.json');
+  const seriesUrl = new URL('api/series.json', window.location.href);
+  const res = await fetch(seriesUrl.toString());
   const data = await res.json();
   const rows = data.rows || [];
 
