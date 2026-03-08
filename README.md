@@ -60,9 +60,12 @@ The workflow publishes `/site` daily.
 
 ## History Preservation
 
-- Scheduled runs now commit new `/site/fix/YYYY-MM-DD.json` and `/site/fix/YYYY-MM-DD/index.html` snapshots back to `main`.
-- This keeps `/api/series.json` cumulative across days instead of resetting to only the current run output.
-- Push/manual runs still deploy immediately but do not auto-commit generated files.
+- Canonical cumulative public history file: `/site/api/series.json`.
+- Scheduled runs generate one daily reference and write immutable snapshots to:
+  - `/site/fix/YYYY-MM-DD.json`
+  - `/site/fix/YYYY-MM-DD/index.html`
+- Scheduled runs then update `/site/api/series.json` and auto-commit snapshots/history back to `main`.
+- Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
 
 ## One-Time Backfill (If Early Days Were Lost)
 

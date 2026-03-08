@@ -787,6 +787,41 @@ def run(args: argparse.Namespace) -> int:
     publish_methodology(site_dir, templates_dir, generated_at)
     publish_governance(site_dir, templates_dir, generated_at)
 
+    if args.no_new_reference:
+        latest_path = site_dir / "api" / "latest.json"
+        if latest_path.exists():
+            latest = json.loads(latest_path.read_text(encoding="utf-8"))
+            status_title = "OK"
+            status_detail = "Build-only mode: reused existing published data and did not create a new daily reference."
+        else:
+            latest = {
+                "date": iso_date(day),
+                "as_of": generated_at,
+                "computed": {
+                    "fix": None,
+                    "band": {"p25": None, "p75": None},
+                    "dispersion": None,
+                    "status": "CONFIG NEEDED",
+                    "withheld": True,
+                    "withhold_reasons": ["no existing published data"],
+                },
+            }
+            status_title = "CONFIG NEEDED"
+            status_detail = "No existing published data found in build-only mode."
+
+        publish_status(
+            site_dir,
+            templates_dir,
+            generated_at,
+            status_title=status_title,
+            status_detail=status_detail,
+            missing=None,
+        )
+        publish_home(site_dir, templates_dir, generated_at, latest)
+        publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
+        publish_series(site_dir)
+        return 0
+
     missing = missing_secrets()
     if missing:
         publish_status(
@@ -882,6 +917,11 @@ def parse_args() -> argparse.Namespace:
         "--allow-outside-window",
         action="store_true",
         help="Allow sampling outside 13:45-14:15 UTC (for local verification only)",
+    )
+    parser.add_argument(
+        "--no-new-reference",
+        action="store_true",
+        help="Render/rebuild site using existing data only, without generating a new daily reference",
     )
     return parser.parse_args()
 

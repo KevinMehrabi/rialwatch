@@ -46,10 +46,11 @@ jobs:
           if [ "${{ github.event_name }}" = "schedule" ]; then
             python3 scripts/pipeline.py --site-dir site --templates-dir templates
           else
-            python3 scripts/pipeline.py --site-dir site --templates-dir templates --skip-waits --allow-outside-window
+            python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
           fi
 
       - name: Persist daily snapshots
+        if: github.event_name == 'schedule'
         run: |
           targets=()
           for path in site/fix site/api/latest.json site/api/series.json site/archive/index.html; do
