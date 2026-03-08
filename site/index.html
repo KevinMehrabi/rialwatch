@@ -3,192 +3,128 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>USD/IRR Dashboard</title>
-
 <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet">
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
-<body>
-
+<body class="theme-dark">
 <div class="page">
-
-<header class="navbar navbar-dark bg-dark">
-<div class="container-xl">
-
-<span class="navbar-brand text-white">
-USD/IRR Open Market Reference
-</span>
-
-<div class="navbar-nav flex-row gap-3">
-<a class="nav-link text-white" href="/">Home</a>
-<a class="nav-link text-white" href="/archive/">Archive</a>
-<a class="nav-link text-white" href="/status/">Status</a>
-<a class="nav-link text-white" href="/methodology/">Methodology</a>
-</div>
-
-</div>
-</header>
-
-<div class="page-wrapper">
-<div class="container-xl mt-4">
-
-<div class="mb-4">
-  <h1 class="page-title mb-1">USD/IRR Dashboard</h1>
-  <p class="text-secondary mb-0">Daily open-market reference with static JSON endpoints.</p>
-</div>
-
-<div class="row g-3 mb-3">
-  <div class="col-md-8">
-    <section class="card">
-      <div class="card-body">
-        <h3 class="card-title mb-3">Today's Reference</h3>
-        <div class="metric-value mb-2">N/A IRR</div>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="text-secondary small text-uppercase">Band (P25-P75)</div>
-            <div class="fw-semibold">N/A - N/A</div>
-          </div>
-          <div class="col-md-6">
-            <div class="text-secondary small text-uppercase">Status</div>
-            <span class="status-pill status-CONFIG-NEEDED">CONFIG NEEDED</span>
-          </div>
-          <div class="col-md-6">
-            <div class="text-secondary small text-uppercase">Withheld</div>
-            <div class="fw-semibold">Yes</div>
-          </div>
-          <div class="col-md-6">
-            <div class="text-secondary small text-uppercase">Timestamp</div>
-            <div class="fw-semibold">2026-03-08T02:22:58Z</div>
-          </div>
-        </div>
-        <div class="mt-3 text-secondary small">Date: 2026-03-08</div>
+  <header class="navbar navbar-expand-md navbar-dark d-print-none" style="background:#0f172a;">
+    <div class="container-xl">
+      <a class="navbar-brand navbar-brand-autodark text-white" href="/">USD/IRR Open Market Reference</a>
+      <div class="navbar-nav flex-row gap-3">
+        <a class="nav-link text-white" href="/">Home</a>
+        <a class="nav-link text-white" href="/archive/">Archive</a>
+        <a class="nav-link text-white" href="/status/">Status</a>
+        <a class="nav-link text-white" href="/methodology/">Methodology</a>
       </div>
-    </section>
-  </div>
-
-  <div class="col-md-4">
-    <section class="card h-100">
+    </div>
+  </header>
+  <div class="page-wrapper" style="background:#0b1220; min-height:100vh;">
+    <div class="container-xl py-4">
+      <div class="row row-deck row-cards">
+  <div class="col-lg-6">
+    <div class="card bg-dark text-white">
       <div class="card-body">
-        <h3 class="card-title mb-3">Historical Series</h3>
-        <div class="chart-shell">
-          <svg id="series-chart" role="img" aria-label="historical series chart"></svg>
-          <div id="series-chart-note" class="chart-empty">Chart renders from <code>/api/series.json</code>.</div>
-        </div>
-        <div class="mt-3 small">
-          <a href="/api/latest.json">/api/latest.json</a><br />
-          <a href="/api/series.json">/api/series.json</a>
+        <div class="text-secondary mb-2">TODAY'S REFERENCE</div>
+        <div class="h1 mb-1">N/A IRR</div>
+        <div class="text-secondary">Date: 2026-03-08 | As of: 2026-03-08T05:44:37Z</div>
+        <div class="row mt-4">
+          <div class="col-4">
+            <div class="text-secondary">Band (P25-P75)</div>
+            <div>N/A - N/A</div>
+          </div>
+          <div class="col-4">
+            <div class="text-secondary">Status</div>
+            <div>CONFIG NEEDED</div>
+          </div>
+          <div class="col-4">
+            <div class="text-secondary">Withheld</div>
+            <div>Yes</div>
+          </div>
         </div>
       </div>
-    </section>
-  </div>
-</div>
-
-<section class="card">
-  <div class="card-body">
-    <h3 class="card-title mb-3">Recent Days</h3>
-    <div class="table-responsive">
-      <table class="table table-sm table-vcenter">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Fix</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="recent-days-body">
-          <tr><td colspan="3" class="text-secondary">Loading daily rows from /api/series.json...</td></tr>
-        </tbody>
-      </table>
     </div>
   </div>
-</section>
+
+  <div class="col-lg-6">
+    <div class="card bg-dark text-white">
+      <div class="card-body">
+        <div class="text-secondary mb-2">HISTORICAL SERIES</div>
+        <canvas id="historyChart" height="160"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="card bg-dark text-white">
+      <div class="card-body">
+        <div class="text-secondary mb-3">RECENT DAILY REFERENCES</div>
+        <div class="table-responsive">
+          <table class="table table-dark table-vcenter">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Fix</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recent-days">
+              <tr><td colspan="3">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
-(function () {
-  function fmt(v) {
-    if (v === null || v === undefined) return 'N/A';
-    return Number(v).toLocaleString('en-US', {maximumFractionDigits: 0});
-  }
+async function loadSeries() {
+  const res = await fetch('/api/series.json');
+  const data = await res.json();
+  const rows = data.rows || [];
 
-  function drawChart(rows) {
-    var svg = document.getElementById('series-chart');
-    var note = document.getElementById('series-chart-note');
-    if (!svg || !note) return;
+  const tbody = document.getElementById('recent-days');
+  tbody.innerHTML = rows.slice(-30).reverse().map(r => `
+    <tr>
+      <td>${r.date}</td>
+      <td>${r.fix ?? 'N/A'}</td>
+      <td>${r.status ?? 'N/A'}</td>
+    </tr>
+  `).join('');
 
-    var points = rows.filter(function (r) { return typeof r.fix === 'number'; });
-    if (points.length < 2) {
-      svg.innerHTML = '';
-      note.style.display = 'block';
-      return;
+  const ctx = document.getElementById('historyChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: rows.map(r => r.date),
+      datasets: [{
+        label: 'USD/IRR',
+        data: rows.map(r => r.fix),
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.15)',
+        tension: 0.2,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+        y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
+      }
     }
-
-    note.style.display = 'none';
-    var width = svg.clientWidth || 420;
-    var height = svg.clientHeight || 220;
-    var pad = 16;
-    var values = points.map(function (p) { return p.fix; });
-    var min = Math.min.apply(null, values);
-    var max = Math.max.apply(null, values);
-    var span = Math.max(1, max - min);
-
-    var path = points.map(function (p, i) {
-      var x = pad + (i / (points.length - 1)) * (width - pad * 2);
-      var y = height - pad - ((p.fix - min) / span) * (height - pad * 2);
-      return (i === 0 ? 'M' : 'L') + x.toFixed(1) + ' ' + y.toFixed(1);
-    }).join(' ');
-
-    svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
-    svg.innerHTML = '<path d="' + path + '" fill="none" stroke="#66a3ff" stroke-width="2.5"/>';
-  }
-
-  function drawTable(rows) {
-    var body = document.getElementById('recent-days-body');
-    if (!body) return;
-    var recent = rows.slice(-30).reverse();
-
-    if (!recent.length) {
-      body.innerHTML = '<tr><td colspan="3" class="text-secondary">No daily rows available.</td></tr>';
-      return;
-    }
-
-    body.innerHTML = recent.map(function (r) {
-      return '<tr>' +
-        '<td>' + r.date + '</td>' +
-        '<td>' + fmt(r.fix) + '</td>' +
-        '<td>' + (r.status || 'N/A') + '</td>' +
-        '</tr>';
-    }).join('');
-  }
-
-  fetch('/api/series.json', {cache: 'no-store'})
-    .then(function (res) { return res.ok ? res.json() : []; })
-    .then(function (rows) {
-      var clean = (rows || []).filter(function (r) { return r && r.date; }).sort(function (a, b) {
-        return String(a.date).localeCompare(String(b.date));
-      });
-      drawChart(clean);
-      drawTable(clean);
-    })
-    .catch(function () {
-      drawChart([]);
-      drawTable([]);
-    });
-})();
+  });
+}
+loadSeries();
 </script>
 
-
-<footer class="text-muted mt-4">
-Generated at 2026-03-08T02:22:58Z
-</footer>
-
+      <div class="text-secondary mt-4">Generated at 2026-03-08T05:44:37Z</div>
+    </div>
+  </div>
 </div>
-</div>
-
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
-
 </body>
 </html>

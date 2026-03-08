@@ -499,15 +499,11 @@ def load_series_rows(site_dir: Path) -> List[Dict[str, Any]]:
             continue
 
         computed = daily.get("computed", {})
-        band = computed.get("band", {})
         rows.append(
             {
                 "date": daily.get("date", path.stem),
                 "fix": computed.get("fix"),
-                "p25": band.get("p25"),
-                "p75": band.get("p75"),
                 "status": computed.get("status"),
-                "withheld": bool(computed.get("withheld", False)),
             }
         )
 
@@ -687,7 +683,7 @@ def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
 
 def publish_series(site_dir: Path) -> None:
     rows = load_series_rows(site_dir)
-    write_json(site_dir / "api" / "series.json", rows)
+    write_json(site_dir / "api" / "series.json", {"rows": rows})
 
 
 def immutable_day_exists(site_dir: Path, day: str) -> bool:
