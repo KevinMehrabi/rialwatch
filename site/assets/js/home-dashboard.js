@@ -116,7 +116,7 @@
   }
 
   function loadSeries() {
-    fetch('/api/series.json', { cache: 'no-store' })
+    fetch('api/series.json', { cache: 'no-store' })
       .then(function (res) { return res.ok ? res.json() : []; })
       .then(function (rows) {
         var parsed = parseRows(rows);

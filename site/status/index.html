@@ -2,24 +2,26 @@
 <html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
   <title>Status</title>
-  <link rel="stylesheet" href="/assets/vendor/tabler/tabler.min.css" />
+  <link rel="stylesheet" href="/assets/tabler/tabler.min.css" />
   <link rel="stylesheet" href="/assets/css/dashboard.css" />
-  <script src="/assets/vendor/tabler/tabler.min.js" defer></script>
+  <script src="/assets/tabler/tabler.min.js" defer></script>
 </head>
 <body>
   <div class="page">
     <header class="navbar navbar-expand-md">
-      <div class="container-xl">
+      <div class="container-xl navbar-shell">
         <a class="navbar-brand text-uppercase" href="/">RialWatch Reference</a>
-        <ul class="navbar-nav ms-auto d-flex flex-row gap-2">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/methodology/">Methodology</a></li>
-          <li class="nav-item"><a class="nav-link" href="/governance/">Governance</a></li>
-          <li class="nav-item"><a class="nav-link" href="/archive/">Archive</a></li>
-          <li class="nav-item"><a class="nav-link" href="/status/">Status</a></li>
-        </ul>
+        <button class="nav-toggle" data-nav-toggle="site-nav" aria-label="Toggle navigation">Menu</button>
+        <nav id="site-nav" class="nav-links ms-auto">
+          <a class="nav-link" href="/">Home</a>
+          <a class="nav-link" href="/methodology/">Methodology</a>
+          <a class="nav-link" href="/governance/">Governance</a>
+          <a class="nav-link" href="/archive/">Archive</a>
+          <a class="nav-link" href="/status/">Status</a>
+        </nav>
       </div>
     </header>
 
@@ -46,7 +48,7 @@
       <footer class="container-xl mt-4 py-3">
         <div class="d-flex justify-content-between align-items-center text-secondary small">
           <span>USD/IRR Open Market Reference</span>
-          <span>Generated at 2026-03-07T22:04:07Z (UTC)</span>
+          <span>Generated at 2026-03-08T00:02:02Z (UTC)</span>
         </div>
       </footer>
     </div>

@@ -1,6 +1,6 @@
 <div class="mb-3">
-  <h1 class="page-title">USD/IRR Institutional Reference Dashboard</h1>
-  <p class="text-secondary mb-0">Static daily reference, produced by deterministic pipeline logic.</p>
+  <h1 class="page-title">USD/IRR Open Market Reference Terminal</h1>
+  <p class="text-secondary mb-0">Institutional daily benchmark panel. Static publish path. No runtime backend.</p>
 </div>
 
 <div class="terminal-grid">
@@ -8,25 +8,26 @@
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
-          <div class="text-secondary text-uppercase small">Latest Fix</div>
+          <div class="text-secondary uppercase small">Latest USD/IRR Reference</div>
           <div class="metric-value">$fix <span class="fs-5">IRR</span></div>
-          <div class="metric-sub">Date $date | As of $as_of</div>
+          <div class="metric-sub">Observation date $date</div>
+          <div class="metric-sub">As of $as_of</div>
         </div>
         <span class="status-pill status-$status_class">$status</span>
       </div>
 
       <div class="row g-3">
         <div class="col-md-4">
-          <div class="text-secondary text-uppercase small">Band (P25-P75)</div>
+          <div class="text-secondary uppercase small">Band (P25-P75)</div>
           <div class="fw-semibold">$p25 - $p75</div>
         </div>
         <div class="col-md-4">
-          <div class="text-secondary text-uppercase small">Withheld</div>
+          <div class="text-secondary uppercase small">Withheld</div>
           <div class="fw-semibold">$withheld</div>
         </div>
         <div class="col-md-4">
-          <div class="text-secondary text-uppercase small">Micro Trend</div>
-          <svg id="sparkline" class="sparkline" viewBox="0 0 360 56" role="img" aria-label="sparkline"></svg>
+          <div class="text-secondary uppercase small">Short Horizon Sparkline</div>
+          <svg id="sparkline" class="sparkline" viewBox="0 0 360 56" role="img" aria-label="recent sparkline"></svg>
         </div>
       </div>
     </div>
@@ -34,13 +35,13 @@
 
   <section class="card span-4">
     <div class="card-body">
-      <h3 class="card-title">Operational Links</h3>
+      <h3 class="card-title">Data Endpoints</h3>
       <div class="list-group list-group-flush">
-        <a class="list-group-item bg-transparent px-0" href="/api/latest.json">Latest JSON</a>
-        <a class="list-group-item bg-transparent px-0" href="/api/series.json">Historical Series JSON</a>
-        <a class="list-group-item bg-transparent px-0" href="/archive/">Archive</a>
+        <a class="list-group-item bg-transparent px-0" href="/api/latest.json">/api/latest.json</a>
+        <a class="list-group-item bg-transparent px-0" href="/api/series.json">/api/series.json</a>
+        <a class="list-group-item bg-transparent px-0" href="/archive/">/archive/</a>
       </div>
-      <div class="mt-3 text-secondary small">WITHHOLD notes</div>
+      <div class="mt-3 text-secondary uppercase small">WITHHOLD Rationale</div>
       <div class="small">$reasons</div>
     </div>
   </section>
@@ -48,12 +49,12 @@
   <section class="card span-12">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h3 class="card-title mb-0">Historical Daily Fix (from /api/series.json)</h3>
-        <span class="text-secondary small">Ordered daily time series</span>
+        <h3 class="card-title">Historical Time Series</h3>
+        <span class="text-secondary small">Source: /api/series.json</span>
       </div>
       <div class="chart-shell">
-        <svg id="history-chart-svg" role="img" aria-label="historical chart"></svg>
-        <div id="history-chart-empty" class="chart-empty">No chart data yet.</div>
+        <svg id="history-chart-svg" role="img" aria-label="historical line chart"></svg>
+        <div id="history-chart-empty" class="chart-empty">Insufficient historical observations for line view.</div>
       </div>
     </div>
   </section>
@@ -61,8 +62,8 @@
   <section class="card span-12">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h3 class="card-title mb-0">Recent Daily Tape (Last 30)</h3>
-        <span class="text-secondary small">Loaded client-side from /api/series.json</span>
+        <h3 class="card-title">Recent Daily Tape (Last 30)</h3>
+        <span class="text-secondary small">Date | Fix | Band | Status | Withheld</span>
       </div>
       <div class="table-responsive">
         <table class="table table-sm table-vcenter">
@@ -77,7 +78,7 @@
             </tr>
           </thead>
           <tbody id="history-table-body">
-            <tr><td colspan="6" class="text-secondary">Loading series...</td></tr>
+            <tr><td colspan="6" class="text-secondary">Initializing market tape...</td></tr>
           </tbody>
         </table>
       </div>

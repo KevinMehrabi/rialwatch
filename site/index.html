@@ -2,32 +2,34 @@
 <html lang="en" data-bs-theme="dark">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
   <title>USD/IRR Dashboard</title>
-  <link rel="stylesheet" href="/assets/vendor/tabler/tabler.min.css" />
+  <link rel="stylesheet" href="/assets/tabler/tabler.min.css" />
   <link rel="stylesheet" href="/assets/css/dashboard.css" />
-  <script src="/assets/vendor/tabler/tabler.min.js" defer></script>
+  <script src="/assets/tabler/tabler.min.js" defer></script>
 </head>
 <body>
   <div class="page">
     <header class="navbar navbar-expand-md">
-      <div class="container-xl">
+      <div class="container-xl navbar-shell">
         <a class="navbar-brand text-uppercase" href="/">RialWatch Reference</a>
-        <ul class="navbar-nav ms-auto d-flex flex-row gap-2">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/methodology/">Methodology</a></li>
-          <li class="nav-item"><a class="nav-link" href="/governance/">Governance</a></li>
-          <li class="nav-item"><a class="nav-link" href="/archive/">Archive</a></li>
-          <li class="nav-item"><a class="nav-link" href="/status/">Status</a></li>
-        </ul>
+        <button class="nav-toggle" data-nav-toggle="site-nav" aria-label="Toggle navigation">Menu</button>
+        <nav id="site-nav" class="nav-links ms-auto">
+          <a class="nav-link" href="/">Home</a>
+          <a class="nav-link" href="/methodology/">Methodology</a>
+          <a class="nav-link" href="/governance/">Governance</a>
+          <a class="nav-link" href="/archive/">Archive</a>
+          <a class="nav-link" href="/status/">Status</a>
+        </nav>
       </div>
     </header>
 
     <div class="page-wrapper">
       <div class="container-xl">
         <div class="mb-3">
-  <h1 class="page-title">USD/IRR Institutional Reference Dashboard</h1>
-  <p class="text-secondary mb-0">Static daily reference, produced by deterministic pipeline logic.</p>
+  <h1 class="page-title">USD/IRR Open Market Reference Terminal</h1>
+  <p class="text-secondary mb-0">Institutional daily benchmark panel. Static publish path. No runtime backend.</p>
 </div>
 
 <div class="terminal-grid">
@@ -35,25 +37,26 @@
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
-          <div class="text-secondary text-uppercase small">Latest Fix</div>
+          <div class="text-secondary uppercase small">Latest USD/IRR Reference</div>
           <div class="metric-value">N/A <span class="fs-5">IRR</span></div>
-          <div class="metric-sub">Date 2026-03-07 | As of 2026-03-07T22:04:07Z</div>
+          <div class="metric-sub">Observation date 2026-03-08</div>
+          <div class="metric-sub">As of 2026-03-08T00:02:02Z</div>
         </div>
         <span class="status-pill status-CONFIG-NEEDED">CONFIG NEEDED</span>
       </div>
 
       <div class="row g-3">
         <div class="col-md-4">
-          <div class="text-secondary text-uppercase small">Band (P25-P75)</div>
+          <div class="text-secondary uppercase small">Band (P25-P75)</div>
           <div class="fw-semibold">N/A - N/A</div>
         </div>
         <div class="col-md-4">
-          <div class="text-secondary text-uppercase small">Withheld</div>
+          <div class="text-secondary uppercase small">Withheld</div>
           <div class="fw-semibold">Yes</div>
         </div>
         <div class="col-md-4">
-          <div class="text-secondary text-uppercase small">Micro Trend</div>
-          <svg id="sparkline" class="sparkline" viewBox="0 0 360 56" role="img" aria-label="sparkline"></svg>
+          <div class="text-secondary uppercase small">Short Horizon Sparkline</div>
+          <svg id="sparkline" class="sparkline" viewBox="0 0 360 56" role="img" aria-label="recent sparkline"></svg>
         </div>
       </div>
     </div>
@@ -61,13 +64,13 @@
 
   <section class="card span-4">
     <div class="card-body">
-      <h3 class="card-title">Operational Links</h3>
+      <h3 class="card-title">Data Endpoints</h3>
       <div class="list-group list-group-flush">
-        <a class="list-group-item bg-transparent px-0" href="/api/latest.json">Latest JSON</a>
-        <a class="list-group-item bg-transparent px-0" href="/api/series.json">Historical Series JSON</a>
-        <a class="list-group-item bg-transparent px-0" href="/archive/">Archive</a>
+        <a class="list-group-item bg-transparent px-0" href="/api/latest.json">/api/latest.json</a>
+        <a class="list-group-item bg-transparent px-0" href="/api/series.json">/api/series.json</a>
+        <a class="list-group-item bg-transparent px-0" href="/archive/">/archive/</a>
       </div>
-      <div class="mt-3 text-secondary small">WITHHOLD notes</div>
+      <div class="mt-3 text-secondary uppercase small">WITHHOLD Rationale</div>
       <div class="small"><ul class="mb-0"><li>missing secrets</li></ul></div>
     </div>
   </section>
@@ -75,12 +78,12 @@
   <section class="card span-12">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h3 class="card-title mb-0">Historical Daily Fix (from /api/series.json)</h3>
-        <span class="text-secondary small">Ordered daily time series</span>
+        <h3 class="card-title">Historical Time Series</h3>
+        <span class="text-secondary small">Source: /api/series.json</span>
       </div>
       <div class="chart-shell">
-        <svg id="history-chart-svg" role="img" aria-label="historical chart"></svg>
-        <div id="history-chart-empty" class="chart-empty">No chart data yet.</div>
+        <svg id="history-chart-svg" role="img" aria-label="historical line chart"></svg>
+        <div id="history-chart-empty" class="chart-empty">Insufficient historical observations for line view.</div>
       </div>
     </div>
   </section>
@@ -88,8 +91,8 @@
   <section class="card span-12">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h3 class="card-title mb-0">Recent Daily Tape (Last 30)</h3>
-        <span class="text-secondary small">Loaded client-side from /api/series.json</span>
+        <h3 class="card-title">Recent Daily Tape (Last 30)</h3>
+        <span class="text-secondary small">Date | Fix | Band | Status | Withheld</span>
       </div>
       <div class="table-responsive">
         <table class="table table-sm table-vcenter">
@@ -104,7 +107,7 @@
             </tr>
           </thead>
           <tbody id="history-table-body">
-            <tr><td colspan="6" class="text-secondary">Loading series...</td></tr>
+            <tr><td colspan="6" class="text-secondary">Initializing market tape...</td></tr>
           </tbody>
         </table>
       </div>
@@ -119,7 +122,7 @@
       <footer class="container-xl mt-4 py-3">
         <div class="d-flex justify-content-between align-items-center text-secondary small">
           <span>USD/IRR Open Market Reference</span>
-          <span>Generated at 2026-03-07T22:04:07Z (UTC)</span>
+          <span>Generated at 2026-03-08T00:02:02Z (UTC)</span>
         </div>
       </footer>
     </div>

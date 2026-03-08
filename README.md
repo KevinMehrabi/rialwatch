@@ -7,8 +7,10 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - Static output: `/site`
 - Pipeline: `/scripts/pipeline.py`
 - Templates: `/templates`
+- Local dashboard shell assets (Tabler-style): `/assets/tabler`
 - Static assets copied by pipeline: `/assets` -> `/site/assets`
 - Scheduled workflow: `/Users/kevinmehrabi/Projects/rialwatch/.github/workflows/daily-reference.yml`
+- Frontend runtime: plain HTML/CSS/JS (no React, no build toolchain)
 
 ## Key Outputs
 
