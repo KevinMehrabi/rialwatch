@@ -1,6 +1,9 @@
 name: Daily USD/IRR Reference
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     # Starts at 13:45 UTC, samples through 14:15, publishes at 14:20.
     - cron: "45 13 * * *"
