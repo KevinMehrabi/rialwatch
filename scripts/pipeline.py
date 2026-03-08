@@ -258,23 +258,30 @@ def should_sleep_until(target: dt.datetime, skip_waits: bool) -> None:
     time.sleep((target - now).total_seconds())
 
 
+def env_or_default(name: str, default: str) -> str:
+    value = os.environ.get(name)
+    if value and value.strip():
+        return value
+    return default
+
+
 def build_source_configs() -> List[SourceConfig]:
     return [
         SourceConfig(
             name="bonbast",
-            url=os.environ.get("BONBAST_API_URL", "https://api.bonbast.com/v1/rates"),
+            url=env_or_default("BONBAST_API_URL", "https://api.bonbast.com/v1/rates"),
             auth_mode="query_user_hash",
             secret_fields=("BONBAST_USERNAME", "BONBAST_HASH"),
         ),
         SourceConfig(
             name="navasan",
-            url=os.environ.get("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
+            url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
             auth_mode="query_api_key",
             secret_fields=("NAVASAN_API_KEY",),
         ),
         SourceConfig(
             name="alanchand",
-            url=os.environ.get("ALANCHAND_API_URL", "https://api.alanchand.com/v1/rates"),
+            url=env_or_default("ALANCHAND_API_URL", "https://api.alanchand.com/v1/rates"),
             auth_mode="header_api_key",
             secret_fields=("ALANCHAND_API_KEY",),
         ),
