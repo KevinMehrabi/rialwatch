@@ -61,29 +61,63 @@ async function loadSeries() {
   const res = await fetch(seriesUrl.toString());
   const data = await res.json();
   const rows = data.rows || [];
-  const numericRows = rows
-    .map(r => ({ ...r, fixNum: Number(r.fix) }))
-    .filter(r => Number.isFinite(r.fixNum));
+  const marketStatuses = new Set(['Green', 'Amber', 'Red']);
+  const toFixNumber = (value) => {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) && value > 0 ? value : null;
+    }
+    if (typeof value === 'string') {
+      const cleaned = value.trim().replace(/,/g, '');
+      if (!cleaned) return null;
+      const parsed = Number(cleaned);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    }
+    return null;
+  };
+  const toBool = (value) => {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'string') {
+      const lowered = value.trim().toLowerCase();
+      if (lowered === 'true') return true;
+      if (lowered === 'false') return false;
+    }
+    return null;
+  };
+  const validRows = rows
+    .map(r => {
+      const status = typeof r.status === 'string' ? r.status.trim() : '';
+      return {
+        ...r,
+        status,
+        fixNum: toFixNumber(r.fix),
+        withheldBool: toBool(r.withheld)
+      };
+    })
+    .filter(r => r.fixNum !== null && r.withheldBool === false && marketStatuses.has(r.status));
 
   const tbody = document.getElementById('recent-days');
-  tbody.innerHTML = rows.slice(-30).reverse().map(r => `
-    <tr>
-      <td>${r.date}</td>
-      <td>${r.fix ?? 'N/A'}</td>
-      <td>${r.status ?? 'N/A'}</td>
-    </tr>
-  `).join('');
+  if (!validRows.length) {
+    tbody.innerHTML = '<tr><td colspan="3">No valid published daily fixes yet.</td></tr>';
+  } else {
+    tbody.innerHTML = validRows.slice(-30).reverse().map(r => `
+      <tr>
+        <td>${r.date}</td>
+        <td>${r.fixNum}</td>
+        <td>${r.status}</td>
+      </tr>
+    `).join('');
+  }
 
   const canvas = document.getElementById('historyChart');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  if (!numericRows.length) {
+  if (!validRows.length) {
     const holder = canvas.parentElement;
     if (holder && !holder.querySelector('.no-series-note')) {
       const note = document.createElement('div');
       note.className = 'text-secondary mt-2 no-series-note';
-      note.textContent = 'No numeric IRR values available in series.json yet.';
+      note.textContent = 'No valid published historical fixes available yet.';
       holder.appendChild(note);
     }
     return;
@@ -92,10 +126,10 @@ async function loadSeries() {
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: numericRows.map(r => r.date),
+      labels: validRows.map(r => r.date),
       datasets: [{
         label: 'USD/IRR',
-        data: numericRows.map(r => r.fixNum),
+        data: validRows.map(r => r.fixNum),
         borderColor: '#3b82f6',
         backgroundColor: 'rgba(59,130,246,0.15)',
         tension: 0.2,

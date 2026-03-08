@@ -18,7 +18,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/fix/YYYY-MM-DD/` daily permalink page
 - `/fix/YYYY-MM-DD.json` daily JSON payload
 - `/api/latest.json` latest payload
-- `/api/series.json` ordered historical rows (merged from `/site/fix/*.json` and any existing `series.json` rows)
+- `/api/series.json` ordered public historical rows (only valid published fixes: numeric, non-withheld, Green/Amber/Red)
 - `/archive/`, `/status/`, `/methodology/`, `/governance/`
 
 ## Required GitHub Secrets

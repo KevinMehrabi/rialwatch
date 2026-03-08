@@ -575,6 +575,23 @@ def load_series_rows(site_dir: Path) -> List[Dict[str, Any]]:
     return rows
 
 
+def is_public_series_row(row: Dict[str, Any]) -> bool:
+    status = row.get("status")
+    fix = row.get("fix")
+    withheld = row.get("withheld")
+
+    if not isinstance(status, str) or status not in {"Green", "Amber", "Red"}:
+        return False
+    if withheld is not False:
+        return False
+    if not isinstance(fix, (int, float)):
+        return False
+    if not math.isfinite(float(fix)) or float(fix) <= 0:
+        return False
+
+    return True
+
+
 def copy_static_assets(assets_dir: Path, site_dir: Path) -> None:
     if not assets_dir.exists():
         return
@@ -747,7 +764,8 @@ def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
 
 def publish_series(site_dir: Path) -> None:
     rows = load_series_rows(site_dir)
-    write_json(site_dir / "api" / "series.json", {"rows": rows})
+    public_rows = [row for row in rows if is_public_series_row(row)]
+    write_json(site_dir / "api" / "series.json", {"rows": public_rows})
 
 
 def immutable_day_exists(site_dir: Path, day: str) -> bool:
