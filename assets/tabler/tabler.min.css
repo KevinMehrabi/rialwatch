@@ -48,6 +48,14 @@ a:hover {
   width: 100%;
 }
 
+.navbar-dark {
+  color: #e8edf7;
+}
+
+.bg-dark {
+  background: rgba(9, 14, 27, 0.94);
+}
+
 .navbar-shell {
   display: flex;
   justify-content: space-between;
@@ -251,6 +259,10 @@ a:hover {
   display: flex;
 }
 
+.flex-row {
+  flex-direction: row;
+}
+
 .justify-content-between {
   justify-content: space-between;
 }
@@ -271,8 +283,16 @@ a:hover {
   gap: 0.5rem;
 }
 
+.gap-3 {
+  gap: 0.75rem;
+}
+
 .bg-transparent {
   background: transparent;
+}
+
+.text-white {
+  color: #f5f8ff;
 }
 
 .px-0 {
@@ -289,6 +309,7 @@ a:hover {
 .mt-2 { margin-top: 0.5rem; }
 .mt-3 { margin-top: 0.85rem; }
 .mt-4 { margin-top: 1.25rem; }
+.h-100 { height: 100%; }
 .py-3 { padding-top: 0.9rem; padding-bottom: 0.9rem; }
 .g-3 > * { margin-bottom: 0.75rem; }
 

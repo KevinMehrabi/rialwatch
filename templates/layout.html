@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="color-scheme" content="dark" />
   <title>$title</title>
   <link rel="stylesheet" href="/assets/tabler/tabler.min.css" />
@@ -11,31 +11,22 @@
 </head>
 <body>
   <div class="page">
-    <header class="navbar navbar-expand-md">
-      <div class="container-xl navbar-shell">
-        <a class="navbar-brand text-uppercase" href="/">RialWatch Reference</a>
-        <button class="nav-toggle" data-nav-toggle="site-nav" aria-label="Toggle navigation">Menu</button>
-        <nav id="site-nav" class="nav-links ms-auto">
-          <a class="nav-link" href="/">Home</a>
-          <a class="nav-link" href="/methodology/">Methodology</a>
-          <a class="nav-link" href="/governance/">Governance</a>
-          <a class="nav-link" href="/archive/">Archive</a>
-          <a class="nav-link" href="/status/">Status</a>
-        </nav>
+    <header class="navbar navbar-dark bg-dark">
+      <div class="container-xl">
+        <span class="navbar-brand">USD/IRR Open Market Reference</span>
+        <div class="navbar-nav flex-row gap-3">
+          <a class="nav-link text-white" href="/">Home</a>
+          <a class="nav-link text-white" href="/archive/">Archive</a>
+          <a class="nav-link text-white" href="/status/">Status</a>
+          <a class="nav-link text-white" href="/methodology/">Methodology</a>
+        </div>
       </div>
     </header>
 
     <div class="page-wrapper">
-      <div class="container-xl">
-        $content
+      <div class="container-xl mt-4">
+        ${content}
       </div>
-
-      <footer class="container-xl mt-4 py-3">
-        <div class="d-flex justify-content-between align-items-center text-secondary small">
-          <span>USD/IRR Open Market Reference</span>
-          <span>Generated at $generated_at (UTC)</span>
-        </div>
-      </footer>
     </div>
   </div>
 </body>
