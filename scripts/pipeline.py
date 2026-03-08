@@ -37,6 +37,16 @@ REQUIRED_SECRETS = (
     "ALANCHAND_API_KEY",
 )
 
+BENCHMARK_LABELS: Dict[str, str] = {
+    "open_market": "Open Market / Street Rate",
+    "retail_seller": "Retail Seller Rate",
+    "retail_buyer": "Retail Buyer Rate",
+    "retail_mid_composite": "Retail Mid-Market Composite",
+}
+
+PRIMARY_BENCHMARK = "open_market"
+SUPPLEMENTARY_BENCHMARKS = ("retail_seller", "retail_buyer", "retail_mid_composite")
+
 
 @dataclass
 class SourceConfig:
@@ -51,6 +61,7 @@ class Sample:
     source: str
     sampled_at: dt.datetime
     value: Optional[float]
+    benchmark_values: Dict[str, Optional[float]]
     quote_time: Optional[dt.datetime]
     ok: bool
     stale: bool
@@ -162,7 +173,7 @@ def extract_quote_time(payload: Any) -> Optional[dt.datetime]:
     return scored[0][1]
 
 
-def extract_usd_irr(payload: Any) -> Optional[float]:
+def extract_usd_irr_for_benchmark(payload: Any, benchmark: str) -> Optional[float]:
     candidates = flatten_json(payload)
     ranked: List[Tuple[int, float]] = []
 
@@ -177,12 +188,32 @@ def extract_usd_irr(payload: Any) -> Optional[float]:
             score += 4
         if "irr" in path_l or "rial" in path_l:
             score += 4
-        if "market" in path_l or "open" in path_l:
-            score += 2
-        if "sell" in path_l or "price" in path_l or path_l.endswith(".value"):
+        has_sell = any(tok in path_l for tok in ("sell", "seller", "offer"))
+        has_buy = any(tok in path_l for tok in ("buy", "buyer", "bid"))
+        has_open = any(tok in path_l for tok in ("open", "market", "street", "free", "azad"))
+
+        if benchmark == "open_market":
+            if has_open:
+                score += 3
+            if has_sell:
+                score += 1
+            if has_buy:
+                score -= 1
+        elif benchmark == "retail_seller":
+            if not has_sell:
+                continue
+            score += 3
+            if has_buy:
+                score -= 2
+        elif benchmark == "retail_buyer":
+            if not has_buy:
+                continue
+            score += 3
+            if has_sell:
+                score -= 2
+
+        if "price" in path_l or path_l.endswith(".value"):
             score += 1
-        if "buy" in path_l:
-            score -= 1
         if 150_000 <= num <= 2_500_000:
             score += 2
 
@@ -194,6 +225,27 @@ def extract_usd_irr(payload: Any) -> Optional[float]:
 
     ranked.sort(key=lambda x: x[0], reverse=True)
     return ranked[0][1]
+
+
+def extract_benchmark_values(payload: Any) -> Dict[str, Optional[float]]:
+    open_market = extract_usd_irr_for_benchmark(payload, "open_market")
+    seller = extract_usd_irr_for_benchmark(payload, "retail_seller")
+    buyer = extract_usd_irr_for_benchmark(payload, "retail_buyer")
+
+    mid: Optional[float] = None
+    if seller is not None and buyer is not None:
+        mid = (seller + buyer) / 2.0
+
+    return {
+        "open_market": open_market,
+        "retail_seller": seller,
+        "retail_buyer": buyer,
+        "retail_mid_composite": mid,
+    }
+
+
+def extract_usd_irr(payload: Any) -> Optional[float]:
+    return extract_benchmark_values(payload).get(PRIMARY_BENCHMARK)
 
 
 def percentile(values: List[float], pct: float) -> float:
@@ -337,17 +389,18 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             body = resp.read().decode("utf-8", errors="replace")
         payload = json.loads(body)
     except KeyError as exc:
-        return Sample(config.name, sampled_at, None, None, ok=False, stale=False, error=f"missing secret: {exc}")
+        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error=f"missing secret: {exc}")
     except urllib.error.HTTPError as exc:
-        return Sample(config.name, sampled_at, None, None, ok=False, stale=False, error=f"http {exc.code}")
+        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error=f"http {exc.code}")
     except urllib.error.URLError as exc:
-        return Sample(config.name, sampled_at, None, None, ok=False, stale=False, error=f"network: {exc.reason}")
+        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error=f"network: {exc.reason}")
     except TimeoutError:
-        return Sample(config.name, sampled_at, None, None, ok=False, stale=False, error="timeout")
+        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error="timeout")
     except json.JSONDecodeError:
-        return Sample(config.name, sampled_at, None, None, ok=False, stale=False, error="invalid json")
+        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error="invalid json")
 
-    value = extract_usd_irr(payload)
+    benchmark_values = extract_benchmark_values(payload)
+    value = benchmark_values.get(PRIMARY_BENCHMARK)
     quote_time = extract_quote_time(payload)
 
     stale = False
@@ -355,9 +408,27 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         stale = True
 
     if value is None:
-        return Sample(config.name, sampled_at, None, quote_time, ok=False, stale=stale, error="unable to parse USD/IRR")
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=stale,
+            error="unable to parse USD/IRR",
+        )
 
-    return Sample(config.name, sampled_at, value, quote_time, ok=not stale, stale=stale, error="stale quote" if stale else None)
+    return Sample(
+        config.name,
+        sampled_at,
+        value,
+        benchmark_values,
+        quote_time,
+        ok=not stale,
+        stale=stale,
+        error="stale quote" if stale else None,
+    )
 
 
 def collect_samples(
@@ -393,10 +464,18 @@ def collect_samples(
 
 def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, Any]:
     source_medians: Dict[str, float] = {}
+    source_benchmark_medians: Dict[str, Dict[str, float]] = {}
     source_notes: Dict[str, str] = {}
     invalid_or_stale = False
 
     for source, entries in samples.items():
+        benchmark_medians: Dict[str, float] = {}
+        for benchmark in BENCHMARK_LABELS:
+            benchmark_values = [s.benchmark_values.get(benchmark) for s in entries if s.benchmark_values.get(benchmark) is not None]
+            if benchmark_values:
+                benchmark_medians[benchmark] = median(benchmark_values)
+        source_benchmark_medians[source] = benchmark_medians
+
         valid_values = [s.value for s in entries if s.value is not None]
         if not valid_values:
             source_notes[source] = "no valid samples"
@@ -440,6 +519,24 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
         else:
             status = "WITHHOLD"
 
+    benchmark_daily_values: Dict[str, Optional[float]] = {key: None for key in BENCHMARK_LABELS}
+    benchmark_daily_values[PRIMARY_BENCHMARK] = fix_value
+
+    for benchmark in SUPPLEMENTARY_BENCHMARKS:
+        per_source = [values.get(benchmark) for values in source_benchmark_medians.values() if values.get(benchmark) is not None]
+        if per_source:
+            benchmark_daily_values[benchmark] = median(per_source)
+
+    computed_benchmarks = {
+        key: {
+            "label": BENCHMARK_LABELS[key],
+            "value": benchmark_daily_values.get(key),
+            "available": benchmark_daily_values.get(key) is not None,
+            "is_primary": key == PRIMARY_BENCHMARK,
+        }
+        for key in BENCHMARK_LABELS
+    }
+
     return {
         "date": iso_date(day),
         "as_of": iso_ts(utc_now()),
@@ -454,6 +551,7 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
                     {
                         "sampled_at": iso_ts(s.sampled_at),
                         "value": s.value,
+                        "benchmarks": s.benchmark_values,
                         "quote_time": iso_ts(s.quote_time) if s.quote_time else None,
                         "ok": s.ok,
                         "stale": s.stale,
@@ -462,6 +560,7 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
                     for s in entries
                 ],
                 "median": source_medians.get(source),
+                "benchmark_medians": source_benchmark_medians.get(source, {}),
                 "note": source_notes.get(source),
             }
             for source, entries in samples.items()
@@ -474,6 +573,7 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
             "withheld": withheld,
             "withhold_reasons": reasons,
             "source_medians": source_medians,
+            "benchmarks": computed_benchmarks,
         },
     }
 
@@ -692,6 +792,16 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     if withheld and reasons:
         reasons_html = '<ul class="mb-0">' + "".join(f"<li>{r}</li>" for r in reasons) + "</ul>"
 
+    benchmark_map = c.get("benchmarks", {})
+    benchmark_map = benchmark_map if isinstance(benchmark_map, dict) else {}
+
+    def benchmark_value_or_unavailable(key: str) -> str:
+        entry = benchmark_map.get(key, {})
+        if not isinstance(entry, dict):
+            return "Unavailable"
+        value = parse_number(entry.get("value"))
+        return f"{fmt_rate(value)} IRR" if value is not None else "Unavailable"
+
     html = render_page(
         templates_dir,
         "index.html",
@@ -706,6 +816,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         status_class=css_class(status),
         withheld="Yes" if withheld else "No",
         reasons=reasons_html,
+        retail_seller_value=benchmark_value_or_unavailable("retail_seller"),
+        retail_buyer_value=benchmark_value_or_unavailable("retail_buyer"),
+        retail_mid_value=benchmark_value_or_unavailable("retail_mid_composite"),
     )
     write_text(site_dir / "index.html", html)
 

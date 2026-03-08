@@ -21,6 +21,21 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/api/series.json` ordered public historical rows (only valid published fixes: numeric, non-withheld, Green/Amber/Red)
 - `/archive/`, `/status/`, `/methodology/`, `/governance/`
 
+## Benchmarks
+
+- Primary benchmark (flagship): `open_market` (`Open Market / Street Rate`)
+- Supplementary benchmarks:
+  - `retail_seller` (`Retail Seller Rate`)
+  - `retail_buyer` (`Retail Buyer Rate`)
+  - `retail_mid_composite` (`Retail Mid-Market Composite`)
+
+Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
+
+- `computed.fix` for the primary benchmark
+- `computed.benchmarks` for all benchmark types with `label`, `value`, `available`, and `is_primary`
+
+Public historical series (`/api/series.json`) remains strict and primary-only.
+
 ## Required GitHub Secrets
 
 Add these in **Settings -> Secrets and variables -> Actions**:

@@ -2,7 +2,8 @@
   <div class="col-lg-6">
     <div class="card bg-dark text-white">
       <div class="card-body">
-        <div class="text-secondary mb-2">TODAY'S REFERENCE</div>
+        <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
+        <div class="text-secondary mb-2">Open Market / Street Rate</div>
         <div class="h1 mb-1">${fix} IRR</div>
         <div class="text-secondary">Date: ${date} | As of: ${as_of}</div>
         <div class="row mt-4">
@@ -28,6 +29,38 @@
       <div class="card-body">
         <div class="text-secondary mb-2">HISTORICAL SERIES</div>
         <canvas id="historyChart" height="160"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="row row-cards">
+      <div class="col-md-4">
+        <div class="card bg-dark text-white">
+          <div class="card-body">
+            <div class="text-secondary mb-2">SUPPLEMENTARY BENCHMARK</div>
+            <div class="fw-semibold mb-2">Retail Seller Rate</div>
+            <div class="h3 mb-0">${retail_seller_value}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-dark text-white">
+          <div class="card-body">
+            <div class="text-secondary mb-2">SUPPLEMENTARY BENCHMARK</div>
+            <div class="fw-semibold mb-2">Retail Buyer Rate</div>
+            <div class="h3 mb-0">${retail_buyer_value}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card bg-dark text-white">
+          <div class="card-body">
+            <div class="text-secondary mb-2">SUPPLEMENTARY BENCHMARK</div>
+            <div class="fw-semibold mb-2">Retail Mid-Market Composite</div>
+            <div class="h3 mb-0">${retail_mid_value}</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
