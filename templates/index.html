@@ -193,8 +193,7 @@
           <div class="text-secondary mb-1">RECENT DAILY REFERENCES</div>
           <div class="recent-table-subtitle">Published reference fixes</div>
         </div>
-        <div class="recent-table-divider"></div>
-        <div class="table-responsive">
+        <div class="recent-table-body table-responsive">
           <table class="table table-dark table-vcenter">
             <thead>
               <tr>
@@ -207,6 +206,9 @@
               <tr><td colspan="3">Loading...</td></tr>
             </tbody>
           </table>
+        </div>
+        <div class="panel-bottom recent-table-footer">
+          <div class="text-secondary small" id="recent-days-summary">More history will appear as daily fixes accumulate</div>
         </div>
       </div>
     </div>
@@ -254,8 +256,12 @@ async function loadSeries() {
     .filter(r => r.fixNum !== null && r.withheldBool === false && marketStatuses.has(r.status));
 
   const tbody = document.getElementById('recent-days');
+  const summary = document.getElementById('recent-days-summary');
   if (!validRows.length) {
     tbody.innerHTML = '<tr><td colspan="3">No valid published daily fixes yet.</td></tr>';
+    if (summary) {
+      summary.textContent = 'More history will appear as daily fixes accumulate';
+    }
   } else {
     tbody.innerHTML = validRows.slice(-30).reverse().map(r => `
       <tr>
@@ -264,6 +270,11 @@ async function loadSeries() {
         <td>${r.status}</td>
       </tr>
     `).join('');
+    if (summary) {
+      summary.textContent = validRows.length === 1
+        ? '1 published day'
+        : `${validRows.length} published days`;
+    }
   }
 
   const canvas = document.getElementById('historyChart');
