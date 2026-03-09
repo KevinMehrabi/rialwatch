@@ -53,30 +53,32 @@ INDICATOR_LABELS: Dict[str, str] = {
     "crypto_premium": "Crypto Premium",
 }
 
+STRICT_CANONICAL_BENCHMARKS = {"nima", "official", "regional_transfer"}
+
 BENCHMARK_SYMBOL_CANDIDATES: Dict[str, Tuple[str, ...]] = {
-    "nima": ("nim", "nima", "usd_nima", "usd_nim"),
     "crypto_usdt": ("usdt", "tether", "usd_tether"),
+    # Prefer exact "sekkeh" where exposed; keep existing aliases as fallback.
     "emami_gold_coin": ("sekkeh", "sekke", "emami", "coin_emami", "sekeh_emami"),
-    "official": (
-        "usd_official",
-        "official_usd",
-        "usd_bank",
-        "bank_usd",
-        "usd_cbi",
-        "cbi_usd",
-        "usd_sana",
-        "sana_usd",
-        "usd_4200",
-    ),
-    "regional_transfer": (
-        "usd_shakhs",
-        "usd_sherkat",
-        "usd_hav",
-        "usd_havale",
-        "usd_hawala",
-        "usd_transfer",
-        "transfer_usd",
-    ),
+}
+
+# Exact source-to-symbol mappings for production-safe parsing.
+# If a strict benchmark has no entry for a source, we intentionally return unavailable.
+CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
+    "navasan": {
+        "official": ("mob_usd", "mex_usd_sell", "mex_usd_buy"),
+        "regional_transfer": ("usd_shakhs", "usd_sherkat"),
+        "crypto_usdt": ("usdt",),
+        "emami_gold_coin": ("sekkeh",),
+    },
+    "alanchand": {
+        "regional_transfer": ("usd-hav", "usd_hav"),
+        "crypto_usdt": ("usdt",),
+        "emami_gold_coin": ("sekkeh",),
+    },
+    "bonbast": {
+        "crypto_usdt": ("usdt", "tether"),
+        "emami_gold_coin": ("sekkeh",),
+    },
 }
 
 
@@ -372,8 +374,22 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
     return ranked[0][1]
 
 
-def extract_benchmark_values(payload: Any) -> Dict[str, Optional[float]]:
+def extract_benchmark_values(payload: Any, source_name: Optional[str] = None) -> Dict[str, Optional[float]]:
+    source_key = (source_name or "").strip().lower()
+
     def resolve(benchmark: str) -> Optional[float]:
+        canonical_map = CANONICAL_SOURCE_SYMBOLS.get(source_key, {})
+        canonical_symbols = canonical_map.get(benchmark)
+        if canonical_symbols:
+            by_symbol = extract_value_by_symbol_candidates(payload, canonical_symbols)
+            if by_symbol is not None:
+                return by_symbol
+            if benchmark in STRICT_CANONICAL_BENCHMARKS:
+                return None
+
+        if benchmark in STRICT_CANONICAL_BENCHMARKS:
+            return None
+
         symbol_candidates = BENCHMARK_SYMBOL_CANDIDATES.get(benchmark)
         if symbol_candidates:
             by_symbol = extract_value_by_symbol_candidates(payload, symbol_candidates)
@@ -556,7 +572,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     except json.JSONDecodeError:
         return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error="invalid json")
 
-    benchmark_values = extract_benchmark_values(payload)
+    benchmark_values = extract_benchmark_values(payload, config.name)
     value = benchmark_values.get(PRIMARY_BENCHMARK)
     quote_time = extract_quote_time(payload)
 
