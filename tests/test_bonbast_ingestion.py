@@ -78,6 +78,57 @@ class BonbastIngestionTests(unittest.TestCase):
         validation = bonbast_sample.health.get("validation_result", {})
         self.assertEqual(validation.get("peer_band_result"), "failed")
 
+    def test_summarize_day_preserves_sample_health_debug_fields(self) -> None:
+        now = dt.datetime(2026, 3, 9, 14, 0, tzinfo=dt.timezone.utc)
+        source_configs = pipeline.build_source_configs()
+        samples = {cfg.name: [] for cfg in source_configs}
+
+        samples["navasan"].append(
+            pipeline.Sample(
+                source="navasan",
+                sampled_at=now,
+                value=166_400.0,
+                benchmark_values={"open_market": 166_400.0},
+                quote_time=now,
+                ok=True,
+                stale=False,
+                health={
+                    "fetch_success": True,
+                    "validation_result": {"ok": True},
+                    "failure_reason": None,
+                },
+            )
+        )
+        samples["bonbast"].append(
+            pipeline.Sample(
+                source="bonbast",
+                sampled_at=now,
+                value=None,
+                benchmark_values={},
+                quote_time=None,
+                ok=False,
+                stale=False,
+                error="network failure",
+                health={
+                    "fetch_success": False,
+                    "validation_result": {"ok": False, "reason": "network failure"},
+                    "failure_reason": "network failure",
+                },
+            )
+        )
+
+        daily = pipeline.summarize_day(samples, source_configs, dt.date(2026, 3, 9))
+        navasan_sample = daily["sources"]["navasan"]["samples"][0]
+        bonbast_sample = daily["sources"]["bonbast"]["samples"][0]
+
+        self.assertTrue(navasan_sample["fetch_success"])
+        self.assertEqual(navasan_sample["validation_result"], {"ok": True})
+        self.assertIsNone(navasan_sample["failure_reason"])
+
+        self.assertFalse(bonbast_sample["fetch_success"])
+        self.assertEqual(bonbast_sample["validation_result"], {"ok": False, "reason": "network failure"})
+        self.assertEqual(bonbast_sample["failure_reason"], "network failure")
+
 
 if __name__ == "__main__":
     unittest.main()

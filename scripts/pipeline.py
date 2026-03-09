@@ -1631,22 +1631,37 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
             "sample_count_per_source": sample_count_per_source,
         },
         "sources": {
-            source: {
-                "samples": [
-                    {
-                        "sampled_at": iso_ts(s.sampled_at),
-                        "value": s.value,
-                        "benchmarks": s.benchmark_values,
-                        "quote_time": iso_ts(s.quote_time) if s.quote_time else None,
-                        "ok": s.ok,
-                        "stale": s.stale,
-                        "error": s.error,
-                        "source_unit": s.source_unit,
-                        "normalized_unit": s.normalized_unit,
-                        "health": s.health if isinstance(s.health, dict) else {},
-                    }
-                    for s in entries
-                ],
+	            source: {
+	                "samples": [
+	                    {
+	                        **({"health": s.health} if isinstance(s.health, dict) else {"health": {}}),
+	                        "sampled_at": iso_ts(s.sampled_at),
+	                        "value": s.value,
+	                        "benchmarks": s.benchmark_values,
+	                        "quote_time": iso_ts(s.quote_time) if s.quote_time else None,
+	                        "ok": s.ok,
+	                        "stale": s.stale,
+	                        "error": s.error,
+	                        "fetch_success": (
+	                            s.health.get("fetch_success")
+	                            if isinstance(s.health, dict)
+	                            else None
+	                        ),
+	                        "validation_result": (
+	                            s.health.get("validation_result")
+	                            if isinstance(s.health, dict)
+	                            else None
+	                        ),
+	                        "failure_reason": (
+	                            s.health.get("failure_reason")
+	                            if isinstance(s.health, dict)
+	                            else None
+	                        ),
+	                        "source_unit": s.source_unit,
+	                        "normalized_unit": s.normalized_unit,
+	                    }
+	                    for s in entries
+	                ],
                 "median": source_benchmark_medians.get(source, {}).get("open_market"),
                 "benchmark_medians": source_benchmark_medians.get(source, {}),
                 "note": benchmark_results["open_market"].get("source_notes", {}).get(source),
@@ -2169,6 +2184,7 @@ def unique_intraday_file(site_dir: Path, collected_at: dt.datetime) -> Path:
 
 
 def serialize_sample(sample: Sample) -> Dict[str, Any]:
+    health = sample.health if isinstance(sample.health, dict) else {}
     payload = {
         "sampled_at": iso_ts(sample.sampled_at),
         "value": sample.value,
@@ -2177,21 +2193,24 @@ def serialize_sample(sample: Sample) -> Dict[str, Any]:
         "ok": sample.ok,
         "stale": sample.stale,
         "error": sample.error,
-        "health": sample.health if isinstance(sample.health, dict) else {},
+        "health": health,
+        "fetch_success": health.get("fetch_success"),
+        "validation_result": health.get("validation_result"),
+        "failure_reason": health.get("failure_reason"),
         "source_unit": sample.source_unit,
         "normalized_unit": sample.normalized_unit,
     }
-    if sample.source == "bonbast" and isinstance(sample.health, dict):
+    if sample.source == "bonbast":
         payload["bonbast"] = {
-            "bonbast_usd_buy": sample.health.get("bonbast_usd_buy"),
-            "bonbast_usd_sell": sample.health.get("bonbast_usd_sell"),
-            "bonbast_usd_mid": sample.health.get("bonbast_usd_mid"),
-            "source_unit": sample.health.get("source_unit"),
-            "normalized_unit": sample.health.get("normalized_unit"),
-            "fetch_mode": sample.health.get("fetch_mode"),
-            "selector_used": sample.health.get("selector_used"),
-            "fetch_success": sample.health.get("fetch_success"),
-            "failure_reason": sample.health.get("failure_reason"),
+            "bonbast_usd_buy": health.get("bonbast_usd_buy"),
+            "bonbast_usd_sell": health.get("bonbast_usd_sell"),
+            "bonbast_usd_mid": health.get("bonbast_usd_mid"),
+            "source_unit": health.get("source_unit"),
+            "normalized_unit": health.get("normalized_unit"),
+            "fetch_mode": health.get("fetch_mode"),
+            "selector_used": health.get("selector_used"),
+            "fetch_success": health.get("fetch_success"),
+            "failure_reason": health.get("failure_reason"),
         }
     return payload
 
@@ -2236,6 +2255,12 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
     quote_time = try_parse_datetime(quote_time_raw) if quote_time_raw is not None else None
     benchmark_values = payload.get("benchmarks") if isinstance(payload.get("benchmarks"), dict) else {}
     health = payload.get("health") if isinstance(payload.get("health"), dict) else {}
+    if "fetch_success" in payload and "fetch_success" not in health:
+        health["fetch_success"] = payload.get("fetch_success")
+    if "validation_result" in payload and "validation_result" not in health:
+        health["validation_result"] = payload.get("validation_result")
+    if "failure_reason" in payload and "failure_reason" not in health:
+        health["failure_reason"] = payload.get("failure_reason")
     source_unit = str(payload.get("source_unit") or "unknown")
     normalized_unit = str(payload.get("normalized_unit") or "rial")
     return Sample(
