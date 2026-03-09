@@ -9,7 +9,8 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - Templates: `/templates`
 - Local dashboard shell assets (Tabler-style): `/assets/tabler`
 - Static assets copied by pipeline: `/assets` -> `/site/assets`
-- Scheduled workflow: `/Users/kevinmehrabi/Projects/rialwatch/.github/workflows/daily-reference.yml`
+- Intraday collection workflow: `/Users/kevinmehrabi/Projects/rialwatch/.github/workflows/intraday-collection.yml`
+- Daily publication/deploy workflow: `/Users/kevinmehrabi/Projects/rialwatch/.github/workflows/daily-reference.yml`
 - Frontend runtime: plain HTML/CSS/JS (no React, no build toolchain)
 
 ## Key Outputs
@@ -19,6 +20,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/fix/YYYY-MM-DD.json` daily JSON payload
 - `/api/latest.json` latest payload
 - `/api/series.json` ordered public historical rows (only valid published fixes: numeric, non-withheld, Green/Amber/Red)
+- `/intraday/YYYY-MM-DD/HH-MM-SS.json` timestamped intraday collection attempts
 - `/archive/`, `/status/`, `/methodology/`, `/governance/`
 
 ## Benchmarks
@@ -42,6 +44,20 @@ Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
 - top-level `indicators` and `computed.indicators` for derived percentage signals
 
 Public historical series (`/api/series.json`) remains strict and primary-only.
+
+## Intraday Collection And Daily Publication
+
+- Intraday collection writes one timestamped file per attempt under:
+  - `/site/intraday/YYYY-MM-DD/HH-MM-SS.json`
+- Initial cadence (UTC):
+  - `13:45`
+  - `14:00`
+  - `14:15`
+- Official daily publication runs once at `14:20 UTC` and selects from intraday attempts in the publication window (`13:45-14:15 UTC`) using this explicit rule:
+  - choose the latest valid intraday attempt
+  - if the latest attempt is invalid, fall back to the most recent valid attempt
+  - if none are valid, publish a WITHHOLD daily snapshot (no fabricated rate)
+- Homepage remains daily-only (no live ticker behavior).
 
 ### Supplementary Source Wiring
 
@@ -92,13 +108,25 @@ If required secrets are missing, `/status/` is published as `CONFIG NEEDED` and 
 ## Local Run
 
 ```bash
-python scripts/pipeline.py --site-dir site --templates-dir templates --assets-dir assets
+python scripts/pipeline.py --mode full --site-dir site --templates-dir templates --assets-dir assets
 ```
 
 Quick local verification (no waiting for UTC window):
 
 ```bash
-python scripts/pipeline.py --site-dir site --templates-dir templates --assets-dir assets --skip-waits --allow-outside-window
+python scripts/pipeline.py --mode full --site-dir site --templates-dir templates --assets-dir assets --skip-waits --allow-outside-window
+```
+
+Collect one intraday attempt immediately:
+
+```bash
+python scripts/pipeline.py --mode collect-intraday --site-dir site --templates-dir templates --assets-dir assets
+```
+
+Publish daily benchmark from collected intraday data:
+
+```bash
+python scripts/pipeline.py --mode publish-daily --site-dir site --templates-dir templates --assets-dir assets --skip-waits
 ```
 
 ## GitHub Pages Setup
@@ -108,6 +136,12 @@ python scripts/pipeline.py --site-dir site --templates-dir templates --assets-di
 3. Save.
 
 The workflow publishes `/site` daily.
+
+To increase intraday frequency later, add more cron entries in:
+
+- `/Users/kevinmehrabi/Projects/rialwatch/.github/workflows/intraday-collection.yml`
+
+This can be expanded to hourly / every 30 minutes / every 15 minutes without parser changes.
 
 ## History Preservation
 

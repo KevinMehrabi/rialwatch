@@ -6,12 +6,12 @@
 <section class="card">
   <div class="card-body">
     <ol class="mb-0">
-      <li>Observation window: <code>13:45-14:15 UTC</code>.</li>
-      <li>Each source is sampled three times inside the window.</li>
-      <li>Per-source value equals median of that source's three samples.</li>
-      <li>Headline FIX equals median of source medians.</li>
-      <li>BAND equals p25-p75 across source medians.</li>
-      <li>DISPERSION equals <code>(p75 - p25) / FIX</code>.</li>
+      <li>Intraday collection writes timestamped attempts to <code>/intraday/YYYY-MM-DD/HH-MM-SS.json</code>.</li>
+      <li>Publication window remains <code>13:45-14:15 UTC</code>.</li>
+      <li>Official daily publication selects the latest valid intraday attempt in that window.</li>
+      <li>If the latest attempt is invalid, publication falls back to the most recent valid attempt.</li>
+      <li>If no valid attempts exist, the day is published as <code>WITHHOLD</code> (no fabricated rate).</li>
+      <li>For each selected attempt, FIX is computed from source medians; BAND is p25-p75; DISPERSION is <code>(p75 - p25) / FIX</code>.</li>
       <li>Status bands: Green <= 1.5%, Amber <= 3.5%, Red <= 5%.</li>
       <li>WITHHOLD is triggered by invalid/stale inputs, insufficient source quality, or excessive dispersion.</li>
     </ol>
