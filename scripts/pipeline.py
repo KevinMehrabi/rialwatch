@@ -87,6 +87,17 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
     },
 }
 
+# Navasan exposes mixed-unit channels in a single payload:
+# - street/transfer/crypto/coin rates in toman
+# - mob_usd (exchange-center managed benchmark) in rial
+NAVASAN_BENCHMARK_UNITS: Dict[str, str] = {
+    "open_market": "toman",
+    "official": "rial",
+    "regional_transfer": "toman",
+    "crypto_usdt": "toman",
+    "emami_gold_coin": "toman",
+}
+
 BONBAST_SELECTOR_MAP: Dict[str, Tuple[str, ...]] = {
     "open_market": (
         "#usd1",
@@ -218,6 +229,18 @@ def normalize_unit(value: Optional[float], source_unit: str) -> Optional[float]:
 
 def normalize_benchmark_values(values: Dict[str, Optional[float]], source_unit: str) -> Dict[str, Optional[float]]:
     return {key: normalize_unit(val, source_unit) for key, val in values.items()}
+
+
+def normalize_benchmark_values_with_units(
+    values: Dict[str, Optional[float]],
+    benchmark_units: Dict[str, str],
+    default_unit: str,
+) -> Dict[str, Optional[float]]:
+    out: Dict[str, Optional[float]] = {}
+    for key, val in values.items():
+        unit = benchmark_units.get(key, default_unit)
+        out[key] = normalize_unit(val, unit)
+    return out
 
 
 def detect_unit_from_text(text: str, default_unit: str) -> str:
@@ -1167,11 +1190,24 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             normalized_unit=normalized_unit,
         )
 
-    source_unit = detect_source_unit(payload, config.default_unit)
-    benchmark_values = normalize_benchmark_values(extract_benchmark_values(payload, config.name), source_unit)
+    raw_extracted_values = extract_benchmark_values(payload, config.name)
+    benchmark_units: Dict[str, str] = {}
+    if config.name == "navasan":
+        benchmark_units = {key: NAVASAN_BENCHMARK_UNITS.get(key, config.default_unit) for key in BENCHMARK_LABELS}
+        benchmark_values = normalize_benchmark_values_with_units(
+            raw_extracted_values, benchmark_units=benchmark_units, default_unit=config.default_unit
+        )
+        source_unit = "mixed"
+    else:
+        source_unit = detect_source_unit(payload, config.default_unit)
+        benchmark_values = normalize_benchmark_values(raw_extracted_values, source_unit)
+        benchmark_units = {key: source_unit for key in BENCHMARK_LABELS}
+
     value = benchmark_values.get(PRIMARY_BENCHMARK)
     quote_time = extract_quote_time(payload)
     health["extracted_values"] = {k: benchmark_values.get(k) for k in benchmark_values}
+    health["raw_extracted_values"] = {k: raw_extracted_values.get(k) for k in raw_extracted_values}
+    health["benchmark_units"] = benchmark_units
     health["source_unit"] = source_unit
     health["normalized_unit"] = normalized_unit
 
@@ -2247,6 +2283,33 @@ def write_intraday_attempt(site_dir: Path, attempt: Dict[str, Any]) -> Path:
     return path
 
 
+def apply_legacy_navasan_unit_repair(
+    source: str,
+    benchmark_values: Dict[str, Any],
+    source_unit: str,
+    health: Dict[str, Any],
+) -> Tuple[Dict[str, Any], str]:
+    if source != "navasan" or source_unit != "unknown" or not isinstance(benchmark_values, dict):
+        return benchmark_values, source_unit
+
+    repaired = dict(benchmark_values)
+    changed = False
+    for key, unit in NAVASAN_BENCHMARK_UNITS.items():
+        raw_num = parse_number(benchmark_values.get(key))
+        if raw_num is None:
+            continue
+        normalized = normalize_unit(raw_num, unit)
+        if normalized != raw_num:
+            changed = True
+        repaired[key] = normalized
+
+    if changed:
+        health["legacy_unit_repair"] = "applied_navasan_symbol_unit_map"
+        health["benchmark_units"] = dict(NAVASAN_BENCHMARK_UNITS)
+        return repaired, "mixed"
+    return benchmark_values, source_unit
+
+
 def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample]:
     sampled_at = try_parse_datetime(payload.get("sampled_at"))
     if sampled_at is None:
@@ -2263,10 +2326,18 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
         health["failure_reason"] = payload.get("failure_reason")
     source_unit = str(payload.get("source_unit") or "unknown")
     normalized_unit = str(payload.get("normalized_unit") or "rial")
+    benchmark_values, source_unit = apply_legacy_navasan_unit_repair(source, benchmark_values, source_unit, health)
+    value = parse_number(payload.get("value"))
+    if source == "navasan" and value is not None and source_unit == "mixed":
+        # Legacy navasan samples without explicit unit stored `value` as toman street quote.
+        value = normalize_unit(value, NAVASAN_BENCHMARK_UNITS.get("open_market", "toman"))
+    elif value is None:
+        value = parse_number(benchmark_values.get(PRIMARY_BENCHMARK))
+
     return Sample(
         source=source,
         sampled_at=sampled_at,
-        value=parse_number(payload.get("value")),
+        value=value,
         benchmark_values=benchmark_values,
         quote_time=quote_time,
         ok=bool(payload.get("ok")),

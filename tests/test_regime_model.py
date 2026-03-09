@@ -35,6 +35,29 @@ class RegimeModelTests(unittest.TestCase):
         self.assertNotIn("street_nima_gap", pipeline.INDICATOR_LABELS)
         self.assertNotIn("street_mobadeleh_gap", pipeline.INDICATOR_LABELS)
 
+    def test_legacy_navasan_samples_apply_symbol_unit_map(self) -> None:
+        sample = pipeline.parse_sample_record(
+            "navasan",
+            {
+                "sampled_at": "2026-03-09T14:09:03Z",
+                "value": 166400.0,
+                "benchmarks": {
+                    "open_market": 166400.0,
+                    "official": 420000.0,
+                    "regional_transfer": 169700.0,
+                    "crypto_usdt": 149700.0,
+                },
+                "ok": True,
+                "stale": False,
+            },
+        )
+        self.assertIsNotNone(sample)
+        assert sample is not None
+        self.assertEqual(sample.source_unit, "mixed")
+        self.assertEqual(sample.value, 1_664_000.0)
+        self.assertEqual(sample.benchmark_values["open_market"], 1_664_000.0)
+        self.assertEqual(sample.benchmark_values["official"], 420_000.0)
+
 
 if __name__ == "__main__":
     unittest.main()
