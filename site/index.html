@@ -13,7 +13,7 @@
   }
 
   .dashboard-section {
-    margin-top: 14px;
+    margin-top: 16px;
   }
 
   .dashboard-section:first-child {
@@ -30,20 +30,23 @@
   }
 
   .top-grid {
-    grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+    grid-template-columns: 4fr 8fr;
     align-items: start;
   }
 
   .indicators-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
   }
 
   .readings-grid,
   .signals-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
   }
 
   .dashboard-card {
+    display: flex;
     padding: 18px;
     min-height: 220px;
     height: 100%;
@@ -69,8 +72,7 @@
   }
 
   .recent-table-wrap {
-    max-width: 900px;
-    margin: 0 auto;
+    width: 100%;
   }
 
   @media (max-width: 1100px) {
@@ -116,7 +118,7 @@
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
           <div class="h1 mb-1">1,664,000 IRR</div>
-          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T21:26:32Z</div>
+          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T21:30:04Z</div>
           <div class="text-secondary small mt-1">Observed sample: 20:42 UTC (intraday window)</div>
           
         </div>
@@ -357,7 +359,7 @@ async function loadSeries() {
 loadSeries();
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-09T21:26:32Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-09T21:30:04Z</div>
     </div>
   </div>
 </div>
