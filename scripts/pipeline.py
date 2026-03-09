@@ -50,12 +50,14 @@ INDICATOR_LABELS: Dict[str, str] = {
     "street_nima_gap": "Street-NIMA Gap",
     "street_mobadeleh_gap": "Street–Mobadeleh Gap",
     "crypto_premium": "Crypto Premium",
+    "transfer_premium": "Transfer Premium",
 }
 
 INDICATOR_FORMULAS: Dict[str, str] = {
     "street_nima_gap": "((street_rate - nima_rate) / nima_rate) * 100",
     "street_mobadeleh_gap": "((street_rate - mobadeleh_rate) / mobadeleh_rate) * 100",
     "crypto_premium": "((crypto_usdt_rate - street_rate) / street_rate) * 100",
+    "transfer_premium": "((regional_transfer_rate - street_rate) / street_rate) * 100",
 }
 
 STRICT_CANONICAL_BENCHMARKS = {"nima", "official", "regional_transfer"}
@@ -1056,11 +1058,13 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
     street = benchmark_results.get("open_market", {})
     nima = benchmark_results.get("nima", {})
     mobadeleh = benchmark_results.get("official", {})
+    transfer = benchmark_results.get("regional_transfer", {})
     crypto = benchmark_results.get("crypto_usdt", {})
 
     street_fix = parse_number(street.get("fix"))
     nima_fix = parse_number(nima.get("fix"))
     mobadeleh_fix = parse_number(mobadeleh.get("fix"))
+    transfer_fix = parse_number(transfer.get("fix"))
     crypto_fix = parse_number(crypto.get("fix"))
 
     street_nima_gap: Optional[float] = None
@@ -1074,6 +1078,10 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
     crypto_premium: Optional[float] = None
     if street_fix not in (None, 0) and crypto_fix is not None:
         crypto_premium = ((crypto_fix - street_fix) / street_fix) * 100 if crypto_fix is not None else None
+
+    transfer_premium: Optional[float] = None
+    if street_fix not in (None, 0) and transfer_fix is not None:
+        transfer_premium = ((transfer_fix - street_fix) / street_fix) * 100
 
     return {
         "street_nima_gap": {
@@ -1093,6 +1101,12 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
             "value": crypto_premium,
             "available": crypto_premium is not None,
             "formula": INDICATOR_FORMULAS["crypto_premium"],
+        },
+        "transfer_premium": {
+            "label": INDICATOR_LABELS["transfer_premium"],
+            "value": transfer_premium,
+            "available": transfer_premium is not None,
+            "formula": INDICATOR_FORMULAS["transfer_premium"],
         },
     }
 
@@ -1440,6 +1454,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     street = benchmark_value_number("open_market")
     nima = benchmark_value_number("nima")
     mobadeleh = benchmark_value_number("official")
+    transfer = benchmark_value_number("regional_transfer")
     crypto = benchmark_value_number("crypto_usdt")
     fallback_indicator_values: Dict[str, Optional[float]] = {
         "street_nima_gap": (
@@ -1458,6 +1473,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         "crypto_premium": (
             ((crypto - street) / street) * 100
             if crypto is not None and street not in (None, 0)
+            else None
+        ),
+        "transfer_premium": (
+            ((transfer - street) / street) * 100
+            if transfer is not None and street not in (None, 0)
             else None
         ),
     }
@@ -1541,6 +1561,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street_nima_gap_value=indicator_value_or_unavailable("street_nima_gap"),
         street_mobadeleh_gap_value=indicator_value_or_unavailable("street_mobadeleh_gap"),
         crypto_premium_value=indicator_value_or_unavailable("crypto_premium"),
+        transfer_premium_value=indicator_value_or_unavailable("transfer_premium"),
     )
     write_text(site_dir / "index.html", html)
 

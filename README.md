@@ -36,6 +36,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
   - `street_nima_gap`
   - `street_mobadeleh_gap`
   - `crypto_premium`
+  - `transfer_premium`
 
 Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
 
@@ -69,7 +70,7 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
   - fallback status: heuristic fallback disabled
 - `official`:
   - canonical mapping: `navasan -> mob_usd`
-  - methodology note: this is the live successor managed-market benchmark (`Exchange Center USD Remittance Rate`) from `2025-01-20` onward
+  - methodology note: this is the live successor managed-market benchmark (`Exchange Center USD Remittance Rate`) from `2025-01-20` onward and is treated as a proxy for the managed commercial FX market that replaced NIMA
   - transition note: after the early-January-2026 hall merger, this track is treated as the unified commercial/remittance successor series when source structure reflects the merge
   - fallback status: heuristic fallback disabled
 - `regional_transfer`:
