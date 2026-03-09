@@ -1981,7 +1981,7 @@ def publish_status(
         parsed = try_parse_datetime(value)
         if parsed is None:
             return "Unknown"
-        return parsed.strftime("%b %d, %Y, %H:%M UTC")
+        return parsed.strftime("%b %d, %Y · %H:%M UTC")
 
     def light_class(label: str) -> str:
         lowered = label.strip().lower()
@@ -2011,8 +2011,17 @@ def publish_status(
         if "no valid samples" in text:
             return "No recent valid sample."
         if "source family not used" in text:
-            return "Not used for this benchmark."
+            return "Not currently used for this benchmark."
         return value.strip()
+
+    def source_public_label(source_name: str, index: int) -> str:
+        mapping = {
+            "navasan": "Street Market Feed",
+            "bonbast": "Street Market Feed (Secondary)",
+            "alanchand": "Regional Market Feed",
+        }
+        key = source_name.strip().lower()
+        return mapping.get(key, f"Market Feed {index}")
 
     def map_pipeline_state(value: str) -> str:
         upper = value.strip().upper()
@@ -2072,7 +2081,7 @@ def publish_status(
     publication_updated = fmt_status_time(effective_latest.get("as_of") or generated_at)
 
     source_rows: List[Dict[str, str]] = []
-    for source_name, source_data in sorted(sources.items(), key=lambda item: str(item[0]).lower()):
+    for idx, (source_name, source_data) in enumerate(sorted(sources.items(), key=lambda item: str(item[0]).lower()), start=1):
         if not isinstance(source_data, dict):
             continue
         samples = source_data.get("samples", [])
@@ -2120,15 +2129,15 @@ def publish_status(
             failure_reason = latest_sample.get("failure_reason")
             sample_error = latest_sample.get("error")
             if isinstance(failure_reason, str) and failure_reason.strip():
-                note = failure_reason.strip()
+                note = "Feed temporarily degraded."
             elif isinstance(sample_error, str) and sample_error.strip():
-                note = sample_error.strip()
+                note = "Feed temporarily unavailable."
         if not note:
             note = "Collecting normally." if source_status == "Online" else "No additional notes."
 
         source_rows.append(
             {
-                "name": str(source_name),
+                "name": source_public_label(str(source_name), idx),
                 "status": source_status,
                 "last_success": (
                     last_success_ts.strftime("%b %d, %Y, %H:%M UTC") if last_success_ts is not None else "N/A"
@@ -2156,8 +2165,8 @@ def publish_status(
 
     total_sources = len(source_rows)
     online_sources = sum(1 for row in source_rows if row["status"] == "Online")
-    degraded_sources = [row["name"] for row in source_rows if row["status"] == "Degraded"]
-    offline_sources = [row["name"] for row in source_rows if row["status"] == "Offline"]
+    degraded_count = sum(1 for row in source_rows if row["status"] == "Degraded")
+    offline_count = sum(1 for row in source_rows if row["status"] == "Offline")
 
     source_collection_state = "Unknown"
     source_collection_note = "No source samples available."
@@ -2168,10 +2177,10 @@ def publish_status(
         elif online_sources > 0:
             source_collection_state = "Degraded"
             source_collection_note = f"{online_sources}/{total_sources} sources online."
-        elif degraded_sources:
+        elif degraded_count > 0:
             source_collection_state = "Degraded"
             source_collection_note = "Sources are partially available but degraded."
-        elif offline_sources:
+        elif offline_count > 0:
             source_collection_state = "Offline"
             source_collection_note = "No active source collection currently online."
 
@@ -2186,12 +2195,20 @@ def publish_status(
 
     pipeline_state = map_pipeline_state(status_title)
     deployment_state = "Online"
+    pipeline_note = {
+        "Online": "Benchmark pipeline is operating normally.",
+        "Degraded": "Benchmark pipeline is operating with reduced reliability.",
+        "Offline": "Benchmark pipeline is currently unavailable.",
+        "Unknown": "Benchmark pipeline status is currently unknown.",
+    }.get(pipeline_state, "Benchmark pipeline status is currently unknown.")
+    if "withhold" in status_detail.strip().lower() and pipeline_state != "Offline":
+        pipeline_note = "Benchmark pipeline is running, but publication quality checks are currently limiting output."
 
     overview_cards = [
-        ("Benchmark Pipeline", pipeline_state, status_detail),
+        ("Benchmark Pipeline", pipeline_state, pipeline_note),
         ("Latest Publication", publication_overview_state, publication_overview_note),
         ("Source Collection", source_collection_state, source_collection_note),
-        ("Site Deployment", deployment_state, f"Static site rendered {fmt_status_time(generated_at)}"),
+        ("Site Deployment", deployment_state, "Dashboard deployment is online."),
     ]
     overview_cards_html = "\n".join(
         "<div class=\"status-overview-card\">"
@@ -2210,20 +2227,22 @@ def publish_status(
             if isinstance(mapping_data, dict):
                 stale_days = mapping_data.get("stale_days", [])
                 if isinstance(stale_days, list) and stale_days:
-                    diagnostics.append(f"{len(stale_days)} day(s) were generated under older mapping fingerprints.")
+                    diagnostics.append(
+                        f"{len(stale_days)} historical day(s) were generated under an older mapping version and are flagged for review."
+                    )
         except json.JSONDecodeError:
-            diagnostics.append("Mapping audit file could not be parsed.")
+            diagnostics.append("Methodology mapping audit data could not be read.")
 
-    if degraded_sources:
-        diagnostics.append(f"Degraded sources: {', '.join(sorted(degraded_sources))}.")
-    if offline_sources:
-        diagnostics.append(f"Offline sources: {', '.join(sorted(offline_sources))}.")
+    if degraded_count > 0:
+        diagnostics.append("One or more market feeds are currently degraded.")
+    if offline_count > 0:
+        diagnostics.append("One or more market feeds are currently offline.")
 
     methodology = effective_latest.get("methodology", {})
     if isinstance(methodology, dict):
         rebuild_note = methodology.get("rebuild_note")
         if isinstance(rebuild_note, str) and rebuild_note.strip():
-            diagnostics.append(rebuild_note.strip())
+            diagnostics.append("A historical correction note is active for one or more records.")
 
     fix_dir = site_dir / "fix"
     withheld_days: List[str] = []
@@ -2239,8 +2258,10 @@ def publish_status(
             if isinstance(computed_row, dict) and computed_row.get("withheld") is True:
                 withheld_days.append(path.stem)
     if withheld_days:
-        preview = ", ".join(withheld_days[-3:])
-        diagnostics.append(f"{len(withheld_days)} historical day(s) are currently withheld ({preview}).")
+        diagnostics.append(f"{len(withheld_days)} historical day(s) remain withheld due to publication-quality rules.")
+
+    if missing:
+        diagnostics.append("One or more required configuration items are currently missing.")
 
     diagnostics_html = (
         "<ul class=\"mb-0\">" + "".join(f"<li>{html_lib.escape(item)}</li>" for item in diagnostics) + "</ul>"
