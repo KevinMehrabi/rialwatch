@@ -1,6 +1,6 @@
 {
   "date": "2026-03-09",
-  "as_of": "2026-03-09T23:02:08Z",
+  "as_of": "2026-03-09T23:51:15Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -13,7 +13,7 @@
           "health": {
             "collector": "playwright",
             "fetch_mode": "playwright",
-            "scrape_timestamp": "2026-03-09T20:42:45Z",
+            "scrape_timestamp": "2026-03-09T23:51:07Z",
             "page_load_ok": true,
             "selector_success": true,
             "fetch_success": true,
@@ -22,8 +22,8 @@
               "buy": "#usd2",
               "sell": "#usd1"
             },
-            "fetch_duration_ms": 2645,
-            "content_length": 388407,
+            "fetch_duration_ms": 2882,
+            "content_length": 388270,
             "final_url": "https://bonbast.com/",
             "error_type": null,
             "http_status": 200,
@@ -58,7 +58,7 @@
               "peer_band_result": "skipped_sample_not_valid"
             }
           },
-          "sampled_at": "2026-03-09T20:42:45Z",
+          "sampled_at": "2026-03-09T23:51:07Z",
           "value": 1499500.0,
           "benchmarks": {
             "open_market": 1499500.0,
@@ -67,7 +67,7 @@
             "crypto_usdt": null,
             "emami_gold_coin": 2090000000.0
           },
-          "quote_time": "2026-03-09T20:42:45Z",
+          "quote_time": "2026-03-09T23:51:07Z",
           "ok": false,
           "stale": true,
           "error": "stale quote",
@@ -96,10 +96,11 @@
         {
           "health": {
             "collector": "http_json",
-            "scrape_timestamp": "2026-03-09T20:42:45Z",
+            "scrape_timestamp": "2026-03-09T23:51:07Z",
             "page_load_ok": true,
             "selector_success": null,
             "error_type": null,
+            "request_url": "https://www.navasan.net/initrates.php?api_key=%2A%2A%2A",
             "content_length": 7367,
             "final_url": "https://www.navasan.net/initrates.php?api_key=dummy",
             "payload_mode": "javascript_var:yesterday",
@@ -149,7 +150,7 @@
             "validation_result": null,
             "failure_reason": null
           },
-          "sampled_at": "2026-03-09T20:42:45Z",
+          "sampled_at": "2026-03-09T23:51:07Z",
           "value": 1664000.0,
           "benchmarks": {
             "open_market": 1664000.0,
@@ -183,16 +184,28 @@
       "samples": [
         {
           "health": {
-            "collector": "http_json",
-            "scrape_timestamp": "2026-03-09T20:42:45Z",
-            "page_load_ok": null,
-            "selector_success": null,
-            "error_type": "http_error",
-            "fetch_success": null,
-            "validation_result": null,
-            "failure_reason": null
+            "collector": "http_json_fallback",
+            "fetch_success": true,
+            "failure_reason": null,
+            "error_type": null,
+            "fallback_used": true,
+            "fallback_source": "navasan",
+            "fallback_reason": "http 401",
+            "fallback_error_type": "http_error",
+            "request_url": "https://www.navasan.net/initrates.php?api_key=%2A%2A%2A",
+            "final_url": "https://www.navasan.net/initrates.php?api_key=dummy",
+            "content_length": 7367,
+            "raw_extracted_values": {
+              "regional_transfer": 169700.0
+            },
+            "extracted_values": {
+              "regional_transfer": 1697000.0
+            },
+            "source_unit": "mixed",
+            "normalized_unit": "rial",
+            "validation_result": null
           },
-          "sampled_at": "2026-03-09T20:42:45Z",
+          "sampled_at": "2026-03-09T23:51:07Z",
           "value": null,
           "benchmarks": {
             "open_market": null,
@@ -202,13 +215,13 @@
             "emami_gold_coin": null
           },
           "quote_time": null,
-          "ok": false,
+          "ok": true,
           "stale": false,
-          "error": "http 401",
-          "fetch_success": null,
+          "error": null,
+          "fetch_success": true,
           "validation_result": null,
           "failure_reason": null,
-          "source_unit": "toman",
+          "source_unit": "mixed",
           "normalized_unit": "rial"
         }
       ],
@@ -519,11 +532,11 @@
       "start": "13:45",
       "end": "14:15"
     },
-    "candidate_count": 1,
-    "valid_candidate_count": 1,
-    "selected_collected_at": "2026-03-09T20:42:45Z",
-    "latest_candidate_collected_at": "2026-03-09T20:42:45Z",
-    "selected_attempt_file": "intraday/2026-03-09/20-42-45.json",
+    "candidate_count": 2,
+    "valid_candidate_count": 2,
+    "selected_collected_at": "2026-03-09T23:51:07Z",
+    "latest_candidate_collected_at": "2026-03-09T23:51:07Z",
+    "selected_attempt_file": "intraday/2026-03-09/23-51-07.json",
     "selected_valid": true,
     "used_fallback": false,
     "basis_label": "Selected from latest intraday attempt (outside publication window)",

@@ -738,8 +738,27 @@ def build_request(config: SourceConfig) -> urllib.request.Request:
     elif config.auth_mode == "header_api_key":
         key = os.environ["ALANCHAND_API_KEY"]
         headers["Authorization"] = f"Bearer {key}"
-        headers["X-API-Key"] = key
-        url = with_query(url, {"api_key": key})
+        if config.name == "alanchand":
+            # AlanChand documents the API at api.alanchand.com with Bearer auth.
+            # Normalize stale /v1/rates paths and ensure explicit symbols for canonical parsing.
+            parsed = urllib.parse.urlparse(url)
+            host = (parsed.netloc or "").lower()
+            if host in {"alanchand.com", "www.alanchand.com"}:
+                parsed = parsed._replace(netloc="api.alanchand.com")
+                host = "api.alanchand.com"
+            if host in {"api.alanchand.com", "www.api.alanchand.com"}:
+                parsed = parsed._replace(path="/")
+                existing = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
+                if "type" not in existing:
+                    existing["type"] = ["currency"]
+                if "symbols" not in existing:
+                    existing["symbols"] = ["usd-hav"]
+                normalized_query = urllib.parse.urlencode(existing, doseq=True)
+                parsed = parsed._replace(query=normalized_query)
+            url = urllib.parse.urlunparse(parsed)
+        else:
+            headers["X-API-Key"] = key
+            url = with_query(url, {"api_key": key})
 
     return urllib.request.Request(url=url, headers=headers, method="GET")
 
@@ -751,6 +770,20 @@ def with_query(url: str, extra_params: Dict[str, str]) -> str:
         existing[key] = [value]
     query = urllib.parse.urlencode(existing, doseq=True)
     return urllib.parse.urlunparse(parsed._replace(query=query))
+
+
+def redact_url_for_health(url: str) -> str:
+    parsed = urllib.parse.urlparse(url)
+    query = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
+    redacted: Dict[str, List[str]] = {}
+    for key, values in query.items():
+        key_l = key.lower()
+        if any(token in key_l for token in ("key", "token", "auth", "secret")):
+            redacted[key] = ["***"]
+        else:
+            redacted[key] = values
+    redacted_query = urllib.parse.urlencode(redacted, doseq=True)
+    return urllib.parse.urlunparse(parsed._replace(query=redacted_query))
 
 
 def extract_bonbast_from_selector_results(selector_results: Dict[str, Any]) -> Dict[str, Optional[float]]:
@@ -1118,6 +1151,61 @@ def fetch_bonbast_browser(
     )
 
 
+def fetch_alanchand_regional_fallback(
+    sampled_at: dt.datetime,
+    window_start_dt: dt.datetime,
+    window_end_dt: dt.datetime,
+    primary_error: str,
+    primary_error_type: str,
+) -> Optional[Sample]:
+    fallback_config = SourceConfig(
+        name="navasan",
+        url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
+        auth_mode="query_api_key",
+        secret_fields=("NAVASAN_API_KEY",),
+        benchmark_families=("regional_transfer",),
+        default_unit="toman",
+    )
+    fallback_sample = fetch_one(fallback_config, sampled_at, window_start_dt, window_end_dt)
+    fallback_value = parse_number(fallback_sample.benchmark_values.get("regional_transfer"))
+    if fallback_value is None:
+        return None
+
+    fallback_health = fallback_sample.health if isinstance(fallback_sample.health, dict) else {}
+    health: Dict[str, Any] = {
+        "collector": "http_json_fallback",
+        "fetch_success": True,
+        "failure_reason": None,
+        "error_type": None,
+        "fallback_used": True,
+        "fallback_source": "navasan",
+        "fallback_reason": primary_error,
+        "fallback_error_type": primary_error_type,
+        "request_url": fallback_health.get("request_url"),
+        "final_url": fallback_health.get("final_url"),
+        "content_length": fallback_health.get("content_length"),
+        "raw_extracted_values": {
+            "regional_transfer": (fallback_health.get("raw_extracted_values") or {}).get("regional_transfer")
+        },
+        "extracted_values": {"regional_transfer": fallback_value},
+        "source_unit": fallback_sample.source_unit,
+        "normalized_unit": fallback_sample.normalized_unit,
+    }
+    return Sample(
+        source="alanchand",
+        sampled_at=sampled_at,
+        value=None,
+        benchmark_values=blank_benchmark_values(),
+        quote_time=fallback_sample.quote_time,
+        ok=fallback_sample.ok,
+        stale=fallback_sample.stale,
+        error=None,
+        health=health,
+        source_unit=fallback_sample.source_unit,
+        normalized_unit=fallback_sample.normalized_unit,
+    )
+
+
 def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime) -> Sample:
     if config.auth_mode == "browser_playwright":
         return fetch_bonbast_browser(config, sampled_at, window_start_dt, window_end_dt)
@@ -1148,11 +1236,13 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         "page_load_ok": None,
         "selector_success": None,
         "error_type": None,
+        "request_url": None,
     }
     source_unit = config.default_unit
     normalized_unit = "rial"
     try:
         req = build_request(config)
+        health["request_url"] = redact_url_for_health(req.full_url)
         with urllib.request.urlopen(req, timeout=20) as resp:
             body = resp.read().decode("utf-8", errors="replace")
             final_url = resp.geturl()
@@ -1163,6 +1253,18 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["page_load_ok"] = True
     except KeyError as exc:
         health["error_type"] = "missing_secret"
+        health["fetch_success"] = False
+        health["failure_reason"] = f"missing secret: {exc}"
+        if config.name == "alanchand":
+            fallback = fetch_alanchand_regional_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error=f"missing secret: {exc}",
+                primary_error_type="missing_secret",
+            )
+            if fallback is not None:
+                return fallback
         return Sample(
             config.name,
             sampled_at,
@@ -1178,6 +1280,18 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         )
     except urllib.error.HTTPError as exc:
         health["error_type"] = "http_error"
+        health["fetch_success"] = False
+        health["failure_reason"] = f"http {exc.code}"
+        if config.name == "alanchand":
+            fallback = fetch_alanchand_regional_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error=f"http {exc.code}",
+                primary_error_type="http_error",
+            )
+            if fallback is not None:
+                return fallback
         return Sample(
             config.name,
             sampled_at,
@@ -1193,6 +1307,18 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         )
     except urllib.error.URLError as exc:
         health["error_type"] = "network_error"
+        health["fetch_success"] = False
+        health["failure_reason"] = f"network: {exc.reason}"
+        if config.name == "alanchand":
+            fallback = fetch_alanchand_regional_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error=f"network: {exc.reason}",
+                primary_error_type="network_error",
+            )
+            if fallback is not None:
+                return fallback
         return Sample(
             config.name,
             sampled_at,
@@ -1208,6 +1334,18 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         )
     except TimeoutError:
         health["error_type"] = "timeout"
+        health["fetch_success"] = False
+        health["failure_reason"] = "timeout"
+        if config.name == "alanchand":
+            fallback = fetch_alanchand_regional_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error="timeout",
+                primary_error_type="timeout",
+            )
+            if fallback is not None:
+                return fallback
         return Sample(
             config.name,
             sampled_at,
@@ -1223,6 +1361,18 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         )
     except json.JSONDecodeError:
         health["error_type"] = "invalid_json"
+        health["fetch_success"] = False
+        health["failure_reason"] = "invalid json"
+        if config.name == "alanchand":
+            fallback = fetch_alanchand_regional_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error="invalid json",
+                primary_error_type="invalid_json",
+            )
+            if fallback is not None:
+                return fallback
         return Sample(
             config.name,
             sampled_at,
@@ -2106,6 +2256,14 @@ def publish_status(
                 for benchmark_value in benchmarks_obj.values():
                     if parse_number(benchmark_value) is not None:
                         return True
+            health_obj = sample_obj.get("health")
+            if isinstance(health_obj, dict):
+                for field in ("extracted_values", "raw_extracted_values"):
+                    extracted_obj = health_obj.get(field)
+                    if isinstance(extracted_obj, dict):
+                        for extracted_value in extracted_obj.values():
+                            if parse_number(extracted_value) is not None:
+                                return True
             return False
 
         for sample in samples:
@@ -2173,6 +2331,10 @@ def publish_status(
             source_status = "Offline"
 
         note = humanize_source_note(source_data.get("note"))
+        if latest_sample:
+            latest_health = latest_sample.get("health")
+            if isinstance(latest_health, dict) and latest_health.get("fallback_used") is True:
+                note = "Primary endpoint unavailable; fallback feed active."
         if source_status == "Offline" and latest_sample:
             latest_failure_reason = latest_sample.get("failure_reason")
             latest_sample_error = latest_sample.get("error")
