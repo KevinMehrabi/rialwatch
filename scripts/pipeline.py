@@ -53,6 +53,32 @@ INDICATOR_LABELS: Dict[str, str] = {
     "crypto_premium": "Crypto Premium",
 }
 
+BENCHMARK_SYMBOL_CANDIDATES: Dict[str, Tuple[str, ...]] = {
+    "nima": ("nim", "nima", "usd_nima", "usd_nim"),
+    "crypto_usdt": ("usdt", "tether", "usd_tether"),
+    "emami_gold_coin": ("sekkeh", "sekke", "emami", "coin_emami", "sekeh_emami"),
+    "official": (
+        "usd_official",
+        "official_usd",
+        "usd_bank",
+        "bank_usd",
+        "usd_cbi",
+        "cbi_usd",
+        "usd_sana",
+        "sana_usd",
+        "usd_4200",
+    ),
+    "regional_transfer": (
+        "usd_shakhs",
+        "usd_sherkat",
+        "usd_hav",
+        "usd_havale",
+        "usd_hawala",
+        "usd_transfer",
+        "transfer_usd",
+    ),
+}
+
 
 @dataclass
 class SourceConfig:
@@ -160,6 +186,63 @@ def flatten_json(obj: Any, prefix: str = "") -> List[Tuple[str, Any]]:
     else:
         items.append((prefix, obj))
     return items
+
+
+def normalize_symbol_token(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.lower())
+
+
+def extract_numeric_from_quote_obj(obj: Dict[str, Any]) -> Optional[float]:
+    for field in ("value", "price", "last", "close", "sell", "buy", "rate", "amount"):
+        if field in obj:
+            parsed = parse_number(obj.get(field))
+            if parsed is not None:
+                return parsed
+    return None
+
+
+def extract_value_by_symbol_candidates(payload: Any, candidates: Tuple[str, ...]) -> Optional[float]:
+    target_tokens = {normalize_symbol_token(item) for item in candidates}
+
+    def matches(text: Any) -> bool:
+        if not isinstance(text, str):
+            return False
+        token = normalize_symbol_token(text)
+        if not token:
+            return False
+        return token in target_tokens
+
+    def walk(node: Any) -> List[float]:
+        found: List[float] = []
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if matches(key):
+                    if isinstance(value, dict):
+                        parsed = extract_numeric_from_quote_obj(value)
+                        if parsed is not None:
+                            found.append(parsed)
+                    else:
+                        parsed = parse_number(value)
+                        if parsed is not None:
+                            found.append(parsed)
+
+            id_fields = ("symbol", "name", "slug", "code", "title", "label", "item", "id")
+            if any(matches(node.get(field)) for field in id_fields):
+                parsed = extract_numeric_from_quote_obj(node)
+                if parsed is not None:
+                    found.append(parsed)
+
+            for value in node.values():
+                found.extend(walk(value))
+        elif isinstance(node, list):
+            for item in node:
+                found.extend(walk(item))
+        return found
+
+    values = walk(payload)
+    if not values:
+        return None
+    return median(values)
 
 
 def extract_quote_time(payload: Any) -> Optional[dt.datetime]:
@@ -290,12 +373,20 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
 
 
 def extract_benchmark_values(payload: Any) -> Dict[str, Optional[float]]:
-    open_market = extract_benchmark_value(payload, "open_market")
-    nima = extract_benchmark_value(payload, "nima")
-    official = extract_benchmark_value(payload, "official")
-    regional_transfer = extract_benchmark_value(payload, "regional_transfer")
-    crypto_usdt = extract_benchmark_value(payload, "crypto_usdt")
-    emami_gold_coin = extract_benchmark_value(payload, "emami_gold_coin")
+    def resolve(benchmark: str) -> Optional[float]:
+        symbol_candidates = BENCHMARK_SYMBOL_CANDIDATES.get(benchmark)
+        if symbol_candidates:
+            by_symbol = extract_value_by_symbol_candidates(payload, symbol_candidates)
+            if by_symbol is not None:
+                return by_symbol
+        return extract_benchmark_value(payload, benchmark)
+
+    open_market = resolve("open_market")
+    nima = resolve("nima")
+    official = resolve("official")
+    regional_transfer = resolve("regional_transfer")
+    crypto_usdt = resolve("crypto_usdt")
+    emami_gold_coin = resolve("emami_gold_coin")
 
     return {
         "open_market": open_market,

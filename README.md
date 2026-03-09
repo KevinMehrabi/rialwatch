@@ -43,6 +43,21 @@ Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
 
 Public historical series (`/api/series.json`) remains strict and primary-only.
 
+### Supplementary Source Wiring
+
+- `nima`: sourced from `navasan` and `alanchand` families when available; parser prefers symbol candidates like `nim`/`nima`.
+- `crypto_usdt`: sourced from `navasan`, `alanchand`, and `bonbast` families; parser prefers symbol candidates like `usdt`/`tether`.
+- `emami_gold_coin`: sourced from `navasan`, `alanchand`, and `bonbast` families; parser prefers symbol candidates like `sekkeh`/`emami`.
+- `official`: sourced from `navasan` and `alanchand` families; parser prefers candidates like `usd_official`/`usd_bank`.
+- `regional_transfer`: sourced from `navasan`, `alanchand`, and `bonbast` families; parser prefers candidates like `usd_shakhs`/`usd_hav`.
+
+Implementation references:
+
+- Source-family routing: `/Users/kevinmehrabi/Projects/rialwatch/scripts/pipeline.py` (`build_source_configs`)
+- Parsing logic: `/Users/kevinmehrabi/Projects/rialwatch/scripts/pipeline.py` (`extract_benchmark_values`, `extract_value_by_symbol_candidates`, `extract_benchmark_value`)
+- Validation and withheld rules: `/Users/kevinmehrabi/Projects/rialwatch/scripts/pipeline.py` (`compute_benchmark_result`)
+- Fallback behavior: card shows `Unavailable` if no valid benchmark value (`publish_home`).
+
 ## Required GitHub Secrets
 
 Add these in **Settings -> Secrets and variables -> Actions**:
