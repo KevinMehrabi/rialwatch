@@ -20,6 +20,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/fix/YYYY-MM-DD.json` daily JSON payload
 - `/api/latest.json` latest payload
 - `/api/series.json` ordered public historical rows (only valid published fixes: numeric, non-withheld, Green/Amber/Red)
+- `/api/mapping_audit.json` mapping-version audit for historical backfill/rebuild targeting
 - `/intraday/YYYY-MM-DD/HH-MM-SS.json` timestamped intraday collection attempts
 - `/archive/`, `/status/`, `/methodology/`, `/governance/`
 
@@ -127,6 +128,12 @@ Publish daily benchmark from collected intraday data:
 python scripts/pipeline.py --mode publish-daily --site-dir site --templates-dir templates --assets-dir assets --skip-waits
 ```
 
+Rebuild one existing day from stored samples using current mapping/normalization logic:
+
+```bash
+python scripts/pipeline.py --site-dir site --templates-dir templates --rebuild-day YYYY-MM-DD
+```
+
 ## GitHub Pages Setup
 
 1. Open **Settings -> Pages**.
@@ -149,6 +156,7 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
   - `/site/fix/YYYY-MM-DD/index.html`
 - Scheduled runs then update `/site/api/series.json` and auto-commit snapshots/history back to `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
+- Every build writes `/site/api/mapping_audit.json` with the current mapping fingerprint and any stale historical day payloads, so mapping changes can be backfilled explicitly instead of silently drifting.
 
 ## One-Time Backfill (If Early Days Were Lost)
 

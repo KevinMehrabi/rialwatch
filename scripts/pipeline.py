@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 import math
 import os
@@ -100,6 +101,15 @@ NAVASAN_BENCHMARK_UNITS: Dict[str, str] = {
     "crypto_usdt": "toman",
     "emami_gold_coin": "toman",
 }
+
+
+def current_mapping_fingerprint() -> str:
+    material = {
+        "canonical_source_symbols": CANONICAL_SOURCE_SYMBOLS,
+        "navasan_benchmark_units": NAVASAN_BENCHMARK_UNITS,
+    }
+    raw = json.dumps(material, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()[:12]
 
 BONBAST_SELECTOR_MAP: Dict[str, Tuple[str, ...]] = {
     "open_market": (
@@ -1770,6 +1780,14 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
         },
     }
     daily_payload["normalized_metrics"] = build_normalized_market_snapshot(daily_payload)
+    daily_payload["methodology"] = {
+        "mapping_fingerprint": current_mapping_fingerprint(),
+        "canonical_source_symbols": {
+            source: {benchmark: list(symbols) for benchmark, symbols in mapping.items()}
+            for source, mapping in CANONICAL_SOURCE_SYMBOLS.items()
+        },
+        "navasan_benchmark_units": dict(NAVASAN_BENCHMARK_UNITS),
+    }
     return daily_payload
 
 
@@ -2243,6 +2261,40 @@ def publish_series(site_dir: Path) -> None:
     write_json(site_dir / "api" / "series.json", {"rows": public_rows})
 
 
+def publish_mapping_audit(site_dir: Path) -> None:
+    fix_dir = site_dir / "fix"
+    current = current_mapping_fingerprint()
+    stale_days: List[Dict[str, Any]] = []
+
+    if fix_dir.exists():
+        for path in sorted(fix_dir.glob("*.json")):
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
+                continue
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                continue
+
+            methodology = payload.get("methodology", {})
+            recorded = methodology.get("mapping_fingerprint") if isinstance(methodology, dict) else None
+            if recorded != current:
+                stale_days.append(
+                    {
+                        "date": path.stem,
+                        "recorded_mapping_fingerprint": recorded,
+                        "current_mapping_fingerprint": current,
+                    }
+                )
+
+    write_json(
+        site_dir / "api" / "mapping_audit.json",
+        {
+            "current_mapping_fingerprint": current,
+            "stale_days": stale_days,
+        },
+    )
+
+
 def intraday_day_dir(site_dir: Path, day: dt.date) -> Path:
     return site_dir / "intraday" / iso_date(day)
 
@@ -2371,11 +2423,22 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
     normalized_unit = str(payload.get("normalized_unit") or "rial")
     benchmark_values, source_unit = apply_legacy_navasan_unit_repair(source, benchmark_values, source_unit, health)
     value = parse_number(payload.get("value"))
+    if source == "navasan" and source_unit == "unknown" and value is not None:
+        # Old navasan payloads stored only `value` without unit metadata.
+        # Treat plausible legacy street values as toman and normalize to rial.
+        if 50_000 <= value <= 500_000:
+            value = normalize_unit(value, "toman")
+            health["legacy_unit_repair"] = "assumed_navasan_unknown_value_toman"
+            source_unit = "mixed"
     if source == "navasan" and value is not None and source_unit == "mixed":
         # Legacy navasan samples without explicit unit stored `value` as toman street quote.
         # New mixed-unit payloads include benchmark_units metadata and are already normalized.
         has_benchmark_units = isinstance(health.get("benchmark_units"), dict) and bool(health.get("benchmark_units"))
-        if not has_benchmark_units or health.get("legacy_unit_repair") == "applied_navasan_symbol_unit_map":
+        legacy_repair_mode = str(health.get("legacy_unit_repair") or "")
+        if (
+            legacy_repair_mode != "assumed_navasan_unknown_value_toman"
+            and (not has_benchmark_units or legacy_repair_mode == "applied_navasan_symbol_unit_map")
+        ):
             value = normalize_unit(value, NAVASAN_BENCHMARK_UNITS.get("open_market", "toman"))
     elif value is None:
         value = parse_number(benchmark_values.get(PRIMARY_BENCHMARK))
@@ -2466,6 +2529,21 @@ def refresh_existing_day_payload(
         return None
 
     refreshed = summarize_day(samples, source_configs, day)
+    existing_fix = parse_number(existing.get("computed", {}).get("fix") if isinstance(existing.get("computed"), dict) else None)
+    refreshed_fix = parse_number(refreshed.get("computed", {}).get("fix") if isinstance(refreshed.get("computed"), dict) else None)
+    has_legacy_sample_repairs = any(
+        isinstance(sample.health, dict) and str(sample.health.get("legacy_unit_repair") or "").strip() != ""
+        for rows in samples.values()
+        for sample in rows
+    )
+    if refreshed_fix is None and (existing_fix is not None or has_legacy_sample_repairs):
+        methodology = refreshed.get("methodology")
+        if not isinstance(methodology, dict):
+            methodology = {}
+            refreshed["methodology"] = methodology
+        methodology["rebuild_note"] = (
+            "Recomputed from stored legacy samples with current mapping/validation; no valid benchmark inputs remained."
+        )
 
     # Preserve original publication timestamp/selection metadata where available.
     as_of = existing.get("as_of")
@@ -2550,6 +2628,14 @@ def build_placeholder_payload(day: dt.date, as_of: str, status: str, reason: str
     payload = {
         "date": iso_date(day),
         "as_of": as_of,
+        "methodology": {
+            "mapping_fingerprint": current_mapping_fingerprint(),
+            "canonical_source_symbols": {
+                source: {benchmark: list(symbols) for benchmark, symbols in mapping.items()}
+                for source, mapping in CANONICAL_SOURCE_SYMBOLS.items()
+            },
+            "navasan_benchmark_units": dict(NAVASAN_BENCHMARK_UNITS),
+        },
         "benchmarks": placeholder_benchmarks,
         "indicators": placeholder_indicators,
         "computed": {
@@ -2703,6 +2789,7 @@ def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: 
     publish_home(site_dir, templates_dir, generated_at, latest)
     publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
     publish_series(site_dir)
+    publish_mapping_audit(site_dir)
     return 0
 
 
@@ -2771,6 +2858,7 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
             publish_home(site_dir, templates_dir, generated_at, latest)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
         publish_series(site_dir)
+        publish_mapping_audit(site_dir)
         return 0
 
     missing = missing_secrets()
@@ -2788,6 +2876,7 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
         publish_latest(site_dir, placeholder)
         publish_series(site_dir)
+        publish_mapping_audit(site_dir)
         return 0
 
     source_configs = build_source_configs()
@@ -2802,6 +2891,7 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
         publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=placeholder)
         publish_latest(site_dir, placeholder)
         publish_series(site_dir)
+        publish_mapping_audit(site_dir)
         publish_status(
             site_dir,
             templates_dir,
@@ -2816,6 +2906,7 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
     publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
     publish_latest(site_dir, daily)
     publish_series(site_dir)
+    publish_mapping_audit(site_dir)
     publish_status(
         site_dir,
         templates_dir,
@@ -2844,6 +2935,12 @@ def run(args: argparse.Namespace) -> int:
     publish_methodology(site_dir, templates_dir, generated_at)
     publish_governance(site_dir, templates_dir, generated_at)
 
+    if args.rebuild_day:
+        rebuild_day = parse_iso_date_text(args.rebuild_day)
+        if rebuild_day is None:
+            raise PipelineError(f"invalid --rebuild-day value: {args.rebuild_day}")
+        return run_build_only(site_dir, templates_dir, generated_at, rebuild_day)
+
     if args.no_new_reference:
         return run_build_only(site_dir, templates_dir, generated_at, day)
 
@@ -2871,6 +2968,7 @@ def run(args: argparse.Namespace) -> int:
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
         publish_latest(site_dir, placeholder)
         publish_series(site_dir)
+        publish_mapping_audit(site_dir)
         return 0
 
     source_configs = build_source_configs()
@@ -2891,6 +2989,7 @@ def run(args: argparse.Namespace) -> int:
             publish_home(site_dir, templates_dir, generated_at, latest)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
         publish_series(site_dir)
+        publish_mapping_audit(site_dir)
         return 0
 
     window_start_dt = dt.datetime.combine(day, WINDOW_START, tzinfo=UTC)
@@ -2926,6 +3025,7 @@ def run(args: argparse.Namespace) -> int:
     publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
     publish_latest(site_dir, daily)
     publish_series(site_dir)
+    publish_mapping_audit(site_dir)
 
     publish_status(
         site_dir,
@@ -2969,6 +3069,11 @@ def parse_args() -> argparse.Namespace:
         "--no-new-reference",
         action="store_true",
         help="Render/rebuild site using existing data only, without generating a new daily reference",
+    )
+    parser.add_argument(
+        "--rebuild-day",
+        default="",
+        help="Rebuild a specific YYYY-MM-DD daily artifact from stored samples using current logic",
     )
     return parser.parse_args()
 

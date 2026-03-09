@@ -10,122 +10,368 @@
     "bonbast": {
       "samples": [
         {
+          "health": {
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:44Z",
           "value": null,
+          "benchmarks": {},
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "network: [Errno -5] No address associated with hostname"
+          "error": "network: [Errno -5] No address associated with hostname",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "unknown",
+          "normalized_unit": "rial"
         },
         {
+          "health": {
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:46Z",
           "value": null,
+          "benchmarks": {},
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "network: [Errno -5] No address associated with hostname"
+          "error": "network: [Errno -5] No address associated with hostname",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "unknown",
+          "normalized_unit": "rial"
         },
         {
+          "health": {
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:46Z",
           "value": null,
+          "benchmarks": {},
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "network: [Errno -5] No address associated with hostname"
+          "error": "network: [Errno -5] No address associated with hostname",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "unknown",
+          "normalized_unit": "rial"
         }
       ],
       "median": null,
-      "note": "no valid samples"
+      "benchmark_medians": {},
+      "note": "no valid in-window samples"
     },
     "navasan": {
       "samples": [
         {
+          "health": {
+            "legacy_unit_repair": "assumed_navasan_unknown_value_toman",
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:44Z",
-          "value": 153500.0,
+          "value": 1535000.0,
+          "benchmarks": {},
           "quote_time": "2026-03-08T22:03:55Z",
           "ok": false,
           "stale": true,
-          "error": "stale quote"
+          "error": "stale quote",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "mixed",
+          "normalized_unit": "rial"
         },
         {
+          "health": {
+            "legacy_unit_repair": "assumed_navasan_unknown_value_toman",
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:46Z",
-          "value": 153500.0,
+          "value": 1535000.0,
+          "benchmarks": {},
           "quote_time": "2026-03-08T22:03:55Z",
           "ok": false,
           "stale": true,
-          "error": "stale quote"
+          "error": "stale quote",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "mixed",
+          "normalized_unit": "rial"
         },
         {
+          "health": {
+            "legacy_unit_repair": "assumed_navasan_unknown_value_toman",
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:46Z",
-          "value": 153500.0,
+          "value": 1535000.0,
+          "benchmarks": {},
           "quote_time": "2026-03-08T22:03:55Z",
           "ok": false,
           "stale": true,
-          "error": "stale quote"
+          "error": "stale quote",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "mixed",
+          "normalized_unit": "rial"
         }
       ],
-      "median": 153500.0,
-      "note": null
+      "median": null,
+      "benchmark_medians": {},
+      "note": "no valid in-window samples"
     },
     "alanchand": {
       "samples": [
         {
+          "health": {
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:44Z",
           "value": null,
+          "benchmarks": {},
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "http 401"
+          "error": "http 401",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "unknown",
+          "normalized_unit": "rial"
         },
         {
+          "health": {
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:46Z",
           "value": null,
+          "benchmarks": {},
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "http 401"
+          "error": "http 401",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "unknown",
+          "normalized_unit": "rial"
         },
         {
+          "health": {
+            "fetch_success": null,
+            "validation_result": null,
+            "failure_reason": null
+          },
           "sampled_at": "2026-03-08T22:22:46Z",
           "value": null,
+          "benchmarks": {},
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "http 401"
+          "error": "http 401",
+          "fetch_success": null,
+          "validation_result": null,
+          "failure_reason": null,
+          "source_unit": "unknown",
+          "normalized_unit": "rial"
         }
       ],
       "median": null,
-      "note": "no valid samples"
+      "benchmark_medians": {},
+      "note": "no valid in-window samples"
+    }
+  },
+  "benchmarks": {
+    "open_market": {
+      "label": "Open Market / Street Rate",
+      "benchmark": "open_market",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "no valid sources available"
+      ],
+      "source_medians": {},
+      "source_units": {},
+      "source_notes": {
+        "bonbast": "no valid in-window samples",
+        "navasan": "no valid in-window samples",
+        "alanchand": "no valid in-window samples"
+      },
+      "available": false
+    },
+    "official": {
+      "label": "Official Commercial USD Rate",
+      "benchmark": "official",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "no valid sources available"
+      ],
+      "source_medians": {},
+      "source_units": {},
+      "source_notes": {
+        "bonbast": "no valid samples",
+        "navasan": "no valid samples",
+        "alanchand": "no valid samples"
+      },
+      "available": false
+    },
+    "regional_transfer": {
+      "label": "Regional Transfer Rate",
+      "benchmark": "regional_transfer",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "no valid sources available"
+      ],
+      "source_medians": {},
+      "source_units": {},
+      "source_notes": {
+        "bonbast": "no valid samples",
+        "navasan": "no valid samples",
+        "alanchand": "no valid samples"
+      },
+      "available": false
+    },
+    "crypto_usdt": {
+      "label": "Crypto Dollar (USDT)",
+      "benchmark": "crypto_usdt",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "no valid sources available"
+      ],
+      "source_medians": {},
+      "source_units": {},
+      "source_notes": {
+        "bonbast": "no valid samples",
+        "navasan": "no valid samples",
+        "alanchand": "no valid samples"
+      },
+      "available": false
+    },
+    "emami_gold_coin": {
+      "label": "Emami Gold Coin",
+      "benchmark": "emami_gold_coin",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "no valid sources available"
+      ],
+      "source_medians": {},
+      "source_units": {},
+      "source_notes": {
+        "bonbast": "no valid samples",
+        "navasan": "no valid samples",
+        "alanchand": "no valid samples"
+      },
+      "available": false
+    }
+  },
+  "indicators": {
+    "street_official_gap_pct": {
+      "label": "Street-Official Gap",
+      "value": null,
+      "available": false,
+      "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
+    },
+    "street_transfer_gap_pct": {
+      "label": "Street-Transfer Gap",
+      "value": null,
+      "available": false,
+      "formula": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100"
+    },
+    "street_crypto_gap_pct": {
+      "label": "Street-Crypto Gap",
+      "value": null,
+      "available": false,
+      "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
+    },
+    "official_commercial_trend_7d": {
+      "label": "Official 7d Trend",
+      "value": null,
+      "available": false,
+      "formula": "7-day percent change of official_commercial_usd_irr"
     }
   },
   "computed": {
-    "fix": 153500.0,
+    "fix": null,
     "band": {
-      "p25": 153500.0,
-      "p75": 153500.0
+      "p25": null,
+      "p75": null
     },
-    "dispersion": 0.0,
-    "status": "Green",
-    "withheld": false,
-    "withhold_reasons": [],
-    "source_medians": {
-      "navasan": 153500.0
-    },
+    "dispersion": null,
+    "status": "WITHHOLD",
+    "withheld": true,
+    "withhold_reasons": [
+      "no valid sources available"
+    ],
+    "source_medians": {},
+    "source_units": {},
+    "source_unit": "unknown",
+    "normalized_unit": "rial",
+    "validation_warnings": [],
     "benchmarks": {
       "open_market": {
         "label": "Open Market / Street Rate",
-        "value": 153500.0,
-        "available": true,
-        "is_primary": true
-      },
-      "nima": {
-        "label": "NIMA Rate",
         "value": null,
         "available": false,
-        "is_primary": false
+        "is_primary": true
       },
       "official": {
-        "label": "Official Rate",
+        "label": "Official Commercial USD Rate",
         "value": null,
         "available": false,
         "is_primary": false
@@ -150,142 +396,97 @@
       }
     },
     "indicators": {
-      "street_nima_gap": {
-        "label": "Street-NIMA Gap",
+      "street_official_gap_pct": {
+        "label": "Street-Official Gap",
         "value": null,
         "available": false,
-        "formula": "((street_rate - nima_rate) / nima_rate) * 100"
+        "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
       },
-      "crypto_premium": {
-        "label": "Crypto Premium",
+      "street_transfer_gap_pct": {
+        "label": "Street-Transfer Gap",
         "value": null,
         "available": false,
-        "formula": "((crypto_usdt_rate - street_rate) / street_rate) * 100"
+        "formula": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100"
+      },
+      "street_crypto_gap_pct": {
+        "label": "Street-Crypto Gap",
+        "value": null,
+        "available": false,
+        "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
+      },
+      "official_commercial_trend_7d": {
+        "label": "Official 7d Trend",
+        "value": null,
+        "available": false,
+        "formula": "7-day percent change of official_commercial_usd_irr"
       }
     }
   },
-  "benchmarks": {
-    "open_market": {
-      "label": "Open Market / Street Rate",
-      "benchmark": "open_market",
-      "fix": 153500.0,
-      "band": {
-        "p25": 153500.0,
-        "p75": 153500.0
-      },
-      "dispersion": 0.0,
-      "status": "Green",
-      "withheld": false,
-      "withhold_reasons": [],
-      "source_medians": {
-        "navasan": 153500.0
-      },
-      "source_notes": {},
-      "available": true
-    },
-    "nima": {
-      "label": "NIMA Rate",
-      "benchmark": "nima",
-      "fix": null,
-      "band": {
-        "p25": null,
-        "p75": null
-      },
-      "dispersion": null,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "not available in historical snapshot migration"
-      ],
-      "source_medians": {},
-      "source_notes": {},
-      "available": false
-    },
-    "official": {
-      "label": "Official Rate",
-      "benchmark": "official",
-      "fix": null,
-      "band": {
-        "p25": null,
-        "p75": null
-      },
-      "dispersion": null,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "not available in historical snapshot migration"
-      ],
-      "source_medians": {},
-      "source_notes": {},
-      "available": false
-    },
-    "regional_transfer": {
-      "label": "Regional Transfer Rate",
-      "benchmark": "regional_transfer",
-      "fix": null,
-      "band": {
-        "p25": null,
-        "p75": null
-      },
-      "dispersion": null,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "not available in historical snapshot migration"
-      ],
-      "source_medians": {},
-      "source_notes": {},
-      "available": false
-    },
-    "crypto_usdt": {
-      "label": "Crypto Dollar (USDT)",
-      "benchmark": "crypto_usdt",
-      "fix": null,
-      "band": {
-        "p25": null,
-        "p75": null
-      },
-      "dispersion": null,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "not available in historical snapshot migration"
-      ],
-      "source_medians": {},
-      "source_notes": {},
-      "available": false
-    },
-    "emami_gold_coin": {
-      "label": "Emami Gold Coin",
-      "benchmark": "emami_gold_coin",
-      "fix": null,
-      "band": {
-        "p25": null,
-        "p75": null
-      },
-      "dispersion": null,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "not available in historical snapshot migration"
-      ],
-      "source_medians": {},
-      "source_notes": {},
-      "available": false
-    }
+  "normalized_metrics": {
+    "street_usd_irr": null,
+    "official_commercial_usd_irr": null,
+    "regional_transfer_usd_irr": null,
+    "crypto_usdt_irr": null,
+    "emami_coin_irr": null,
+    "street_official_gap_pct": null,
+    "street_transfer_gap_pct": null,
+    "street_crypto_gap_pct": null,
+    "official_commercial_trend_7d": null,
+    "street_confidence_status": "WITHHOLD",
+    "source_unit": "unknown",
+    "normalized_unit": "rial"
   },
-  "indicators": {
-    "street_nima_gap": {
-      "label": "Street-NIMA Gap",
-      "value": null,
-      "available": false,
-      "formula": "((street_rate - nima_rate) / nima_rate) * 100"
+  "methodology": {
+    "mapping_fingerprint": "b7d66ace91d5",
+    "canonical_source_symbols": {
+      "navasan": {
+        "open_market": [
+          "usd_sell",
+          "usd"
+        ],
+        "official": [
+          "mex_usd_sell"
+        ],
+        "regional_transfer": [
+          "usd_shakhs",
+          "usd_sherkat"
+        ],
+        "crypto_usdt": [
+          "usdt"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      },
+      "alanchand": {
+        "regional_transfer": [
+          "usd-hav",
+          "usd_hav"
+        ],
+        "crypto_usdt": [
+          "usdt"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      },
+      "bonbast": {
+        "crypto_usdt": [
+          "usdt",
+          "tether"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      }
     },
-    "crypto_premium": {
-      "label": "Crypto Premium",
-      "value": null,
-      "available": false,
-      "formula": "((crypto_usdt_rate - street_rate) / street_rate) * 100"
-    }
+    "navasan_benchmark_units": {
+      "open_market": "toman",
+      "official": "rial",
+      "regional_transfer": "toman",
+      "crypto_usdt": "toman",
+      "emami_gold_coin": "toman"
+    },
+    "rebuild_note": "Recomputed from stored legacy samples with current mapping/validation; no valid benchmark inputs remained."
   }
 }

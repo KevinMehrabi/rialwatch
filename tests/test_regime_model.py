@@ -68,6 +68,21 @@ class RegimeModelTests(unittest.TestCase):
         self.assertIn("mex_usd_sell", payload)
         self.assertEqual(payload["mex_usd_sell"]["value"], 1325072)
 
+    def test_legacy_navasan_unknown_value_assumes_toman(self) -> None:
+        sample = pipeline.parse_sample_record(
+            "navasan",
+            {
+                "sampled_at": "2026-03-08T22:22:47Z",
+                "value": 153500.0,
+                "ok": True,
+                "stale": False,
+            },
+        )
+        self.assertIsNotNone(sample)
+        assert sample is not None
+        self.assertEqual(sample.value, 1_535_000.0)
+        self.assertEqual(sample.source_unit, "mixed")
+
 
 if __name__ == "__main__":
     unittest.main()

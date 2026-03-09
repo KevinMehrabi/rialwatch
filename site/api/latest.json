@@ -1,6 +1,6 @@
 {
   "date": "2026-03-09",
-  "as_of": "2026-03-09T20:44:38Z",
+  "as_of": "2026-03-09T20:53:40Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -459,6 +459,58 @@
     "street_confidence_status": "Green",
     "source_unit": "mixed",
     "normalized_unit": "rial"
+  },
+  "methodology": {
+    "mapping_fingerprint": "b7d66ace91d5",
+    "canonical_source_symbols": {
+      "navasan": {
+        "open_market": [
+          "usd_sell",
+          "usd"
+        ],
+        "official": [
+          "mex_usd_sell"
+        ],
+        "regional_transfer": [
+          "usd_shakhs",
+          "usd_sherkat"
+        ],
+        "crypto_usdt": [
+          "usdt"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      },
+      "alanchand": {
+        "regional_transfer": [
+          "usd-hav",
+          "usd_hav"
+        ],
+        "crypto_usdt": [
+          "usdt"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      },
+      "bonbast": {
+        "crypto_usdt": [
+          "usdt",
+          "tether"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      }
+    },
+    "navasan_benchmark_units": {
+      "open_market": "toman",
+      "official": "rial",
+      "regional_transfer": "toman",
+      "crypto_usdt": "toman",
+      "emami_gold_coin": "toman"
+    }
   },
   "publication_selection": {
     "rule": "latest valid intraday attempt in publication window, else latest attempt",
