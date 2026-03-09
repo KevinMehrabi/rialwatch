@@ -335,7 +335,7 @@
             <a href="/methodology/">Methodology</a>
             <a href="/status/">Status</a>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-09T22:17:33Z">Last update: 2026-03-09T22:17:33Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-09T22:20:32Z">Last update: 2026-03-09T22:20:32Z</div>
         </div>
       </div>
     </div>
@@ -344,42 +344,77 @@
     <div class="container-xl py-4 dashboard-container">
       <div class="mb-3">
   <h1 class="page-title">Methodology</h1>
-  <p class="text-secondary mb-0">Reference construction protocol and calculation standards.</p>
+  <p class="text-secondary mb-0">How RialWatch defines, validates, and publishes its USD/IRR benchmark.</p>
 </div>
 
 <section class="card">
   <div class="card-body">
+    <h2 class="h4 mb-2">1. Benchmark Definition</h2>
+    <p class="mb-2">
+      <strong>Primary benchmark:</strong> Open Market / Street USD/IRR daily benchmark.
+    </p>
+    <p class="mb-2">
+      RialWatch publishes one official daily benchmark value, not a live ticker. Daily publication is either
+      <strong>Published</strong> or <strong>Withheld</strong> based on validation rules.
+    </p>
+    <p class="mb-0 text-secondary">
+      Supplementary cards (Official Commercial, Regional Transfer, Crypto USDT, Emami Gold Coin) are separate readings and do not replace the primary benchmark.
+    </p>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h2 class="h4 mb-2">2. Market Structure</h2>
+    <ul class="mb-0">
+      <li>Open Market / Street Rate is the flagship public benchmark.</li>
+      <li>Official Commercial USD Rate is the managed-market anchor currently mapped to <code>navasan:mex_usd_sell</code>.</li>
+      <li>Regional Transfer, Crypto Dollar (USDT), and Emami Gold Coin are tracked as distinct market channels/signals.</li>
+      <li>NIMA is treated as a legacy mechanism and is not currently maintained as a live standalone series.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h2 class="h4 mb-2">3. Data Normalization</h2>
+    <ul class="mb-0">
+      <li>All stored benchmark values are normalized to <strong>IRR (rial)</strong> internally.</li>
+      <li>If a source provides a value in toman, RialWatch converts using <code>rial = toman * 10</code>.</li>
+      <li>If a source provides a value in rial, it is stored unchanged.</li>
+      <li>Invalid, missing, non-numeric, stale, or out-of-window values are excluded from benchmark computation.</li>
+    </ul>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h2 class="h4 mb-2">4. Calculation Approach</h2>
     <ol class="mb-0">
-      <li>Intraday collection writes timestamped attempts to <code>/intraday/YYYY-MM-DD/HH-MM-SS.json</code>.</li>
-      <li>Publication window remains <code>13:45-14:15 UTC</code>.</li>
-      <li>Official daily publication selects the latest valid intraday attempt in that window.</li>
-      <li>If the latest attempt is invalid, publication falls back to the most recent valid attempt.</li>
-      <li>If no valid attempts exist, the day is published as <code>WITHHOLD</code> (no fabricated rate).</li>
-      <li>For each selected attempt, FIX is computed from source medians; BAND is p25-p75; DISPERSION is <code>(p75 - p25) / FIX</code>.</li>
-      <li><code>WITHHOLD</code> can still occur even when a numeric candidate exists (for example stale inputs or high dispersion).</li>
-      <li>Status bands: Green <= 1.5%, Amber <= 3.5%, Red <= 5%.</li>
-      <li>WITHHOLD is triggered by invalid/stale inputs, insufficient source quality, or excessive dispersion.</li>
-      <li>Derived indicators are suppressed unless required benchmark inputs are available; Street-Official Gap, Street-Transfer Gap, and Street-Crypto Gap may use the Street candidate value when Street is WITHHOLD.</li>
+      <li>Intraday attempts are stored at timestamped paths: <code>/intraday/YYYY-MM-DD/HH-MM-SS.json</code>.</li>
+      <li>Within each source, sampled values are reduced to a source median for the benchmark window.</li>
+      <li><strong>FIX</strong> is the median of source medians.</li>
+      <li><strong>BAND</strong> is the 25th-75th percentile range of source medians.</li>
+      <li><strong>DISPERSION</strong> is computed as <code>(p75 - p25) / FIX</code>.</li>
+      <li>Indicator formulas (Street-Official, Street-Transfer, Street-Crypto, Official 7d Trend) are derived separately from benchmark values.</li>
     </ol>
   </div>
 </section>
 
 <section class="card mt-3">
   <div class="card-body">
-    <h2 class="h4 mb-3">Managed-Market Series Transition</h2>
+    <h2 class="h4 mb-2">5. Publication Rules</h2>
     <ul class="mb-0">
-      <li><strong>NIMA legacy status:</strong> NIMA was a legacy platform ended in January 2025 and is not tracked as a live RialWatch series.</li>
-      <li><strong>Successor managed-market series:</strong> from <code>2025-01-20</code> onward, the live dashboard tracks <strong>Official Commercial USD Rate</strong> as the managed commercial benchmark anchor.</li>
-      <li><strong>Unified remittance quote transition:</strong> after the early-January-2026 hall merger, the successor series is treated as a unified commercial/remittance managed-market quote when source structure reflects that merge.</li>
-      <li><strong>Current benchmark mapping:</strong> <strong>Official Commercial USD Rate</strong> is currently sourced from <code>navasan: mex_usd_sell</code> (Iran Exchange Center USD remittance sell quote proxy).</li>
-      <li><strong>Legacy concepts note:</strong> NIMA and Mobadeleh are policy-era legacy terms and are not shown as standalone live market indicators.</li>
-      <li><strong>Integrity guardrails:</strong> no guessed NIMA ticker is used and no fabricated values are published.</li>
-      <li><strong>Regional Transfer Rate</strong> remains production-approved with strict canonical source mapping.</li>
+      <li>Publication window: <code>13:45-14:15 UTC</code>. Official publish checkpoint: <code>14:20 UTC</code>.</li>
+      <li>Selection rule: latest valid intraday sample in-window; fallback to most recent valid in-window sample if needed.</li>
+      <li>Publish state is <strong>Withheld</strong> when methodology checks fail (for example insufficient valid sources, stale/invalid inputs, or excessive dispersion).</li>
+      <li>No fabricated values are published. Missing configuration is explicitly surfaced as <code>CONFIG NEEDED</code>.</li>
+      <li>Historical outputs are immutable once written; no silent backfill/rewrite of prior published days.</li>
     </ul>
   </div>
 </section>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-09T22:17:33Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-09T22:20:32Z</div>
     </div>
   </div>
 </div>
