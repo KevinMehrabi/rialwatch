@@ -37,8 +37,7 @@ REQUIRED_SECRETS = (
 
 BENCHMARK_LABELS: Dict[str, str] = {
     "open_market": "Open Market / Street Rate",
-    "nima": "NIMA Rate",
-    "official": "Exchange Center USD Remittance Rate",
+    "official": "Official Commercial USD Rate",
     "regional_transfer": "Regional Transfer Rate",
     "crypto_usdt": "Crypto Dollar (USDT)",
     "emami_gold_coin": "Emami Gold Coin",
@@ -47,20 +46,20 @@ BENCHMARK_LABELS: Dict[str, str] = {
 PRIMARY_BENCHMARK = "open_market"
 
 INDICATOR_LABELS: Dict[str, str] = {
-    "street_nima_gap": "Street-NIMA Gap",
-    "street_mobadeleh_gap": "Street–Mobadeleh Gap",
-    "crypto_premium": "Crypto Premium",
-    "transfer_premium": "Transfer Premium",
+    "street_official_gap_pct": "Street-Official Gap",
+    "street_transfer_gap_pct": "Street-Transfer Gap",
+    "street_crypto_gap_pct": "Street-Crypto Gap",
+    "official_commercial_trend_7d": "Official 7d Trend",
 }
 
 INDICATOR_FORMULAS: Dict[str, str] = {
-    "street_nima_gap": "((street_rate - nima_rate) / nima_rate) * 100",
-    "street_mobadeleh_gap": "((street_rate - mobadeleh_rate) / mobadeleh_rate) * 100",
-    "crypto_premium": "((crypto_usdt_rate - street_rate) / street_rate) * 100",
-    "transfer_premium": "((regional_transfer_rate - street_rate) / street_rate) * 100",
+    "street_official_gap_pct": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100",
+    "street_transfer_gap_pct": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100",
+    "street_crypto_gap_pct": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100",
+    "official_commercial_trend_7d": "7-day percent change of official_commercial_usd_irr",
 }
 
-STRICT_CANONICAL_BENCHMARKS = {"nima", "official", "regional_transfer"}
+STRICT_CANONICAL_BENCHMARKS = {"official", "regional_transfer"}
 
 BENCHMARK_SYMBOL_CANDIDATES: Dict[str, Tuple[str, ...]] = {
     "crypto_usdt": ("usdt", "tether", "usd_tether"),
@@ -125,6 +124,7 @@ class SourceConfig:
     auth_mode: str  # browser_playwright | query_api_key | header_api_key
     secret_fields: Tuple[str, ...]
     benchmark_families: Tuple[str, ...]
+    default_unit: str = "toman"
 
 
 @dataclass
@@ -138,6 +138,8 @@ class Sample:
     stale: bool
     error: Optional[str] = None
     health: Optional[Dict[str, Any]] = None
+    source_unit: str = "toman"
+    normalized_unit: str = "rial"
 
 
 class PipelineError(RuntimeError):
@@ -178,14 +180,43 @@ def parse_number(value: Any) -> Optional[float]:
     if v <= 0:
         return None
 
-    # Heuristic: some feeds use toman; normalize to rial when values are clearly too low.
-    if 1_000 <= v < 100_000:
-        return v * 10.0
     return v
 
 
 def blank_benchmark_values() -> Dict[str, Optional[float]]:
     return {key: None for key in BENCHMARK_LABELS}
+
+
+def normalize_unit(value: Optional[float], source_unit: str) -> Optional[float]:
+    if value is None:
+        return None
+    unit = (source_unit or "").strip().lower()
+    if unit == "toman":
+        return value * 10.0
+    return value
+
+
+def normalize_benchmark_values(values: Dict[str, Optional[float]], source_unit: str) -> Dict[str, Optional[float]]:
+    return {key: normalize_unit(val, source_unit) for key, val in values.items()}
+
+
+def detect_unit_from_text(text: str, default_unit: str) -> str:
+    lowered = text.lower()
+    if "toman" in lowered or "tmn" in lowered or "تومان" in text:
+        return "toman"
+    if "rial" in lowered or "irr" in lowered or "ریال" in text:
+        return "rial"
+    return default_unit
+
+
+def detect_source_unit(payload: Any, default_unit: str) -> str:
+    unit = default_unit
+    for _path, raw in flatten_json(payload):
+        if isinstance(raw, str):
+            unit = detect_unit_from_text(raw, unit)
+            if unit in {"toman", "rial"}:
+                return unit
+    return unit
 
 
 def parse_number_from_text(text: Any) -> Optional[float]:
@@ -354,7 +385,6 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
         has_sell = any(tok in path_l for tok in ("sell", "seller", "offer"))
         has_buy = any(tok in path_l for tok in ("buy", "buyer", "bid"))
         has_open = any(tok in path_l for tok in ("open", "market", "street", "free", "azad"))
-        has_nima = "nima" in path_l
         has_usdt = any(tok in path_l for tok in ("usdt", "tether"))
         has_emami = any(tok in path_l for tok in ("emami", "sekke", "coin"))
         has_gold = any(tok in path_l for tok in ("gold", "tala"))
@@ -373,16 +403,6 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
                 score += 1
             if has_buy:
                 score -= 1
-            if 150_000 <= num <= 2_500_000:
-                score += 2
-        elif benchmark == "nima":
-            if not has_nima:
-                continue
-            if has_usd:
-                score += 4
-            if has_irr:
-                score += 4
-            score += 3
             if 150_000 <= num <= 2_500_000:
                 score += 2
         elif benchmark == "official":
@@ -463,20 +483,12 @@ def extract_benchmark_values(payload: Any, source_name: Optional[str] = None) ->
                 return by_symbol
         return extract_benchmark_value(payload, benchmark)
 
-    open_market = resolve("open_market")
-    nima = resolve("nima")
-    official = resolve("official")
-    regional_transfer = resolve("regional_transfer")
-    crypto_usdt = resolve("crypto_usdt")
-    emami_gold_coin = resolve("emami_gold_coin")
-
     return {
-        "open_market": open_market,
-        "nima": nima,
-        "official": official,
-        "regional_transfer": regional_transfer,
-        "crypto_usdt": crypto_usdt,
-        "emami_gold_coin": emami_gold_coin,
+        "open_market": resolve("open_market"),
+        "official": resolve("official"),
+        "regional_transfer": resolve("regional_transfer"),
+        "crypto_usdt": resolve("crypto_usdt"),
+        "emami_gold_coin": resolve("emami_gold_coin"),
     }
 
 
@@ -581,21 +593,24 @@ def build_source_configs() -> List[SourceConfig]:
             url=env_or_default("BONBAST_SITE_URL", "https://bonbast.com"),
             auth_mode="browser_playwright",
             secret_fields=(),
-            benchmark_families=("open_market", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            default_unit="toman",
         ),
         SourceConfig(
             name="navasan",
             url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
             auth_mode="query_api_key",
             secret_fields=("NAVASAN_API_KEY",),
-            benchmark_families=("open_market", "nima", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            default_unit="toman",
         ),
         SourceConfig(
             name="alanchand",
             url=env_or_default("ALANCHAND_API_URL", "https://api.alanchand.com/v1/rates"),
             auth_mode="header_api_key",
             secret_fields=("ALANCHAND_API_KEY",),
-            benchmark_families=("open_market", "nima", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            default_unit="toman",
         ),
     ]
 
@@ -703,6 +718,8 @@ def fetch_bonbast_browser(
         "error_type": None,
     }
     benchmark_values = blank_benchmark_values()
+    source_unit = config.default_unit
+    normalized_unit = "rial"
     quote_time = sampled_at
 
     try:
@@ -722,6 +739,8 @@ def fetch_bonbast_browser(
             stale=False,
             error="bonbast browser collector unavailable",
             health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
 
     selector_script = """
@@ -779,6 +798,8 @@ def fetch_bonbast_browser(
             stale=False,
             error="bonbast page load timeout",
             health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
     except PlaywrightError as exc:
         health["error_type"] = "playwright_error"
@@ -793,6 +814,8 @@ def fetch_bonbast_browser(
             stale=False,
             error="bonbast browser scrape error",
             health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
     except Exception as exc:  # pragma: no cover - defensive.
         health["error_type"] = "unknown_error"
@@ -807,12 +830,15 @@ def fetch_bonbast_browser(
             stale=False,
             error="bonbast browser scrape error",
             health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
 
     selector_results = scrape_payload.get("selector_results") if isinstance(scrape_payload, dict) else {}
     page_text = scrape_payload.get("page_text") if isinstance(scrape_payload, dict) else ""
     selector_results = selector_results if isinstance(selector_results, dict) else {}
     page_text = page_text if isinstance(page_text, str) else ""
+    source_unit = detect_unit_from_text(page_text, config.default_unit)
 
     extracted = extract_bonbast_from_selector_results(selector_results)
     extracted["open_market"] = extracted.get("open_market") or extract_bonbast_value_from_text(
@@ -824,10 +850,12 @@ def fetch_bonbast_browser(
     extracted["emami_gold_coin"] = extracted.get("emami_gold_coin") or extract_bonbast_value_from_text(
         page_text, BONBAST_TEXT_HINTS["emami_gold_coin"], 1_000_000, 20_000_000_000
     )
-    benchmark_values.update(extracted)
+    benchmark_values.update(normalize_benchmark_values(extracted, source_unit))
 
     health["selector_success"] = any(v is not None for v in extracted.values())
     health["extracted_values"] = {k: benchmark_values.get(k) for k in ("open_market", "crypto_usdt", "emami_gold_coin")}
+    health["source_unit"] = source_unit
+    health["normalized_unit"] = normalized_unit
     health["selector_result_counts"] = {
         benchmark: len(entries) if isinstance(entries, list) else 0 for benchmark, entries in selector_results.items()
     }
@@ -846,6 +874,8 @@ def fetch_bonbast_browser(
             stale=stale,
             error="unable to parse USD/IRR",
             health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
 
     return Sample(
@@ -858,6 +888,8 @@ def fetch_bonbast_browser(
         stale=stale,
         error="stale quote" if stale else None,
         health=health,
+        source_unit=source_unit,
+        normalized_unit=normalized_unit,
     )
 
 
@@ -872,6 +904,8 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         "selector_success": None,
         "error_type": None,
     }
+    source_unit = config.default_unit
+    normalized_unit = "rial"
     try:
         req = build_request(config)
         with urllib.request.urlopen(req, timeout=20) as resp:
@@ -880,31 +914,86 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     except KeyError as exc:
         health["error_type"] = "missing_secret"
         return Sample(
-            config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error=f"missing secret: {exc}", health=health
+            config.name,
+            sampled_at,
+            None,
+            blank_benchmark_values(),
+            None,
+            ok=False,
+            stale=False,
+            error=f"missing secret: {exc}",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
     except urllib.error.HTTPError as exc:
         health["error_type"] = "http_error"
         return Sample(
-            config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error=f"http {exc.code}", health=health
+            config.name,
+            sampled_at,
+            None,
+            blank_benchmark_values(),
+            None,
+            ok=False,
+            stale=False,
+            error=f"http {exc.code}",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
     except urllib.error.URLError as exc:
         health["error_type"] = "network_error"
         return Sample(
-            config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error=f"network: {exc.reason}", health=health
+            config.name,
+            sampled_at,
+            None,
+            blank_benchmark_values(),
+            None,
+            ok=False,
+            stale=False,
+            error=f"network: {exc.reason}",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
     except TimeoutError:
         health["error_type"] = "timeout"
-        return Sample(config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error="timeout", health=health)
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            blank_benchmark_values(),
+            None,
+            ok=False,
+            stale=False,
+            error="timeout",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
     except json.JSONDecodeError:
         health["error_type"] = "invalid_json"
         return Sample(
-            config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error="invalid json", health=health
+            config.name,
+            sampled_at,
+            None,
+            blank_benchmark_values(),
+            None,
+            ok=False,
+            stale=False,
+            error="invalid json",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
 
-    benchmark_values = extract_benchmark_values(payload, config.name)
+    source_unit = detect_source_unit(payload, config.default_unit)
+    benchmark_values = normalize_benchmark_values(extract_benchmark_values(payload, config.name), source_unit)
     value = benchmark_values.get(PRIMARY_BENCHMARK)
     quote_time = extract_quote_time(payload)
     health["extracted_values"] = {k: benchmark_values.get(k) for k in benchmark_values}
+    health["source_unit"] = source_unit
+    health["normalized_unit"] = normalized_unit
 
     stale = False
     if quote_time is not None and (quote_time < window_start_dt or quote_time > window_end_dt):
@@ -921,6 +1010,8 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             stale=stale,
             error="unable to parse USD/IRR",
             health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
         )
 
     return Sample(
@@ -933,6 +1024,8 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         stale=stale,
         error="stale quote" if stale else None,
         health=health,
+        source_unit=source_unit,
+        normalized_unit=normalized_unit,
     )
 
 
@@ -975,6 +1068,7 @@ def compute_benchmark_result(
 ) -> Dict[str, Any]:
     source_medians: Dict[str, float] = {}
     source_notes: Dict[str, str] = {}
+    source_units: Dict[str, str] = {}
     invalid_or_stale = False
 
     for source, entries in samples.items():
@@ -1001,6 +1095,15 @@ def compute_benchmark_result(
             continue
 
         source_medians[source] = median(values)
+        units_seen = {
+            (s.source_unit or "unknown")
+            for s in entries
+            if s.benchmark_values.get(benchmark_key) is not None
+        }
+        if len(units_seen) == 1:
+            source_units[source] = next(iter(units_seen))
+        elif len(units_seen) > 1:
+            source_units[source] = "mixed"
         if benchmark_key != PRIMARY_BENCHMARK and any(s.stale for s in entries):
             invalid_or_stale = True
 
@@ -1049,6 +1152,7 @@ def compute_benchmark_result(
         "withheld": withheld,
         "withhold_reasons": reasons,
         "source_medians": source_medians,
+        "source_units": source_units,
         "source_notes": source_notes,
         "available": (fix_value is not None and not withheld),
     }
@@ -1056,58 +1160,192 @@ def compute_benchmark_result(
 
 def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     street = benchmark_results.get("open_market", {})
-    nima = benchmark_results.get("nima", {})
-    mobadeleh = benchmark_results.get("official", {})
+    official = benchmark_results.get("official", {})
     transfer = benchmark_results.get("regional_transfer", {})
     crypto = benchmark_results.get("crypto_usdt", {})
 
     street_fix = parse_number(street.get("fix"))
-    nima_fix = parse_number(nima.get("fix"))
-    mobadeleh_fix = parse_number(mobadeleh.get("fix"))
+    official_fix = parse_number(official.get("fix"))
     transfer_fix = parse_number(transfer.get("fix"))
     crypto_fix = parse_number(crypto.get("fix"))
 
-    street_nima_gap: Optional[float] = None
-    if street.get("available") and nima.get("available") and nima_fix not in (None, 0):
-        street_nima_gap = ((street_fix - nima_fix) / nima_fix) * 100 if street_fix is not None else None
+    street_official_gap_pct: Optional[float] = None
+    if street_fix is not None and official_fix not in (None, 0):
+        street_official_gap_pct = ((street_fix - official_fix) / official_fix) * 100
 
-    street_mobadeleh_gap: Optional[float] = None
-    if street_fix is not None and mobadeleh_fix not in (None, 0):
-        street_mobadeleh_gap = ((street_fix - mobadeleh_fix) / mobadeleh_fix) * 100
+    street_transfer_gap_pct: Optional[float] = None
+    if street_fix is not None and transfer_fix not in (None, 0):
+        street_transfer_gap_pct = ((street_fix - transfer_fix) / transfer_fix) * 100
 
-    crypto_premium: Optional[float] = None
+    street_crypto_gap_pct: Optional[float] = None
     if street_fix not in (None, 0) and crypto_fix is not None:
-        crypto_premium = ((crypto_fix - street_fix) / street_fix) * 100 if crypto_fix is not None else None
-
-    transfer_premium: Optional[float] = None
-    if street_fix not in (None, 0) and transfer_fix is not None:
-        transfer_premium = ((transfer_fix - street_fix) / street_fix) * 100
+        street_crypto_gap_pct = ((crypto_fix - street_fix) / street_fix) * 100
 
     return {
-        "street_nima_gap": {
-            "label": INDICATOR_LABELS["street_nima_gap"],
-            "value": street_nima_gap,
-            "available": street_nima_gap is not None,
-            "formula": INDICATOR_FORMULAS["street_nima_gap"],
+        "street_official_gap_pct": {
+            "label": INDICATOR_LABELS["street_official_gap_pct"],
+            "value": street_official_gap_pct,
+            "available": street_official_gap_pct is not None,
+            "formula": INDICATOR_FORMULAS["street_official_gap_pct"],
         },
-        "street_mobadeleh_gap": {
-            "label": INDICATOR_LABELS["street_mobadeleh_gap"],
-            "value": street_mobadeleh_gap,
-            "available": street_mobadeleh_gap is not None,
-            "formula": INDICATOR_FORMULAS["street_mobadeleh_gap"],
+        "street_transfer_gap_pct": {
+            "label": INDICATOR_LABELS["street_transfer_gap_pct"],
+            "value": street_transfer_gap_pct,
+            "available": street_transfer_gap_pct is not None,
+            "formula": INDICATOR_FORMULAS["street_transfer_gap_pct"],
         },
-        "crypto_premium": {
-            "label": INDICATOR_LABELS["crypto_premium"],
-            "value": crypto_premium,
-            "available": crypto_premium is not None,
-            "formula": INDICATOR_FORMULAS["crypto_premium"],
+        "street_crypto_gap_pct": {
+            "label": INDICATOR_LABELS["street_crypto_gap_pct"],
+            "value": street_crypto_gap_pct,
+            "available": street_crypto_gap_pct is not None,
+            "formula": INDICATOR_FORMULAS["street_crypto_gap_pct"],
         },
-        "transfer_premium": {
-            "label": INDICATOR_LABELS["transfer_premium"],
-            "value": transfer_premium,
-            "available": transfer_premium is not None,
-            "formula": INDICATOR_FORMULAS["transfer_premium"],
+        "official_commercial_trend_7d": {
+            "label": INDICATOR_LABELS["official_commercial_trend_7d"],
+            "value": None,
+            "available": False,
+            "formula": INDICATOR_FORMULAS["official_commercial_trend_7d"],
         },
+    }
+
+
+def parse_iso_date_text(value: Any) -> Optional[dt.date]:
+    if not isinstance(value, str):
+        return None
+    try:
+        return dt.date.fromisoformat(value)
+    except ValueError:
+        return None
+
+
+def load_benchmark_fix_history(site_dir: Path, benchmark_key: str) -> List[Tuple[dt.date, float]]:
+    rows: List[Tuple[dt.date, float]] = []
+    fix_dir = site_dir / "fix"
+    if not fix_dir.exists():
+        return rows
+
+    for path in sorted(fix_dir.glob("*.json")):
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
+            continue
+        try:
+            daily = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        day = parse_iso_date_text(daily.get("date") or path.stem)
+        if day is None:
+            continue
+        benchmark = daily.get("benchmarks", {}).get(benchmark_key, {})
+        if not isinstance(benchmark, dict):
+            continue
+        fix = parse_number(benchmark.get("fix"))
+        if fix is None:
+            continue
+        rows.append((day, fix))
+
+    rows.sort(key=lambda item: item[0])
+    return rows
+
+
+def compute_official_trend_7d(site_dir: Path, latest_day: dt.date, latest_official_fix: Optional[float]) -> Optional[float]:
+    if latest_official_fix is None or latest_official_fix <= 0:
+        return None
+    history = load_benchmark_fix_history(site_dir, "official")
+    by_day: Dict[dt.date, float] = {day: fix for day, fix in history}
+    by_day[latest_day] = latest_official_fix
+
+    target_day = latest_day - dt.timedelta(days=7)
+    base_candidates = [day for day in by_day if day <= target_day]
+    if not base_candidates:
+        return None
+    base_day = max(base_candidates)
+    base_fix = by_day.get(base_day)
+    if base_fix is None or base_fix <= 0:
+        return None
+    return ((latest_official_fix - base_fix) / base_fix) * 100
+
+
+def evaluate_official_sanity_warnings(benchmark_results: Dict[str, Dict[str, Any]]) -> List[str]:
+    warnings: List[str] = []
+    street_fix = parse_number(benchmark_results.get("open_market", {}).get("fix"))
+    official_fix = parse_number(benchmark_results.get("official", {}).get("fix"))
+    if street_fix is None or official_fix is None:
+        return warnings
+
+    if official_fix > street_fix * 1.05:
+        warnings.append(
+            "official_commercial_usd_irr is materially above street_usd_irr; review parser and rial/toman normalization"
+        )
+    ratio = official_fix / street_fix if street_fix else None
+    if ratio is not None and (ratio < 0.3 or ratio > 1.3):
+        warnings.append("official_commercial_usd_irr appears outside plausible band relative to street_usd_irr")
+    return warnings
+
+
+def build_normalized_market_snapshot(daily: Dict[str, Any], site_dir: Optional[Path] = None) -> Dict[str, Any]:
+    benchmarks = daily.get("benchmarks", {})
+    if not isinstance(benchmarks, dict):
+        benchmarks = {}
+    indicators = daily.get("indicators", {})
+    if not isinstance(indicators, dict):
+        indicators = {}
+
+    street = parse_number(benchmarks.get("open_market", {}).get("fix") if isinstance(benchmarks.get("open_market"), dict) else None)
+    official = parse_number(benchmarks.get("official", {}).get("fix") if isinstance(benchmarks.get("official"), dict) else None)
+    transfer = parse_number(
+        benchmarks.get("regional_transfer", {}).get("fix") if isinstance(benchmarks.get("regional_transfer"), dict) else None
+    )
+    crypto = parse_number(benchmarks.get("crypto_usdt", {}).get("fix") if isinstance(benchmarks.get("crypto_usdt"), dict) else None)
+    emami = parse_number(benchmarks.get("emami_gold_coin", {}).get("fix") if isinstance(benchmarks.get("emami_gold_coin"), dict) else None)
+
+    def indicator_value(key: str) -> Optional[float]:
+        entry = indicators.get(key, {})
+        if isinstance(entry, dict):
+            parsed = parse_float(entry.get("value"))
+            if parsed is not None:
+                return parsed
+        return None
+
+    street_official_gap = indicator_value("street_official_gap_pct")
+    if street_official_gap is None and street is not None and official not in (None, 0):
+        street_official_gap = ((street - official) / official) * 100
+
+    street_transfer_gap = indicator_value("street_transfer_gap_pct")
+    if street_transfer_gap is None and street is not None and transfer not in (None, 0):
+        street_transfer_gap = ((street - transfer) / transfer) * 100
+
+    street_crypto_gap = indicator_value("street_crypto_gap_pct")
+    if street_crypto_gap is None and street not in (None, 0) and crypto is not None:
+        street_crypto_gap = ((crypto - street) / street) * 100
+
+    official_trend = indicator_value("official_commercial_trend_7d")
+    latest_day = parse_iso_date_text(daily.get("date"))
+    if official_trend is None and site_dir is not None and latest_day is not None:
+        official_trend = compute_official_trend_7d(site_dir, latest_day, official)
+
+    primary = benchmarks.get("open_market", {})
+    source_units = primary.get("source_units") if isinstance(primary, dict) else {}
+    unit_values = set(source_units.values()) if isinstance(source_units, dict) else set()
+    if len(unit_values) == 1:
+        source_unit = next(iter(unit_values))
+    elif len(unit_values) > 1:
+        source_unit = "mixed"
+    else:
+        source_unit = "unknown"
+
+    status = daily.get("computed", {}).get("status")
+    return {
+        "street_usd_irr": street,
+        "official_commercial_usd_irr": official,
+        "regional_transfer_usd_irr": transfer,
+        "crypto_usdt_irr": crypto,
+        "emami_coin_irr": emami,
+        "street_official_gap_pct": street_official_gap,
+        "street_transfer_gap_pct": street_transfer_gap,
+        "street_crypto_gap_pct": street_crypto_gap,
+        "official_commercial_trend_7d": official_trend,
+        "street_confidence_status": str(status) if status is not None else None,
+        "source_unit": source_unit,
+        "normalized_unit": "rial",
     }
 
 
@@ -1138,10 +1376,15 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
         for key, result in benchmark_results.items()
     }
     indicator_results = compute_indicator_results(benchmark_results)
+    official_warnings = evaluate_official_sanity_warnings(benchmark_results)
+    if official_warnings:
+        official_result = benchmark_results.get("official", {})
+        if isinstance(official_result, dict):
+            official_result["validation_warnings"] = official_warnings
 
     sample_count_per_source = max((len(entries) for entries in samples.values()), default=0)
 
-    return {
+    daily_payload = {
         "date": iso_date(day),
         "as_of": iso_ts(utc_now()),
         "window_utc": {
@@ -1160,6 +1403,9 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
                         "ok": s.ok,
                         "stale": s.stale,
                         "error": s.error,
+                        "source_unit": s.source_unit,
+                        "normalized_unit": s.normalized_unit,
+                        "health": s.health if isinstance(s.health, dict) else {},
                     }
                     for s in entries
                 ],
@@ -1179,10 +1425,20 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
             "withheld": primary.get("withheld"),
             "withhold_reasons": primary.get("withhold_reasons"),
             "source_medians": primary.get("source_medians"),
+            "source_units": primary.get("source_units"),
+            "source_unit": (
+                next(iter(primary.get("source_units", {}).values()))
+                if isinstance(primary.get("source_units"), dict) and len(set(primary.get("source_units", {}).values())) == 1
+                else ("mixed" if isinstance(primary.get("source_units"), dict) and primary.get("source_units") else "unknown")
+            ),
+            "normalized_unit": "rial",
+            "validation_warnings": official_warnings,
             "benchmarks": computed_benchmarks,
             "indicators": indicator_results,
         },
     }
+    daily_payload["normalized_metrics"] = build_normalized_market_snapshot(daily_payload)
+    return daily_payload
 
 
 def load_existing_days(site_dir: Path) -> List[str]:
@@ -1427,12 +1683,6 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         benchmark_map = c.get("benchmarks", {})
     benchmark_map = benchmark_map if isinstance(benchmark_map, dict) else {}
 
-    def benchmark_available(key: str) -> bool:
-        entry = benchmark_map.get(key, {})
-        if not isinstance(entry, dict):
-            return False
-        return bool(entry.get("available"))
-
     def benchmark_value_number(key: str) -> Optional[float]:
         entry = benchmark_map.get(key, {})
         if not isinstance(entry, dict):
@@ -1452,35 +1702,32 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     indicator_map = indicator_map if isinstance(indicator_map, dict) else {}
 
     street = benchmark_value_number("open_market")
-    nima = benchmark_value_number("nima")
-    mobadeleh = benchmark_value_number("official")
+    official = benchmark_value_number("official")
     transfer = benchmark_value_number("regional_transfer")
     crypto = benchmark_value_number("crypto_usdt")
     fallback_indicator_values: Dict[str, Optional[float]] = {
-        "street_nima_gap": (
-            ((street - nima) / nima) * 100
-            if benchmark_available("open_market")
-            and benchmark_available("nima")
-            and street is not None
-            and nima not in (None, 0)
+        "street_official_gap_pct": (
+            ((street - official) / official) * 100
+            if street is not None and official not in (None, 0)
             else None
         ),
-        "street_mobadeleh_gap": (
-            ((street - mobadeleh) / mobadeleh) * 100
-            if street is not None and mobadeleh not in (None, 0)
+        "street_transfer_gap_pct": (
+            ((street - transfer) / transfer) * 100
+            if street is not None and transfer not in (None, 0)
             else None
         ),
-        "crypto_premium": (
+        "street_crypto_gap_pct": (
             ((crypto - street) / street) * 100
             if crypto is not None and street not in (None, 0)
             else None
         ),
-        "transfer_premium": (
-            ((transfer - street) / street) * 100
-            if transfer is not None and street not in (None, 0)
-            else None
-        ),
+        "official_commercial_trend_7d": None,
     }
+
+    latest_day = parse_iso_date_text(latest.get("date"))
+    fallback_indicator_values["official_commercial_trend_7d"] = (
+        compute_official_trend_7d(site_dir, latest_day, official) if latest_day is not None else None
+    )
     if not indicator_map:
         indicator_map = {k: {"value": v} for k, v in fallback_indicator_values.items()}
 
@@ -1553,22 +1800,37 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         publication_meta=publication_meta,
         withhold_reason_short=withhold_reason_text,
         reasons=reasons_html,
-        nima_value=benchmark_value_or_unavailable("nima"),
         official_value=benchmark_value_or_unavailable("official"),
         regional_transfer_value=benchmark_value_or_unavailable("regional_transfer"),
         crypto_usdt_value=benchmark_value_or_unavailable("crypto_usdt"),
         emami_gold_coin_value=benchmark_value_or_unavailable("emami_gold_coin"),
-        street_nima_gap_value=indicator_value_or_unavailable("street_nima_gap"),
-        street_mobadeleh_gap_value=indicator_value_or_unavailable("street_mobadeleh_gap"),
-        crypto_premium_value=indicator_value_or_unavailable("crypto_premium"),
-        transfer_premium_value=indicator_value_or_unavailable("transfer_premium"),
+        street_official_gap_value=indicator_value_or_unavailable("street_official_gap_pct"),
+        street_transfer_gap_value=indicator_value_or_unavailable("street_transfer_gap_pct"),
+        street_crypto_gap_value=indicator_value_or_unavailable("street_crypto_gap_pct"),
+        official_trend_7d_value=indicator_value_or_unavailable("official_commercial_trend_7d"),
     )
     write_text(site_dir / "index.html", html)
 
 
 def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, daily: Dict[str, Any]) -> None:
-    day = daily["date"]
-    c = daily.get("computed", {})
+    daily_out = json.loads(json.dumps(daily))
+    daily_out["normalized_metrics"] = build_normalized_market_snapshot(daily_out, site_dir=site_dir)
+
+    indicators = daily_out.get("indicators", {})
+    if isinstance(indicators, dict):
+        trend_entry = indicators.get("official_commercial_trend_7d", {})
+        if isinstance(trend_entry, dict):
+            trend_entry["value"] = daily_out["normalized_metrics"].get("official_commercial_trend_7d")
+            trend_entry["available"] = trend_entry.get("value") is not None
+    computed_indicators = daily_out.get("computed", {}).get("indicators", {})
+    if isinstance(computed_indicators, dict):
+        trend_entry = computed_indicators.get("official_commercial_trend_7d", {})
+        if isinstance(trend_entry, dict):
+            trend_entry["value"] = daily_out["normalized_metrics"].get("official_commercial_trend_7d")
+            trend_entry["available"] = trend_entry.get("value") is not None
+
+    day = daily_out["date"]
+    c = daily_out.get("computed", {})
     reasons = c.get("withhold_reasons", [])
 
     reasons_html = ""
@@ -1581,7 +1843,7 @@ def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, da
         title=f"Reference {day}",
         generated_at=generated_at,
         date=day,
-        as_of=daily.get("as_of", "N/A"),
+        as_of=daily_out.get("as_of", "N/A"),
         fix=fmt_rate(c.get("fix")),
         p25=fmt_rate(c.get("band", {}).get("p25")),
         p75=fmt_rate(c.get("band", {}).get("p75")),
@@ -1590,11 +1852,11 @@ def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, da
         status_class=css_class(str(c.get("status", "N/A"))),
         withheld="Yes" if c.get("withheld") else "No",
         reasons=reasons_html,
-        source_rows=render_source_table(daily),
+        source_rows=render_source_table(daily_out),
     )
 
     write_text(site_dir / "fix" / day / "index.html", html)
-    write_json(site_dir / "fix" / f"{day}.json", daily)
+    write_json(site_dir / "fix" / f"{day}.json", daily_out)
 
 
 def render_source_table(daily: Dict[str, Any]) -> str:
@@ -1617,7 +1879,30 @@ def render_source_table(daily: Dict[str, Any]) -> str:
 
 
 def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
-    write_json(site_dir / "api" / "latest.json", daily)
+    payload = json.loads(json.dumps(daily))
+    benchmark_results = payload.get("benchmarks", {})
+    if isinstance(benchmark_results, dict):
+        new_indicators = compute_indicator_results(benchmark_results)
+        payload["indicators"] = new_indicators
+        if isinstance(payload.get("computed"), dict):
+            payload["computed"]["indicators"] = json.loads(json.dumps(new_indicators))
+
+    payload["normalized_metrics"] = build_normalized_market_snapshot(payload, site_dir=site_dir)
+
+    indicators = payload.get("indicators", {})
+    if isinstance(indicators, dict):
+        trend_entry = indicators.get("official_commercial_trend_7d", {})
+        if isinstance(trend_entry, dict):
+            trend_entry["value"] = payload["normalized_metrics"].get("official_commercial_trend_7d")
+            trend_entry["available"] = trend_entry.get("value") is not None
+    computed_indicators = payload.get("computed", {}).get("indicators", {})
+    if isinstance(computed_indicators, dict):
+        trend_entry = computed_indicators.get("official_commercial_trend_7d", {})
+        if isinstance(trend_entry, dict):
+            trend_entry["value"] = payload["normalized_metrics"].get("official_commercial_trend_7d")
+            trend_entry["available"] = trend_entry.get("value") is not None
+
+    write_json(site_dir / "api" / "latest.json", payload)
 
 
 def publish_series(site_dir: Path) -> None:
@@ -1655,6 +1940,8 @@ def serialize_sample(sample: Sample) -> Dict[str, Any]:
         "stale": sample.stale,
         "error": sample.error,
         "health": sample.health if isinstance(sample.health, dict) else {},
+        "source_unit": sample.source_unit,
+        "normalized_unit": sample.normalized_unit,
     }
 
 
@@ -1694,6 +1981,8 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
     quote_time = try_parse_datetime(quote_time_raw) if quote_time_raw is not None else None
     benchmark_values = payload.get("benchmarks") if isinstance(payload.get("benchmarks"), dict) else {}
     health = payload.get("health") if isinstance(payload.get("health"), dict) else {}
+    source_unit = str(payload.get("source_unit") or "unknown")
+    normalized_unit = str(payload.get("normalized_unit") or "rial")
     return Sample(
         source=source,
         sampled_at=sampled_at,
@@ -1704,6 +1993,8 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
         stale=bool(payload.get("stale")),
         error=str(payload.get("error")) if payload.get("error") is not None else None,
         health=health,
+        source_unit=source_unit,
+        normalized_unit=normalized_unit,
     )
 
 
@@ -1799,7 +2090,7 @@ def build_placeholder_payload(day: dt.date, as_of: str, status: str, reason: str
         }
         for key in INDICATOR_LABELS
     }
-    return {
+    payload = {
         "date": iso_date(day),
         "as_of": as_of,
         "benchmarks": placeholder_benchmarks,
@@ -1824,6 +2115,8 @@ def build_placeholder_payload(day: dt.date, as_of: str, status: str, reason: str
             "indicators": placeholder_indicators,
         },
     }
+    payload["normalized_metrics"] = build_normalized_market_snapshot(payload)
+    return payload
 
 
 def select_daily_from_intraday(
@@ -1906,6 +2199,7 @@ def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: 
         status_detail=status_detail,
         missing=None,
     )
+    publish_latest(site_dir, latest)
     publish_home(site_dir, templates_dir, generated_at, latest)
     publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
     publish_series(site_dir)

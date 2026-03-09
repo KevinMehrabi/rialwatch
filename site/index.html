@@ -57,19 +57,8 @@
             <div class="card bg-dark text-white w-100 h-100">
               <div class="card-body d-flex flex-column">
                 <div>
-                  <div class="fw-semibold mb-1">Street-NIMA Gap</div>
-                  <div class="text-secondary small mb-2">Percent difference between Street Rate and NIMA Rate.</div>
-                </div>
-                <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
-              </div>
-            </div>
-          </div>
-          <div class="col-12 col-md-6 d-flex">
-            <div class="card bg-dark text-white w-100 h-100">
-              <div class="card-body d-flex flex-column">
-                <div>
-                  <div class="fw-semibold mb-1">Street–Mobadeleh Gap</div>
-                  <div class="text-secondary small mb-2">Percent difference between Street Rate and Mobadeleh USD Rate.</div>
+                  <div class="fw-semibold mb-1">Street-Official Gap</div>
+                  <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Official Commercial USD/IRR.</div>
                 </div>
                 <div class="h3 mb-0 mt-auto pt-3">-60.4%</div>
               </div>
@@ -79,8 +68,19 @@
             <div class="card bg-dark text-white w-100 h-100">
               <div class="card-body d-flex flex-column">
                 <div>
-                  <div class="fw-semibold mb-1">Crypto Premium</div>
-                  <div class="text-secondary small mb-2">Premium or discount of USDT vs Street Rate.</div>
+                  <div class="fw-semibold mb-1">Street-Transfer Gap</div>
+                  <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Regional Transfer USD/IRR.</div>
+                </div>
+                <div class="h3 mb-0 mt-auto pt-3">-1.9%</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 d-flex">
+            <div class="card bg-dark text-white w-100 h-100">
+              <div class="card-body d-flex flex-column">
+                <div>
+                  <div class="fw-semibold mb-1">Street-Crypto Gap</div>
+                  <div class="text-secondary small mb-2">Percent difference between crypto USDT-implied USD/IRR and Street USD/IRR.</div>
                 </div>
                 <div class="h3 mb-0 mt-auto pt-3">-10.0%</div>
               </div>
@@ -90,10 +90,10 @@
             <div class="card bg-dark text-white w-100 h-100">
               <div class="card-body d-flex flex-column">
                 <div>
-                  <div class="fw-semibold mb-1">Transfer Premium</div>
-                  <div class="text-secondary small mb-2">Percent difference between Regional Transfer Rate and Street Rate.</div>
+                  <div class="fw-semibold mb-1">Official 7d Trend</div>
+                  <div class="text-secondary small mb-2">7-day percent change in Official Commercial USD/IRR.</div>
                 </div>
-                <div class="h3 mb-0 mt-auto pt-3">+2.0%</div>
+                <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
               </div>
             </div>
           </div>
@@ -122,8 +122,8 @@
         <div class="card bg-dark text-white w-100 h-100">
           <div class="card-body d-flex flex-column">
             <div>
-              <div class="fw-semibold mb-1">Exchange Center USD Remittance Rate</div>
-              <div class="text-secondary small mb-2">Proxy for the managed commercial FX market that replaced NIMA.</div>
+              <div class="fw-semibold mb-1">Official Commercial USD Rate</div>
+              <div class="text-secondary small mb-2">Iran Exchange Center USD remittance sell rate.</div>
             </div>
             <div class="h3 mb-0 mt-auto pt-3">420,000 IRR</div>
           </div>
@@ -290,7 +290,7 @@ async function loadSeries() {
 loadSeries();
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-09T18:07:58Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-09T18:28:21Z</div>
     </div>
   </div>
 </div>
