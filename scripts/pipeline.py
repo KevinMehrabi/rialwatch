@@ -28,7 +28,7 @@ UTC = dt.timezone.utc
 WINDOW_START = dt.time(13, 45)
 WINDOW_END = dt.time(14, 15)
 PUBLISH_AT = dt.time(14, 20)
-SAMPLE_OFFSETS_MIN = (0, 15, 30)  # 13:45, 14:00, 14:15 UTC
+DEFAULT_INTRADAY_SAMPLE_TIMES = ("13:45", "14:00", "14:15")
 
 REQUIRED_SECRETS = (
     "BONBAST_USERNAME",
@@ -471,6 +471,27 @@ def iso_ts(ts: dt.datetime) -> str:
     return ts.astimezone(UTC).replace(microsecond=0).isoformat().replace("+00:00", "Z")
 
 
+def parse_hhmm_utc(value: str) -> dt.time:
+    text = value.strip()
+    if not re.fullmatch(r"\d{2}:\d{2}", text):
+        raise PipelineError(f"invalid HH:MM time: {value!r}")
+    hour = int(text[:2])
+    minute = int(text[3:])
+    if hour > 23 or minute > 59:
+        raise PipelineError(f"invalid HH:MM time: {value!r}")
+    return dt.time(hour, minute)
+
+
+def parse_sample_times(value: str) -> Tuple[dt.time, ...]:
+    parts = [p.strip() for p in value.split(",") if p.strip()]
+    if not parts:
+        raise PipelineError("sample times list cannot be empty")
+    times = tuple(parse_hhmm_utc(p) for p in parts)
+    if len(set(times)) != len(times):
+        raise PipelineError("sample times list contains duplicates")
+    return tuple(sorted(times))
+
+
 def should_sleep_until(target: dt.datetime, skip_waits: bool) -> None:
     if skip_waits:
         return
@@ -607,6 +628,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
 def collect_samples(
     source_configs: List[SourceConfig],
     day: dt.date,
+    sample_times: Tuple[dt.time, ...],
     skip_waits: bool,
     allow_outside_window: bool,
 ) -> Dict[str, List[Sample]]:
@@ -614,8 +636,8 @@ def collect_samples(
     window_start_dt = dt.datetime.combine(day, WINDOW_START, tzinfo=UTC)
     window_end_dt = dt.datetime.combine(day, WINDOW_END, tzinfo=UTC)
 
-    for offset in SAMPLE_OFFSETS_MIN:
-        target = window_start_dt + dt.timedelta(minutes=offset)
+    for sample_time in sample_times:
+        target = dt.datetime.combine(day, sample_time, tzinfo=UTC)
         if not allow_outside_window:
             now = utc_now()
             if now > window_end_dt + dt.timedelta(minutes=5):
@@ -770,13 +792,15 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
     }
     indicator_results = compute_indicator_results(benchmark_results)
 
+    sample_count_per_source = max((len(entries) for entries in samples.values()), default=0)
+
     return {
         "date": iso_date(day),
         "as_of": iso_ts(utc_now()),
         "window_utc": {
             "start": WINDOW_START.strftime("%H:%M"),
             "end": WINDOW_END.strftime("%H:%M"),
-            "sample_count_per_source": 3,
+            "sample_count_per_source": sample_count_per_source,
         },
         "sources": {
             source: {
@@ -1132,12 +1156,14 @@ def render_source_table(daily: Dict[str, Any]) -> str:
     for source, data in daily.get("sources", {}).items():
         median_val = data.get("median")
         note = data.get("note") or ""
-        ok_count = sum(1 for s in data.get("samples", []) if s.get("ok"))
+        sample_rows = data.get("samples", [])
+        ok_count = sum(1 for s in sample_rows if s.get("ok"))
+        total_count = len(sample_rows)
         rows.append(
             "<tr>"
             f"<td>{source}</td>"
             f"<td>{fmt_rate(median_val)}</td>"
-            f"<td>{ok_count}/3</td>"
+            f"<td>{ok_count}/{total_count}</td>"
             f"<td>{note}</td>"
             "</tr>"
         )
@@ -1154,98 +1180,343 @@ def publish_series(site_dir: Path) -> None:
     write_json(site_dir / "api" / "series.json", {"rows": public_rows})
 
 
+def intraday_day_dir(site_dir: Path, day: dt.date) -> Path:
+    return site_dir / "intraday" / iso_date(day)
+
+
+def unique_intraday_file(site_dir: Path, collected_at: dt.datetime) -> Path:
+    day = collected_at.astimezone(UTC).date()
+    day_dir = intraday_day_dir(site_dir, day)
+    base = collected_at.astimezone(UTC).strftime("%H-%M-%S")
+    candidate = day_dir / f"{base}.json"
+    if not candidate.exists():
+        return candidate
+    suffix = 1
+    while True:
+        candidate = day_dir / f"{base}-{suffix}.json"
+        if not candidate.exists():
+            return candidate
+        suffix += 1
+
+
+def serialize_sample(sample: Sample) -> Dict[str, Any]:
+    return {
+        "sampled_at": iso_ts(sample.sampled_at),
+        "value": sample.value,
+        "benchmarks": sample.benchmark_values,
+        "quote_time": iso_ts(sample.quote_time) if sample.quote_time else None,
+        "ok": sample.ok,
+        "stale": sample.stale,
+        "error": sample.error,
+    }
+
+
+def collect_one_attempt(
+    source_configs: List[SourceConfig],
+    sampled_at: dt.datetime,
+    day: dt.date,
+    allow_outside_window: bool,
+) -> Dict[str, List[Sample]]:
+    window_start_dt = dt.datetime.combine(day, WINDOW_START, tzinfo=UTC)
+    window_end_dt = dt.datetime.combine(day, WINDOW_END, tzinfo=UTC)
+    samples: Dict[str, List[Sample]] = {}
+    for cfg in source_configs:
+        sample = fetch_one(cfg, sampled_at, window_start_dt, window_end_dt)
+        if not allow_outside_window and (sampled_at < window_start_dt or sampled_at > window_end_dt):
+            sample.ok = False
+            sample.stale = True
+            sample.error = "sample outside observation window"
+        samples[cfg.name] = [sample]
+    return samples
+
+
+def write_intraday_attempt(site_dir: Path, attempt: Dict[str, Any]) -> Path:
+    collected_at = try_parse_datetime(attempt.get("collected_at"))
+    if collected_at is None:
+        raise PipelineError("intraday attempt missing collected_at timestamp")
+    path = unique_intraday_file(site_dir, collected_at)
+    write_json(path, attempt)
+    return path
+
+
+def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample]:
+    sampled_at = try_parse_datetime(payload.get("sampled_at"))
+    if sampled_at is None:
+        return None
+    quote_time_raw = payload.get("quote_time")
+    quote_time = try_parse_datetime(quote_time_raw) if quote_time_raw is not None else None
+    benchmark_values = payload.get("benchmarks") if isinstance(payload.get("benchmarks"), dict) else {}
+    return Sample(
+        source=source,
+        sampled_at=sampled_at,
+        value=parse_number(payload.get("value")),
+        benchmark_values=benchmark_values,
+        quote_time=quote_time,
+        ok=bool(payload.get("ok")),
+        stale=bool(payload.get("stale")),
+        error=str(payload.get("error")) if payload.get("error") is not None else None,
+    )
+
+
+def load_intraday_attempts(site_dir: Path, day: dt.date) -> List[Dict[str, Any]]:
+    day_dir = intraday_day_dir(site_dir, day)
+    if not day_dir.exists():
+        return []
+
+    attempts: List[Tuple[dt.datetime, Dict[str, Any]]] = []
+    for path in sorted(day_dir.glob("*.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+
+        collected_at = try_parse_datetime(payload.get("collected_at"))
+        if collected_at is None:
+            continue
+
+        payload["file"] = str(path.relative_to(site_dir))
+        attempts.append((collected_at, payload))
+
+    attempts.sort(key=lambda item: item[0])
+    return [payload for _, payload in attempts]
+
+
+def attempt_to_samples(attempt: Dict[str, Any]) -> Dict[str, List[Sample]]:
+    sources = attempt.get("sources")
+    if not isinstance(sources, dict):
+        return {}
+
+    output: Dict[str, List[Sample]] = {}
+    for source, data in sources.items():
+        if not isinstance(data, dict):
+            continue
+        sample_data = data.get("sample")
+        if not isinstance(sample_data, dict):
+            continue
+        parsed = parse_sample_record(source, sample_data)
+        if parsed is None:
+            continue
+        output[source] = [parsed]
+    return output
+
+
+def in_publication_window(ts: dt.datetime, day: dt.date) -> bool:
+    start = dt.datetime.combine(day, WINDOW_START, tzinfo=UTC)
+    end = dt.datetime.combine(day, WINDOW_END, tzinfo=UTC)
+    return start <= ts <= end
+
+
+def is_daily_valid(daily: Dict[str, Any]) -> bool:
+    computed = daily.get("computed", {})
+    status = computed.get("status")
+    fix = computed.get("fix")
+    withheld = computed.get("withheld")
+    return (
+        status in {"Green", "Amber", "Red"}
+        and withheld is False
+        and isinstance(fix, (int, float))
+        and math.isfinite(float(fix))
+        and float(fix) > 0
+    )
+
+
 def immutable_day_exists(site_dir: Path, day: str) -> bool:
     return (site_dir / "fix" / f"{day}.json").exists() or (site_dir / "fix" / day / "index.html").exists()
 
 
-def run(args: argparse.Namespace) -> int:
-    site_dir = Path(args.site_dir)
-    templates_dir = Path(args.templates_dir)
-    assets_dir = Path(args.assets_dir)
-
-    site_dir.mkdir(parents=True, exist_ok=True)
-    copy_static_assets(assets_dir, site_dir)
-
-    now = utc_now()
-    day = now.date()
-    generated_at = iso_ts(now)
-
-    publish_methodology(site_dir, templates_dir, generated_at)
-    publish_governance(site_dir, templates_dir, generated_at)
-
-    if args.no_new_reference:
-        latest_path = site_dir / "api" / "latest.json"
-        if latest_path.exists():
-            latest = json.loads(latest_path.read_text(encoding="utf-8"))
-            status_title = "OK"
-            status_detail = "Build-only mode: reused existing published data and did not create a new daily reference."
-        else:
-            empty_benchmarks = {
+def build_placeholder_payload(day: dt.date, as_of: str, status: str, reason: str) -> Dict[str, Any]:
+    placeholder_benchmarks = {
+        key: {
+            "label": BENCHMARK_LABELS[key],
+            "benchmark": key,
+            "fix": None,
+            "band": {"p25": None, "p75": None},
+            "dispersion": None,
+            "status": "WITHHOLD",
+            "withheld": True,
+            "withhold_reasons": [reason],
+            "source_medians": {},
+            "source_notes": {},
+            "available": False,
+        }
+        for key in BENCHMARK_LABELS
+    }
+    placeholder_indicators = {
+        key: {
+            "label": INDICATOR_LABELS[key],
+            "value": None,
+            "available": False,
+            "formula": (
+                "((street_rate - nima_rate) / nima_rate) * 100"
+                if key == "street_nima_gap"
+                else "((crypto_usdt_rate - street_rate) / street_rate) * 100"
+            ),
+        }
+        for key in INDICATOR_LABELS
+    }
+    return {
+        "date": iso_date(day),
+        "as_of": as_of,
+        "benchmarks": placeholder_benchmarks,
+        "indicators": placeholder_indicators,
+        "computed": {
+            "fix": None,
+            "band": {"p25": None, "p75": None},
+            "dispersion": None,
+            "status": status,
+            "withheld": True,
+            "withhold_reasons": [reason],
+            "source_medians": {},
+            "benchmarks": {
                 key: {
                     "label": BENCHMARK_LABELS[key],
-                    "benchmark": key,
-                    "fix": None,
-                    "band": {"p25": None, "p75": None},
-                    "dispersion": None,
-                    "status": "WITHHOLD",
-                    "withheld": True,
-                    "withhold_reasons": ["no existing published data"],
-                    "source_medians": {},
-                    "source_notes": {},
-                    "available": False,
-                }
-                for key in BENCHMARK_LABELS
-            }
-            empty_indicators = {
-                key: {
-                    "label": INDICATOR_LABELS[key],
                     "value": None,
                     "available": False,
-                    "formula": (
-                        "((street_rate - nima_rate) / nima_rate) * 100"
-                        if key == "street_nima_gap"
-                        else "((crypto_usdt_rate - street_rate) / street_rate) * 100"
-                    ),
+                    "is_primary": key == PRIMARY_BENCHMARK,
                 }
-                for key in INDICATOR_LABELS
-            }
-            latest = {
-                "date": iso_date(day),
-                "as_of": generated_at,
-                "benchmarks": empty_benchmarks,
-                "indicators": empty_indicators,
-                "computed": {
-                    "fix": None,
-                    "band": {"p25": None, "p75": None},
-                    "dispersion": None,
-                    "status": "CONFIG NEEDED",
-                    "withheld": True,
-                    "withhold_reasons": ["no existing published data"],
-                    "source_medians": {},
-                    "benchmarks": {
-                        key: {
-                            "label": BENCHMARK_LABELS[key],
-                            "value": None,
-                            "available": False,
-                            "is_primary": key == PRIMARY_BENCHMARK,
-                        }
-                        for key in BENCHMARK_LABELS
-                    },
-                    "indicators": empty_indicators,
-                },
-            }
-            status_title = "CONFIG NEEDED"
-            status_detail = "No existing published data found in build-only mode."
+                for key in BENCHMARK_LABELS
+            },
+            "indicators": placeholder_indicators,
+        },
+    }
 
+
+def select_daily_from_intraday(
+    site_dir: Path,
+    day: dt.date,
+    source_configs: List[SourceConfig],
+) -> Optional[Dict[str, Any]]:
+    attempts = load_intraday_attempts(site_dir, day)
+    if not attempts:
+        return None
+
+    candidates: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool]] = []
+    for attempt in attempts:
+        collected_at = try_parse_datetime(attempt.get("collected_at"))
+        if collected_at is None or not in_publication_window(collected_at, day):
+            continue
+        samples = attempt_to_samples(attempt)
+        if not samples:
+            continue
+        daily = summarize_day(samples, source_configs, day)
+        valid = is_daily_valid(daily)
+        candidates.append((collected_at, attempt, daily, valid))
+
+    if not candidates:
+        return None
+
+    candidates.sort(key=lambda item: item[0])
+    latest_attempt = candidates[-1]
+    valid_candidates = [item for item in candidates if item[3]]
+
+    if valid_candidates:
+        selected = valid_candidates[-1]
+        selected_reason = "latest valid intraday attempt in publication window"
+    else:
+        selected = latest_attempt
+        selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
+
+    selected_at, selected_attempt, daily, selected_valid = selected
+    daily["publication_selection"] = {
+        "rule": "latest valid intraday attempt in publication window, else latest attempt",
+        "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
+        "candidate_count": len(candidates),
+        "valid_candidate_count": len(valid_candidates),
+        "selected_collected_at": iso_ts(selected_at),
+        "selected_attempt_file": selected_attempt.get("file"),
+        "selected_valid": selected_valid,
+        "selection_reason": selected_reason,
+    }
+    return daily
+
+
+def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
+    latest_path = site_dir / "api" / "latest.json"
+    if latest_path.exists():
+        latest = json.loads(latest_path.read_text(encoding="utf-8"))
+        status_title = "OK"
+        status_detail = "Build-only mode: reused existing published data and did not create a new daily reference."
+    else:
+        latest = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "no existing published data")
+        status_title = "CONFIG NEEDED"
+        status_detail = "No existing published data found in build-only mode."
+
+    publish_status(
+        site_dir,
+        templates_dir,
+        generated_at,
+        status_title=status_title,
+        status_detail=status_detail,
+        missing=None,
+    )
+    publish_home(site_dir, templates_dir, generated_at, latest)
+    publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
+    publish_series(site_dir)
+    return 0
+
+
+def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir: Path, generated_at: str) -> int:
+    day = utc_now().date()
+    missing = missing_secrets()
+    if missing:
         publish_status(
             site_dir,
             templates_dir,
             generated_at,
-            status_title=status_title,
-            status_detail=status_detail,
+            status_title="CONFIG NEEDED",
+            status_detail="Required API secrets are missing. Intraday collection skipped.",
+            missing=missing,
+        )
+        return 0
+
+    source_configs = build_source_configs()
+    sampled_at = utc_now()
+    samples = collect_one_attempt(
+        source_configs=source_configs,
+        sampled_at=sampled_at,
+        day=day,
+        allow_outside_window=args.allow_outside_window,
+    )
+    summary = summarize_day(samples, source_configs, day)
+    attempt_payload = {
+        "date": iso_date(day),
+        "collected_at": iso_ts(sampled_at),
+        "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
+        "sources": {
+            source: {
+                "sample": serialize_sample(entries[0]) if entries else None,
+            }
+            for source, entries in samples.items()
+        },
+        "computed": summary.get("computed", {}),
+    }
+    path = write_intraday_attempt(site_dir, attempt_payload)
+
+    publish_status(
+        site_dir,
+        templates_dir,
+        generated_at,
+        status_title="OK",
+        status_detail=f"Stored intraday collection attempt at {attempt_payload['collected_at']} UTC in {path.as_posix()}.",
+    )
+    return 0
+
+
+def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
+    day_s = iso_date(day)
+    if immutable_day_exists(site_dir, day_s):
+        publish_status(
+            site_dir,
+            templates_dir,
+            generated_at,
+            status_title="IMMUTABLE",
+            status_detail=f"Reference for {day_s} already exists and was not modified.",
             missing=None,
         )
-        publish_home(site_dir, templates_dir, generated_at, latest)
+        latest_path = site_dir / "api" / "latest.json"
+        if latest_path.exists():
+            latest = json.loads(latest_path.read_text(encoding="utf-8"))
+            publish_home(site_dir, templates_dir, generated_at, latest)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
         publish_series(site_dir)
         return 0
@@ -1260,61 +1531,90 @@ def run(args: argparse.Namespace) -> int:
             status_detail="Required API secrets are missing. No daily rate has been published.",
             missing=missing,
         )
+        placeholder = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "missing secrets")
+        publish_home(site_dir, templates_dir, generated_at, placeholder)
+        publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
+        publish_latest(site_dir, placeholder)
+        publish_series(site_dir)
+        return 0
 
-        placeholder_benchmarks = {
-            key: {
-                "label": BENCHMARK_LABELS[key],
-                "benchmark": key,
-                "fix": None,
-                "band": {"p25": None, "p75": None},
-                "dispersion": None,
-                "status": "WITHHOLD",
-                "withheld": True,
-                "withhold_reasons": ["missing secrets"],
-                "source_medians": {},
-                "source_notes": {},
-                "available": False,
-            }
-            for key in BENCHMARK_LABELS
-        }
-        placeholder_indicators = {
-            key: {
-                "label": INDICATOR_LABELS[key],
-                "value": None,
-                "available": False,
-                "formula": (
-                    "((street_rate - nima_rate) / nima_rate) * 100"
-                    if key == "street_nima_gap"
-                    else "((crypto_usdt_rate - street_rate) / street_rate) * 100"
-                ),
-            }
-            for key in INDICATOR_LABELS
-        }
-        placeholder = {
-            "date": iso_date(day),
-            "as_of": generated_at,
-            "benchmarks": placeholder_benchmarks,
-            "indicators": placeholder_indicators,
-            "computed": {
-                "fix": None,
-                "band": {"p25": None, "p75": None},
-                "dispersion": None,
-                "status": "CONFIG NEEDED",
-                "withheld": True,
-                "withhold_reasons": ["missing secrets"],
-                "source_medians": {},
-                "benchmarks": {
-                    key: {
-                        "label": BENCHMARK_LABELS[key],
-                        "value": None,
-                        "available": False,
-                        "is_primary": key == PRIMARY_BENCHMARK,
-                    }
-                    for key in BENCHMARK_LABELS
-                },
-                "indicators": placeholder_indicators,
-            },
-        }
+    source_configs = build_source_configs()
+    daily = select_daily_from_intraday(site_dir, day, source_configs)
+    if daily is None:
+        placeholder = build_placeholder_payload(
+            day,
+            generated_at,
+            "WITHHOLD",
+            "no intraday samples available in publication window",
+        )
+        publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=placeholder)
+        publish_latest(site_dir, placeholder)
+        publish_series(site_dir)
+        publish_status(
+            site_dir,
+            templates_dir,
+            generated_at=iso_ts(utc_now()),
+            status_title="WITHHOLD",
+            status_detail="No intraday collection attempts found in publication window; published WITHHOLD daily snapshot.",
+        )
+        publish_home(site_dir, templates_dir, generated_at=iso_ts(utc_now()), latest=placeholder)
+        publish_archive(site_dir, templates_dir, generated_at=iso_ts(utc_now()), days=load_existing_days(site_dir))
+        return 0
+
+    publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
+    publish_latest(site_dir, daily)
+    publish_series(site_dir)
+    publish_status(
+        site_dir,
+        templates_dir,
+        generated_at=iso_ts(utc_now()),
+        status_title="OK",
+        status_detail=f"Published {day_s} daily reference from intraday selection at {PUBLISH_AT.strftime('%H:%M')} UTC.",
+    )
+    publish_home(site_dir, templates_dir, generated_at=iso_ts(utc_now()), latest=daily)
+    publish_archive(site_dir, templates_dir, generated_at=iso_ts(utc_now()), days=load_existing_days(site_dir))
+    return 0
+
+
+def run(args: argparse.Namespace) -> int:
+    site_dir = Path(args.site_dir)
+    templates_dir = Path(args.templates_dir)
+    assets_dir = Path(args.assets_dir)
+    sample_times = parse_sample_times(args.sample_times_utc)
+
+    site_dir.mkdir(parents=True, exist_ok=True)
+    copy_static_assets(assets_dir, site_dir)
+
+    now = utc_now()
+    day = now.date()
+    generated_at = iso_ts(now)
+
+    publish_methodology(site_dir, templates_dir, generated_at)
+    publish_governance(site_dir, templates_dir, generated_at)
+
+    if args.no_new_reference:
+        return run_build_only(site_dir, templates_dir, generated_at, day)
+
+    if args.mode == "collect-intraday":
+        return run_collect_intraday(args, site_dir, templates_dir, generated_at)
+
+    if args.mode == "publish-daily":
+        publish_dt = dt.datetime.combine(day, PUBLISH_AT, tzinfo=UTC)
+        should_sleep_until(publish_dt, skip_waits=args.skip_waits)
+        return run_publish_daily(args, site_dir, templates_dir, generated_at, day)
+
+    # Legacy mode: collect sample_times for today and publish at PUBLISH_AT.
+    missing = missing_secrets()
+    if missing:
+        publish_status(
+            site_dir,
+            templates_dir,
+            generated_at,
+            status_title="CONFIG NEEDED",
+            status_detail="Required API secrets are missing. No daily rate has been published.",
+            missing=missing,
+        )
+        placeholder = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "missing secrets")
         publish_home(site_dir, templates_dir, generated_at, placeholder)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
         publish_latest(site_dir, placeholder)
@@ -1348,6 +1648,7 @@ def run(args: argparse.Namespace) -> int:
     samples = collect_samples(
         source_configs,
         day,
+        sample_times=sample_times,
         skip_waits=args.skip_waits,
         allow_outside_window=args.allow_outside_window,
     )
@@ -1356,6 +1657,12 @@ def run(args: argparse.Namespace) -> int:
     should_sleep_until(publish_dt, skip_waits=args.skip_waits)
 
     daily = summarize_day(samples, source_configs, day)
+    daily["publication_selection"] = {
+        "rule": "legacy full-mode collection: summarize all configured sample times for the day",
+        "sample_times_utc": [t.strftime("%H:%M") for t in sample_times],
+        "selected_valid": is_daily_valid(daily),
+        "selection_reason": "legacy mode aggregates all configured collection times",
+    }
     publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
     publish_latest(site_dir, daily)
     publish_series(site_dir)
@@ -1367,7 +1674,6 @@ def run(args: argparse.Namespace) -> int:
         status_title="OK",
         status_detail=f"Published {day_s} reference at scheduled time {PUBLISH_AT.strftime('%H:%M')} UTC.",
     )
-
     publish_home(site_dir, templates_dir, generated_at=iso_ts(utc_now()), latest=daily)
     publish_archive(site_dir, templates_dir, generated_at=iso_ts(utc_now()), days=load_existing_days(site_dir))
     return 0
@@ -1375,9 +1681,20 @@ def run(args: argparse.Namespace) -> int:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="USD/IRR Open Market Reference pipeline")
+    parser.add_argument(
+        "--mode",
+        choices=("full", "collect-intraday", "publish-daily"),
+        default="full",
+        help="Pipeline mode: legacy full collection+publish, intraday collection, or daily publication from intraday data",
+    )
     parser.add_argument("--site-dir", default="site", help="Output directory for static site")
     parser.add_argument("--templates-dir", default="templates", help="Template directory")
     parser.add_argument("--assets-dir", default="assets", help="Static assets copied to /site/assets")
+    parser.add_argument(
+        "--sample-times-utc",
+        default=",".join(DEFAULT_INTRADAY_SAMPLE_TIMES),
+        help="Comma-separated UTC HH:MM collection times used in legacy full mode (example: 13:45,14:00,14:15)",
+    )
     parser.add_argument(
         "--skip-waits",
         action="store_true",

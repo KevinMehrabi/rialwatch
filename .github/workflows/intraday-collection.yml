@@ -1,0 +1,61 @@
+name: Intraday USD/IRR Collection
+
+on:
+  schedule:
+    # Initial cadence around publication window.
+    - cron: "45 13 * * *"
+    - cron: "0 14 * * *"
+    - cron: "15 14 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: intraday-usd-irr-collection
+  cancel-in-progress: false
+
+jobs:
+  collect_intraday:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Collect one intraday attempt
+        env:
+          BONBAST_USERNAME: ${{ secrets.BONBAST_USERNAME }}
+          BONBAST_HASH: ${{ secrets.BONBAST_HASH }}
+          NAVASAN_API_KEY: ${{ secrets.NAVASAN_API_KEY }}
+          ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
+          BONBAST_API_URL: ${{ secrets.BONBAST_API_URL }}
+          NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
+          ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
+        run: |
+          python3 scripts/pipeline.py --mode collect-intraday --site-dir site --templates-dir templates
+
+      - name: Persist intraday snapshots
+        run: |
+          today="$(date -u +%F)"
+          target_dir="site/intraday/${today}"
+
+          if [ ! -d "$target_dir" ]; then
+            echo "No intraday directory for ${today}."
+            exit 0
+          fi
+
+          if [ -z "$(git status --porcelain -- "$target_dir")" ]; then
+            echo "No intraday changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$target_dir"
+          git commit -m "collect: intraday USD/IRR sample ${today} [skip ci]"
+          git push origin main

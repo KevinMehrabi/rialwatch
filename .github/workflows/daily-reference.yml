@@ -5,8 +5,8 @@ on:
     branches:
       - main
   schedule:
-    # Starts at 13:45 UTC, samples through 14:15, publishes at 14:20.
-    - cron: "45 13 * * *"
+    # Publish official daily benchmark at 14:20 UTC from intraday history.
+    - cron: "20 14 * * *"
   workflow_dispatch:
 
 permissions:
@@ -44,7 +44,7 @@ jobs:
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            python3 scripts/pipeline.py --site-dir site --templates-dir templates
+            python3 scripts/pipeline.py --mode publish-daily --site-dir site --templates-dir templates
           else
             python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
           fi
