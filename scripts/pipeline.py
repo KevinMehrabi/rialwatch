@@ -65,7 +65,7 @@ BENCHMARK_SYMBOL_CANDIDATES: Dict[str, Tuple[str, ...]] = {
 # If a strict benchmark has no entry for a source, we intentionally return unavailable.
 CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
     "navasan": {
-        "official": ("mob_usd", "mex_usd_sell", "mex_usd_buy"),
+        "official": ("mob_usd",),
         "regional_transfer": ("usd_shakhs", "usd_sherkat"),
         "crypto_usdt": ("usdt",),
         "emami_gold_coin": ("sekkeh",),

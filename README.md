@@ -49,7 +49,7 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
   - canonical mapping: not yet defined in code (intentionally unavailable)
   - fallback status: heuristic fallback disabled
 - `official`:
-  - canonical mapping: `navasan -> mob_usd` (primary), plus `mex_usd_sell` / `mex_usd_buy` as institutional proxy fields
+  - canonical mapping: `navasan -> mob_usd`
   - fallback status: heuristic fallback disabled
 - `regional_transfer`:
   - canonical mapping: `navasan -> usd_shakhs`, `usd_sherkat`; `alanchand -> usd-hav`
