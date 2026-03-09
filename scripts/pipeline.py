@@ -39,14 +39,19 @@ REQUIRED_SECRETS = (
 
 BENCHMARK_LABELS: Dict[str, str] = {
     "open_market": "Open Market / Street Rate",
-    "nima_rate": "NIMA Rate",
-    "official_rate": "Official Rate",
-    "transfer_hawala": "Transfer / Hawala Rate",
+    "nima": "NIMA Rate",
+    "official": "Official Rate",
+    "regional_transfer": "Regional Transfer Rate",
     "crypto_usdt": "Crypto Dollar (USDT)",
     "emami_gold_coin": "Emami Gold Coin",
 }
 
 PRIMARY_BENCHMARK = "open_market"
+
+INDICATOR_LABELS: Dict[str, str] = {
+    "street_nima_gap": "Street-NIMA Gap",
+    "crypto_premium": "Crypto Premium",
+}
 
 
 @dataclass
@@ -78,10 +83,11 @@ def utc_now() -> dt.datetime:
     return dt.datetime.now(tz=UTC)
 
 
-def parse_number(value: Any) -> Optional[float]:
+def parse_float(value: Any) -> Optional[float]:
     if isinstance(value, (int, float)):
         v = float(value)
-    elif isinstance(value, str):
+        return v if math.isfinite(v) else None
+    if isinstance(value, str):
         cleaned = value.strip().replace(",", "")
         cleaned = cleaned.replace(" ", "")
         if not cleaned:
@@ -89,10 +95,16 @@ def parse_number(value: Any) -> Optional[float]:
         if not re.fullmatch(r"[-+]?\d+(?:\.\d+)?", cleaned):
             return None
         v = float(cleaned)
-    else:
+        return v if math.isfinite(v) else None
+    return None
+
+
+def parse_number(value: Any) -> Optional[float]:
+    v = parse_float(value)
+    if v is None:
         return None
 
-    if not math.isfinite(v) or v <= 0:
+    if v <= 0:
         return None
 
     # Heuristic: some feeds use toman; normalize to rial when values are clearly too low.
@@ -212,7 +224,7 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
                 score -= 1
             if 150_000 <= num <= 2_500_000:
                 score += 2
-        elif benchmark == "nima_rate":
+        elif benchmark == "nima":
             if not has_nima:
                 continue
             if has_usd:
@@ -222,7 +234,7 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
             score += 3
             if 150_000 <= num <= 2_500_000:
                 score += 2
-        elif benchmark == "official_rate":
+        elif benchmark == "official":
             if not has_official:
                 continue
             if has_usd:
@@ -232,7 +244,7 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
             score += 3
             if 10_000 <= num <= 2_500_000:
                 score += 2
-        elif benchmark == "transfer_hawala":
+        elif benchmark == "regional_transfer":
             if not has_transfer:
                 continue
             if has_usd:
@@ -279,17 +291,17 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
 
 def extract_benchmark_values(payload: Any) -> Dict[str, Optional[float]]:
     open_market = extract_benchmark_value(payload, "open_market")
-    nima_rate = extract_benchmark_value(payload, "nima_rate")
-    official_rate = extract_benchmark_value(payload, "official_rate")
-    transfer_hawala = extract_benchmark_value(payload, "transfer_hawala")
+    nima = extract_benchmark_value(payload, "nima")
+    official = extract_benchmark_value(payload, "official")
+    regional_transfer = extract_benchmark_value(payload, "regional_transfer")
     crypto_usdt = extract_benchmark_value(payload, "crypto_usdt")
     emami_gold_coin = extract_benchmark_value(payload, "emami_gold_coin")
 
     return {
         "open_market": open_market,
-        "nima_rate": nima_rate,
-        "official_rate": official_rate,
-        "transfer_hawala": transfer_hawala,
+        "nima": nima,
+        "official": official,
+        "regional_transfer": regional_transfer,
         "crypto_usdt": crypto_usdt,
         "emami_gold_coin": emami_gold_coin,
     }
@@ -375,21 +387,21 @@ def build_source_configs() -> List[SourceConfig]:
             url=env_or_default("BONBAST_API_URL", "https://api.bonbast.com/v1/rates"),
             auth_mode="query_user_hash",
             secret_fields=("BONBAST_USERNAME", "BONBAST_HASH"),
-            benchmark_families=("open_market", "transfer_hawala", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
         ),
         SourceConfig(
             name="navasan",
             url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
             auth_mode="query_api_key",
             secret_fields=("NAVASAN_API_KEY",),
-            benchmark_families=("open_market", "nima_rate", "official_rate", "transfer_hawala", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "nima", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
         ),
         SourceConfig(
             name="alanchand",
             url=env_or_default("ALANCHAND_API_URL", "https://api.alanchand.com/v1/rates"),
             auth_mode="header_api_key",
             secret_fields=("ALANCHAND_API_KEY",),
-            benchmark_families=("open_market", "nima_rate", "official_rate", "transfer_hawala", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "nima", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
         ),
     ]
 
@@ -590,6 +602,39 @@ def compute_benchmark_result(
     }
 
 
+def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    street = benchmark_results.get("open_market", {})
+    nima = benchmark_results.get("nima", {})
+    crypto = benchmark_results.get("crypto_usdt", {})
+
+    street_fix = parse_number(street.get("fix"))
+    nima_fix = parse_number(nima.get("fix"))
+    crypto_fix = parse_number(crypto.get("fix"))
+
+    street_nima_gap: Optional[float] = None
+    if street.get("available") and nima.get("available") and nima_fix not in (None, 0):
+        street_nima_gap = ((street_fix - nima_fix) / nima_fix) * 100 if street_fix is not None else None
+
+    crypto_premium: Optional[float] = None
+    if street.get("available") and crypto.get("available") and street_fix not in (None, 0):
+        crypto_premium = ((crypto_fix - street_fix) / street_fix) * 100 if crypto_fix is not None else None
+
+    return {
+        "street_nima_gap": {
+            "label": INDICATOR_LABELS["street_nima_gap"],
+            "value": street_nima_gap,
+            "available": street_nima_gap is not None,
+            "formula": "((street_rate - nima_rate) / nima_rate) * 100",
+        },
+        "crypto_premium": {
+            "label": INDICATOR_LABELS["crypto_premium"],
+            "value": crypto_premium,
+            "available": crypto_premium is not None,
+            "formula": "((crypto_usdt_rate - street_rate) / street_rate) * 100",
+        },
+    }
+
+
 def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceConfig], day: dt.date) -> Dict[str, Any]:
     benchmark_sources = {cfg.name: cfg.benchmark_families for cfg in source_configs}
 
@@ -616,6 +661,7 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
         }
         for key, result in benchmark_results.items()
     }
+    indicator_results = compute_indicator_results(benchmark_results)
 
     return {
         "date": iso_date(day),
@@ -646,6 +692,7 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
             for source, entries in samples.items()
         },
         "benchmarks": benchmark_results,
+        "indicators": indicator_results,
         "computed": {
             "fix": primary.get("fix"),
             "band": primary.get("band"),
@@ -655,6 +702,7 @@ def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceC
             "withhold_reasons": primary.get("withhold_reasons"),
             "source_medians": primary.get("source_medians"),
             "benchmarks": computed_benchmarks,
+            "indicators": indicator_results,
         },
     }
 
@@ -878,14 +926,43 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         benchmark_map = c.get("benchmarks", {})
     benchmark_map = benchmark_map if isinstance(benchmark_map, dict) else {}
 
-    def benchmark_value_or_unavailable(key: str) -> str:
+    def benchmark_value_number(key: str) -> Optional[float]:
         entry = benchmark_map.get(key, {})
         if not isinstance(entry, dict):
-            return "Unavailable"
+            return None
         value = parse_number(entry.get("value"))
         if value is None:
             value = parse_number(entry.get("fix"))
+        return value
+
+    def benchmark_value_or_unavailable(key: str) -> str:
+        value = benchmark_value_number(key)
         return f"{fmt_rate(value)} IRR" if value is not None else "Unavailable"
+
+    indicator_map = latest.get("indicators", {})
+    if not isinstance(indicator_map, dict):
+        indicator_map = c.get("indicators", {})
+    indicator_map = indicator_map if isinstance(indicator_map, dict) else {}
+
+    if not indicator_map:
+        street = benchmark_value_number("open_market")
+        nima = benchmark_value_number("nima")
+        crypto = benchmark_value_number("crypto_usdt")
+        street_nima_gap = ((street - nima) / nima) * 100 if street is not None and nima not in (None, 0) else None
+        crypto_premium = ((crypto - street) / street) * 100 if crypto is not None and street not in (None, 0) else None
+        indicator_map = {
+            "street_nima_gap": {"value": street_nima_gap},
+            "crypto_premium": {"value": crypto_premium},
+        }
+
+    def indicator_value_or_unavailable(key: str) -> str:
+        entry = indicator_map.get(key, {})
+        if not isinstance(entry, dict):
+            return "Unavailable"
+        value = parse_float(entry.get("value"))
+        if value is None:
+            return "Unavailable"
+        return f"{value:+.1f}%"
 
     html = render_page(
         templates_dir,
@@ -901,11 +978,13 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         status_class=css_class(status),
         withheld="Yes" if withheld else "No",
         reasons=reasons_html,
-        nima_rate_value=benchmark_value_or_unavailable("nima_rate"),
-        official_rate_value=benchmark_value_or_unavailable("official_rate"),
-        transfer_hawala_value=benchmark_value_or_unavailable("transfer_hawala"),
+        nima_value=benchmark_value_or_unavailable("nima"),
+        official_value=benchmark_value_or_unavailable("official"),
+        regional_transfer_value=benchmark_value_or_unavailable("regional_transfer"),
         crypto_usdt_value=benchmark_value_or_unavailable("crypto_usdt"),
         emami_gold_coin_value=benchmark_value_or_unavailable("emami_gold_coin"),
+        street_nima_gap_value=indicator_value_or_unavailable("street_nima_gap"),
+        crypto_premium_value=indicator_value_or_unavailable("crypto_premium"),
     )
     write_text(site_dir / "index.html", html)
 
@@ -1010,10 +1089,24 @@ def run(args: argparse.Namespace) -> int:
                 }
                 for key in BENCHMARK_LABELS
             }
+            empty_indicators = {
+                key: {
+                    "label": INDICATOR_LABELS[key],
+                    "value": None,
+                    "available": False,
+                    "formula": (
+                        "((street_rate - nima_rate) / nima_rate) * 100"
+                        if key == "street_nima_gap"
+                        else "((crypto_usdt_rate - street_rate) / street_rate) * 100"
+                    ),
+                }
+                for key in INDICATOR_LABELS
+            }
             latest = {
                 "date": iso_date(day),
                 "as_of": generated_at,
                 "benchmarks": empty_benchmarks,
+                "indicators": empty_indicators,
                 "computed": {
                     "fix": None,
                     "band": {"p25": None, "p75": None},
@@ -1031,6 +1124,7 @@ def run(args: argparse.Namespace) -> int:
                         }
                         for key in BENCHMARK_LABELS
                     },
+                    "indicators": empty_indicators,
                 },
             }
             status_title = "CONFIG NEEDED"
@@ -1076,10 +1170,24 @@ def run(args: argparse.Namespace) -> int:
             }
             for key in BENCHMARK_LABELS
         }
+        placeholder_indicators = {
+            key: {
+                "label": INDICATOR_LABELS[key],
+                "value": None,
+                "available": False,
+                "formula": (
+                    "((street_rate - nima_rate) / nima_rate) * 100"
+                    if key == "street_nima_gap"
+                    else "((crypto_usdt_rate - street_rate) / street_rate) * 100"
+                ),
+            }
+            for key in INDICATOR_LABELS
+        }
         placeholder = {
             "date": iso_date(day),
             "as_of": generated_at,
             "benchmarks": placeholder_benchmarks,
+            "indicators": placeholder_indicators,
             "computed": {
                 "fix": None,
                 "band": {"p25": None, "p75": None},
@@ -1097,6 +1205,7 @@ def run(args: argparse.Namespace) -> int:
                     }
                     for key in BENCHMARK_LABELS
                 },
+                "indicators": placeholder_indicators,
             },
         }
         publish_home(site_dir, templates_dir, generated_at, placeholder)

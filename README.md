@@ -25,17 +25,21 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 
 - Primary benchmark (flagship): `open_market` (`Open Market / Street Rate`)
 - Supplementary benchmarks:
-  - `nima_rate` (`NIMA Rate`)
-  - `official_rate` (`Official Rate`)
-  - `transfer_hawala` (`Transfer / Hawala Rate`)
+  - `nima` (`NIMA Rate`)
+  - `official` (`Official Rate`)
+  - `regional_transfer` (`Regional Transfer Rate`)
   - `crypto_usdt` (`Crypto Dollar (USDT)`)
   - `emami_gold_coin` (`Emami Gold Coin`)
+- Derived indicators:
+  - `street_nima_gap`
+  - `crypto_premium`
 
 Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
 
 - `computed.fix` for the primary benchmark
 - top-level `benchmarks` with per-benchmark results (`fix`, `band`, `status`, `withheld`, etc.)
 - `computed.benchmarks` lightweight summary for homepage/UI compatibility
+- top-level `indicators` and `computed.indicators` for derived percentage signals
 
 Public historical series (`/api/series.json`) remains strict and primary-only.
 

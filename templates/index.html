@@ -40,11 +40,10 @@
         <div class="card bg-dark text-white w-100 h-100">
           <div class="card-body d-flex flex-column">
             <div>
-              <div class="text-secondary mb-2">SUPPLEMENTARY BENCHMARK</div>
               <div class="fw-semibold mb-1">NIMA Rate</div>
               <div class="text-secondary small mb-2">Semi-official FX platform rate used for importer/exporter settlement.</div>
             </div>
-            <div class="h3 mb-0 mt-auto pt-3">${nima_rate_value}</div>
+            <div class="h3 mb-0 mt-auto pt-3">${nima_value}</div>
           </div>
         </div>
       </div>
@@ -52,11 +51,10 @@
         <div class="card bg-dark text-white w-100 h-100">
           <div class="card-body d-flex flex-column">
             <div>
-              <div class="text-secondary mb-2">SUPPLEMENTARY BENCHMARK</div>
               <div class="fw-semibold mb-1">Official Rate</div>
               <div class="text-secondary small mb-2">Official benchmark exchange rate set by monetary authorities.</div>
             </div>
-            <div class="h3 mb-0 mt-auto pt-3">${official_rate_value}</div>
+            <div class="h3 mb-0 mt-auto pt-3">${official_value}</div>
           </div>
         </div>
       </div>
@@ -64,11 +62,10 @@
         <div class="card bg-dark text-white w-100 h-100">
           <div class="card-body d-flex flex-column">
             <div>
-              <div class="text-secondary mb-2">SUPPLEMENTARY BENCHMARK</div>
-              <div class="fw-semibold mb-1">Transfer / Hawala Rate</div>
-              <div class="text-secondary small mb-2">Informal transfer-market USD/IRR rate used in cross-border settlement.</div>
+              <div class="fw-semibold mb-1">Regional Transfer Rate</div>
+              <div class="text-secondary small mb-2">Regional transfer-channel USD/IRR reading used for cross-border settlement flows.</div>
             </div>
-            <div class="h3 mb-0 mt-auto pt-3">${transfer_hawala_value}</div>
+            <div class="h3 mb-0 mt-auto pt-3">${regional_transfer_value}</div>
           </div>
         </div>
       </div>
@@ -78,11 +75,10 @@
   <div class="col-12">
     <div class="text-secondary mb-2">MARKET SIGNALS</div>
     <div class="row row-cards">
-      <div class="col-md-6 d-flex">
+      <div class="col-md-4 d-flex offset-md-2">
         <div class="card bg-dark text-white w-100 h-100">
           <div class="card-body d-flex flex-column">
             <div>
-              <div class="text-secondary mb-2">SUPPLEMENTARY BENCHMARK</div>
               <div class="fw-semibold mb-1">Crypto Dollar (USDT)</div>
               <div class="text-secondary small mb-2">USDT-implied USD/IRR rate from crypto markets.</div>
             </div>
@@ -90,15 +86,42 @@
           </div>
         </div>
       </div>
-      <div class="col-md-6 d-flex">
+      <div class="col-md-4 d-flex">
         <div class="card bg-dark text-white w-100 h-100">
           <div class="card-body d-flex flex-column">
             <div>
-              <div class="text-secondary mb-2">SUPPLEMENTARY BENCHMARK</div>
               <div class="fw-semibold mb-1">Emami Gold Coin</div>
               <div class="text-secondary small mb-2">IRR price of the standard Iranian gold coin (major inflation signal).</div>
             </div>
             <div class="h3 mb-0 mt-auto pt-3">${emami_gold_coin_value}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="text-secondary mb-2">INDICATORS</div>
+    <div class="row row-cards">
+      <div class="col-md-6 d-flex">
+        <div class="card bg-dark text-white w-100 h-100">
+          <div class="card-body d-flex flex-column">
+            <div>
+              <div class="fw-semibold mb-1">Street-NIMA Gap</div>
+              <div class="text-secondary small mb-2">Percent difference between the Street Rate and NIMA Rate.</div>
+            </div>
+            <div class="h3 mb-0 mt-auto pt-3">${street_nima_gap_value}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 d-flex">
+        <div class="card bg-dark text-white w-100 h-100">
+          <div class="card-body d-flex flex-column">
+            <div>
+              <div class="fw-semibold mb-1">Crypto Premium</div>
+              <div class="text-secondary small mb-2">Percent premium or discount of Crypto Dollar (USDT) relative to Street Rate.</div>
+            </div>
+            <div class="h3 mb-0 mt-auto pt-3">${crypto_premium_value}</div>
           </div>
         </div>
       </div>

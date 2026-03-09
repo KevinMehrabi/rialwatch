@@ -118,20 +118,20 @@
         "available": true,
         "is_primary": true
       },
-      "nima_rate": {
+      "nima": {
         "label": "NIMA Rate",
         "value": null,
         "available": false,
         "is_primary": false
       },
-      "official_rate": {
+      "official": {
         "label": "Official Rate",
         "value": null,
         "available": false,
         "is_primary": false
       },
-      "transfer_hawala": {
-        "label": "Transfer / Hawala Rate",
+      "regional_transfer": {
+        "label": "Regional Transfer Rate",
         "value": null,
         "available": false,
         "is_primary": false
@@ -147,6 +147,20 @@
         "value": null,
         "available": false,
         "is_primary": false
+      }
+    },
+    "indicators": {
+      "street_nima_gap": {
+        "label": "Street-NIMA Gap",
+        "value": null,
+        "available": false,
+        "formula": "((street_rate - nima_rate) / nima_rate) * 100"
+      },
+      "crypto_premium": {
+        "label": "Crypto Premium",
+        "value": null,
+        "available": false,
+        "formula": "((crypto_usdt_rate - street_rate) / street_rate) * 100"
       }
     }
   },
@@ -169,9 +183,9 @@
       "source_notes": {},
       "available": true
     },
-    "nima_rate": {
+    "nima": {
       "label": "NIMA Rate",
-      "benchmark": "nima_rate",
+      "benchmark": "nima",
       "fix": null,
       "band": {
         "p25": null,
@@ -187,9 +201,9 @@
       "source_notes": {},
       "available": false
     },
-    "official_rate": {
+    "official": {
       "label": "Official Rate",
-      "benchmark": "official_rate",
+      "benchmark": "official",
       "fix": null,
       "band": {
         "p25": null,
@@ -205,9 +219,9 @@
       "source_notes": {},
       "available": false
     },
-    "transfer_hawala": {
-      "label": "Transfer / Hawala Rate",
-      "benchmark": "transfer_hawala",
+    "regional_transfer": {
+      "label": "Regional Transfer Rate",
+      "benchmark": "regional_transfer",
       "fix": null,
       "band": {
         "p25": null,
@@ -258,6 +272,20 @@
       "source_medians": {},
       "source_notes": {},
       "available": false
+    }
+  },
+  "indicators": {
+    "street_nima_gap": {
+      "label": "Street-NIMA Gap",
+      "value": null,
+      "available": false,
+      "formula": "((street_rate - nima_rate) / nima_rate) * 100"
+    },
+    "crypto_premium": {
+      "label": "Crypto Premium",
+      "value": null,
+      "available": false,
+      "formula": "((crypto_usdt_rate - street_rate) / street_rate) * 100"
     }
   }
 }
