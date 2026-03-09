@@ -2007,9 +2007,11 @@ def publish_status(
         if not text:
             return ""
         if "no valid in-window samples" in text:
-            return "No recent valid in-window sample."
+            return "No valid benchmark-window sample today."
         if "no valid samples" in text:
             return "No recent valid sample."
+        if "outside observation window" in text:
+            return "Out-of-window observation."
         if "source family not used" in text:
             return "Not currently used for this benchmark."
         return value.strip()
@@ -2091,9 +2093,20 @@ def publish_status(
         latest_sample: Optional[Dict[str, Any]] = None
         latest_sample_ts: Optional[dt.datetime] = None
         last_success_ts: Optional[dt.datetime] = None
-        any_success = False
-        any_valid = False
-        any_error = False
+        any_fetch_success = False
+        any_offline_failure = False
+        any_degraded_failure = False
+        any_parsed_data = False
+
+        def sample_has_parsed_data(sample_obj: Dict[str, Any]) -> bool:
+            if parse_number(sample_obj.get("value")) is not None:
+                return True
+            benchmarks_obj = sample_obj.get("benchmarks")
+            if isinstance(benchmarks_obj, dict):
+                for benchmark_value in benchmarks_obj.values():
+                    if parse_number(benchmark_value) is not None:
+                        return True
+            return False
 
         for sample in samples:
             if not isinstance(sample, dict):
@@ -2105,33 +2118,83 @@ def publish_status(
                 latest_sample_ts = sample_ts
                 latest_sample = sample
 
-            if sample.get("fetch_success") is True:
-                any_success = True
+            has_parsed_data = sample_has_parsed_data(sample)
+            fetch_success = sample.get("fetch_success")
+            failure_reason = sample.get("failure_reason")
+            sample_error = sample.get("error")
+            validation = sample.get("validation_result")
+            validation_failed = isinstance(validation, dict) and validation.get("ok") is False
+
+            if fetch_success is True:
+                any_fetch_success = True
                 if sample_ts is not None and (last_success_ts is None or sample_ts > last_success_ts):
                     last_success_ts = sample_ts
-
-            if sample.get("ok") is True and sample.get("stale") is not True:
-                any_valid = True
-
-            if sample.get("error") or sample.get("failure_reason"):
-                any_error = True
+                if has_parsed_data:
+                    any_parsed_data = True
+                if validation_failed or (isinstance(failure_reason, str) and failure_reason.strip()):
+                    any_degraded_failure = True
+                if not has_parsed_data:
+                    any_degraded_failure = True
+            elif fetch_success is False:
+                any_offline_failure = True
+            elif isinstance(sample_error, str) and sample_error.strip():
+                # Errors with no successful fetch are treated as source offline/unreachable.
+                any_offline_failure = True
 
         source_status = "Unknown"
-        if any_valid:
+        latest_status: Optional[str] = None
+        if latest_sample:
+            latest_has_parsed_data = sample_has_parsed_data(latest_sample)
+            latest_fetch_success = latest_sample.get("fetch_success")
+            latest_failure_reason = latest_sample.get("failure_reason")
+            latest_sample_error = latest_sample.get("error")
+            latest_validation = latest_sample.get("validation_result")
+            latest_validation_failed = isinstance(latest_validation, dict) and latest_validation.get("ok") is False
+            latest_failure_text = isinstance(latest_failure_reason, str) and latest_failure_reason.strip()
+            latest_error_text = isinstance(latest_sample_error, str) and latest_sample_error.strip()
+
+            if latest_fetch_success is True:
+                if latest_has_parsed_data and not latest_validation_failed and not latest_failure_text:
+                    latest_status = "Online"
+                else:
+                    latest_status = "Degraded"
+            elif latest_fetch_success is False:
+                latest_status = "Offline"
+            elif latest_error_text or latest_failure_text:
+                latest_status = "Offline"
+
+        if latest_status:
+            source_status = latest_status
+        elif any_fetch_success and any_parsed_data and not any_degraded_failure:
             source_status = "Online"
-        elif any_success or any_error:
+        elif any_fetch_success:
             source_status = "Degraded"
-        elif samples:
+        elif any_offline_failure or samples:
             source_status = "Offline"
 
         note = humanize_source_note(source_data.get("note"))
+        if source_status == "Offline" and latest_sample:
+            latest_failure_reason = latest_sample.get("failure_reason")
+            latest_sample_error = latest_sample.get("error")
+            has_failure_text = isinstance(latest_failure_reason, str) and latest_failure_reason.strip()
+            has_error_text = isinstance(latest_sample_error, str) and latest_sample_error.strip()
+            if has_failure_text or has_error_text:
+                note = "Source request failed."
+        elif source_status == "Degraded":
+            note = "Source responded, but returned invalid data."
+
+        if not note and latest_sample and latest_sample.get("stale") is True:
+            note = "Out-of-window observation."
         if not note and latest_sample:
             failure_reason = latest_sample.get("failure_reason")
             sample_error = latest_sample.get("error")
-            if isinstance(failure_reason, str) and failure_reason.strip():
-                note = "Feed temporarily degraded."
-            elif isinstance(sample_error, str) and sample_error.strip():
-                note = "Feed temporarily unavailable."
+            if source_status == "Degraded":
+                note = "Source responded, but returned invalid data."
+            elif source_status == "Offline":
+                if isinstance(failure_reason, str) and failure_reason.strip():
+                    note = "Source request failed."
+                elif isinstance(sample_error, str) and sample_error.strip():
+                    note = "Source request failed."
         if not note:
             note = "Collecting normally." if source_status == "Online" else "No additional notes."
 
