@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>USD/IRR Dashboard</title>
+<title>RialWatch — USD/IRR Market Benchmark</title>
 <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -33,7 +33,7 @@
   }
 
   .site-subtitle {
-    color: #94a3b8;
+    color: #cbd5e1;
     font-size: 0.82rem;
     line-height: 1.2;
   }
@@ -42,7 +42,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     padding-top: 8px;
     display: flex;
-    gap: 10px;
+    gap: 16px;
     flex-wrap: wrap;
   }
 
@@ -56,9 +56,10 @@
     color: #ffffff;
   }
 
-  .site-nav .sep {
-    color: rgba(148, 163, 184, 0.6);
-    font-size: 0.88rem;
+  .site-updated {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    line-height: 1.2;
   }
 
   .page-main-title {
@@ -284,18 +285,18 @@
         <div class="site-subtitle">Independent USD/IRR Market Reference</div>
         <div class="site-nav">
           <a href="/">Home</a>
-          <span class="sep">|</span>
           <a href="/methodology/">Methodology</a>
-          <span class="sep">|</span>
           <a href="/status/">Status</a>
         </div>
+        <div class="site-updated">Last update: 2026-03-09T21:58:23Z</div>
       </div>
     </div>
   </header>
   <div class="page-wrapper" style="background:#0b1220; min-height:100vh;">
     <div class="container-xl py-4 dashboard-container">
       <section class="dashboard-section">
-  <h1 class="page-main-title">USD/IRR Open Market Reference</h1>
+  <h1 class="page-main-title">USD/IRR Open Market Benchmark</h1>
+  <p class="text-secondary mb-0 mt-1">Daily published benchmark for Iran open-market USD/IRR price discovery.</p>
 </section>
 
 <section class="dashboard-section">
@@ -306,7 +307,7 @@
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
           <div class="h1 mb-1">1,664,000 IRR</div>
-          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T21:55:05Z</div>
+          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T21:58:23Z</div>
           <div class="text-secondary small mt-1">Observed sample: 20:42 UTC (intraday window)</div>
           
         </div>
@@ -618,7 +619,7 @@ async function loadSeries() {
 loadSeries();
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-09T21:55:05Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-09T21:58:23Z</div>
     </div>
   </div>
 </div>
