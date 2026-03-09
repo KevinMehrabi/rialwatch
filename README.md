@@ -26,6 +26,8 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - Primary benchmark (flagship): `open_market` (`Open Market / Street Rate`)
 - Supplementary benchmarks:
   - `nima_rate` (`NIMA Rate`)
+  - `official_rate` (`Official Rate`)
+  - `transfer_hawala` (`Transfer / Hawala Rate`)
   - `crypto_usdt` (`Crypto Dollar (USDT)`)
   - `emami_gold_coin` (`Emami Gold Coin`)
 

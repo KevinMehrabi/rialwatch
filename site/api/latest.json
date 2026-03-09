@@ -124,6 +124,18 @@
         "available": false,
         "is_primary": false
       },
+      "official_rate": {
+        "label": "Official Rate",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      },
+      "transfer_hawala": {
+        "label": "Transfer / Hawala Rate",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      },
       "crypto_usdt": {
         "label": "Crypto Dollar (USDT)",
         "value": null,
@@ -160,6 +172,42 @@
     "nima_rate": {
       "label": "NIMA Rate",
       "benchmark": "nima_rate",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "not available in historical snapshot migration"
+      ],
+      "source_medians": {},
+      "source_notes": {},
+      "available": false
+    },
+    "official_rate": {
+      "label": "Official Rate",
+      "benchmark": "official_rate",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "not available in historical snapshot migration"
+      ],
+      "source_medians": {},
+      "source_notes": {},
+      "available": false
+    },
+    "transfer_hawala": {
+      "label": "Transfer / Hawala Rate",
+      "benchmark": "transfer_hawala",
       "fix": null,
       "band": {
         "p25": null,

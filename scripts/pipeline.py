@@ -40,12 +40,13 @@ REQUIRED_SECRETS = (
 BENCHMARK_LABELS: Dict[str, str] = {
     "open_market": "Open Market / Street Rate",
     "nima_rate": "NIMA Rate",
+    "official_rate": "Official Rate",
+    "transfer_hawala": "Transfer / Hawala Rate",
     "crypto_usdt": "Crypto Dollar (USDT)",
     "emami_gold_coin": "Emami Gold Coin",
 }
 
 PRIMARY_BENCHMARK = "open_market"
-SUPPLEMENTARY_BENCHMARKS = ("nima_rate", "crypto_usdt", "emami_gold_coin")
 
 
 @dataclass
@@ -194,6 +195,8 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
         has_usdt = any(tok in path_l for tok in ("usdt", "tether"))
         has_emami = any(tok in path_l for tok in ("emami", "sekke", "coin"))
         has_gold = any(tok in path_l for tok in ("gold", "tala"))
+        has_official = any(tok in path_l for tok in ("official", "bank", "cbi", "gov", "government"))
+        has_transfer = any(tok in path_l for tok in ("transfer", "hawala", "remit", "remittance"))
         has_price = "price" in path_l or path_l.endswith(".value")
 
         if benchmark == "open_market":
@@ -211,6 +214,26 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
                 score += 2
         elif benchmark == "nima_rate":
             if not has_nima:
+                continue
+            if has_usd:
+                score += 4
+            if has_irr:
+                score += 4
+            score += 3
+            if 150_000 <= num <= 2_500_000:
+                score += 2
+        elif benchmark == "official_rate":
+            if not has_official:
+                continue
+            if has_usd:
+                score += 4
+            if has_irr:
+                score += 4
+            score += 3
+            if 10_000 <= num <= 2_500_000:
+                score += 2
+        elif benchmark == "transfer_hawala":
+            if not has_transfer:
                 continue
             if has_usd:
                 score += 4
@@ -257,12 +280,16 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
 def extract_benchmark_values(payload: Any) -> Dict[str, Optional[float]]:
     open_market = extract_benchmark_value(payload, "open_market")
     nima_rate = extract_benchmark_value(payload, "nima_rate")
+    official_rate = extract_benchmark_value(payload, "official_rate")
+    transfer_hawala = extract_benchmark_value(payload, "transfer_hawala")
     crypto_usdt = extract_benchmark_value(payload, "crypto_usdt")
     emami_gold_coin = extract_benchmark_value(payload, "emami_gold_coin")
 
     return {
         "open_market": open_market,
         "nima_rate": nima_rate,
+        "official_rate": official_rate,
+        "transfer_hawala": transfer_hawala,
         "crypto_usdt": crypto_usdt,
         "emami_gold_coin": emami_gold_coin,
     }
@@ -348,21 +375,21 @@ def build_source_configs() -> List[SourceConfig]:
             url=env_or_default("BONBAST_API_URL", "https://api.bonbast.com/v1/rates"),
             auth_mode="query_user_hash",
             secret_fields=("BONBAST_USERNAME", "BONBAST_HASH"),
-            benchmark_families=("open_market", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "transfer_hawala", "crypto_usdt", "emami_gold_coin"),
         ),
         SourceConfig(
             name="navasan",
             url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
             auth_mode="query_api_key",
             secret_fields=("NAVASAN_API_KEY",),
-            benchmark_families=("open_market", "nima_rate", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "nima_rate", "official_rate", "transfer_hawala", "crypto_usdt", "emami_gold_coin"),
         ),
         SourceConfig(
             name="alanchand",
             url=env_or_default("ALANCHAND_API_URL", "https://api.alanchand.com/v1/rates"),
             auth_mode="header_api_key",
             secret_fields=("ALANCHAND_API_KEY",),
-            benchmark_families=("open_market", "nima_rate", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "nima_rate", "official_rate", "transfer_hawala", "crypto_usdt", "emami_gold_coin"),
         ),
     ]
 
@@ -875,6 +902,8 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         withheld="Yes" if withheld else "No",
         reasons=reasons_html,
         nima_rate_value=benchmark_value_or_unavailable("nima_rate"),
+        official_rate_value=benchmark_value_or_unavailable("official_rate"),
+        transfer_hawala_value=benchmark_value_or_unavailable("transfer_hawala"),
         crypto_usdt_value=benchmark_value_or_unavailable("crypto_usdt"),
         emami_gold_coin_value=benchmark_value_or_unavailable("emami_gold_coin"),
     )
