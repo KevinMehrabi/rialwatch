@@ -25,9 +25,9 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 
 - Primary benchmark (flagship): `open_market` (`Open Market / Street Rate`)
 - Supplementary benchmarks:
-  - `retail_sell` (`Retail Seller Rate`)
-  - `retail_buy` (`Retail Buyer Rate`)
-  - `retail_mid` (`Retail Mid-Market Composite`)
+  - `nima_rate` (`NIMA Rate`)
+  - `crypto_usdt` (`Crypto Dollar (USDT)`)
+  - `emami_gold_coin` (`Emami Gold Coin`)
 
 Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
 

@@ -118,20 +118,20 @@
         "available": true,
         "is_primary": true
       },
-      "retail_sell": {
-        "label": "Retail Seller Rate",
+      "nima_rate": {
+        "label": "NIMA Rate",
         "value": null,
         "available": false,
         "is_primary": false
       },
-      "retail_buy": {
-        "label": "Retail Buyer Rate",
+      "crypto_usdt": {
+        "label": "Crypto Dollar (USDT)",
         "value": null,
         "available": false,
         "is_primary": false
       },
-      "retail_mid": {
-        "label": "Retail Mid-Market Composite",
+      "emami_gold_coin": {
+        "label": "Emami Gold Coin",
         "value": null,
         "available": false,
         "is_primary": false
@@ -157,9 +157,9 @@
       "source_notes": {},
       "available": true
     },
-    "retail_sell": {
-      "label": "Retail Seller Rate",
-      "benchmark": "retail_sell",
+    "nima_rate": {
+      "label": "NIMA Rate",
+      "benchmark": "nima_rate",
       "fix": null,
       "band": {
         "p25": null,
@@ -175,9 +175,9 @@
       "source_notes": {},
       "available": false
     },
-    "retail_buy": {
-      "label": "Retail Buyer Rate",
-      "benchmark": "retail_buy",
+    "crypto_usdt": {
+      "label": "Crypto Dollar (USDT)",
+      "benchmark": "crypto_usdt",
       "fix": null,
       "band": {
         "p25": null,
@@ -193,9 +193,9 @@
       "source_notes": {},
       "available": false
     },
-    "retail_mid": {
-      "label": "Retail Mid-Market Composite",
-      "benchmark": "retail_mid",
+    "emami_gold_coin": {
+      "label": "Emami Gold Coin",
+      "benchmark": "emami_gold_coin",
       "fix": null,
       "band": {
         "p25": null,

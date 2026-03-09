@@ -39,13 +39,13 @@ REQUIRED_SECRETS = (
 
 BENCHMARK_LABELS: Dict[str, str] = {
     "open_market": "Open Market / Street Rate",
-    "retail_sell": "Retail Seller Rate",
-    "retail_buy": "Retail Buyer Rate",
-    "retail_mid": "Retail Mid-Market Composite",
+    "nima_rate": "NIMA Rate",
+    "crypto_usdt": "Crypto Dollar (USDT)",
+    "emami_gold_coin": "Emami Gold Coin",
 }
 
 PRIMARY_BENCHMARK = "open_market"
-SUPPLEMENTARY_BENCHMARKS = ("retail_sell", "retail_buy", "retail_mid")
+SUPPLEMENTARY_BENCHMARKS = ("nima_rate", "crypto_usdt", "emami_gold_coin")
 
 
 @dataclass
@@ -174,7 +174,7 @@ def extract_quote_time(payload: Any) -> Optional[dt.datetime]:
     return scored[0][1]
 
 
-def extract_usd_irr_for_benchmark(payload: Any, benchmark: str) -> Optional[float]:
+def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
     candidates = flatten_json(payload)
     ranked: List[Tuple[int, float]] = []
 
@@ -185,38 +185,64 @@ def extract_usd_irr_for_benchmark(payload: Any, benchmark: str) -> Optional[floa
             continue
 
         score = 0
-        if "usd" in path_l:
-            score += 4
-        if "irr" in path_l or "rial" in path_l:
-            score += 4
+        has_usd = "usd" in path_l
+        has_irr = "irr" in path_l or "rial" in path_l
         has_sell = any(tok in path_l for tok in ("sell", "seller", "offer"))
         has_buy = any(tok in path_l for tok in ("buy", "buyer", "bid"))
         has_open = any(tok in path_l for tok in ("open", "market", "street", "free", "azad"))
+        has_nima = "nima" in path_l
+        has_usdt = any(tok in path_l for tok in ("usdt", "tether"))
+        has_emami = any(tok in path_l for tok in ("emami", "sekke", "coin"))
+        has_gold = any(tok in path_l for tok in ("gold", "tala"))
+        has_price = "price" in path_l or path_l.endswith(".value")
 
         if benchmark == "open_market":
+            if has_usd:
+                score += 4
+            if has_irr:
+                score += 4
             if has_open:
                 score += 3
             if has_sell:
                 score += 1
             if has_buy:
                 score -= 1
-        elif benchmark == "retail_sell":
-            if not has_sell:
+            if 150_000 <= num <= 2_500_000:
+                score += 2
+        elif benchmark == "nima_rate":
+            if not has_nima:
                 continue
+            if has_usd:
+                score += 4
+            if has_irr:
+                score += 4
             score += 3
-            if has_buy:
-                score -= 2
-        elif benchmark == "retail_buy":
-            if not has_buy:
+            if 150_000 <= num <= 2_500_000:
+                score += 2
+        elif benchmark == "crypto_usdt":
+            if not has_usdt:
                 continue
-            score += 3
-            if has_sell:
-                score -= 2
+            score += 5
+            if has_irr:
+                score += 3
+            if has_usd:
+                score += 1
+            if 150_000 <= num <= 2_500_000:
+                score += 2
+        elif benchmark == "emami_gold_coin":
+            if not (has_emami or has_gold):
+                continue
+            if has_emami:
+                score += 4
+            if has_gold:
+                score += 2
+            if 5_000_000 <= num <= 20_000_000_000:
+                score += 2
+        else:
+            continue
 
-        if "price" in path_l or path_l.endswith(".value"):
+        if has_price:
             score += 1
-        if 150_000 <= num <= 2_500_000:
-            score += 2
 
         if score >= 4:
             ranked.append((score, num))
@@ -229,19 +255,16 @@ def extract_usd_irr_for_benchmark(payload: Any, benchmark: str) -> Optional[floa
 
 
 def extract_benchmark_values(payload: Any) -> Dict[str, Optional[float]]:
-    open_market = extract_usd_irr_for_benchmark(payload, "open_market")
-    seller = extract_usd_irr_for_benchmark(payload, "retail_sell")
-    buyer = extract_usd_irr_for_benchmark(payload, "retail_buy")
-
-    mid: Optional[float] = None
-    if seller is not None and buyer is not None:
-        mid = (seller + buyer) / 2.0
+    open_market = extract_benchmark_value(payload, "open_market")
+    nima_rate = extract_benchmark_value(payload, "nima_rate")
+    crypto_usdt = extract_benchmark_value(payload, "crypto_usdt")
+    emami_gold_coin = extract_benchmark_value(payload, "emami_gold_coin")
 
     return {
         "open_market": open_market,
-        "retail_sell": seller,
-        "retail_buy": buyer,
-        "retail_mid": mid,
+        "nima_rate": nima_rate,
+        "crypto_usdt": crypto_usdt,
+        "emami_gold_coin": emami_gold_coin,
     }
 
 
@@ -325,21 +348,21 @@ def build_source_configs() -> List[SourceConfig]:
             url=env_or_default("BONBAST_API_URL", "https://api.bonbast.com/v1/rates"),
             auth_mode="query_user_hash",
             secret_fields=("BONBAST_USERNAME", "BONBAST_HASH"),
-            benchmark_families=("open_market", "retail_sell", "retail_buy"),
+            benchmark_families=("open_market", "crypto_usdt", "emami_gold_coin"),
         ),
         SourceConfig(
             name="navasan",
             url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
             auth_mode="query_api_key",
             secret_fields=("NAVASAN_API_KEY",),
-            benchmark_families=("open_market",),
+            benchmark_families=("open_market", "nima_rate", "crypto_usdt", "emami_gold_coin"),
         ),
         SourceConfig(
             name="alanchand",
             url=env_or_default("ALANCHAND_API_URL", "https://api.alanchand.com/v1/rates"),
             auth_mode="header_api_key",
             secret_fields=("ALANCHAND_API_KEY",),
-            benchmark_families=("open_market", "retail_sell", "retail_buy"),
+            benchmark_families=("open_market", "nima_rate", "crypto_usdt", "emami_gold_coin"),
         ),
     ]
 
@@ -540,65 +563,12 @@ def compute_benchmark_result(
     }
 
 
-def compute_retail_mid(benchmarks: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
-    sell = benchmarks.get("retail_sell", {})
-    buy = benchmarks.get("retail_buy", {})
-    sell_fix = parse_number(sell.get("fix"))
-    buy_fix = parse_number(buy.get("fix"))
-
-    if not (sell.get("available") and buy.get("available") and sell_fix is not None and buy_fix is not None):
-        return {
-            "label": BENCHMARK_LABELS["retail_mid"],
-            "benchmark": "retail_mid",
-            "fix": None,
-            "band": {"p25": None, "p75": None},
-            "dispersion": None,
-            "status": "WITHHOLD",
-            "withheld": True,
-            "withhold_reasons": ["requires valid retail_sell and retail_buy benchmarks"],
-            "source_medians": {},
-            "source_notes": {},
-            "available": False,
-        }
-
-    values = [sell_fix, buy_fix]
-    fix_value = median(values)
-    p25 = percentile(values, 0.25)
-    p75 = percentile(values, 0.75)
-    dispersion = (p75 - p25) / fix_value if fix_value else None
-    withheld = dispersion is not None and dispersion > 0.05
-    reasons = ["dispersion > 5%"] if withheld else []
-    status = "WITHHOLD"
-    if not withheld and dispersion is not None:
-        if dispersion <= 0.015:
-            status = "Green"
-        elif dispersion <= 0.035:
-            status = "Amber"
-        elif dispersion <= 0.05:
-            status = "Red"
-
-    return {
-        "label": BENCHMARK_LABELS["retail_mid"],
-        "benchmark": "retail_mid",
-        "fix": fix_value,
-        "band": {"p25": p25, "p75": p75},
-        "dispersion": dispersion,
-        "status": status,
-        "withheld": withheld,
-        "withhold_reasons": reasons,
-        "source_medians": {"retail_sell": sell_fix, "retail_buy": buy_fix},
-        "source_notes": {},
-        "available": (fix_value is not None and not withheld),
-    }
-
-
 def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceConfig], day: dt.date) -> Dict[str, Any]:
     benchmark_sources = {cfg.name: cfg.benchmark_families for cfg in source_configs}
 
     benchmark_results: Dict[str, Dict[str, Any]] = {}
-    for key in ("open_market", "retail_sell", "retail_buy"):
+    for key in BENCHMARK_LABELS:
         benchmark_results[key] = compute_benchmark_result(samples, key, benchmark_sources)
-    benchmark_results["retail_mid"] = compute_retail_mid(benchmark_results)
 
     primary = benchmark_results[PRIMARY_BENCHMARK]
 
@@ -886,6 +856,8 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         if not isinstance(entry, dict):
             return "Unavailable"
         value = parse_number(entry.get("value"))
+        if value is None:
+            value = parse_number(entry.get("fix"))
         return f"{fmt_rate(value)} IRR" if value is not None else "Unavailable"
 
     html = render_page(
@@ -902,9 +874,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         status_class=css_class(status),
         withheld="Yes" if withheld else "No",
         reasons=reasons_html,
-        retail_seller_value=benchmark_value_or_unavailable("retail_sell"),
-        retail_buyer_value=benchmark_value_or_unavailable("retail_buy"),
-        retail_mid_value=benchmark_value_or_unavailable("retail_mid"),
+        nima_rate_value=benchmark_value_or_unavailable("nima_rate"),
+        crypto_usdt_value=benchmark_value_or_unavailable("crypto_usdt"),
+        emami_gold_coin_value=benchmark_value_or_unavailable("emami_gold_coin"),
     )
     write_text(site_dir / "index.html", html)
 
