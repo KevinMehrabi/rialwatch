@@ -71,7 +71,8 @@ BENCHMARK_SYMBOL_CANDIDATES: Dict[str, Tuple[str, ...]] = {
 # If a strict benchmark has no entry for a source, we intentionally return unavailable.
 CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
     "navasan": {
-        "official": ("mob_usd",),
+        # Commercial managed-market sell quote.
+        "official": ("mex_usd_sell",),
         "regional_transfer": ("usd_shakhs", "usd_sherkat"),
         "crypto_usdt": ("usdt",),
         "emami_gold_coin": ("sekkeh",),
@@ -88,8 +89,9 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
 }
 
 # Navasan exposes mixed-unit channels in a single payload:
-# - street/transfer/crypto/coin rates in toman
-# - mob_usd (exchange-center managed benchmark) in rial
+# - street/transfer/crypto rates in toman
+# - exchange-center commercial sell quote (mex_usd_sell) in rial
+# - coin prices are published in toman in some payloads and rial in others; keep conservative toman default.
 NAVASAN_BENCHMARK_UNITS: Dict[str, str] = {
     "open_market": "toman",
     "official": "rial",
