@@ -16,17 +16,13 @@
           ${primary_reason_html}
         </div>
         <div class="row mt-auto pt-4">
-          <div class="col-4">
+          <div class="col-6">
             <div class="text-secondary">Band (P25-P75)</div>
             <div>${p25} - ${p75}</div>
           </div>
-          <div class="col-4">
-            <div class="text-secondary">Status</div>
-            <div>${status}</div>
-          </div>
-          <div class="col-4">
-            <div class="text-secondary">Withheld</div>
-            <div>${withheld}</div>
+          <div class="col-6">
+            <div class="text-secondary">Publication</div>
+            <div>${publication_state}</div>
           </div>
         </div>
       </div>
@@ -106,11 +102,7 @@
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="panel-meta-row">
-            <span class="meta-pill">${official_change_24h}</span>
-            <span class="meta-pill">${official_as_of}</span>
-            <span class="meta-pill">${official_source_badge}</span>
-          </div>
+          <div class="text-secondary small">${official_as_of}</div>
           <div class="panel-sparkline mt-2">${official_sparkline}</div>
         </div>
       </div>
@@ -128,11 +120,7 @@
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="panel-meta-row">
-            <span class="meta-pill">${regional_transfer_change_24h}</span>
-            <span class="meta-pill">${regional_transfer_as_of}</span>
-            <span class="meta-pill">${regional_transfer_source_badge}</span>
-          </div>
+          <div class="text-secondary small">${regional_transfer_as_of}</div>
           <div class="panel-sparkline mt-2">${regional_transfer_sparkline}</div>
         </div>
       </div>
@@ -156,11 +144,7 @@
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="panel-meta-row">
-            <span class="meta-pill">${crypto_usdt_change_24h}</span>
-            <span class="meta-pill">${crypto_usdt_as_of}</span>
-            <span class="meta-pill">${crypto_usdt_source_badge}</span>
-          </div>
+          <div class="text-secondary small">${crypto_usdt_as_of}</div>
           <div class="panel-sparkline mt-2">${crypto_usdt_sparkline}</div>
         </div>
       </div>
@@ -178,11 +162,7 @@
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="panel-meta-row">
-            <span class="meta-pill">${emami_gold_coin_change_24h}</span>
-            <span class="meta-pill">${emami_gold_coin_as_of}</span>
-            <span class="meta-pill">${emami_gold_coin_source_badge}</span>
-          </div>
+          <div class="text-secondary small">${emami_gold_coin_as_of}</div>
           <div class="panel-sparkline mt-2">${emami_gold_coin_sparkline}</div>
         </div>
       </div>
@@ -204,7 +184,7 @@
               <tr>
                 <th>Date</th>
                 <th>Fix</th>
-                <th>Status</th>
+                <th>Publication</th>
               </tr>
             </thead>
             <tbody id="recent-days">
@@ -272,7 +252,7 @@ async function loadSeries() {
       <tr>
         <td>${r.date}</td>
         <td>${r.fixNum}</td>
-        <td>${r.status}</td>
+        <td>Published</td>
       </tr>
     `).join('');
     if (summary) {
