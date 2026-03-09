@@ -63,6 +63,75 @@
     height: 100%;
   }
 
+  .panel-top .fw-semibold {
+    line-height: 1.2;
+  }
+
+  .panel-middle {
+    margin-top: 14px;
+  }
+
+  .value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .value-row .panel-value {
+    font-size: 1.6rem;
+    line-height: 1.1;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .value-row .unit-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    letter-spacing: 0.01em;
+  }
+
+  .panel-bottom {
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+    margin-top: auto;
+    padding-top: 10px;
+  }
+
+  .panel-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    line-height: 1.2;
+  }
+
+  .meta-pill {
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    border-radius: 999px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+
+  .panel-sparkline {
+    min-height: 22px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
+  .sparkline-svg {
+    display: block;
+    width: 100%;
+    height: 20px;
+  }
+
+  .indicator-note {
+    margin-top: auto;
+    padding-top: 10px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+
   .dashboard-title {
     margin-bottom: 10px;
   }
@@ -118,7 +187,7 @@
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
           <div class="h1 mb-1">1,664,000 IRR</div>
-          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T21:30:04Z</div>
+          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T21:37:47Z</div>
           <div class="text-secondary small mt-1">Observed sample: 20:42 UTC (intraday window)</div>
           
         </div>
@@ -158,6 +227,7 @@
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Official Commercial USD/IRR.</div>
         </div>
         <div class="h3 mb-0 mt-auto pt-3">+25.6%</div>
+        <div class="indicator-note">Premium to official market</div>
       </div>
     </div>
 
@@ -168,6 +238,7 @@
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Regional Transfer USD/IRR.</div>
         </div>
         <div class="h3 mb-0 mt-auto pt-3">-1.9%</div>
+        <div class="indicator-note">Premium/discount to transfer market</div>
       </div>
     </div>
 
@@ -178,6 +249,7 @@
           <div class="text-secondary small mb-2">Percent difference between crypto USDT-implied USD/IRR and Street USD/IRR.</div>
         </div>
         <div class="h3 mb-0 mt-auto pt-3">-10.3%</div>
+        <div class="indicator-note">Premium/discount to crypto market</div>
       </div>
     </div>
 
@@ -188,6 +260,7 @@
           <div class="text-secondary small mb-2">7-day percent change in Official Commercial USD/IRR.</div>
         </div>
         <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
+        <div class="indicator-note">Insufficient history</div>
       </div>
     </div>
   </div>
@@ -198,20 +271,46 @@
   <div class="readings-grid">
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
-        <div>
+        <div class="panel-top">
           <div class="fw-semibold mb-1">Official Commercial USD Rate</div>
           <div class="text-secondary small mb-2">Iran Exchange Center USD remittance sell rate.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">1,325,072 IRR</div>
+        <div class="panel-middle">
+          <div class="value-row">
+            <div class="panel-value">1,325,072</div>
+            <div class="unit-label">IRR per USD</div>
+          </div>
+        </div>
+        <div class="panel-bottom">
+          <div class="panel-meta-row">
+            <span class="meta-pill">No 24h delta yet</span>
+            <span class="meta-pill">As of 20:42 UTC</span>
+            <span class="meta-pill">Source: navasan</span>
+          </div>
+          <div class="panel-sparkline mt-2">No 7d sparkline yet</div>
+        </div>
       </div>
     </div>
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
-        <div>
+        <div class="panel-top">
           <div class="fw-semibold mb-1">Regional Transfer Rate</div>
           <div class="text-secondary small mb-2">Regional transfer-channel USD/IRR reading for cross-border settlement.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">1,697,000 IRR</div>
+        <div class="panel-middle">
+          <div class="value-row">
+            <div class="panel-value">1,697,000</div>
+            <div class="unit-label">IRR per USD</div>
+          </div>
+        </div>
+        <div class="panel-bottom">
+          <div class="panel-meta-row">
+            <span class="meta-pill">No 24h delta yet</span>
+            <span class="meta-pill">As of 20:42 UTC</span>
+            <span class="meta-pill">Source: navasan</span>
+          </div>
+          <div class="panel-sparkline mt-2">No 7d sparkline yet</div>
+        </div>
       </div>
     </div>
   </div>
@@ -222,20 +321,46 @@
   <div class="signals-grid">
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
-        <div>
+        <div class="panel-top">
           <div class="fw-semibold mb-1">Crypto Dollar (USDT)</div>
           <div class="text-secondary small mb-2">USDT-implied USD/IRR from crypto markets.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">1,493,000 IRR</div>
+        <div class="panel-middle">
+          <div class="value-row">
+            <div class="panel-value">1,493,000</div>
+            <div class="unit-label">IRR per USD</div>
+          </div>
+        </div>
+        <div class="panel-bottom">
+          <div class="panel-meta-row">
+            <span class="meta-pill">No 24h delta yet</span>
+            <span class="meta-pill">As of 20:42 UTC</span>
+            <span class="meta-pill">Source: navasan</span>
+          </div>
+          <div class="panel-sparkline mt-2">No 7d sparkline yet</div>
+        </div>
       </div>
     </div>
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
-        <div>
+        <div class="panel-top">
           <div class="fw-semibold mb-1">Emami Gold Coin</div>
           <div class="text-secondary small mb-2">IRR price of the standard Iranian gold coin.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">2,095,000,000 IRR</div>
+        <div class="panel-middle">
+          <div class="value-row">
+            <div class="panel-value">2,095,000,000</div>
+            <div class="unit-label">IRR per coin</div>
+          </div>
+        </div>
+        <div class="panel-bottom">
+          <div class="panel-meta-row">
+            <span class="meta-pill">No 24h delta yet</span>
+            <span class="meta-pill">As of 20:42 UTC</span>
+            <span class="meta-pill">Source: bonbast, navasan</span>
+          </div>
+          <div class="panel-sparkline mt-2">No 7d sparkline yet</div>
+        </div>
       </div>
     </div>
   </div>
@@ -359,7 +484,7 @@ async function loadSeries() {
 loadSeries();
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-09T21:30:04Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-09T21:37:47Z</div>
     </div>
   </div>
 </div>

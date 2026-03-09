@@ -46,6 +46,7 @@
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Official Commercial USD/IRR.</div>
         </div>
         <div class="h3 mb-0 mt-auto pt-3">${street_official_gap_value}</div>
+        <div class="indicator-note">${street_official_gap_note}</div>
       </div>
     </div>
 
@@ -56,6 +57,7 @@
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Regional Transfer USD/IRR.</div>
         </div>
         <div class="h3 mb-0 mt-auto pt-3">${street_transfer_gap_value}</div>
+        <div class="indicator-note">${street_transfer_gap_note}</div>
       </div>
     </div>
 
@@ -66,6 +68,7 @@
           <div class="text-secondary small mb-2">Percent difference between crypto USDT-implied USD/IRR and Street USD/IRR.</div>
         </div>
         <div class="h3 mb-0 mt-auto pt-3">${street_crypto_gap_value}</div>
+        <div class="indicator-note">${street_crypto_gap_note}</div>
       </div>
     </div>
 
@@ -76,6 +79,7 @@
           <div class="text-secondary small mb-2">7-day percent change in Official Commercial USD/IRR.</div>
         </div>
         <div class="h3 mb-0 mt-auto pt-3">${official_trend_7d_value}</div>
+        <div class="indicator-note">${official_trend_7d_note}</div>
       </div>
     </div>
   </div>
@@ -86,20 +90,46 @@
   <div class="readings-grid">
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
-        <div>
+        <div class="panel-top">
           <div class="fw-semibold mb-1">Official Commercial USD Rate</div>
           <div class="text-secondary small mb-2">Iran Exchange Center USD remittance sell rate.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">${official_value}</div>
+        <div class="panel-middle">
+          <div class="value-row">
+            <div class="panel-value">${official_value_main}</div>
+            <div class="unit-label">IRR per USD</div>
+          </div>
+        </div>
+        <div class="panel-bottom">
+          <div class="panel-meta-row">
+            <span class="meta-pill">${official_change_24h}</span>
+            <span class="meta-pill">${official_as_of}</span>
+            <span class="meta-pill">${official_source_badge}</span>
+          </div>
+          <div class="panel-sparkline mt-2">${official_sparkline}</div>
+        </div>
       </div>
     </div>
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
-        <div>
+        <div class="panel-top">
           <div class="fw-semibold mb-1">Regional Transfer Rate</div>
           <div class="text-secondary small mb-2">Regional transfer-channel USD/IRR reading for cross-border settlement.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">${regional_transfer_value}</div>
+        <div class="panel-middle">
+          <div class="value-row">
+            <div class="panel-value">${regional_transfer_value_main}</div>
+            <div class="unit-label">IRR per USD</div>
+          </div>
+        </div>
+        <div class="panel-bottom">
+          <div class="panel-meta-row">
+            <span class="meta-pill">${regional_transfer_change_24h}</span>
+            <span class="meta-pill">${regional_transfer_as_of}</span>
+            <span class="meta-pill">${regional_transfer_source_badge}</span>
+          </div>
+          <div class="panel-sparkline mt-2">${regional_transfer_sparkline}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -110,20 +140,46 @@
   <div class="signals-grid">
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
-        <div>
+        <div class="panel-top">
           <div class="fw-semibold mb-1">Crypto Dollar (USDT)</div>
           <div class="text-secondary small mb-2">USDT-implied USD/IRR from crypto markets.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">${crypto_usdt_value}</div>
+        <div class="panel-middle">
+          <div class="value-row">
+            <div class="panel-value">${crypto_usdt_value_main}</div>
+            <div class="unit-label">IRR per USD</div>
+          </div>
+        </div>
+        <div class="panel-bottom">
+          <div class="panel-meta-row">
+            <span class="meta-pill">${crypto_usdt_change_24h}</span>
+            <span class="meta-pill">${crypto_usdt_as_of}</span>
+            <span class="meta-pill">${crypto_usdt_source_badge}</span>
+          </div>
+          <div class="panel-sparkline mt-2">${crypto_usdt_sparkline}</div>
+        </div>
       </div>
     </div>
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
-        <div>
+        <div class="panel-top">
           <div class="fw-semibold mb-1">Emami Gold Coin</div>
           <div class="text-secondary small mb-2">IRR price of the standard Iranian gold coin.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">${emami_gold_coin_value}</div>
+        <div class="panel-middle">
+          <div class="value-row">
+            <div class="panel-value">${emami_gold_coin_value_main}</div>
+            <div class="unit-label">IRR per coin</div>
+          </div>
+        </div>
+        <div class="panel-bottom">
+          <div class="panel-meta-row">
+            <span class="meta-pill">${emami_gold_coin_change_24h}</span>
+            <span class="meta-pill">${emami_gold_coin_as_of}</span>
+            <span class="meta-pill">${emami_gold_coin_source_badge}</span>
+          </div>
+          <div class="panel-sparkline mt-2">${emami_gold_coin_sparkline}</div>
+        </div>
       </div>
     </div>
   </div>

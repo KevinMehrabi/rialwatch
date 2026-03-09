@@ -2046,6 +2046,10 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         value = benchmark_value_number(key)
         return f"{fmt_rate(value)} IRR" if value is not None else "Unavailable"
 
+    def benchmark_value_main(key: str) -> str:
+        value = benchmark_value_number(key)
+        return fmt_rate(value) if value is not None else "Unavailable"
+
     indicator_map = latest.get("indicators", {})
     if not isinstance(indicator_map, dict):
         indicator_map = c.get("indicators", {})
@@ -2081,14 +2085,117 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     if not indicator_map:
         indicator_map = {k: {"value": v} for k, v in fallback_indicator_values.items()}
 
-    def indicator_value_or_unavailable(key: str) -> str:
+    def indicator_value_number(key: str) -> Optional[float]:
         entry = indicator_map.get(key, {})
         value = parse_float(entry.get("value")) if isinstance(entry, dict) else None
         if value is None:
             value = fallback_indicator_values.get(key)
+        return value
+
+    def indicator_value_or_unavailable(key: str) -> str:
+        value = indicator_value_number(key)
         if value is None:
             return "Unavailable"
         return f"{value:+.1f}%"
+
+    sources_map = latest.get("sources", {})
+    if not isinstance(sources_map, dict):
+        sources_map = {}
+
+    def benchmark_as_of_text(key: str) -> str:
+        latest_sample_ts: Optional[dt.datetime] = None
+        for source_data in sources_map.values():
+            if not isinstance(source_data, dict):
+                continue
+            sample_rows = source_data.get("samples", [])
+            if not isinstance(sample_rows, list):
+                continue
+            for sample in sample_rows:
+                if not isinstance(sample, dict):
+                    continue
+                bench_map = sample.get("benchmarks", {})
+                if not isinstance(bench_map, dict):
+                    continue
+                if parse_number(bench_map.get(key)) is None:
+                    continue
+                sample_ts = try_parse_datetime(sample.get("sampled_at"))
+                if sample_ts is None:
+                    sample_ts = try_parse_datetime(sample.get("quote_time"))
+                if sample_ts is None:
+                    continue
+                if latest_sample_ts is None or sample_ts > latest_sample_ts:
+                    latest_sample_ts = sample_ts
+        if latest_sample_ts is None:
+            return "As of N/A"
+        return f"As of {latest_sample_ts.strftime('%H:%M UTC')}"
+
+    def benchmark_source_badge_text(key: str) -> str:
+        entry = benchmark_map.get(key, {})
+        if not isinstance(entry, dict):
+            return "Source: n/a"
+        source_medians = entry.get("source_medians", {})
+        if not isinstance(source_medians, dict):
+            return "Source: n/a"
+        source_names = [name for name, val in source_medians.items() if parse_number(val) is not None]
+        if not source_names:
+            return "Source: n/a"
+        source_names.sort()
+        return f"Source: {', '.join(source_names)}"
+
+    def benchmark_24h_change_text(key: str) -> str:
+        if latest_day is None:
+            return "No 24h delta yet"
+        current = benchmark_value_number(key)
+        if current is None:
+            return "No 24h delta yet"
+        history = load_benchmark_fix_history(site_dir, key)
+        prev_candidates = [fix for day, fix in history if day < latest_day and fix > 0]
+        if not prev_candidates:
+            return "No 24h delta yet"
+        previous = prev_candidates[-1]
+        if previous <= 0:
+            return "No 24h delta yet"
+        delta = ((current - previous) / previous) * 100
+        return f"24h {delta:+.1f}%"
+
+    def benchmark_sparkline_html(key: str) -> str:
+        if latest_day is None:
+            return "No 7d sparkline yet"
+        current = benchmark_value_number(key)
+        if current is None:
+            return "No 7d sparkline yet"
+
+        history = load_benchmark_fix_history(site_dir, key)
+        by_day: Dict[dt.date, float] = {day: fix for day, fix in history if fix > 0}
+        by_day[latest_day] = current
+        ordered_values = [fix for _day, fix in sorted(by_day.items())][-7:]
+
+        if len(ordered_values) < 2:
+            return "No 7d sparkline yet"
+
+        width = 120.0
+        height = 20.0
+        pad = 1.5
+        min_val = min(ordered_values)
+        max_val = max(ordered_values)
+        span = max_val - min_val
+
+        points: List[str] = []
+        for idx, value in enumerate(ordered_values):
+            x = pad + (idx * (width - 2 * pad) / (len(ordered_values) - 1))
+            if span <= 0:
+                y = height / 2.0
+            else:
+                y = pad + ((max_val - value) / span) * (height - 2 * pad)
+            points.append(f"{x:.1f},{y:.1f}")
+
+        polyline = " ".join(points)
+        return (
+            f'<svg class="sparkline-svg" viewBox="0 0 {int(width)} {int(height)}" preserveAspectRatio="none" '
+            'role="img" aria-label="7 day sparkline">'
+            f'<polyline fill="none" stroke="#3b82f6" stroke-width="2" points="{polyline}"></polyline>'
+            "</svg>"
+        )
 
     publication_meta = ""
     publication_selection = latest.get("publication_selection")
@@ -2132,6 +2239,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         primary_value_html = f'<div class="h1 mb-1">{fmt_rate(fix)} IRR</div>'
         primary_reason_html = ""
 
+    official_trend_value = indicator_value_number("official_commercial_trend_7d")
+    official_trend_note = (
+        "Insufficient history" if official_trend_value is None else "Seven-day directional move in official market"
+    )
+
     html = render_page(
         templates_dir,
         "index.html",
@@ -2151,13 +2263,37 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         withhold_reason_short=withhold_reason_text,
         reasons=reasons_html,
         official_value=benchmark_value_or_unavailable("official"),
+        official_value_main=benchmark_value_main("official"),
+        official_change_24h=benchmark_24h_change_text("official"),
+        official_as_of=benchmark_as_of_text("official"),
+        official_source_badge=benchmark_source_badge_text("official"),
+        official_sparkline=benchmark_sparkline_html("official"),
         regional_transfer_value=benchmark_value_or_unavailable("regional_transfer"),
+        regional_transfer_value_main=benchmark_value_main("regional_transfer"),
+        regional_transfer_change_24h=benchmark_24h_change_text("regional_transfer"),
+        regional_transfer_as_of=benchmark_as_of_text("regional_transfer"),
+        regional_transfer_source_badge=benchmark_source_badge_text("regional_transfer"),
+        regional_transfer_sparkline=benchmark_sparkline_html("regional_transfer"),
         crypto_usdt_value=benchmark_value_or_unavailable("crypto_usdt"),
+        crypto_usdt_value_main=benchmark_value_main("crypto_usdt"),
+        crypto_usdt_change_24h=benchmark_24h_change_text("crypto_usdt"),
+        crypto_usdt_as_of=benchmark_as_of_text("crypto_usdt"),
+        crypto_usdt_source_badge=benchmark_source_badge_text("crypto_usdt"),
+        crypto_usdt_sparkline=benchmark_sparkline_html("crypto_usdt"),
         emami_gold_coin_value=benchmark_value_or_unavailable("emami_gold_coin"),
+        emami_gold_coin_value_main=benchmark_value_main("emami_gold_coin"),
+        emami_gold_coin_change_24h=benchmark_24h_change_text("emami_gold_coin"),
+        emami_gold_coin_as_of=benchmark_as_of_text("emami_gold_coin"),
+        emami_gold_coin_source_badge=benchmark_source_badge_text("emami_gold_coin"),
+        emami_gold_coin_sparkline=benchmark_sparkline_html("emami_gold_coin"),
         street_official_gap_value=indicator_value_or_unavailable("street_official_gap_pct"),
+        street_official_gap_note="Premium to official market",
         street_transfer_gap_value=indicator_value_or_unavailable("street_transfer_gap_pct"),
+        street_transfer_gap_note="Premium/discount to transfer market",
         street_crypto_gap_value=indicator_value_or_unavailable("street_crypto_gap_pct"),
+        street_crypto_gap_note="Premium/discount to crypto market",
         official_trend_7d_value=indicator_value_or_unavailable("official_commercial_trend_7d"),
+        official_trend_7d_note=official_trend_note,
     )
     write_text(site_dir / "index.html", html)
 
