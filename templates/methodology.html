@@ -1,20 +1,40 @@
 <div class="mb-3">
   <h1 class="page-title">Methodology</h1>
-  <p class="text-secondary mb-0">How RialWatch defines, validates, and publishes its USD/IRR benchmark.</p>
+  <p class="text-secondary mb-0">How RialWatch defines, validates, and publishes its USD/IRR benchmark</p>
 </div>
 
 <section class="card">
   <div class="card-body">
+    <p class="mb-2">
+      RialWatch publishes an independent daily benchmark for the Iranian rial against the U.S. dollar based on open-market price discovery.
+    </p>
+    <p class="mb-2">
+      Because Iran operates multiple parallel currency markets and official banking rates do not reflect freely traded prices, RialWatch is designed to track the markets that matter most for real-world USD/IRR valuation.
+    </p>
+    <p class="mb-0">
+      The benchmark is intended to provide a transparent public reference for the open-market dollar value of the rial, while also showing several adjacent market readings that help explain broader currency conditions.
+    </p>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
     <h2 class="h4 mb-2">1. Benchmark Definition</h2>
     <p class="mb-2">
-      <strong>Primary benchmark:</strong> Open Market / Street USD/IRR daily benchmark.
+      The primary benchmark is the daily open-market USD/IRR reference rate.
     </p>
     <p class="mb-2">
-      RialWatch publishes one official daily benchmark value, not a live ticker. Daily publication is either
-      <strong>Published</strong> or <strong>Withheld</strong> based on validation rules.
+      This benchmark is intended to represent the prevailing parallel-market exchange rate for U.S. dollars in Iran, based on observed market pricing during a defined publication window.
     </p>
-    <p class="mb-0 text-secondary">
-      Supplementary cards (Official Commercial, Regional Transfer, Crypto USDT, Emami Gold Coin) are separate readings and do not replace the primary benchmark.
+    <p class="mb-2">
+      RialWatch publishes one official daily benchmark value, not a live ticker. Each daily publication is either:
+    </p>
+    <ul class="mb-2">
+      <li>Published, when sufficient validated market evidence is available</li>
+      <li>Withheld, when market conditions or data quality do not support a reliable benchmark</li>
+    </ul>
+    <p class="mb-0">
+      The primary benchmark should be understood as the site's core reference value. Other cards on the homepage are supplementary market readings and do not replace the benchmark itself.
     </p>
   </div>
 </section>
@@ -22,50 +42,177 @@
 <section class="card mt-3">
   <div class="card-body">
     <h2 class="h4 mb-2">2. Market Structure</h2>
-    <ul class="mb-0">
-      <li>Open Market / Street Rate is the flagship public benchmark.</li>
-      <li>Official Commercial USD Rate is the managed-market anchor currently mapped to <code>navasan:mex_usd_sell</code>.</li>
-      <li>Regional Transfer, Crypto Dollar (USDT), and Emami Gold Coin are tracked as distinct market channels/signals.</li>
-      <li>NIMA is treated as a legacy mechanism and is not currently maintained as a live standalone series.</li>
-    </ul>
+    <p class="mb-3">
+      RialWatch monitors several distinct market layers because the Iranian rial does not trade in a single unified currency market.
+    </p>
+
+    <h3 class="h5 mb-1">Open Market / Street Rate</h3>
+    <p class="mb-3">
+      The open market is the flagship public benchmark.
+    </p>
+    <p class="mb-3">
+      It reflects parallel-market price discovery through dealer quotes and other observable market channels outside the official banking system. This is the market most closely associated with real-world dollar access and the practical purchasing-power exchange rate of the rial.
+    </p>
+
+    <h3 class="h5 mb-1">Official Commercial USD Rate</h3>
+    <p class="mb-3">
+      RialWatch also tracks the government-managed commercial-market dollar rate used for regulated settlement and commercial allocation.
+    </p>
+    <p class="mb-3">
+      This rate is not the primary benchmark. It is included as an important policy anchor and as a reference point for measuring the gap between managed and open-market pricing.
+    </p>
+
+    <h3 class="h5 mb-1">Regional Transfer Rate</h3>
+    <p class="mb-3">
+      Regional transfer markets reflect cross-border settlement channels used for trade, remittance, and capital movement outside ordinary domestic banking rails.
+    </p>
+    <p class="mb-3">
+      These readings are useful because they often move differently from domestic open-market prices during periods of capital stress or external funding pressure.
+    </p>
+
+    <h3 class="h5 mb-1">Crypto Dollar</h3>
+    <p class="mb-3">
+      RialWatch tracks crypto-implied dollar pricing as a distinct settlement channel.
+    </p>
+    <p class="mb-3">
+      Stablecoin-based dollar access can diverge from domestic cash markets, especially during periods of sanctions pressure, liquidity fragmentation, or demand for cross-border transfer.
+    </p>
+
+    <h3 class="h5 mb-1">Gold Coin Market</h3>
+    <p class="mb-3">
+      RialWatch also tracks domestic gold coin pricing as a parallel monetary signal.
+    </p>
+    <p class="mb-0">
+      Gold is widely used as a local inflation hedge and store of value. It does not represent the same instrument as the FX market, but it can provide useful context about longer-term expectations for inflation, currency weakness, and capital preservation behavior.
+    </p>
   </div>
 </section>
 
 <section class="card mt-3">
   <div class="card-body">
-    <h2 class="h4 mb-2">3. Data Normalization</h2>
-    <ul class="mb-0">
-      <li>All stored benchmark values are normalized to <strong>IRR (rial)</strong> internally.</li>
-      <li>If a source provides a value in toman, RialWatch converts using <code>rial = toman * 10</code>.</li>
-      <li>If a source provides a value in rial, it is stored unchanged.</li>
-      <li>Invalid, missing, non-numeric, stale, or out-of-window values are excluded from benchmark computation.</li>
-    </ul>
+    <h2 class="h4 mb-2">3. Units and Normalization</h2>
+    <p class="mb-2">All published values are normalized into consistent units before calculation and display.</p>
+
+    <h3 class="h5 mb-1">FX rates</h3>
+    <p class="mb-2">
+      Foreign exchange readings are displayed as:
+    </p>
+    <p class="mb-3"><strong>Iranian rials per U.S. dollar (IRR per USD)</strong></p>
+
+    <h3 class="h5 mb-1">Gold</h3>
+    <p class="mb-2">
+      Gold coin readings are displayed as:
+    </p>
+    <p class="mb-3"><strong>Iranian rials per coin (IRR per coin)</strong></p>
+
+    <p class="mb-2">
+      Because Iranian market quotes are often expressed in either rial or toman, RialWatch standardizes values into rials for internal consistency.
+    </p>
+    <p class="mb-2">The conversion used is:</p>
+    <p class="mb-2"><strong>1 toman = 10 rials</strong></p>
+    <p class="mb-0">
+      If a market observation is quoted in toman, it is converted into rials before any calculation is performed.
+    </p>
   </div>
 </section>
 
 <section class="card mt-3">
   <div class="card-body">
-    <h2 class="h4 mb-2">4. Calculation Approach</h2>
-    <ol class="mb-0">
-      <li>Intraday attempts are stored at timestamped paths: <code>/intraday/YYYY-MM-DD/HH-MM-SS.json</code>.</li>
-      <li>Within each source, sampled values are reduced to a source median for the benchmark window.</li>
-      <li><strong>FIX</strong> is the median of source medians.</li>
-      <li><strong>BAND</strong> is the 25th-75th percentile range of source medians.</li>
-      <li><strong>DISPERSION</strong> is computed as <code>(p75 - p25) / FIX</code>.</li>
-      <li>Indicator formulas (Street-Official, Street-Transfer, Street-Crypto, Official 7d Trend) are derived separately from benchmark values.</li>
-    </ol>
+    <h2 class="h4 mb-2">4. Benchmark Calculation Approach</h2>
+    <p class="mb-2">
+      RialWatch uses a validation-first approach rather than publishing every observed quote directly.
+    </p>
+    <p class="mb-2">
+      Within the publication window, RialWatch collects available observations and evaluates them for usability. Readings may be excluded if they are stale, incomplete, clearly inconsistent with the broader market context, or otherwise unsuitable for benchmark publication.
+    </p>
+    <p class="mb-2">
+      When sufficient valid observations are available, the daily benchmark is calculated from the center of the usable market evidence rather than from a single raw quote. This is intended to reduce the effect of outliers, isolated bad inputs, or temporary distortions.
+    </p>
+    <p class="mb-2">
+      RialWatch also derives supplementary indicators from the relationship between the primary benchmark and the other monitored market layers, including:
+    </p>
+    <ul class="mb-2">
+      <li>Street versus official commercial gap</li>
+      <li>Street versus regional transfer gap</li>
+      <li>Street versus crypto-implied dollar gap</li>
+      <li>Official market trend measures, when sufficient history is available</li>
+    </ul>
+    <p class="mb-0">
+      These indicators are interpretive tools and are published separately from the benchmark itself.
+    </p>
   </div>
 </section>
 
 <section class="card mt-3">
   <div class="card-body">
     <h2 class="h4 mb-2">5. Publication Rules</h2>
-    <ul class="mb-0">
-      <li>Publication window: <code>13:45-14:15 UTC</code>. Official publish checkpoint: <code>14:20 UTC</code>.</li>
-      <li>Selection rule: latest valid intraday sample in-window; fallback to most recent valid in-window sample if needed.</li>
-      <li>Publish state is <strong>Withheld</strong> when methodology checks fail (for example insufficient valid sources, stale/invalid inputs, or excessive dispersion).</li>
-      <li>No fabricated values are published. Missing configuration is explicitly surfaced as <code>CONFIG NEEDED</code>.</li>
-      <li>Historical outputs are immutable once written; no silent backfill/rewrite of prior published days.</li>
+    <p class="mb-2">
+      RialWatch publishes the daily benchmark only when the market evidence is strong enough to support a reliable reference value.
+    </p>
+    <p class="mb-2">
+      A daily value may be withheld when:
+    </p>
+    <ul class="mb-2">
+      <li>too few usable observations are available</li>
+      <li>observed values are stale or invalid</li>
+      <li>market inputs are excessively inconsistent with each other</li>
+      <li>technical or methodological conditions prevent a credible publication</li>
     </ul>
+    <p class="mb-2">
+      This means RialWatch prefers to withhold rather than publish a number that may be misleading.
+    </p>
+    <p class="mb-0">
+      Published daily outputs are intended to function as reference records. Historical values are not silently rewritten once published unless a correction is explicitly required for methodological integrity.
+    </p>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h2 class="h4 mb-2">6. Supplementary Readings</h2>
+    <p class="mb-2">
+      The homepage includes several non-benchmark cards that provide additional context.
+    </p>
+    <p class="mb-2">
+      These readings are not interchangeable with the primary benchmark. They exist to help users interpret broader currency conditions across:
+    </p>
+    <ul class="mb-0">
+      <li>the open market</li>
+      <li>the managed commercial market</li>
+      <li>cross-border settlement channels</li>
+      <li>crypto dollar access</li>
+      <li>gold as a monetary hedge</li>
+    </ul>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h2 class="h4 mb-2">7. Interpretation</h2>
+    <p class="mb-2">
+      The RialWatch benchmark should be read as a daily public reference for open-market USD/IRR price discovery, not as an official banking rate and not as a tradable interbank quote from a unified global FX market.
+    </p>
+    <p class="mb-0">
+      In parallel-market currency systems, different market layers can diverge substantially from one another. That divergence is not noise. It is part of the structure RialWatch is designed to measure.
+    </p>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h2 class="h4 mb-2">8. Limitations</h2>
+    <p class="mb-2">
+      RialWatch is based on publicly observable market information and therefore has natural limitations.
+    </p>
+    <ul class="mb-2">
+      <li>It does not claim to represent every transaction in the Iranian FX economy</li>
+      <li>It does not replace official regulatory or banking publications</li>
+      <li>It is not a live execution feed</li>
+      <li>It may withhold publication when market evidence is insufficient</li>
+      <li>Some supplementary indicators require more historical depth before they become meaningful</li>
+    </ul>
+    <p class="mb-0">
+      The goal is not to eliminate uncertainty. The goal is to provide a transparent, disciplined public reference for a market that is otherwise fragmented and difficult to observe.
+    </p>
   </div>
 </section>
