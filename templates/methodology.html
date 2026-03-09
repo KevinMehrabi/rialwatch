@@ -22,12 +22,14 @@
 
 <section class="card mt-3">
   <div class="card-body">
-    <h2 class="h4 mb-3">Supplementary Benchmark Notes</h2>
+    <h2 class="h4 mb-3">Managed-Market Series Transition</h2>
     <ul class="mb-0">
-      <li><strong>NIMA Rate</strong> remains unavailable because no explicit canonical live source/field is currently confirmed.</li>
-      <li><strong>Regional Transfer Rate</strong> is production-approved with strict canonical source mapping.</li>
-      <li><strong>Mobadeleh USD Rate</strong> is the current managed-market benchmark and is mapped to <code>mob_usd</code>.</li>
-      <li>If a canonical explicit NIMA source is confirmed in the future, the NIMA card will be activated.</li>
+      <li><strong>Legacy NIMA series:</strong> treated as historical only through <code>2025-01-19</code>; it is not used as a live benchmark card.</li>
+      <li><strong>Successor managed-market series:</strong> from <code>2025-01-20</code> onward, the live dashboard uses <strong>Exchange Center USD Remittance Rate</strong> as the NIMA-successor benchmark track.</li>
+      <li><strong>Unified remittance quote transition:</strong> after the early-January-2026 hall merger, the successor series is treated as a unified commercial/remittance managed-market quote when source structure reflects that merge.</li>
+      <li><strong>Current production mapping:</strong> live successor series is currently mapped to <code>navasan: mob_usd</code> until a better canonical successor field is confirmed.</li>
+      <li><strong>Integrity guardrails:</strong> no guessed NIMA ticker is used and no fabricated values are published.</li>
+      <li><strong>Regional Transfer Rate</strong> remains production-approved with strict canonical source mapping.</li>
     </ul>
   </div>
 </section>
