@@ -40,7 +40,7 @@ REQUIRED_SECRETS = (
 BENCHMARK_LABELS: Dict[str, str] = {
     "open_market": "Open Market / Street Rate",
     "nima": "NIMA Rate",
-    "official": "Official Rate",
+    "official": "MOB USD Benchmark",
     "regional_transfer": "Regional Transfer Rate",
     "crypto_usdt": "Crypto Dollar (USDT)",
     "emami_gold_coin": "Emami Gold Coin",
