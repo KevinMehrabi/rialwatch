@@ -1067,6 +1067,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     p25 = c.get("band", {}).get("p25")
     p75 = c.get("band", {}).get("p75")
     status = str(c.get("status", "N/A"))
+    status_upper = status.strip().upper()
     withheld = bool(c.get("withheld", True))
     reasons = c.get("withhold_reasons", [])
 
@@ -1152,7 +1153,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             parts.append(f"Selected sample: {selected_sample}")
         publication_meta = " | ".join(parts)
 
-    withhold_reason_short = ""
+    withhold_reason_text = ""
     if withheld:
         normalized_reason = None
         if isinstance(reasons, list):
@@ -1161,7 +1162,22 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
                 if normalized_reason:
                     break
         if normalized_reason:
-            withhold_reason_short = f"WITHHOLD reason: {normalized_reason}"
+            withhold_reason_text = normalized_reason
+
+    if status_upper == "WITHHOLD":
+        candidate = f"{fmt_rate(fix)} IRR"
+        primary_value_html = (
+            '<div class="text-warning fw-bold mb-1">WITHHELD</div>'
+            f'<div class="h5 mb-1">Candidate value: {candidate}</div>'
+        )
+        primary_reason_html = (
+            f'<div class="text-warning small mt-1">Reason: {withhold_reason_text}</div>'
+            if withhold_reason_text
+            else ""
+        )
+    else:
+        primary_value_html = f'<div class="h1 mb-1">{fmt_rate(fix)} IRR</div>'
+        primary_reason_html = ""
 
     html = render_page(
         templates_dir,
@@ -1171,13 +1187,15 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         date=latest.get("date", "N/A"),
         as_of=latest.get("as_of", "N/A"),
         fix=fmt_rate(fix),
+        primary_value_html=primary_value_html,
+        primary_reason_html=primary_reason_html,
         p25=fmt_rate(p25),
         p75=fmt_rate(p75),
         status=status,
         status_class=css_class(status),
         withheld="Yes" if withheld else "No",
         publication_meta=publication_meta,
-        withhold_reason_short=withhold_reason_short,
+        withhold_reason_short=withhold_reason_text,
         reasons=reasons_html,
         nima_value=benchmark_value_or_unavailable("nima"),
         official_value=benchmark_value_or_unavailable("official"),
