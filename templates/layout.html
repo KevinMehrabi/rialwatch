@@ -12,6 +12,62 @@
     margin: 0 auto;
   }
 
+  .site-header {
+    background: #0f172a;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  }
+
+  .site-header-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .site-title {
+    color: #f8fafc;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .site-subtitle {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    line-height: 1.2;
+  }
+
+  .site-nav {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .site-nav a {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 0.88rem;
+  }
+
+  .site-nav a:hover {
+    color: #ffffff;
+  }
+
+  .site-nav .sep {
+    color: rgba(148, 163, 184, 0.6);
+    font-size: 0.88rem;
+  }
+
+  .page-main-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f8fafc;
+  }
+
   .dashboard-section {
     margin-top: 16px;
   }
@@ -221,14 +277,18 @@
 </head>
 <body class="theme-dark">
 <div class="page">
-  <header class="navbar navbar-expand-md navbar-dark d-print-none" style="background:#0f172a;">
+  <header class="site-header d-print-none">
     <div class="container-xl">
-      <a class="navbar-brand navbar-brand-autodark text-white" href="/">USD/IRR Open Market Reference</a>
-      <div class="navbar-nav flex-row gap-3">
-        <a class="nav-link text-white" href="/">Home</a>
-        <a class="nav-link text-white" href="/archive/">Archive</a>
-        <a class="nav-link text-white" href="/status/">Status</a>
-        <a class="nav-link text-white" href="/methodology/">Methodology</a>
+      <div class="site-header-inner">
+        <a class="site-title" href="/">RialWatch</a>
+        <div class="site-subtitle">Independent USD/IRR Market Reference</div>
+        <div class="site-nav">
+          <a href="/">Home</a>
+          <span class="sep">|</span>
+          <a href="/methodology/">Methodology</a>
+          <span class="sep">|</span>
+          <a href="/status/">Status</a>
+        </div>
       </div>
     </div>
   </header>
