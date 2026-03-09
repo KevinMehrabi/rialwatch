@@ -39,13 +39,13 @@ REQUIRED_SECRETS = (
 
 BENCHMARK_LABELS: Dict[str, str] = {
     "open_market": "Open Market / Street Rate",
-    "retail_seller": "Retail Seller Rate",
-    "retail_buyer": "Retail Buyer Rate",
-    "retail_mid_composite": "Retail Mid-Market Composite",
+    "retail_sell": "Retail Seller Rate",
+    "retail_buy": "Retail Buyer Rate",
+    "retail_mid": "Retail Mid-Market Composite",
 }
 
 PRIMARY_BENCHMARK = "open_market"
-SUPPLEMENTARY_BENCHMARKS = ("retail_seller", "retail_buyer", "retail_mid_composite")
+SUPPLEMENTARY_BENCHMARKS = ("retail_sell", "retail_buy", "retail_mid")
 
 
 @dataclass
@@ -54,6 +54,7 @@ class SourceConfig:
     url: str
     auth_mode: str  # query_user_hash | query_api_key | header_api_key
     secret_fields: Tuple[str, ...]
+    benchmark_families: Tuple[str, ...]
 
 
 @dataclass
@@ -199,13 +200,13 @@ def extract_usd_irr_for_benchmark(payload: Any, benchmark: str) -> Optional[floa
                 score += 1
             if has_buy:
                 score -= 1
-        elif benchmark == "retail_seller":
+        elif benchmark == "retail_sell":
             if not has_sell:
                 continue
             score += 3
             if has_buy:
                 score -= 2
-        elif benchmark == "retail_buyer":
+        elif benchmark == "retail_buy":
             if not has_buy:
                 continue
             score += 3
@@ -229,8 +230,8 @@ def extract_usd_irr_for_benchmark(payload: Any, benchmark: str) -> Optional[floa
 
 def extract_benchmark_values(payload: Any) -> Dict[str, Optional[float]]:
     open_market = extract_usd_irr_for_benchmark(payload, "open_market")
-    seller = extract_usd_irr_for_benchmark(payload, "retail_seller")
-    buyer = extract_usd_irr_for_benchmark(payload, "retail_buyer")
+    seller = extract_usd_irr_for_benchmark(payload, "retail_sell")
+    buyer = extract_usd_irr_for_benchmark(payload, "retail_buy")
 
     mid: Optional[float] = None
     if seller is not None and buyer is not None:
@@ -238,9 +239,9 @@ def extract_benchmark_values(payload: Any) -> Dict[str, Optional[float]]:
 
     return {
         "open_market": open_market,
-        "retail_seller": seller,
-        "retail_buyer": buyer,
-        "retail_mid_composite": mid,
+        "retail_sell": seller,
+        "retail_buy": buyer,
+        "retail_mid": mid,
     }
 
 
@@ -324,18 +325,21 @@ def build_source_configs() -> List[SourceConfig]:
             url=env_or_default("BONBAST_API_URL", "https://api.bonbast.com/v1/rates"),
             auth_mode="query_user_hash",
             secret_fields=("BONBAST_USERNAME", "BONBAST_HASH"),
+            benchmark_families=("open_market", "retail_sell", "retail_buy"),
         ),
         SourceConfig(
             name="navasan",
             url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
             auth_mode="query_api_key",
             secret_fields=("NAVASAN_API_KEY",),
+            benchmark_families=("open_market",),
         ),
         SourceConfig(
             name="alanchand",
             url=env_or_default("ALANCHAND_API_URL", "https://api.alanchand.com/v1/rates"),
             auth_mode="header_api_key",
             secret_fields=("ALANCHAND_API_KEY",),
+            benchmark_families=("open_market", "retail_sell", "retail_buy"),
         ),
     ]
 
@@ -462,25 +466,29 @@ def collect_samples(
     return samples
 
 
-def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, Any]:
+def compute_benchmark_result(
+    samples: Dict[str, List[Sample]],
+    benchmark_key: str,
+    benchmark_sources: Dict[str, Tuple[str, ...]],
+) -> Dict[str, Any]:
     source_medians: Dict[str, float] = {}
-    source_benchmark_medians: Dict[str, Dict[str, float]] = {}
     source_notes: Dict[str, str] = {}
     invalid_or_stale = False
 
     for source, entries in samples.items():
-        benchmark_medians: Dict[str, float] = {}
-        for benchmark in BENCHMARK_LABELS:
-            benchmark_values = [s.benchmark_values.get(benchmark) for s in entries if s.benchmark_values.get(benchmark) is not None]
-            if benchmark_values:
-                benchmark_medians[benchmark] = median(benchmark_values)
-        source_benchmark_medians[source] = benchmark_medians
+        families = benchmark_sources.get(source, ())
+        if benchmark_key not in families:
+            source_notes[source] = "source family not used for this benchmark"
+            continue
 
-        valid_values = [s.value for s in entries if s.value is not None]
-        if not valid_values:
+        values = [s.benchmark_values.get(benchmark_key) for s in entries if s.benchmark_values.get(benchmark_key) is not None]
+        if not values:
             source_notes[source] = "no valid samples"
             continue
-        source_medians[source] = median(valid_values)
+
+        source_medians[source] = median(values)
+        if any(s.stale for s in entries):
+            invalid_or_stale = True
 
     medians = list(source_medians.values())
     reasons: List[str] = []
@@ -516,25 +524,100 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
             status = "Amber"
         elif dispersion <= 0.05:
             status = "Red"
-        else:
-            status = "WITHHOLD"
 
-    benchmark_daily_values: Dict[str, Optional[float]] = {key: None for key in BENCHMARK_LABELS}
-    benchmark_daily_values[PRIMARY_BENCHMARK] = fix_value
+    return {
+        "label": BENCHMARK_LABELS[benchmark_key],
+        "benchmark": benchmark_key,
+        "fix": fix_value,
+        "band": {"p25": p25, "p75": p75},
+        "dispersion": dispersion,
+        "status": status,
+        "withheld": withheld,
+        "withhold_reasons": reasons,
+        "source_medians": source_medians,
+        "source_notes": source_notes,
+        "available": (fix_value is not None and not withheld),
+    }
 
-    for benchmark in SUPPLEMENTARY_BENCHMARKS:
-        per_source = [values.get(benchmark) for values in source_benchmark_medians.values() if values.get(benchmark) is not None]
-        if per_source:
-            benchmark_daily_values[benchmark] = median(per_source)
+
+def compute_retail_mid(benchmarks: Dict[str, Dict[str, Any]]) -> Dict[str, Any]:
+    sell = benchmarks.get("retail_sell", {})
+    buy = benchmarks.get("retail_buy", {})
+    sell_fix = parse_number(sell.get("fix"))
+    buy_fix = parse_number(buy.get("fix"))
+
+    if not (sell.get("available") and buy.get("available") and sell_fix is not None and buy_fix is not None):
+        return {
+            "label": BENCHMARK_LABELS["retail_mid"],
+            "benchmark": "retail_mid",
+            "fix": None,
+            "band": {"p25": None, "p75": None},
+            "dispersion": None,
+            "status": "WITHHOLD",
+            "withheld": True,
+            "withhold_reasons": ["requires valid retail_sell and retail_buy benchmarks"],
+            "source_medians": {},
+            "source_notes": {},
+            "available": False,
+        }
+
+    values = [sell_fix, buy_fix]
+    fix_value = median(values)
+    p25 = percentile(values, 0.25)
+    p75 = percentile(values, 0.75)
+    dispersion = (p75 - p25) / fix_value if fix_value else None
+    withheld = dispersion is not None and dispersion > 0.05
+    reasons = ["dispersion > 5%"] if withheld else []
+    status = "WITHHOLD"
+    if not withheld and dispersion is not None:
+        if dispersion <= 0.015:
+            status = "Green"
+        elif dispersion <= 0.035:
+            status = "Amber"
+        elif dispersion <= 0.05:
+            status = "Red"
+
+    return {
+        "label": BENCHMARK_LABELS["retail_mid"],
+        "benchmark": "retail_mid",
+        "fix": fix_value,
+        "band": {"p25": p25, "p75": p75},
+        "dispersion": dispersion,
+        "status": status,
+        "withheld": withheld,
+        "withhold_reasons": reasons,
+        "source_medians": {"retail_sell": sell_fix, "retail_buy": buy_fix},
+        "source_notes": {},
+        "available": (fix_value is not None and not withheld),
+    }
+
+
+def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceConfig], day: dt.date) -> Dict[str, Any]:
+    benchmark_sources = {cfg.name: cfg.benchmark_families for cfg in source_configs}
+
+    benchmark_results: Dict[str, Dict[str, Any]] = {}
+    for key in ("open_market", "retail_sell", "retail_buy"):
+        benchmark_results[key] = compute_benchmark_result(samples, key, benchmark_sources)
+    benchmark_results["retail_mid"] = compute_retail_mid(benchmark_results)
+
+    primary = benchmark_results[PRIMARY_BENCHMARK]
+
+    source_benchmark_medians: Dict[str, Dict[str, float]] = {}
+    for source, entries in samples.items():
+        source_benchmark_medians[source] = {}
+        for key in BENCHMARK_LABELS:
+            values = [s.benchmark_values.get(key) for s in entries if s.benchmark_values.get(key) is not None]
+            if values:
+                source_benchmark_medians[source][key] = median(values)
 
     computed_benchmarks = {
         key: {
-            "label": BENCHMARK_LABELS[key],
-            "value": benchmark_daily_values.get(key),
-            "available": benchmark_daily_values.get(key) is not None,
+            "label": result.get("label", BENCHMARK_LABELS[key]),
+            "value": result.get("fix"),
+            "available": bool(result.get("available")),
             "is_primary": key == PRIMARY_BENCHMARK,
         }
-        for key in BENCHMARK_LABELS
+        for key, result in benchmark_results.items()
     }
 
     return {
@@ -559,20 +642,21 @@ def summarize_day(samples: Dict[str, List[Sample]], day: dt.date) -> Dict[str, A
                     }
                     for s in entries
                 ],
-                "median": source_medians.get(source),
+                "median": source_benchmark_medians.get(source, {}).get("open_market"),
                 "benchmark_medians": source_benchmark_medians.get(source, {}),
-                "note": source_notes.get(source),
+                "note": benchmark_results["open_market"].get("source_notes", {}).get(source),
             }
             for source, entries in samples.items()
         },
+        "benchmarks": benchmark_results,
         "computed": {
-            "fix": fix_value,
-            "band": {"p25": p25, "p75": p75},
-            "dispersion": dispersion,
-            "status": status,
-            "withheld": withheld,
-            "withhold_reasons": reasons,
-            "source_medians": source_medians,
+            "fix": primary.get("fix"),
+            "band": primary.get("band"),
+            "dispersion": primary.get("dispersion"),
+            "status": primary.get("status"),
+            "withheld": primary.get("withheld"),
+            "withhold_reasons": primary.get("withhold_reasons"),
+            "source_medians": primary.get("source_medians"),
             "benchmarks": computed_benchmarks,
         },
     }
@@ -792,7 +876,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     if withheld and reasons:
         reasons_html = '<ul class="mb-0">' + "".join(f"<li>{r}</li>" for r in reasons) + "</ul>"
 
-    benchmark_map = c.get("benchmarks", {})
+    benchmark_map = latest.get("benchmarks", {})
+    if not isinstance(benchmark_map, dict):
+        benchmark_map = c.get("benchmarks", {})
     benchmark_map = benchmark_map if isinstance(benchmark_map, dict) else {}
 
     def benchmark_value_or_unavailable(key: str) -> str:
@@ -816,9 +902,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         status_class=css_class(status),
         withheld="Yes" if withheld else "No",
         reasons=reasons_html,
-        retail_seller_value=benchmark_value_or_unavailable("retail_seller"),
-        retail_buyer_value=benchmark_value_or_unavailable("retail_buyer"),
-        retail_mid_value=benchmark_value_or_unavailable("retail_mid_composite"),
+        retail_seller_value=benchmark_value_or_unavailable("retail_sell"),
+        retail_buyer_value=benchmark_value_or_unavailable("retail_buy"),
+        retail_mid_value=benchmark_value_or_unavailable("retail_mid"),
     )
     write_text(site_dir / "index.html", html)
 
@@ -907,9 +993,26 @@ def run(args: argparse.Namespace) -> int:
             status_title = "OK"
             status_detail = "Build-only mode: reused existing published data and did not create a new daily reference."
         else:
+            empty_benchmarks = {
+                key: {
+                    "label": BENCHMARK_LABELS[key],
+                    "benchmark": key,
+                    "fix": None,
+                    "band": {"p25": None, "p75": None},
+                    "dispersion": None,
+                    "status": "WITHHOLD",
+                    "withheld": True,
+                    "withhold_reasons": ["no existing published data"],
+                    "source_medians": {},
+                    "source_notes": {},
+                    "available": False,
+                }
+                for key in BENCHMARK_LABELS
+            }
             latest = {
                 "date": iso_date(day),
                 "as_of": generated_at,
+                "benchmarks": empty_benchmarks,
                 "computed": {
                     "fix": None,
                     "band": {"p25": None, "p75": None},
@@ -917,6 +1020,16 @@ def run(args: argparse.Namespace) -> int:
                     "status": "CONFIG NEEDED",
                     "withheld": True,
                     "withhold_reasons": ["no existing published data"],
+                    "source_medians": {},
+                    "benchmarks": {
+                        key: {
+                            "label": BENCHMARK_LABELS[key],
+                            "value": None,
+                            "available": False,
+                            "is_primary": key == PRIMARY_BENCHMARK,
+                        }
+                        for key in BENCHMARK_LABELS
+                    },
                 },
             }
             status_title = "CONFIG NEEDED"
@@ -946,9 +1059,26 @@ def run(args: argparse.Namespace) -> int:
             missing=missing,
         )
 
+        placeholder_benchmarks = {
+            key: {
+                "label": BENCHMARK_LABELS[key],
+                "benchmark": key,
+                "fix": None,
+                "band": {"p25": None, "p75": None},
+                "dispersion": None,
+                "status": "WITHHOLD",
+                "withheld": True,
+                "withhold_reasons": ["missing secrets"],
+                "source_medians": {},
+                "source_notes": {},
+                "available": False,
+            }
+            for key in BENCHMARK_LABELS
+        }
         placeholder = {
             "date": iso_date(day),
             "as_of": generated_at,
+            "benchmarks": placeholder_benchmarks,
             "computed": {
                 "fix": None,
                 "band": {"p25": None, "p75": None},
@@ -956,6 +1086,16 @@ def run(args: argparse.Namespace) -> int:
                 "status": "CONFIG NEEDED",
                 "withheld": True,
                 "withhold_reasons": ["missing secrets"],
+                "source_medians": {},
+                "benchmarks": {
+                    key: {
+                        "label": BENCHMARK_LABELS[key],
+                        "value": None,
+                        "available": False,
+                        "is_primary": key == PRIMARY_BENCHMARK,
+                    }
+                    for key in BENCHMARK_LABELS
+                },
             },
         }
         publish_home(site_dir, templates_dir, generated_at, placeholder)
@@ -998,7 +1138,7 @@ def run(args: argparse.Namespace) -> int:
     publish_dt = dt.datetime.combine(day, PUBLISH_AT, tzinfo=UTC)
     should_sleep_until(publish_dt, skip_waits=args.skip_waits)
 
-    daily = summarize_day(samples, day)
+    daily = summarize_day(samples, source_configs, day)
     publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
     publish_latest(site_dir, daily)
     publish_series(site_dir)

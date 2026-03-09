@@ -25,14 +25,15 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 
 - Primary benchmark (flagship): `open_market` (`Open Market / Street Rate`)
 - Supplementary benchmarks:
-  - `retail_seller` (`Retail Seller Rate`)
-  - `retail_buyer` (`Retail Buyer Rate`)
-  - `retail_mid_composite` (`Retail Mid-Market Composite`)
+  - `retail_sell` (`Retail Seller Rate`)
+  - `retail_buy` (`Retail Buyer Rate`)
+  - `retail_mid` (`Retail Mid-Market Composite`)
 
 Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
 
 - `computed.fix` for the primary benchmark
-- `computed.benchmarks` for all benchmark types with `label`, `value`, `available`, and `is_primary`
+- top-level `benchmarks` with per-benchmark results (`fix`, `band`, `status`, `withheld`, etc.)
+- `computed.benchmarks` lightweight summary for homepage/UI compatibility
 
 Public historical series (`/api/series.json`) remains strict and primary-only.
 

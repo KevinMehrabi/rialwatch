@@ -118,24 +118,98 @@
         "available": true,
         "is_primary": true
       },
-      "retail_seller": {
+      "retail_sell": {
         "label": "Retail Seller Rate",
         "value": null,
         "available": false,
         "is_primary": false
       },
-      "retail_buyer": {
+      "retail_buy": {
         "label": "Retail Buyer Rate",
         "value": null,
         "available": false,
         "is_primary": false
       },
-      "retail_mid_composite": {
+      "retail_mid": {
         "label": "Retail Mid-Market Composite",
         "value": null,
         "available": false,
         "is_primary": false
       }
+    }
+  },
+  "benchmarks": {
+    "open_market": {
+      "label": "Open Market / Street Rate",
+      "benchmark": "open_market",
+      "fix": 153500.0,
+      "band": {
+        "p25": 153500.0,
+        "p75": 153500.0
+      },
+      "dispersion": 0.0,
+      "status": "Green",
+      "withheld": false,
+      "withhold_reasons": [],
+      "source_medians": {
+        "navasan": 153500.0
+      },
+      "source_notes": {},
+      "available": true
+    },
+    "retail_sell": {
+      "label": "Retail Seller Rate",
+      "benchmark": "retail_sell",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "not available in historical snapshot migration"
+      ],
+      "source_medians": {},
+      "source_notes": {},
+      "available": false
+    },
+    "retail_buy": {
+      "label": "Retail Buyer Rate",
+      "benchmark": "retail_buy",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "not available in historical snapshot migration"
+      ],
+      "source_medians": {},
+      "source_notes": {},
+      "available": false
+    },
+    "retail_mid": {
+      "label": "Retail Mid-Market Composite",
+      "benchmark": "retail_mid",
+      "fix": null,
+      "band": {
+        "p25": null,
+        "p75": null
+      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "not available in historical snapshot migration"
+      ],
+      "source_medians": {},
+      "source_notes": {},
+      "available": false
     }
   }
 }
