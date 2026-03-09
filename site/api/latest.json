@@ -16,7 +16,10 @@
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "network: [Errno -5] No address associated with hostname"
+          "error": "network: [Errno -5] No address associated with hostname",
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         },
         {
           "sampled_at": "2026-03-09T14:09:05Z",
@@ -25,7 +28,10 @@
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "network: [Errno -5] No address associated with hostname"
+          "error": "network: [Errno -5] No address associated with hostname",
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         },
         {
           "sampled_at": "2026-03-09T14:15:00Z",
@@ -34,12 +40,15 @@
           "quote_time": null,
           "ok": false,
           "stale": true,
-          "error": "sample outside observation window"
+          "error": "sample outside observation window",
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         }
       ],
       "median": null,
       "benchmark_medians": {},
-      "note": "no valid samples"
+      "note": "no valid in-window samples"
     },
     "navasan": {
       "samples": [
@@ -57,7 +66,10 @@
           "quote_time": "2026-03-09T14:08:11Z",
           "ok": true,
           "stale": false,
-          "error": null
+          "error": null,
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         },
         {
           "sampled_at": "2026-03-09T14:09:05Z",
@@ -73,7 +85,10 @@
           "quote_time": "2026-03-09T14:08:11Z",
           "ok": true,
           "stale": false,
-          "error": null
+          "error": null,
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         },
         {
           "sampled_at": "2026-03-09T14:15:00Z",
@@ -89,7 +104,10 @@
           "quote_time": "2026-03-09T14:13:13Z",
           "ok": false,
           "stale": true,
-          "error": "sample outside observation window"
+          "error": "sample outside observation window",
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         }
       ],
       "median": 166400.0,
@@ -111,7 +129,10 @@
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "http 401"
+          "error": "http 401",
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         },
         {
           "sampled_at": "2026-03-09T14:09:05Z",
@@ -120,7 +141,10 @@
           "quote_time": null,
           "ok": false,
           "stale": false,
-          "error": "http 401"
+          "error": "http 401",
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         },
         {
           "sampled_at": "2026-03-09T14:15:00Z",
@@ -129,12 +153,15 @@
           "quote_time": null,
           "ok": false,
           "stale": true,
-          "error": "sample outside observation window"
+          "error": "sample outside observation window",
+          "source_unit": "unknown",
+          "normalized_unit": "rial",
+          "health": {}
         }
       ],
       "median": null,
       "benchmark_medians": {},
-      "note": "no valid samples"
+      "note": "no valid in-window samples"
     }
   },
   "benchmarks": {
@@ -147,44 +174,23 @@
         "p75": 166400.0
       },
       "dispersion": 0.0,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "invalid/stale inputs"
-      ],
+      "status": "Green",
+      "withheld": false,
+      "withhold_reasons": [],
       "source_medians": {
         "navasan": 166400.0
       },
+      "source_units": {
+        "navasan": "unknown"
+      },
       "source_notes": {
-        "bonbast": "no valid samples",
-        "alanchand": "no valid samples"
+        "bonbast": "no valid in-window samples",
+        "alanchand": "no valid in-window samples"
       },
-      "available": false
-    },
-    "nima": {
-      "label": "NIMA Rate",
-      "benchmark": "nima",
-      "fix": null,
-      "band": {
-        "p25": null,
-        "p75": null
-      },
-      "dispersion": null,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "no valid sources available"
-      ],
-      "source_medians": {},
-      "source_notes": {
-        "bonbast": "source family not used for this benchmark",
-        "navasan": "no valid samples",
-        "alanchand": "no valid samples"
-      },
-      "available": false
+      "available": true
     },
     "official": {
-      "label": "MOB USD Benchmark",
+      "label": "Official Commercial USD Rate",
       "benchmark": "official",
       "fix": 420000.0,
       "band": {
@@ -200,11 +206,18 @@
       "source_medians": {
         "navasan": 420000.0
       },
+      "source_units": {
+        "navasan": "unknown"
+      },
       "source_notes": {
-        "bonbast": "source family not used for this benchmark",
+        "bonbast": "no valid samples",
         "alanchand": "no valid samples"
       },
-      "available": false
+      "available": false,
+      "validation_warnings": [
+        "official_commercial_usd_irr is materially above street_usd_irr; review parser and rial/toman normalization",
+        "official_commercial_usd_irr appears outside plausible band relative to street_usd_irr"
+      ]
     },
     "regional_transfer": {
       "label": "Regional Transfer Rate",
@@ -222,6 +235,9 @@
       ],
       "source_medians": {
         "navasan": 169700.0
+      },
+      "source_units": {
+        "navasan": "unknown"
       },
       "source_notes": {
         "bonbast": "no valid samples",
@@ -246,6 +262,9 @@
       "source_medians": {
         "navasan": 149700.0
       },
+      "source_units": {
+        "navasan": "unknown"
+      },
       "source_notes": {
         "bonbast": "no valid samples",
         "alanchand": "no valid samples"
@@ -268,6 +287,9 @@
       ],
       "source_medians": {
         "navasan": 210000.0
+      },
+      "source_units": {
+        "navasan": "unknown"
       },
       "source_notes": {
         "bonbast": "no valid samples",
@@ -309,29 +331,30 @@
       "p75": 166400.0
     },
     "dispersion": 0.0,
-    "status": "WITHHOLD",
-    "withheld": true,
-    "withhold_reasons": [
-      "invalid/stale inputs"
-    ],
+    "status": "Green",
+    "withheld": false,
+    "withhold_reasons": [],
     "source_medians": {
       "navasan": 166400.0
     },
+    "source_units": {
+      "navasan": "unknown"
+    },
+    "source_unit": "unknown",
+    "normalized_unit": "rial",
+    "validation_warnings": [
+      "official_commercial_usd_irr is materially above street_usd_irr; review parser and rial/toman normalization",
+      "official_commercial_usd_irr appears outside plausible band relative to street_usd_irr"
+    ],
     "benchmarks": {
       "open_market": {
         "label": "Open Market / Street Rate",
         "value": 166400.0,
-        "available": false,
+        "available": true,
         "is_primary": true
       },
-      "nima": {
-        "label": "NIMA Rate",
-        "value": null,
-        "available": false,
-        "is_primary": false
-      },
       "official": {
-        "label": "MOB USD Benchmark",
+        "label": "Official Commercial USD Rate",
         "value": 420000.0,
         "available": false,
         "is_primary": false
@@ -392,7 +415,7 @@
     "street_transfer_gap_pct": -1.9446081319976427,
     "street_crypto_gap_pct": -10.036057692307693,
     "official_commercial_trend_7d": null,
-    "street_confidence_status": "WITHHOLD",
+    "street_confidence_status": "Green",
     "source_unit": "unknown",
     "normalized_unit": "rial"
   }

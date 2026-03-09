@@ -2276,6 +2276,66 @@ def load_intraday_attempts(site_dir: Path, day: dt.date) -> List[Dict[str, Any]]
     return [payload for _, payload in attempts]
 
 
+def load_samples_from_daily_payload(daily: Dict[str, Any], source_configs: List[SourceConfig]) -> Dict[str, List[Sample]]:
+    samples: Dict[str, List[Sample]] = {cfg.name: [] for cfg in source_configs}
+    sources = daily.get("sources")
+    if not isinstance(sources, dict):
+        return samples
+
+    for source, source_data in sources.items():
+        if source not in samples:
+            continue
+        if not isinstance(source_data, dict):
+            continue
+        rows = source_data.get("samples")
+        if not isinstance(rows, list):
+            continue
+        parsed_rows: List[Sample] = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            parsed = parse_sample_record(source, row)
+            if parsed is not None:
+                parsed_rows.append(parsed)
+        samples[source] = parsed_rows
+
+    return samples
+
+
+def refresh_existing_day_payload(
+    site_dir: Path,
+    templates_dir: Path,
+    generated_at: str,
+    day: dt.date,
+    source_configs: List[SourceConfig],
+) -> Optional[Dict[str, Any]]:
+    day_s = iso_date(day)
+    day_json = site_dir / "fix" / f"{day_s}.json"
+    if not day_json.exists():
+        return None
+
+    try:
+        existing = json.loads(day_json.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+
+    samples = load_samples_from_daily_payload(existing, source_configs)
+    if not any(samples.values()):
+        return None
+
+    refreshed = summarize_day(samples, source_configs, day)
+
+    # Preserve original publication timestamp/selection metadata where available.
+    as_of = existing.get("as_of")
+    if isinstance(as_of, str) and as_of.strip():
+        refreshed["as_of"] = as_of
+    if isinstance(existing.get("publication_selection"), dict):
+        refreshed["publication_selection"] = existing.get("publication_selection")
+
+    publish_daily_fix(site_dir, templates_dir, generated_at=generated_at, daily=refreshed)
+    return refreshed
+
+
 def attempt_to_samples(attempt: Dict[str, Any]) -> Dict[str, List[Sample]]:
     sources = attempt.get("sources")
     if not isinstance(sources, dict):
@@ -2436,8 +2496,17 @@ def select_daily_from_intraday(
 
 
 def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
+    source_configs = build_source_configs()
+    refreshed = refresh_existing_day_payload(site_dir, templates_dir, generated_at, day, source_configs)
+
     latest_path = site_dir / "api" / "latest.json"
-    if latest_path.exists():
+    if refreshed is not None:
+        latest = refreshed
+        status_title = "OK"
+        status_detail = (
+            f"Build-only mode: refreshed {iso_date(day)} published artifact using current benchmark logic."
+        )
+    elif latest_path.exists():
         latest = json.loads(latest_path.read_text(encoding="utf-8"))
         status_title = "OK"
         status_detail = "Build-only mode: reused existing published data and did not create a new daily reference."
