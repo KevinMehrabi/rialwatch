@@ -144,6 +144,41 @@
     width: 100%;
   }
 
+  .recent-table-card .panel-top {
+    margin-bottom: 10px;
+  }
+
+  .recent-table-subtitle {
+    font-size: 0.8rem;
+    color: #94a3b8;
+  }
+
+  .recent-table-divider {
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+    margin-bottom: 10px;
+  }
+
+  .recent-table-card .table-responsive {
+    margin-top: 0;
+  }
+
+  .recent-table-card .table {
+    margin-bottom: 0;
+  }
+
+  .recent-table-card thead th {
+    background: #1e293b;
+    color: #cbd5e1;
+    border-bottom: 1px solid #334155;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .recent-table-card tbody td {
+    border-color: #334155;
+  }
+
   @media (max-width: 1100px) {
     .indicators-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -187,7 +222,7 @@
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
           <div class="h1 mb-1">1,664,000 IRR</div>
-          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T21:37:47Z</div>
+          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T21:42:05Z</div>
           <div class="text-secondary small mt-1">Observed sample: 20:42 UTC (intraday window)</div>
           
         </div>
@@ -368,9 +403,13 @@
 
 <section class="dashboard-section">
   <div class="recent-table-wrap">
-    <div class="card bg-dark text-white">
+    <div class="card bg-dark text-white dashboard-card recent-table-card">
       <div class="card-body">
-        <div class="text-secondary mb-3">RECENT DAILY REFERENCES</div>
+        <div class="panel-top">
+          <div class="text-secondary mb-1">RECENT DAILY REFERENCES</div>
+          <div class="recent-table-subtitle">Published reference fixes</div>
+        </div>
+        <div class="recent-table-divider"></div>
         <div class="table-responsive">
           <table class="table table-dark table-vcenter">
             <thead>
@@ -484,7 +523,7 @@ async function loadSeries() {
 loadSeries();
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-09T21:37:47Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-09T21:42:05Z</div>
     </div>
   </div>
 </div>
