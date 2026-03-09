@@ -7,6 +7,20 @@
 <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+  :root {
+    --rw-bg: #0b1220;
+    --rw-surface-1: #172334;
+    --rw-surface-2: #1f2d43;
+    --rw-border: rgba(148, 163, 184, 0.18);
+    --rw-text-primary: #e5edf8;
+    --rw-text-strong: #f8fbff;
+    --rw-text-muted: #9cafc7;
+  }
+
+  body.theme-dark {
+    color: var(--rw-text-primary);
+  }
+
   .dashboard-container {
     max-width: 1280px;
     margin: 0 auto;
@@ -33,14 +47,14 @@
   }
 
   .site-title {
-    color: #f8fafc;
+    color: var(--rw-text-strong);
     font-size: 1.15rem;
     font-weight: 700;
     line-height: 1.2;
   }
 
   .site-subtitle {
-    color: #cbd5e1;
+    color: #c4d1e3;
     font-size: 0.82rem;
     line-height: 1.2;
   }
@@ -54,7 +68,7 @@
   }
 
   .site-nav a {
-    color: #e2e8f0;
+    color: #d9e4f2;
     text-decoration: none;
     font-size: 0.88rem;
   }
@@ -64,11 +78,45 @@
   }
 
   .site-updated {
-    color: #94a3b8;
+    color: var(--rw-text-muted);
     font-size: 0.75rem;
     line-height: 1.2;
     text-align: right;
     white-space: nowrap;
+  }
+
+  .page-wrapper {
+    background: var(--rw-bg) !important;
+    min-height: 100vh;
+  }
+
+  .card {
+    background: var(--rw-surface-1);
+    border: 1px solid var(--rw-border);
+    box-shadow: none;
+    color: var(--rw-text-primary);
+  }
+
+  .card .card-title,
+  .card h1,
+  .card h2,
+  .card h3,
+  .card h4,
+  .card h5,
+  .card h6,
+  .page-title {
+    color: var(--rw-text-strong);
+  }
+
+  .text-secondary {
+    color: var(--rw-text-muted) !important;
+  }
+
+  .card code {
+    background: rgba(148, 163, 184, 0.12);
+    color: #dbe8f9;
+    border-radius: 4px;
+    padding: 1px 4px;
   }
 
   .site-meta {
@@ -82,13 +130,13 @@
     margin: 0;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #f8fafc;
+    color: var(--rw-text-strong);
   }
 
   .page-main-subtitle {
     margin-top: 6px;
     margin-bottom: 0;
-    color: #94a3b8;
+    color: var(--rw-text-muted);
   }
 
   .dashboard-section {
@@ -172,7 +220,7 @@
 
   .value-row .unit-label {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--rw-text-muted);
     letter-spacing: 0.01em;
   }
 
@@ -187,7 +235,7 @@
     flex-wrap: wrap;
     gap: 8px;
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--rw-text-muted);
     line-height: 1.2;
   }
 
@@ -212,12 +260,12 @@
     margin-top: auto;
     padding-top: 10px;
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--rw-text-muted);
   }
 
   .dashboard-title {
     margin-bottom: 10px;
-    color: #cbd5e1;
+    color: #d4e0ef;
     font-size: 0.95rem;
     letter-spacing: 0.01em;
   }
@@ -246,7 +294,7 @@
 
   .recent-table-subtitle {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--rw-text-muted);
   }
 
   .recent-table-body {
@@ -258,9 +306,9 @@
   }
 
   .recent-table-card thead th {
-    background: #1e293b;
-    color: #cbd5e1;
-    border-bottom: 1px solid #334155;
+    background: var(--rw-surface-2);
+    color: #d6e3f3;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.25);
     font-size: 0.78rem;
     letter-spacing: 0.02em;
     text-transform: uppercase;
@@ -269,7 +317,7 @@
   }
 
   .recent-table-card tbody td {
-    border-color: #334155;
+    border-color: rgba(148, 163, 184, 0.2);
     padding-top: 0.45rem;
     padding-bottom: 0.45rem;
   }
@@ -286,10 +334,10 @@
   }
 
   .status-overview-card {
-    border: 1px solid rgba(148, 163, 184, 0.2);
+    border: 1px solid rgba(148, 163, 184, 0.24);
     border-radius: 8px;
     padding: 12px;
-    background: rgba(15, 23, 42, 0.45);
+    background: var(--rw-surface-2);
   }
 
   .status-label {
@@ -325,7 +373,7 @@
   }
 
   .status-note {
-    color: #94a3b8;
+    color: var(--rw-text-muted);
     font-size: 0.8rem;
     margin-top: 6px;
   }
@@ -333,6 +381,16 @@
   .source-status-table th,
   .source-status-table td {
     vertical-align: middle;
+  }
+
+  .source-status-table thead th {
+    background: var(--rw-surface-2);
+    color: #d6e3f3;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+  }
+
+  .source-status-table tbody td {
+    border-color: rgba(148, 163, 184, 0.2);
   }
 
   @media (max-width: 1100px) {
