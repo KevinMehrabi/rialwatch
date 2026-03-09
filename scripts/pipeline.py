@@ -90,10 +90,16 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
 BONBAST_SELECTOR_MAP: Dict[str, Tuple[str, ...]] = {
     "open_market": (
         "#usd1",
+        "#usd1_top",
         "#usd",
         "[data-key='usd1']",
         "[data-symbol='usd1']",
         "[data-symbol='usd']",
+    ),
+    "open_market_buy": (
+        "#usd2",
+        "[data-key='usd2']",
+        "[data-symbol='usd2']",
     ),
     "crypto_usdt": (
         "#usdt",
@@ -112,9 +118,23 @@ BONBAST_SELECTOR_MAP: Dict[str, Tuple[str, ...]] = {
 
 BONBAST_TEXT_HINTS: Dict[str, Tuple[str, ...]] = {
     "open_market": ("usd1", "usd", "dollar", "azad", "street"),
+    "open_market_buy": ("usd2", "buy", "bid", "خرید"),
     "crypto_usdt": ("usdt", "tether"),
     "emami_gold_coin": ("sekkeh", "sekke", "emami", "coin"),
 }
+
+BONBAST_USD_BUY_PATTERNS: Tuple[str, ...] = (
+    r"(?is)(?:usd|dollar)[^0-9]{0,80}(?:buy|bid|خرید)[^0-9]{0,50}([0-9][0-9,٬،.]*)",
+    r"(?is)(?:buy|bid|خرید)[^0-9]{0,80}(?:usd|dollar)[^0-9]{0,50}([0-9][0-9,٬،.]*)",
+)
+
+BONBAST_USD_SELL_PATTERNS: Tuple[str, ...] = (
+    r"(?is)(?:usd|dollar)[^0-9]{0,80}(?:sell|offer|فروش)[^0-9]{0,50}([0-9][0-9,٬،.]*)",
+    r"(?is)(?:sell|offer|فروش)[^0-9]{0,80}(?:usd|dollar)[^0-9]{0,50}([0-9][0-9,٬،.]*)",
+)
+
+BONBAST_MAX_SPREAD_PCT_DEFAULT = 0.05
+BONBAST_PEER_DEVIATION_PCT_DEFAULT = 0.20
 
 
 @dataclass
@@ -228,6 +248,20 @@ def parse_number_from_text(text: Any) -> Optional[float]:
         if parsed is not None:
             return parsed
     return None
+
+
+def env_pct(name: str, default: float) -> float:
+    raw = os.environ.get(name)
+    if not raw:
+        return default
+    parsed = parse_float(raw)
+    if parsed is None:
+        return default
+    if parsed > 1 and parsed <= 100:
+        parsed = parsed / 100.0
+    if parsed <= 0 or parsed >= 1:
+        return default
+    return float(parsed)
 
 
 def bounded_value(value: Optional[float], minimum: float, maximum: float) -> Optional[float]:
@@ -707,14 +741,72 @@ def extract_bonbast_value_from_text(page_text: str, hints: Tuple[str, ...], mini
     return None
 
 
+def extract_number_with_patterns(text: str, patterns: Tuple[str, ...], minimum: float, maximum: float) -> Optional[float]:
+    for pattern in patterns:
+        match = re.search(pattern, text)
+        if not match:
+            continue
+        parsed = parse_number(match.group(1))
+        bounded = bounded_value(parsed, minimum, maximum)
+        if bounded is not None:
+            return bounded
+    return None
+
+
+def extract_bonbast_selector_numeric(
+    selector_results: Dict[str, Any], key: str, minimum: float, maximum: float
+) -> Tuple[Optional[float], Optional[str]]:
+    entries_any = selector_results.get(key)
+    entries = entries_any if isinstance(entries_any, list) else []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        for field in ("dataValue", "dataPrice", "value", "content", "text"):
+            candidate = parse_number_from_text(str(entry.get(field) or ""))
+            bounded = bounded_value(candidate, minimum, maximum)
+            if bounded is not None:
+                selector = entry.get("selector")
+                return bounded, str(selector) if selector else None
+    return None, None
+
+
+def validate_bonbast_usd_quote(
+    buy_rial: Optional[float], sell_rial: Optional[float], max_spread_pct: float
+) -> Dict[str, Any]:
+    if buy_rial is None or sell_rial is None:
+        return {"ok": False, "reason": "missing USD buy/sell quote", "spread_pct": None}
+    if buy_rial > sell_rial:
+        return {"ok": False, "reason": "buy quote above sell quote", "spread_pct": None}
+    if sell_rial <= 0:
+        return {"ok": False, "reason": "invalid sell quote", "spread_pct": None}
+    spread_pct = (sell_rial - buy_rial) / sell_rial
+    if spread_pct <= 0:
+        return {"ok": False, "reason": "non-positive bid/ask spread", "spread_pct": spread_pct}
+    if spread_pct > max_spread_pct:
+        return {
+            "ok": False,
+            "reason": "bid/ask spread exceeds configured maximum",
+            "spread_pct": spread_pct,
+            "max_spread_pct": max_spread_pct,
+        }
+    return {"ok": True, "reason": None, "spread_pct": spread_pct, "max_spread_pct": max_spread_pct}
+
+
 def fetch_bonbast_browser(
     config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime
 ) -> Sample:
     health: Dict[str, Any] = {
         "collector": "playwright",
+        "fetch_mode": "playwright",
         "scrape_timestamp": iso_ts(sampled_at),
         "page_load_ok": False,
         "selector_success": False,
+        "fetch_success": False,
+        "failure_reason": None,
+        "selector_used": None,
+        "fetch_duration_ms": None,
+        "content_length": None,
+        "final_url": None,
         "error_type": None,
     }
     benchmark_values = blank_benchmark_values()
@@ -729,6 +821,7 @@ def fetch_bonbast_browser(
     except Exception as exc:  # pragma: no cover - depends on runtime environment.
         health["error_type"] = "playwright_unavailable"
         health["error_detail"] = str(exc)
+        health["failure_reason"] = "playwright unavailable"
         return Sample(
             config.name,
             sampled_at,
@@ -776,18 +869,26 @@ def fetch_bonbast_browser(
     }
     """
 
+    started_at = time.monotonic()
     try:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"])
             page = browser.new_page(viewport={"width": 1440, "height": 900})
-            page.goto(config.url, wait_until="domcontentloaded", timeout=30_000)
+            response = page.goto(config.url, wait_until="domcontentloaded", timeout=30_000)
             health["page_load_ok"] = True
             page.wait_for_timeout(1_000)
             scrape_payload = page.evaluate(selector_script, BONBAST_SELECTOR_MAP)
+            rendered_html = page.content()
+            final_url = page.url
             browser.close()
+            health["http_status"] = response.status if response is not None else None
+            health["final_url"] = final_url
+            health["content_length"] = len(rendered_html.encode("utf-8"))
     except PlaywrightTimeoutError as exc:
         health["error_type"] = "page_timeout"
         health["error_detail"] = str(exc)
+        health["failure_reason"] = "bonbast page load timeout"
+        health["fetch_duration_ms"] = int((time.monotonic() - started_at) * 1000)
         return Sample(
             config.name,
             sampled_at,
@@ -804,6 +905,8 @@ def fetch_bonbast_browser(
     except PlaywrightError as exc:
         health["error_type"] = "playwright_error"
         health["error_detail"] = str(exc)
+        health["failure_reason"] = "bonbast browser scrape error"
+        health["fetch_duration_ms"] = int((time.monotonic() - started_at) * 1000)
         return Sample(
             config.name,
             sampled_at,
@@ -820,6 +923,8 @@ def fetch_bonbast_browser(
     except Exception as exc:  # pragma: no cover - defensive.
         health["error_type"] = "unknown_error"
         health["error_detail"] = str(exc)
+        health["failure_reason"] = "bonbast browser scrape error"
+        health["fetch_duration_ms"] = int((time.monotonic() - started_at) * 1000)
         return Sample(
             config.name,
             sampled_at,
@@ -834,16 +939,34 @@ def fetch_bonbast_browser(
             normalized_unit=normalized_unit,
         )
 
+    health["fetch_duration_ms"] = int((time.monotonic() - started_at) * 1000)
     selector_results = scrape_payload.get("selector_results") if isinstance(scrape_payload, dict) else {}
     page_text = scrape_payload.get("page_text") if isinstance(scrape_payload, dict) else ""
     selector_results = selector_results if isinstance(selector_results, dict) else {}
     page_text = page_text if isinstance(page_text, str) else ""
     source_unit = detect_unit_from_text(page_text, config.default_unit)
 
+    buy_raw, buy_selector = extract_bonbast_selector_numeric(selector_results, "open_market_buy", 100_000, 3_000_000)
+    sell_raw, sell_selector = extract_bonbast_selector_numeric(selector_results, "open_market", 100_000, 3_000_000)
+    if buy_raw is None:
+        buy_raw = extract_number_with_patterns(page_text, BONBAST_USD_BUY_PATTERNS, 100_000, 3_000_000)
+        if buy_raw is not None:
+            buy_selector = "text_pattern_buy"
+    if sell_raw is None:
+        sell_raw = extract_number_with_patterns(page_text, BONBAST_USD_SELL_PATTERNS, 100_000, 3_000_000)
+        if sell_raw is not None:
+            sell_selector = "text_pattern_sell"
+    if sell_raw is None:
+        sell_raw = extract_bonbast_value_from_text(page_text, BONBAST_TEXT_HINTS["open_market"], 100_000, 3_000_000)
+        if sell_raw is not None:
+            sell_selector = "text_hint_open_market"
+
+    buy_rial = normalize_unit(buy_raw, source_unit)
+    sell_rial = normalize_unit(sell_raw, source_unit)
+    mid_rial = ((buy_rial + sell_rial) / 2.0) if buy_rial is not None and sell_rial is not None else None
+
     extracted = extract_bonbast_from_selector_results(selector_results)
-    extracted["open_market"] = extracted.get("open_market") or extract_bonbast_value_from_text(
-        page_text, BONBAST_TEXT_HINTS["open_market"], 100_000, 3_000_000
-    )
+    extracted["open_market"] = sell_raw if sell_raw is not None else extracted.get("open_market")
     extracted["crypto_usdt"] = extracted.get("crypto_usdt") or extract_bonbast_value_from_text(
         page_text, BONBAST_TEXT_HINTS["crypto_usdt"], 100_000, 3_000_000
     )
@@ -854,16 +977,35 @@ def fetch_bonbast_browser(
 
     health["selector_success"] = any(v is not None for v in extracted.values())
     health["extracted_values"] = {k: benchmark_values.get(k) for k in ("open_market", "crypto_usdt", "emami_gold_coin")}
+    health["bonbast_usd_buy"] = buy_rial
+    health["bonbast_usd_sell"] = sell_rial
+    health["bonbast_usd_mid"] = mid_rial
+    health["selector_used"] = {"buy": buy_selector, "sell": sell_selector}
+    health["parse_result"] = {
+        "buy_raw": buy_raw,
+        "sell_raw": sell_raw,
+        "buy_rial": buy_rial,
+        "sell_rial": sell_rial,
+        "mid_rial": mid_rial,
+    }
     health["source_unit"] = source_unit
     health["normalized_unit"] = normalized_unit
     health["selector_result_counts"] = {
         benchmark: len(entries) if isinstance(entries, list) else 0 for benchmark, entries in selector_results.items()
     }
 
+    validation = validate_bonbast_usd_quote(
+        buy_rial=buy_rial,
+        sell_rial=sell_rial,
+        max_spread_pct=env_pct("BONBAST_MAX_SPREAD_PCT", BONBAST_MAX_SPREAD_PCT_DEFAULT),
+    )
+    health["validation_result"] = validation
+
     value = benchmark_values.get(PRIMARY_BENCHMARK)
     stale = bool(sampled_at < window_start_dt or sampled_at > window_end_dt)
     if value is None:
         health["error_type"] = "selector_parse_failed"
+        health["failure_reason"] = "unable to parse USD/IRR"
         return Sample(
             config.name,
             sampled_at,
@@ -877,7 +1019,25 @@ def fetch_bonbast_browser(
             source_unit=source_unit,
             normalized_unit=normalized_unit,
         )
+    if not validation.get("ok"):
+        reason = str(validation.get("reason") or "bonbast validation failed")
+        health["error_type"] = "validation_failed"
+        health["failure_reason"] = reason
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=stale,
+            error=reason,
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
 
+    health["fetch_success"] = True
     return Sample(
         config.name,
         sampled_at,
@@ -896,6 +1056,26 @@ def fetch_bonbast_browser(
 def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime) -> Sample:
     if config.auth_mode == "browser_playwright":
         return fetch_bonbast_browser(config, sampled_at, window_start_dt, window_end_dt)
+    if config.name == "bonbast":
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            blank_benchmark_values(),
+            None,
+            ok=False,
+            stale=False,
+            error="bonbast requires browser_playwright mode",
+            health={
+                "collector": "http_json",
+                "fetch_mode": "http",
+                "fetch_success": False,
+                "failure_reason": "bonbast requires browser_playwright mode",
+                "error_type": "invalid_collector_mode",
+            },
+            source_unit=config.default_unit,
+            normalized_unit="rial",
+        )
 
     health: Dict[str, Any] = {
         "collector": "http_json",
@@ -1058,7 +1238,65 @@ def collect_samples(
                 sample.error = "sample outside observation window"
             samples[cfg.name].append(sample)
 
+    apply_bonbast_peer_validation(
+        samples=samples,
+        max_deviation_pct=env_pct("BONBAST_PEER_DEVIATION_PCT", BONBAST_PEER_DEVIATION_PCT_DEFAULT),
+    )
     return samples
+
+
+def apply_bonbast_peer_validation(samples: Dict[str, List[Sample]], max_deviation_pct: float) -> None:
+    bonbast_entries = samples.get("bonbast")
+    if not bonbast_entries:
+        return
+
+    for idx, bonbast_sample in enumerate(bonbast_entries):
+        if not isinstance(bonbast_sample.health, dict):
+            bonbast_sample.health = {}
+        health = bonbast_sample.health
+        validation = health.get("validation_result")
+        if not isinstance(validation, dict):
+            validation = {}
+
+        if bonbast_sample.value is None or not bonbast_sample.ok or bonbast_sample.stale:
+            validation["peer_band_result"] = "skipped_sample_not_valid"
+            health["validation_result"] = validation
+            continue
+
+        peer_values: List[float] = []
+        for source, entries in samples.items():
+            if source == "bonbast" or idx >= len(entries):
+                continue
+            peer_sample = entries[idx]
+            if not peer_sample.ok or peer_sample.stale:
+                continue
+            peer_value = parse_number(peer_sample.benchmark_values.get(PRIMARY_BENCHMARK))
+            if peer_value is not None:
+                peer_values.append(peer_value)
+
+        if not peer_values:
+            validation["peer_band_result"] = "skipped_no_peer_values"
+            health["validation_result"] = validation
+            continue
+
+        peer_median = median(peer_values)
+        if peer_median <= 0:
+            validation["peer_band_result"] = "skipped_invalid_peer_median"
+            health["validation_result"] = validation
+            continue
+
+        deviation_pct = abs(float(bonbast_sample.value) - peer_median) / peer_median
+        validation["peer_median"] = peer_median
+        validation["peer_deviation_pct"] = deviation_pct
+        validation["peer_max_deviation_pct"] = max_deviation_pct
+        if deviation_pct > max_deviation_pct:
+            validation["peer_band_result"] = "failed"
+            bonbast_sample.ok = False
+            bonbast_sample.error = "outside peer plausibility band"
+            health["failure_reason"] = "outside peer plausibility band"
+        else:
+            validation["peer_band_result"] = "passed"
+        health["validation_result"] = validation
 
 
 def compute_benchmark_result(
@@ -1931,7 +2169,7 @@ def unique_intraday_file(site_dir: Path, collected_at: dt.datetime) -> Path:
 
 
 def serialize_sample(sample: Sample) -> Dict[str, Any]:
-    return {
+    payload = {
         "sampled_at": iso_ts(sample.sampled_at),
         "value": sample.value,
         "benchmarks": sample.benchmark_values,
@@ -1943,6 +2181,19 @@ def serialize_sample(sample: Sample) -> Dict[str, Any]:
         "source_unit": sample.source_unit,
         "normalized_unit": sample.normalized_unit,
     }
+    if sample.source == "bonbast" and isinstance(sample.health, dict):
+        payload["bonbast"] = {
+            "bonbast_usd_buy": sample.health.get("bonbast_usd_buy"),
+            "bonbast_usd_sell": sample.health.get("bonbast_usd_sell"),
+            "bonbast_usd_mid": sample.health.get("bonbast_usd_mid"),
+            "source_unit": sample.health.get("source_unit"),
+            "normalized_unit": sample.health.get("normalized_unit"),
+            "fetch_mode": sample.health.get("fetch_mode"),
+            "selector_used": sample.health.get("selector_used"),
+            "fetch_success": sample.health.get("fetch_success"),
+            "failure_reason": sample.health.get("failure_reason"),
+        }
+    return payload
 
 
 def collect_one_attempt(
@@ -1961,6 +2212,10 @@ def collect_one_attempt(
             sample.stale = True
             sample.error = "sample outside observation window"
         samples[cfg.name] = [sample]
+    apply_bonbast_peer_validation(
+        samples=samples,
+        max_deviation_pct=env_pct("BONBAST_PEER_DEVIATION_PCT", BONBAST_PEER_DEVIATION_PCT_DEFAULT),
+    )
     return samples
 
 
