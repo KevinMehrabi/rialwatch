@@ -758,7 +758,7 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
         street_mobadeleh_gap = ((street_fix - mobadeleh_fix) / mobadeleh_fix) * 100
 
     crypto_premium: Optional[float] = None
-    if street.get("available") and crypto.get("available") and street_fix not in (None, 0):
+    if street_fix not in (None, 0) and crypto_fix is not None:
         crypto_premium = ((crypto_fix - street_fix) / street_fix) * 100 if crypto_fix is not None else None
 
     return {
@@ -1143,10 +1143,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         ),
         "crypto_premium": (
             ((crypto - street) / street) * 100
-            if benchmark_available("open_market")
-            and benchmark_available("crypto_usdt")
-            and crypto is not None
-            and street not in (None, 0)
+            if crypto is not None and street not in (None, 0)
             else None
         ),
     }
