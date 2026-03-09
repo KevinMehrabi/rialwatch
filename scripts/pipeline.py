@@ -1040,6 +1040,28 @@ def publish_archive(site_dir: Path, templates_dir: Path, generated_at: str, days
 
 
 def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest: Dict[str, Any]) -> None:
+    def humanize_withhold_reason(reason: Any) -> Optional[str]:
+        if not isinstance(reason, str):
+            return None
+        text = reason.strip().lower()
+        if not text:
+            return None
+        if "no valid source" in text:
+            return "Insufficient valid sources"
+        if "dispersion" in text:
+            return "High dispersion across sources"
+        if "stale" in text or "invalid/stale" in text or "outside observation window" in text:
+            return "Stale or invalid source inputs"
+        if "missing secret" in text or "missing secrets" in text or "config needed" in text:
+            return "Configuration needed"
+        if "no existing published data" in text:
+            return "No published daily reference available"
+        if "no intraday" in text:
+            return "No intraday samples in publication window"
+        if "no valid attempts" in text:
+            return "No valid intraday samples in publication window"
+        return "Publication withheld by methodology checks"
+
     c = latest.get("computed", {})
     fix = c.get("fix")
     p25 = c.get("band", {}).get("p25")
@@ -1056,6 +1078,12 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     if not isinstance(benchmark_map, dict):
         benchmark_map = c.get("benchmarks", {})
     benchmark_map = benchmark_map if isinstance(benchmark_map, dict) else {}
+
+    def benchmark_available(key: str) -> bool:
+        entry = benchmark_map.get(key, {})
+        if not isinstance(entry, dict):
+            return False
+        return bool(entry.get("available"))
 
     def benchmark_value_number(key: str) -> Optional[float]:
         entry = benchmark_map.get(key, {})
@@ -1079,8 +1107,22 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street = benchmark_value_number("open_market")
         nima = benchmark_value_number("nima")
         crypto = benchmark_value_number("crypto_usdt")
-        street_nima_gap = ((street - nima) / nima) * 100 if street is not None and nima not in (None, 0) else None
-        crypto_premium = ((crypto - street) / street) * 100 if crypto is not None and street not in (None, 0) else None
+        street_nima_gap = (
+            ((street - nima) / nima) * 100
+            if benchmark_available("open_market")
+            and benchmark_available("nima")
+            and street is not None
+            and nima not in (None, 0)
+            else None
+        )
+        crypto_premium = (
+            ((crypto - street) / street) * 100
+            if benchmark_available("open_market")
+            and benchmark_available("crypto_usdt")
+            and crypto is not None
+            and street not in (None, 0)
+            else None
+        )
         indicator_map = {
             "street_nima_gap": {"value": street_nima_gap},
             "crypto_premium": {"value": crypto_premium},
@@ -1095,6 +1137,32 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             return "Unavailable"
         return f"{value:+.1f}%"
 
+    publication_meta = ""
+    publication_selection = latest.get("publication_selection")
+    if isinstance(publication_selection, dict):
+        basis = publication_selection.get("basis_label")
+        if not isinstance(basis, str) or not basis.strip():
+            basis = publication_selection.get("selection_reason") if isinstance(publication_selection.get("selection_reason"), str) else ""
+        selected_ts = try_parse_datetime(publication_selection.get("selected_collected_at"))
+        selected_sample = selected_ts.strftime("%H:%M UTC") if selected_ts else None
+        parts: List[str] = []
+        if basis:
+            parts.append(basis.strip())
+        if selected_sample:
+            parts.append(f"Selected sample: {selected_sample}")
+        publication_meta = " | ".join(parts)
+
+    withhold_reason_short = ""
+    if withheld:
+        normalized_reason = None
+        if isinstance(reasons, list):
+            for reason in reasons:
+                normalized_reason = humanize_withhold_reason(reason)
+                if normalized_reason:
+                    break
+        if normalized_reason:
+            withhold_reason_short = f"WITHHOLD reason: {normalized_reason}"
+
     html = render_page(
         templates_dir,
         "index.html",
@@ -1108,6 +1176,8 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         status=status,
         status_class=css_class(status),
         withheld="Yes" if withheld else "No",
+        publication_meta=publication_meta,
+        withhold_reason_short=withhold_reason_short,
         reasons=reasons_html,
         nima_value=benchmark_value_or_unavailable("nima"),
         official_value=benchmark_value_or_unavailable("official"),
@@ -1417,14 +1487,26 @@ def select_daily_from_intraday(
         selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
 
     selected_at, selected_attempt, daily, selected_valid = selected
+    latest_at = latest_attempt[0]
+    used_fallback = bool(selected_valid and selected_at != latest_at)
+    if selected_valid and not used_fallback:
+        basis_label = "Selected from intraday publication window"
+    elif selected_valid and used_fallback:
+        basis_label = "Fallback to most recent valid intraday sample"
+    else:
+        basis_label = "No valid intraday sample in publication window (WITHHOLD)"
+
     daily["publication_selection"] = {
         "rule": "latest valid intraday attempt in publication window, else latest attempt",
         "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
         "candidate_count": len(candidates),
         "valid_candidate_count": len(valid_candidates),
         "selected_collected_at": iso_ts(selected_at),
+        "latest_candidate_collected_at": iso_ts(latest_at),
         "selected_attempt_file": selected_attempt.get("file"),
         "selected_valid": selected_valid,
+        "used_fallback": used_fallback,
+        "basis_label": basis_label,
         "selection_reason": selected_reason,
     }
     return daily
@@ -1657,9 +1739,17 @@ def run(args: argparse.Namespace) -> int:
     should_sleep_until(publish_dt, skip_waits=args.skip_waits)
 
     daily = summarize_day(samples, source_configs, day)
+    latest_sampled_at: Optional[dt.datetime] = None
+    for entries in samples.values():
+        for sample in entries:
+            if latest_sampled_at is None or sample.sampled_at > latest_sampled_at:
+                latest_sampled_at = sample.sampled_at
     daily["publication_selection"] = {
         "rule": "legacy full-mode collection: summarize all configured sample times for the day",
         "sample_times_utc": [t.strftime("%H:%M") for t in sample_times],
+        "selected_collected_at": iso_ts(latest_sampled_at) if latest_sampled_at else None,
+        "basis_label": "Selected from intraday publication window",
+        "used_fallback": False,
         "selected_valid": is_daily_valid(daily),
         "selection_reason": "legacy mode aggregates all configured collection times",
     }
