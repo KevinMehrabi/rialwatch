@@ -58,6 +58,16 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(sample.benchmark_values["open_market"], 1_664_000.0)
         self.assertEqual(sample.benchmark_values["official"], 420_000.0)
 
+    def test_parse_source_payload_supports_navasan_js_assignment(self) -> None:
+        body = (
+            'var lastrates = {"mob_usd":{"value":"42,000"}};'
+            'var yesterday = {"usd_sell":{"value":166400},"mex_usd_sell":{"value":1325072}};'
+        )
+        payload, mode = pipeline.parse_source_payload("navasan", body)
+        self.assertEqual(mode, "javascript_var:yesterday")
+        self.assertIn("mex_usd_sell", payload)
+        self.assertEqual(payload["mex_usd_sell"]["value"], 1325072)
+
 
 if __name__ == "__main__":
     unittest.main()

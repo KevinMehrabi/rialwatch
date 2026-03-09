@@ -71,6 +71,7 @@ BENCHMARK_SYMBOL_CANDIDATES: Dict[str, Tuple[str, ...]] = {
 # If a strict benchmark has no entry for a source, we intentionally return unavailable.
 CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
     "navasan": {
+        "open_market": ("usd_sell", "usd"),
         # Commercial managed-market sell quote.
         "official": ("mex_usd_sell",),
         "regional_transfer": ("usd_shakhs", "usd_sherkat"),
@@ -262,6 +263,34 @@ def detect_source_unit(payload: Any, default_unit: str) -> str:
             if unit in {"toman", "rial"}:
                 return unit
     return unit
+
+
+def parse_source_payload(source_name: str, body: str) -> Tuple[Any, str]:
+    try:
+        return json.loads(body), "json"
+    except json.JSONDecodeError as exc:
+        if source_name != "navasan":
+            raise exc
+
+        # Navasan fallback for JavaScript assignment payloads such as:
+        #   var lastrates = {...};
+        #   var yesterday = {...};
+        js_vars: Dict[str, Any] = {}
+        for match in re.finditer(r"var\s+([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(\{.*?\})\s*;", body, re.S):
+            var_name = str(match.group(1) or "").strip().lower()
+            var_body = match.group(2)
+            if not var_name or not var_body:
+                continue
+            try:
+                js_vars[var_name] = json.loads(var_body)
+            except json.JSONDecodeError:
+                continue
+
+        for preferred in ("yesterday", "lastrates"):
+            parsed = js_vars.get(preferred)
+            if isinstance(parsed, dict):
+                return parsed, f"javascript_var:{preferred}"
+        raise exc
 
 
 def parse_number_from_text(text: Any) -> Optional[float]:
@@ -1115,7 +1144,12 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         req = build_request(config)
         with urllib.request.urlopen(req, timeout=20) as resp:
             body = resp.read().decode("utf-8", errors="replace")
-        payload = json.loads(body)
+            final_url = resp.geturl()
+        health["content_length"] = len(body.encode("utf-8"))
+        health["final_url"] = final_url
+        payload, payload_mode = parse_source_payload(config.name, body)
+        health["payload_mode"] = payload_mode
+        health["page_load_ok"] = True
     except KeyError as exc:
         health["error_type"] = "missing_secret"
         return Sample(
@@ -1194,6 +1228,12 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
 
     raw_extracted_values = extract_benchmark_values(payload, config.name)
     benchmark_units: Dict[str, str] = {}
+    canonical_map = CANONICAL_SOURCE_SYMBOLS.get(config.name, {})
+    health["source_fields"] = {
+        key: list(canonical_map.get(key, ()))
+        for key in BENCHMARK_LABELS
+        if canonical_map.get(key)
+    }
     if config.name == "navasan":
         benchmark_units = {key: NAVASAN_BENCHMARK_UNITS.get(key, config.default_unit) for key in BENCHMARK_LABELS}
         benchmark_values = normalize_benchmark_values_with_units(
@@ -1212,6 +1252,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     health["benchmark_units"] = benchmark_units
     health["source_unit"] = source_unit
     health["normalized_unit"] = normalized_unit
+    health["fetch_success"] = True
 
     stale = False
     if quote_time is not None and (quote_time < window_start_dt or quote_time > window_end_dt):
@@ -2332,7 +2373,10 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
     value = parse_number(payload.get("value"))
     if source == "navasan" and value is not None and source_unit == "mixed":
         # Legacy navasan samples without explicit unit stored `value` as toman street quote.
-        value = normalize_unit(value, NAVASAN_BENCHMARK_UNITS.get("open_market", "toman"))
+        # New mixed-unit payloads include benchmark_units metadata and are already normalized.
+        has_benchmark_units = isinstance(health.get("benchmark_units"), dict) and bool(health.get("benchmark_units"))
+        if not has_benchmark_units or health.get("legacy_unit_repair") == "applied_navasan_symbol_unit_map":
+            value = normalize_unit(value, NAVASAN_BENCHMARK_UNITS.get("open_market", "toman"))
     elif value is None:
         value = parse_number(benchmark_values.get(PRIMARY_BENCHMARK))
 
@@ -2536,22 +2580,35 @@ def select_daily_from_intraday(
     site_dir: Path,
     day: dt.date,
     source_configs: List[SourceConfig],
+    include_outside_window: bool = False,
 ) -> Optional[Dict[str, Any]]:
     attempts = load_intraday_attempts(site_dir, day)
     if not attempts:
         return None
 
-    candidates: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool]] = []
+    all_attempts: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool, bool]] = []
     for attempt in attempts:
         collected_at = try_parse_datetime(attempt.get("collected_at"))
-        if collected_at is None or not in_publication_window(collected_at, day):
+        if collected_at is None:
             continue
         samples = attempt_to_samples(attempt)
         if not samples:
             continue
         daily = summarize_day(samples, source_configs, day)
         valid = is_daily_valid(daily)
-        candidates.append((collected_at, attempt, daily, valid))
+        in_window = in_publication_window(collected_at, day)
+        all_attempts.append((collected_at, attempt, daily, valid, in_window))
+
+    candidates: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool]] = [
+        (collected_at, attempt, daily, valid)
+        for collected_at, attempt, daily, valid, in_window in all_attempts
+        if in_window
+    ]
+    selection_scope = "publication_window"
+
+    if not candidates and include_outside_window:
+        candidates = [(collected_at, attempt, daily, valid) for collected_at, attempt, daily, valid, _ in all_attempts]
+        selection_scope = "latest_intraday_fallback"
 
     if not candidates:
         return None
@@ -2562,16 +2619,25 @@ def select_daily_from_intraday(
 
     if valid_candidates:
         selected = valid_candidates[-1]
-        selected_reason = "latest valid intraday attempt in publication window"
+        if selection_scope == "latest_intraday_fallback":
+            selected_reason = "latest valid intraday attempt (outside-window fallback for current-day refresh)"
+        else:
+            selected_reason = "latest valid intraday attempt in publication window"
     else:
         selected = latest_attempt
-        selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
+        if selection_scope == "latest_intraday_fallback":
+            selected_reason = "no valid attempts found; used latest intraday attempt (outside-window fallback)"
+        else:
+            selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
 
     selected_at, selected_attempt, daily, selected_valid = selected
     latest_at = latest_attempt[0]
     used_fallback = bool(selected_valid and selected_at != latest_at)
     if selected_valid and not used_fallback:
-        basis_label = "Selected from intraday publication window"
+        if selection_scope == "latest_intraday_fallback":
+            basis_label = "Selected from latest intraday attempt (outside publication window)"
+        else:
+            basis_label = "Selected from intraday publication window"
     elif selected_valid and used_fallback:
         basis_label = "Fallback to most recent valid intraday sample"
     else:
@@ -2579,6 +2645,7 @@ def select_daily_from_intraday(
 
     daily["publication_selection"] = {
         "rule": "latest valid intraday attempt in publication window, else latest attempt",
+        "selection_scope": selection_scope,
         "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
         "candidate_count": len(candidates),
         "valid_candidate_count": len(valid_candidates),
@@ -2595,15 +2662,26 @@ def select_daily_from_intraday(
 
 def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
     source_configs = build_source_configs()
-    refreshed = refresh_existing_day_payload(site_dir, templates_dir, generated_at, day, source_configs)
+    intraday_selected = select_daily_from_intraday(site_dir, day, source_configs, include_outside_window=True)
+    refreshed: Optional[Dict[str, Any]] = None
+    if intraday_selected is not None and is_daily_valid(intraday_selected):
+        publish_daily_fix(site_dir, templates_dir, generated_at=generated_at, daily=intraday_selected)
+        refreshed = intraday_selected
+    else:
+        refreshed = refresh_existing_day_payload(site_dir, templates_dir, generated_at, day, source_configs)
 
     latest_path = site_dir / "api" / "latest.json"
     if refreshed is not None:
         latest = refreshed
         status_title = "OK"
-        status_detail = (
-            f"Build-only mode: refreshed {iso_date(day)} published artifact using current benchmark logic."
-        )
+        if intraday_selected is not None and is_daily_valid(intraday_selected):
+            status_detail = (
+                f"Build-only mode: refreshed {iso_date(day)} from current-day intraday sample selection using current benchmark logic."
+            )
+        else:
+            status_detail = (
+                f"Build-only mode: refreshed {iso_date(day)} published artifact using current benchmark logic."
+            )
     elif latest_path.exists():
         latest = json.loads(latest_path.read_text(encoding="utf-8"))
         status_title = "OK"
