@@ -22,25 +22,69 @@
   </header>
   <div class="page-wrapper" style="background:#0b1220; min-height:100vh;">
     <div class="container-xl py-4">
-      <div class="row row-deck row-cards">
+      <div class="row row-cards">
   <div class="col-lg-6">
-    <div class="card bg-dark text-white">
-      <div class="card-body">
-        <div class="text-secondary mb-2">TODAY'S REFERENCE</div>
-        <div class="h1 mb-1">N/A IRR</div>
-        <div class="text-secondary">Date: 2026-03-08 | As of: 2026-03-08T21:43:51Z</div>
-        <div class="row mt-4">
-          <div class="col-4">
-            <div class="text-secondary">Band (P25-P75)</div>
-            <div>N/A - N/A</div>
+    <div class="d-flex flex-column gap-3">
+      <div class="card bg-dark text-white">
+        <div class="card-body">
+          <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
+          <div class="text-secondary mb-2">Open Market / Street Rate</div>
+          <div class="text-warning fw-bold mb-1">WITHHELD</div><div class="h5 mb-1">Candidate value: 166,400 IRR</div>
+          <div class="text-secondary">Date: 2026-03-09 | As of: 2026-03-09T14:20:00Z</div>
+          <div class="text-secondary small mt-1">Observed sample: 14:20 UTC (intraday window)</div>
+          <div class="text-warning small mt-1">Reason: Stale or invalid source inputs</div>
+          <div class="row mt-4">
+            <div class="col-4">
+              <div class="text-secondary">Band (P25-P75)</div>
+              <div>166,400 - 166,400</div>
+            </div>
+            <div class="col-4">
+              <div class="text-secondary">Status</div>
+              <div>WITHHOLD</div>
+            </div>
+            <div class="col-4">
+              <div class="text-secondary">Withheld</div>
+              <div>Yes</div>
+            </div>
           </div>
-          <div class="col-4">
-            <div class="text-secondary">Status</div>
-            <div>CONFIG NEEDED</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="text-secondary fw-semibold mb-2">Indicators</div>
+        <div class="row g-3">
+          <div class="col-12 col-md-6 d-flex">
+            <div class="card bg-dark text-white w-100 h-100">
+              <div class="card-body d-flex flex-column">
+                <div>
+                  <div class="fw-semibold mb-1">Street-NIMA Gap</div>
+                  <div class="text-secondary small mb-2">Percent difference between Street Rate and NIMA Rate.</div>
+                </div>
+                <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
+              </div>
+            </div>
           </div>
-          <div class="col-4">
-            <div class="text-secondary">Withheld</div>
-            <div>Yes</div>
+          <div class="col-12 col-md-6 d-flex">
+            <div class="card bg-dark text-white w-100 h-100">
+              <div class="card-body d-flex flex-column">
+                <div>
+                  <div class="fw-semibold mb-1">Street–Mobadeleh Gap</div>
+                  <div class="text-secondary small mb-2">Percent difference between Street Rate and Mobadeleh USD Rate.</div>
+                </div>
+                <div class="h3 mb-0 mt-auto pt-3">-60.4%</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 d-flex">
+            <div class="card bg-dark text-white w-100 h-100">
+              <div class="card-body d-flex flex-column">
+                <div>
+                  <div class="fw-semibold mb-1">Crypto Premium</div>
+                  <div class="text-secondary small mb-2">Premium or discount of USDT vs Street Rate.</div>
+                </div>
+                <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -52,6 +96,79 @@
       <div class="card-body">
         <div class="text-secondary mb-2">HISTORICAL SERIES</div>
         <canvas id="historyChart" height="160"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row row-cards mt-1">
+  <div class="col-12">
+    <div class="text-secondary fw-semibold mb-2">Additional Rial Readings</div>
+  </div>
+  <div class="col-12">
+    <div class="row row-cards">
+      <div class="col-md-4 d-flex">
+        <div class="card bg-dark text-white w-100 h-100">
+          <div class="card-body d-flex flex-column">
+            <div>
+              <div class="fw-semibold mb-1">NIMA Rate</div>
+              <div class="text-secondary small mb-2">Semi-official FX rate used for importer/exporter settlement.</div>
+            </div>
+            <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 d-flex">
+        <div class="card bg-dark text-white w-100 h-100">
+          <div class="card-body d-flex flex-column">
+            <div>
+              <div class="fw-semibold mb-1">Mobadeleh USD Rate</div>
+              <div class="text-secondary small mb-2">Managed USD/IRR benchmark derived from the Mobadeleh (exchange center) market.</div>
+            </div>
+            <div class="h3 mb-0 mt-auto pt-3">420,000 IRR</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 d-flex">
+        <div class="card bg-dark text-white w-100 h-100">
+          <div class="card-body d-flex flex-column">
+            <div>
+              <div class="fw-semibold mb-1">Regional Transfer Rate</div>
+              <div class="text-secondary small mb-2">Regional transfer-channel USD/IRR reading for cross-border settlement.</div>
+            </div>
+            <div class="h3 mb-0 mt-auto pt-3">169,700 IRR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12">
+    <div class="text-secondary fw-semibold mb-2">Market Signals</div>
+  </div>
+  <div class="col-12">
+    <div class="row row-cards">
+      <div class="col-md-4 d-flex offset-md-2">
+        <div class="card bg-dark text-white w-100 h-100">
+          <div class="card-body d-flex flex-column">
+            <div>
+              <div class="fw-semibold mb-1">Crypto Dollar (USDT)</div>
+              <div class="text-secondary small mb-2">USDT-implied USD/IRR from crypto markets.</div>
+            </div>
+            <div class="h3 mb-0 mt-auto pt-3">149,700 IRR</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 d-flex">
+        <div class="card bg-dark text-white w-100 h-100">
+          <div class="card-body d-flex flex-column">
+            <div>
+              <div class="fw-semibold mb-1">Emami Gold Coin</div>
+              <div class="text-secondary small mb-2">IRR price of the standard Iranian gold coin.</div>
+            </div>
+            <div class="h3 mb-0 mt-auto pt-3">210,000 IRR</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -85,29 +202,63 @@ async function loadSeries() {
   const res = await fetch(seriesUrl.toString());
   const data = await res.json();
   const rows = data.rows || [];
-  const numericRows = rows
-    .map(r => ({ ...r, fixNum: Number(r.fix) }))
-    .filter(r => Number.isFinite(r.fixNum));
+  const marketStatuses = new Set(['Green', 'Amber', 'Red']);
+  const toFixNumber = (value) => {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) && value > 0 ? value : null;
+    }
+    if (typeof value === 'string') {
+      const cleaned = value.trim().replace(/,/g, '');
+      if (!cleaned) return null;
+      const parsed = Number(cleaned);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    }
+    return null;
+  };
+  const toBool = (value) => {
+    if (typeof value === 'boolean') return value;
+    if (typeof value === 'string') {
+      const lowered = value.trim().toLowerCase();
+      if (lowered === 'true') return true;
+      if (lowered === 'false') return false;
+    }
+    return null;
+  };
+  const validRows = rows
+    .map(r => {
+      const status = typeof r.status === 'string' ? r.status.trim() : '';
+      return {
+        ...r,
+        status,
+        fixNum: toFixNumber(r.fix),
+        withheldBool: toBool(r.withheld)
+      };
+    })
+    .filter(r => r.fixNum !== null && r.withheldBool === false && marketStatuses.has(r.status));
 
   const tbody = document.getElementById('recent-days');
-  tbody.innerHTML = rows.slice(-30).reverse().map(r => `
-    <tr>
-      <td>${r.date}</td>
-      <td>${r.fix ?? 'N/A'}</td>
-      <td>${r.status ?? 'N/A'}</td>
-    </tr>
-  `).join('');
+  if (!validRows.length) {
+    tbody.innerHTML = '<tr><td colspan="3">No valid published daily fixes yet.</td></tr>';
+  } else {
+    tbody.innerHTML = validRows.slice(-30).reverse().map(r => `
+      <tr>
+        <td>${r.date}</td>
+        <td>${r.fixNum}</td>
+        <td>${r.status}</td>
+      </tr>
+    `).join('');
+  }
 
   const canvas = document.getElementById('historyChart');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
 
-  if (!numericRows.length) {
+  if (!validRows.length) {
     const holder = canvas.parentElement;
     if (holder && !holder.querySelector('.no-series-note')) {
       const note = document.createElement('div');
       note.className = 'text-secondary mt-2 no-series-note';
-      note.textContent = 'No numeric IRR values available in series.json yet.';
+      note.textContent = 'No valid published historical fixes available yet.';
       holder.appendChild(note);
     }
     return;
@@ -116,10 +267,10 @@ async function loadSeries() {
   new Chart(ctx, {
     type: 'line',
     data: {
-      labels: numericRows.map(r => r.date),
+      labels: validRows.map(r => r.date),
       datasets: [{
         label: 'USD/IRR',
-        data: numericRows.map(r => r.fixNum),
+        data: validRows.map(r => r.fixNum),
         borderColor: '#3b82f6',
         backgroundColor: 'rgba(59,130,246,0.15)',
         tension: 0.2,
@@ -139,7 +290,7 @@ async function loadSeries() {
 loadSeries();
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-08T21:43:51Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-09T17:21:50Z</div>
     </div>
   </div>
 </div>

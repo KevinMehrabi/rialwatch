@@ -50,7 +50,14 @@ PRIMARY_BENCHMARK = "open_market"
 
 INDICATOR_LABELS: Dict[str, str] = {
     "street_nima_gap": "Street-NIMA Gap",
+    "street_mobadeleh_gap": "Street–Mobadeleh Gap",
     "crypto_premium": "Crypto Premium",
+}
+
+INDICATOR_FORMULAS: Dict[str, str] = {
+    "street_nima_gap": "((street_rate - nima_rate) / nima_rate) * 100",
+    "street_mobadeleh_gap": "((street_rate - mobadeleh_rate) / mobadeleh_rate) * 100",
+    "crypto_premium": "((crypto_usdt_rate - street_rate) / street_rate) * 100",
 }
 
 STRICT_CANONICAL_BENCHMARKS = {"nima", "official", "regional_transfer"}
@@ -734,15 +741,21 @@ def compute_benchmark_result(
 def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     street = benchmark_results.get("open_market", {})
     nima = benchmark_results.get("nima", {})
+    mobadeleh = benchmark_results.get("official", {})
     crypto = benchmark_results.get("crypto_usdt", {})
 
     street_fix = parse_number(street.get("fix"))
     nima_fix = parse_number(nima.get("fix"))
+    mobadeleh_fix = parse_number(mobadeleh.get("fix"))
     crypto_fix = parse_number(crypto.get("fix"))
 
     street_nima_gap: Optional[float] = None
     if street.get("available") and nima.get("available") and nima_fix not in (None, 0):
         street_nima_gap = ((street_fix - nima_fix) / nima_fix) * 100 if street_fix is not None else None
+
+    street_mobadeleh_gap: Optional[float] = None
+    if street_fix is not None and mobadeleh_fix not in (None, 0):
+        street_mobadeleh_gap = ((street_fix - mobadeleh_fix) / mobadeleh_fix) * 100
 
     crypto_premium: Optional[float] = None
     if street.get("available") and crypto.get("available") and street_fix not in (None, 0):
@@ -753,13 +766,19 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
             "label": INDICATOR_LABELS["street_nima_gap"],
             "value": street_nima_gap,
             "available": street_nima_gap is not None,
-            "formula": "((street_rate - nima_rate) / nima_rate) * 100",
+            "formula": INDICATOR_FORMULAS["street_nima_gap"],
+        },
+        "street_mobadeleh_gap": {
+            "label": INDICATOR_LABELS["street_mobadeleh_gap"],
+            "value": street_mobadeleh_gap,
+            "available": street_mobadeleh_gap is not None,
+            "formula": INDICATOR_FORMULAS["street_mobadeleh_gap"],
         },
         "crypto_premium": {
             "label": INDICATOR_LABELS["crypto_premium"],
             "value": crypto_premium,
             "available": crypto_premium is not None,
-            "formula": "((crypto_usdt_rate - street_rate) / street_rate) * 100",
+            "formula": INDICATOR_FORMULAS["crypto_premium"],
         },
     }
 
@@ -1104,36 +1123,41 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         indicator_map = c.get("indicators", {})
     indicator_map = indicator_map if isinstance(indicator_map, dict) else {}
 
-    if not indicator_map:
-        street = benchmark_value_number("open_market")
-        nima = benchmark_value_number("nima")
-        crypto = benchmark_value_number("crypto_usdt")
-        street_nima_gap = (
+    street = benchmark_value_number("open_market")
+    nima = benchmark_value_number("nima")
+    mobadeleh = benchmark_value_number("official")
+    crypto = benchmark_value_number("crypto_usdt")
+    fallback_indicator_values: Dict[str, Optional[float]] = {
+        "street_nima_gap": (
             ((street - nima) / nima) * 100
             if benchmark_available("open_market")
             and benchmark_available("nima")
             and street is not None
             and nima not in (None, 0)
             else None
-        )
-        crypto_premium = (
+        ),
+        "street_mobadeleh_gap": (
+            ((street - mobadeleh) / mobadeleh) * 100
+            if street is not None and mobadeleh not in (None, 0)
+            else None
+        ),
+        "crypto_premium": (
             ((crypto - street) / street) * 100
             if benchmark_available("open_market")
             and benchmark_available("crypto_usdt")
             and crypto is not None
             and street not in (None, 0)
             else None
-        )
-        indicator_map = {
-            "street_nima_gap": {"value": street_nima_gap},
-            "crypto_premium": {"value": crypto_premium},
-        }
+        ),
+    }
+    if not indicator_map:
+        indicator_map = {k: {"value": v} for k, v in fallback_indicator_values.items()}
 
     def indicator_value_or_unavailable(key: str) -> str:
         entry = indicator_map.get(key, {})
-        if not isinstance(entry, dict):
-            return "Unavailable"
-        value = parse_float(entry.get("value"))
+        value = parse_float(entry.get("value")) if isinstance(entry, dict) else None
+        if value is None:
+            value = fallback_indicator_values.get(key)
         if value is None:
             return "Unavailable"
         return f"{value:+.1f}%"
@@ -1141,17 +1165,18 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     publication_meta = ""
     publication_selection = latest.get("publication_selection")
     if isinstance(publication_selection, dict):
-        basis = publication_selection.get("basis_label")
-        if not isinstance(basis, str) or not basis.strip():
-            basis = publication_selection.get("selection_reason") if isinstance(publication_selection.get("selection_reason"), str) else ""
         selected_ts = try_parse_datetime(publication_selection.get("selected_collected_at"))
         selected_sample = selected_ts.strftime("%H:%M UTC") if selected_ts else None
-        parts: List[str] = []
-        if basis:
-            parts.append(basis.strip())
+        used_fallback = bool(publication_selection.get("used_fallback"))
         if selected_sample:
-            parts.append(f"Selected sample: {selected_sample}")
-        publication_meta = " | ".join(parts)
+            if used_fallback:
+                publication_meta = f"Observed sample: {selected_sample} (fallback from intraday window)"
+            else:
+                publication_meta = f"Observed sample: {selected_sample} (intraday window)"
+    if not publication_meta:
+        as_of_ts = try_parse_datetime(latest.get("as_of"))
+        if as_of_ts:
+            publication_meta = f"Observed sample: {as_of_ts.strftime('%H:%M UTC')} (intraday window)"
 
     withhold_reason_text = ""
     if withheld:
@@ -1203,6 +1228,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         crypto_usdt_value=benchmark_value_or_unavailable("crypto_usdt"),
         emami_gold_coin_value=benchmark_value_or_unavailable("emami_gold_coin"),
         street_nima_gap_value=indicator_value_or_unavailable("street_nima_gap"),
+        street_mobadeleh_gap_value=indicator_value_or_unavailable("street_mobadeleh_gap"),
         crypto_premium_value=indicator_value_or_unavailable("crypto_premium"),
     )
     write_text(site_dir / "index.html", html)
@@ -1434,11 +1460,7 @@ def build_placeholder_payload(day: dt.date, as_of: str, status: str, reason: str
             "label": INDICATOR_LABELS[key],
             "value": None,
             "available": False,
-            "formula": (
-                "((street_rate - nima_rate) / nima_rate) * 100"
-                if key == "street_nima_gap"
-                else "((crypto_usdt_rate - street_rate) / street_rate) * 100"
-            ),
+            "formula": INDICATOR_FORMULAS[key],
         }
         for key in INDICATOR_LABELS
     }
