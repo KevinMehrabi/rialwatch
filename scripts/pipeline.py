@@ -31,8 +31,6 @@ PUBLISH_AT = dt.time(14, 20)
 DEFAULT_INTRADAY_SAMPLE_TIMES = ("13:45", "14:00", "14:15")
 
 REQUIRED_SECRETS = (
-    "BONBAST_USERNAME",
-    "BONBAST_HASH",
     "NAVASAN_API_KEY",
     "ALANCHAND_API_KEY",
 )
@@ -88,12 +86,41 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
     },
 }
 
+BONBAST_SELECTOR_MAP: Dict[str, Tuple[str, ...]] = {
+    "open_market": (
+        "#usd1",
+        "#usd",
+        "[data-key='usd1']",
+        "[data-symbol='usd1']",
+        "[data-symbol='usd']",
+    ),
+    "crypto_usdt": (
+        "#usdt",
+        "#tether",
+        "[data-key='usdt']",
+        "[data-symbol='usdt']",
+    ),
+    "emami_gold_coin": (
+        "#sekkeh",
+        "#sekke",
+        "[data-key='sekkeh']",
+        "[data-symbol='sekkeh']",
+        "[data-symbol='emami']",
+    ),
+}
+
+BONBAST_TEXT_HINTS: Dict[str, Tuple[str, ...]] = {
+    "open_market": ("usd1", "usd", "dollar", "azad", "street"),
+    "crypto_usdt": ("usdt", "tether"),
+    "emami_gold_coin": ("sekkeh", "sekke", "emami", "coin"),
+}
+
 
 @dataclass
 class SourceConfig:
     name: str
     url: str
-    auth_mode: str  # query_user_hash | query_api_key | header_api_key
+    auth_mode: str  # browser_playwright | query_api_key | header_api_key
     secret_fields: Tuple[str, ...]
     benchmark_families: Tuple[str, ...]
 
@@ -108,6 +135,7 @@ class Sample:
     ok: bool
     stale: bool
     error: Optional[str] = None
+    health: Optional[Dict[str, Any]] = None
 
 
 class PipelineError(RuntimeError):
@@ -123,8 +151,14 @@ def parse_float(value: Any) -> Optional[float]:
         v = float(value)
         return v if math.isfinite(v) else None
     if isinstance(value, str):
-        cleaned = value.strip().replace(",", "")
-        cleaned = cleaned.replace(" ", "")
+        cleaned = (
+            value.translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
+            .strip()
+            .replace(",", "")
+            .replace("٬", "")
+            .replace("،", "")
+            .replace(" ", "")
+        )
         if not cleaned:
             return None
         if not re.fullmatch(r"[-+]?\d+(?:\.\d+)?", cleaned):
@@ -146,6 +180,29 @@ def parse_number(value: Any) -> Optional[float]:
     if 1_000 <= v < 100_000:
         return v * 10.0
     return v
+
+
+def blank_benchmark_values() -> Dict[str, Optional[float]]:
+    return {key: None for key in BENCHMARK_LABELS}
+
+
+def parse_number_from_text(text: Any) -> Optional[float]:
+    if not isinstance(text, str):
+        return None
+    normalized = text.translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
+    for token in re.findall(r"[-+]?\d[\d,٬،.]*(?:\.\d+)?", normalized):
+        parsed = parse_number(token)
+        if parsed is not None:
+            return parsed
+    return None
+
+
+def bounded_value(value: Optional[float], minimum: float, maximum: float) -> Optional[float]:
+    if value is None:
+        return None
+    if minimum <= value <= maximum:
+        return value
+    return None
 
 
 def try_parse_datetime(value: Any) -> Optional[dt.datetime]:
@@ -519,10 +576,10 @@ def build_source_configs() -> List[SourceConfig]:
     return [
         SourceConfig(
             name="bonbast",
-            url=env_or_default("BONBAST_API_URL", "https://api.bonbast.com/v1/rates"),
-            auth_mode="query_user_hash",
-            secret_fields=("BONBAST_USERNAME", "BONBAST_HASH"),
-            benchmark_families=("open_market", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            url=env_or_default("BONBAST_SITE_URL", "https://bonbast.com"),
+            auth_mode="browser_playwright",
+            secret_fields=(),
+            benchmark_families=("open_market", "crypto_usdt", "emami_gold_coin"),
         ),
         SourceConfig(
             name="navasan",
@@ -550,19 +607,16 @@ def missing_secrets() -> List[str]:
 
 
 def build_request(config: SourceConfig) -> urllib.request.Request:
+    if config.auth_mode == "browser_playwright":
+        raise PipelineError("browser sources do not use HTTP request builder")
+
     url = config.url
     headers = {
         "Accept": "application/json",
         "User-Agent": "rialwatch-pipeline/0.2",
     }
 
-    if config.auth_mode == "query_user_hash":
-        query = {
-            "username": os.environ["BONBAST_USERNAME"],
-            "hash": os.environ["BONBAST_HASH"],
-        }
-        url = with_query(url, query)
-    elif config.auth_mode == "query_api_key":
+    if config.auth_mode == "query_api_key":
         query = {"api_key": os.environ["NAVASAN_API_KEY"]}
         url = with_query(url, query)
     elif config.auth_mode == "header_api_key":
@@ -583,26 +637,272 @@ def with_query(url: str, extra_params: Dict[str, str]) -> str:
     return urllib.parse.urlunparse(parsed._replace(query=query))
 
 
+def extract_bonbast_from_selector_results(selector_results: Dict[str, Any]) -> Dict[str, Optional[float]]:
+    extracted = blank_benchmark_values()
+    ranges: Dict[str, Tuple[float, float]] = {
+        "open_market": (100_000, 3_000_000),
+        "crypto_usdt": (100_000, 3_000_000),
+        "emami_gold_coin": (1_000_000, 20_000_000_000),
+    }
+
+    for benchmark, entries_any in selector_results.items():
+        entries = entries_any if isinstance(entries_any, list) else []
+        value: Optional[float] = None
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            for field in ("dataValue", "dataPrice", "value", "content", "text"):
+                candidate = parse_number_from_text(str(entry.get(field) or ""))
+                if candidate is None:
+                    continue
+                bounds = ranges.get(benchmark)
+                if bounds is None:
+                    value = candidate
+                else:
+                    value = bounded_value(candidate, bounds[0], bounds[1])
+                if value is not None:
+                    break
+            if value is not None:
+                break
+        if benchmark in extracted:
+            extracted[benchmark] = value
+    return extracted
+
+
+def extract_bonbast_value_from_text(page_text: str, hints: Tuple[str, ...], minimum: float, maximum: float) -> Optional[float]:
+    normalized = page_text.translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
+    number_pattern = r"([0-9][0-9,٬،.]{2,})"
+    for hint in hints:
+        esc = re.escape(hint)
+        around_patterns = (
+            rf"(?i){esc}[^\d]{{0,40}}{number_pattern}",
+            rf"(?i){number_pattern}[^\d]{{0,20}}{esc}",
+        )
+        for pattern in around_patterns:
+            match = re.search(pattern, normalized)
+            if not match:
+                continue
+            captured = match.group(1)
+            parsed = parse_number(captured)
+            bounded = bounded_value(parsed, minimum, maximum)
+            if bounded is not None:
+                return bounded
+    return None
+
+
+def fetch_bonbast_browser(
+    config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime
+) -> Sample:
+    health: Dict[str, Any] = {
+        "collector": "playwright",
+        "scrape_timestamp": iso_ts(sampled_at),
+        "page_load_ok": False,
+        "selector_success": False,
+        "error_type": None,
+    }
+    benchmark_values = blank_benchmark_values()
+    quote_time = sampled_at
+
+    try:
+        from playwright.sync_api import Error as PlaywrightError
+        from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+        from playwright.sync_api import sync_playwright
+    except Exception as exc:  # pragma: no cover - depends on runtime environment.
+        health["error_type"] = "playwright_unavailable"
+        health["error_detail"] = str(exc)
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=False,
+            error="bonbast browser collector unavailable",
+            health=health,
+        )
+
+    selector_script = """
+    (selectorMap) => {
+      const readNode = (el) => {
+        if (!el) return null;
+        return {
+          text: (el.textContent || '').trim(),
+          value: (el.value || '').toString(),
+          dataValue: (el.getAttribute('data-value') || '').toString(),
+          dataPrice: (el.getAttribute('data-price') || '').toString(),
+          content: (el.getAttribute('content') || '').toString()
+        };
+      };
+
+      const selectorResults = {};
+      for (const [benchmark, selectors] of Object.entries(selectorMap)) {
+        selectorResults[benchmark] = [];
+        for (const selector of selectors) {
+          const node = document.querySelector(selector);
+          if (!node) continue;
+          selectorResults[benchmark].push({
+            selector,
+            ...readNode(node)
+          });
+        }
+      }
+
+      return {
+        selector_results: selectorResults,
+        page_text: (document.body ? document.body.innerText : '')
+      };
+    }
+    """
+
+    try:
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch(headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"])
+            page = browser.new_page(viewport={"width": 1440, "height": 900})
+            page.goto(config.url, wait_until="domcontentloaded", timeout=30_000)
+            health["page_load_ok"] = True
+            page.wait_for_timeout(1_000)
+            scrape_payload = page.evaluate(selector_script, BONBAST_SELECTOR_MAP)
+            browser.close()
+    except PlaywrightTimeoutError as exc:
+        health["error_type"] = "page_timeout"
+        health["error_detail"] = str(exc)
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=False,
+            error="bonbast page load timeout",
+            health=health,
+        )
+    except PlaywrightError as exc:
+        health["error_type"] = "playwright_error"
+        health["error_detail"] = str(exc)
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=False,
+            error="bonbast browser scrape error",
+            health=health,
+        )
+    except Exception as exc:  # pragma: no cover - defensive.
+        health["error_type"] = "unknown_error"
+        health["error_detail"] = str(exc)
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=False,
+            error="bonbast browser scrape error",
+            health=health,
+        )
+
+    selector_results = scrape_payload.get("selector_results") if isinstance(scrape_payload, dict) else {}
+    page_text = scrape_payload.get("page_text") if isinstance(scrape_payload, dict) else ""
+    selector_results = selector_results if isinstance(selector_results, dict) else {}
+    page_text = page_text if isinstance(page_text, str) else ""
+
+    extracted = extract_bonbast_from_selector_results(selector_results)
+    extracted["open_market"] = extracted.get("open_market") or extract_bonbast_value_from_text(
+        page_text, BONBAST_TEXT_HINTS["open_market"], 100_000, 3_000_000
+    )
+    extracted["crypto_usdt"] = extracted.get("crypto_usdt") or extract_bonbast_value_from_text(
+        page_text, BONBAST_TEXT_HINTS["crypto_usdt"], 100_000, 3_000_000
+    )
+    extracted["emami_gold_coin"] = extracted.get("emami_gold_coin") or extract_bonbast_value_from_text(
+        page_text, BONBAST_TEXT_HINTS["emami_gold_coin"], 1_000_000, 20_000_000_000
+    )
+    benchmark_values.update(extracted)
+
+    health["selector_success"] = any(v is not None for v in extracted.values())
+    health["extracted_values"] = {k: benchmark_values.get(k) for k in ("open_market", "crypto_usdt", "emami_gold_coin")}
+    health["selector_result_counts"] = {
+        benchmark: len(entries) if isinstance(entries, list) else 0 for benchmark, entries in selector_results.items()
+    }
+
+    value = benchmark_values.get(PRIMARY_BENCHMARK)
+    stale = bool(sampled_at < window_start_dt or sampled_at > window_end_dt)
+    if value is None:
+        health["error_type"] = "selector_parse_failed"
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=stale,
+            error="unable to parse USD/IRR",
+            health=health,
+        )
+
+    return Sample(
+        config.name,
+        sampled_at,
+        value,
+        benchmark_values,
+        quote_time,
+        ok=not stale,
+        stale=stale,
+        error="stale quote" if stale else None,
+        health=health,
+    )
+
+
 def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime) -> Sample:
+    if config.auth_mode == "browser_playwright":
+        return fetch_bonbast_browser(config, sampled_at, window_start_dt, window_end_dt)
+
+    health: Dict[str, Any] = {
+        "collector": "http_json",
+        "scrape_timestamp": iso_ts(sampled_at),
+        "page_load_ok": None,
+        "selector_success": None,
+        "error_type": None,
+    }
     try:
         req = build_request(config)
         with urllib.request.urlopen(req, timeout=20) as resp:
             body = resp.read().decode("utf-8", errors="replace")
         payload = json.loads(body)
     except KeyError as exc:
-        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error=f"missing secret: {exc}")
+        health["error_type"] = "missing_secret"
+        return Sample(
+            config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error=f"missing secret: {exc}", health=health
+        )
     except urllib.error.HTTPError as exc:
-        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error=f"http {exc.code}")
+        health["error_type"] = "http_error"
+        return Sample(
+            config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error=f"http {exc.code}", health=health
+        )
     except urllib.error.URLError as exc:
-        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error=f"network: {exc.reason}")
+        health["error_type"] = "network_error"
+        return Sample(
+            config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error=f"network: {exc.reason}", health=health
+        )
     except TimeoutError:
-        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error="timeout")
+        health["error_type"] = "timeout"
+        return Sample(config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error="timeout", health=health)
     except json.JSONDecodeError:
-        return Sample(config.name, sampled_at, None, {}, None, ok=False, stale=False, error="invalid json")
+        health["error_type"] = "invalid_json"
+        return Sample(
+            config.name, sampled_at, None, blank_benchmark_values(), None, ok=False, stale=False, error="invalid json", health=health
+        )
 
     benchmark_values = extract_benchmark_values(payload, config.name)
     value = benchmark_values.get(PRIMARY_BENCHMARK)
     quote_time = extract_quote_time(payload)
+    health["extracted_values"] = {k: benchmark_values.get(k) for k in benchmark_values}
 
     stale = False
     if quote_time is not None and (quote_time < window_start_dt or quote_time > window_end_dt):
@@ -618,6 +918,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             ok=False,
             stale=stale,
             error="unable to parse USD/IRR",
+            health=health,
         )
 
     return Sample(
@@ -629,6 +930,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         ok=not stale,
         stale=stale,
         error="stale quote" if stale else None,
+        health=health,
     )
 
 
@@ -1319,6 +1621,7 @@ def serialize_sample(sample: Sample) -> Dict[str, Any]:
         "ok": sample.ok,
         "stale": sample.stale,
         "error": sample.error,
+        "health": sample.health if isinstance(sample.health, dict) else {},
     }
 
 
@@ -1357,6 +1660,7 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
     quote_time_raw = payload.get("quote_time")
     quote_time = try_parse_datetime(quote_time_raw) if quote_time_raw is not None else None
     benchmark_values = payload.get("benchmarks") if isinstance(payload.get("benchmarks"), dict) else {}
+    health = payload.get("health") if isinstance(payload.get("health"), dict) else {}
     return Sample(
         source=source,
         sampled_at=sampled_at,
@@ -1366,6 +1670,7 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
         ok=bool(payload.get("ok")),
         stale=bool(payload.get("stale")),
         error=str(payload.get("error")) if payload.get("error") is not None else None,
+        health=health,
     )
 
 
@@ -1604,6 +1909,7 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
         "sources": {
             source: {
                 "sample": serialize_sample(entries[0]) if entries else None,
+                "health": (entries[0].health if entries and isinstance(entries[0].health, dict) else {}),
             }
             for source, entries in samples.items()
         },

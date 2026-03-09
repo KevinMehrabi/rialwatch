@@ -34,6 +34,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
   - `emami_gold_coin` (`Emami Gold Coin`)
 - Derived indicators:
   - `street_nima_gap`
+  - `street_mobadeleh_gap`
   - `crypto_premium`
 
 Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
@@ -49,6 +50,7 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
 
 - Intraday collection writes one timestamped file per attempt under:
   - `/site/intraday/YYYY-MM-DD/HH-MM-SS.json`
+- Bonbast is collected via headless browser scrape (Playwright) during intraday runs and stored as normalized source sample data with health metadata.
 - Initial cadence (UTC):
   - `13:45`
   - `14:00`
@@ -74,11 +76,11 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
   - methodology note: production-approved under strict canonical mapping
   - fallback status: heuristic fallback disabled
 - `crypto_usdt`:
-  - source families: `navasan`, `alanchand`, `bonbast`
+  - source families: `navasan`, `alanchand`, `bonbast (Playwright browser collector)`
   - preferred symbols: `usdt`
   - fallback status: enabled (`tether` aliases retained)
 - `emami_gold_coin`:
-  - source families: `navasan`, `alanchand`, `bonbast`
+  - source families: `navasan`, `alanchand`, `bonbast (Playwright browser collector)`
   - preferred symbol: `sekkeh`
   - fallback status: enabled (legacy aliases retained)
 
@@ -91,16 +93,14 @@ Implementation references:
 
 ## Required GitHub Secrets
 
-Add these in **Settings -> Secrets and variables -> Actions**:
+Add these in **Settings -> Secrets and variables -> Actions -> Secrets**:
 
-- `BONBAST_USERNAME`
-- `BONBAST_HASH`
 - `NAVASAN_API_KEY`
 - `ALANCHAND_API_KEY`
 
-Optional endpoint overrides:
+Optional endpoint overrides (**Secrets**) and Bonbast site override (**Variables**):
 
-- `BONBAST_API_URL`
+- `BONBAST_SITE_URL` (repository variable, defaults to `https://bonbast.com`)
 - `NAVASAN_API_URL`
 - `ALANCHAND_API_URL`
 

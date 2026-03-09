@@ -27,13 +27,17 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Playwright (Bonbast browser collector)
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install playwright
+          python3 -m playwright install --with-deps chromium
+
       - name: Collect one intraday attempt
         env:
-          BONBAST_USERNAME: ${{ secrets.BONBAST_USERNAME }}
-          BONBAST_HASH: ${{ secrets.BONBAST_HASH }}
           NAVASAN_API_KEY: ${{ secrets.NAVASAN_API_KEY }}
           ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
-          BONBAST_API_URL: ${{ secrets.BONBAST_API_URL }}
+          BONBAST_SITE_URL: ${{ vars.BONBAST_SITE_URL }}
           NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
