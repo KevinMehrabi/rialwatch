@@ -14,7 +14,7 @@
 
   .site-header {
     background: #0f172a;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .site-header-inner {
@@ -67,6 +67,12 @@
     font-size: 1.25rem;
     font-weight: 700;
     color: #f8fafc;
+  }
+
+  .page-main-subtitle {
+    margin-top: 6px;
+    margin-bottom: 0;
+    color: #94a3b8;
   }
 
   .dashboard-section {
@@ -197,10 +203,13 @@
 
   .dashboard-title {
     margin-bottom: 10px;
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
   }
 
   .chart-card #historyChart {
-    max-height: 300px;
+    max-height: 320px;
   }
 
   .recent-table-wrap {
@@ -288,7 +297,7 @@
           <a href="/methodology/">Methodology</a>
           <a href="/status/">Status</a>
         </div>
-        <div class="site-updated">Last update: 2026-03-09T21:58:23Z</div>
+        <div class="site-updated" id="site-last-update" data-ts="2026-03-09T22:01:42Z">Last update: 2026-03-09T22:01:42Z</div>
       </div>
     </div>
   </header>
@@ -306,7 +315,7 @@
         <div>
           <div class="text-secondary text-uppercase small">Daily Fix</div>
           <div class="metric-value">1,664,000 <span class="fs-5">IRR</span></div>
-          <div class="metric-sub">As of 2026-03-09T21:58:23Z</div>
+          <div class="metric-sub">As of 2026-03-09T22:01:42Z</div>
         </div>
         <span class="status-pill status-Green">Green</span>
       </div>
@@ -361,10 +370,29 @@
   </section>
 </div>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-09T21:58:23Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-09T22:01:42Z</div>
     </div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/js/tabler.min.js"></script>
+<script>
+(() => {
+  const el = document.getElementById('site-last-update');
+  if (!el) return;
+  const raw = el.getAttribute('data-ts') || '';
+  const d = new Date(raw);
+  if (!raw || Number.isNaN(d.getTime())) return;
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'UTC'
+  });
+  el.textContent = `Last update: ${fmt.format(d)} UTC`;
+})();
+</script>
 </body>
 </html>
