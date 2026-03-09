@@ -28,7 +28,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - Primary benchmark (flagship): `open_market` (`Open Market / Street Rate`)
 - Supplementary benchmarks:
   - `nima` (`NIMA Rate`)
-  - `official` (`MOB USD Benchmark`)
+  - `official` (`Mobadeleh USD Rate`)
   - `regional_transfer` (`Regional Transfer Rate`)
   - `crypto_usdt` (`Crypto Dollar (USDT)`)
   - `emami_gold_coin` (`Emami Gold Coin`)
@@ -63,10 +63,11 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
 
 - `nima`:
   - canonical mapping: not yet defined in code (intentionally unavailable)
+  - methodology note: remains unavailable until an explicit canonical live NIMA source/field is confirmed
   - fallback status: heuristic fallback disabled
 - `official`:
   - canonical mapping: `navasan -> mob_usd`
-  - methodology note: this is a narrower administrative benchmark, not a broad generic "Official Rate"
+  - methodology note: this is the current managed-market benchmark (`Mobadeleh USD Rate`)
   - fallback status: heuristic fallback disabled
 - `regional_transfer`:
   - canonical mapping: `navasan -> usd_shakhs`, `usd_sherkat`; `alanchand -> usd-hav`
