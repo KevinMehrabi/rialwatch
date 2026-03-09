@@ -279,8 +279,67 @@
     padding-top: 8px;
   }
 
+  .status-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .status-overview-card {
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 8px;
+    padding: 12px;
+    background: rgba(15, 23, 42, 0.45);
+  }
+
+  .status-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: #e2e8f0;
+  }
+
+  .status-light {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    display: inline-block;
+  }
+
+  .status-online {
+    background: #16a34a;
+  }
+
+  .status-degraded {
+    background: #f59e0b;
+  }
+
+  .status-offline {
+    background: #ef4444;
+  }
+
+  .status-unknown {
+    background: #64748b;
+  }
+
+  .status-note {
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-top: 6px;
+  }
+
+  .source-status-table th,
+  .source-status-table td {
+    vertical-align: middle;
+  }
+
   @media (max-width: 1100px) {
     .indicators-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .status-overview-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
@@ -314,6 +373,10 @@
       grid-template-columns: 1fr;
     }
 
+    .status-overview-grid {
+      grid-template-columns: 1fr;
+    }
+
     .top-grid .dashboard-card {
       min-height: 320px;
     }
@@ -333,9 +396,9 @@
           <div class="site-nav">
             <a href="/rialwatch/">Home</a>
             <a href="/rialwatch/methodology/">Methodology</a>
-            <a href="/status/">Status</a>
+            <a href="/rialwatch/status/">Status</a>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-09T22:23:43Z">Last update: 2026-03-09T22:23:43Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-09T22:28:13Z">Last update: 2026-03-09T22:28:13Z</div>
         </div>
       </div>
     </div>
@@ -344,28 +407,80 @@
     <div class="container-xl py-4 dashboard-container">
       <div class="mb-3">
   <h1 class="page-title">System Status</h1>
-  <p class="text-secondary mb-0">Publishing and data-quality posture.</p>
+  <p class="text-secondary mb-0">Public operational status for benchmark publication and source collection.</p>
 </div>
 
 <section class="card">
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
-      <h3 class="card-title mb-0">Current State</h3>
-      <span class="status-pill status-OK">OK</span>
+      <h3 class="card-title mb-0">System Overview</h3>
+      <span class="text-secondary small">Mar 09, 2026, 22:28 UTC</span>
     </div>
-    <p class="mb-3">Build-only mode: refreshed 2026-03-09 from current-day intraday sample selection using current benchmark logic.</p>
-    
+    <div class="status-overview-grid">
+      <div class="status-overview-card"><div class="text-secondary small">Benchmark Pipeline</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Build-only mode: refreshed 2026-03-09 from current-day intraday sample selection using current benchmark logic.</div></div>
+<div class="status-overview-card"><div class="text-secondary small">Latest Publication</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Published 2026-03-09 benchmark.</div></div>
+<div class="status-overview-card"><div class="text-secondary small">Source Collection</div><div class="mt-1"><span class="status-label"><span class="status-light status-degraded"></span>Degraded</span></div><div class="status-note">1/3 sources online.</div></div>
+<div class="status-overview-card"><div class="text-secondary small">Site Deployment</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Static site rendered Mar 09, 2026, 22:28 UTC</div></div>
+    </div>
   </div>
 </section>
 
 <section class="card mt-3">
   <div class="card-body">
-    <h3 class="card-title mb-3">Operational Details</h3>
-    <ul class="mb-2"><li><strong>Publication state:</strong> Published</li><li><strong>Internal benchmark state:</strong> Green</li><li><strong>Primary-source participation:</strong> navasan</li></ul><p class="mb-2 text-secondary">No active withhold reasons.</p><p class="text-secondary mb-0">Source-level provenance and validation details are retained in <code>/status</code>, <code>/methodology</code>, and daily JSON payloads.</p>
+    <h3 class="card-title mb-3">Source Status</h3>
+    <div class="table-responsive">
+      <table class="table table-dark table-vcenter source-status-table mb-0">
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Status</th>
+            <th>Last Successful Update</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>alanchand</td><td><span class="status-label"><span class="status-light status-degraded"></span>Degraded</span></td><td>N/A</td><td>No recent valid in-window sample.</td></tr>
+<tr><td>bonbast</td><td><span class="status-label"><span class="status-light status-degraded"></span>Degraded</span></td><td>Mar 09, 2026, 20:42 UTC</td><td>No recent valid in-window sample.</td></tr>
+<tr><td>navasan</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 09, 2026, 20:42 UTC</td><td>Collecting normally.</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-09T22:23:43Z</div>
+<section class="card mt-3">
+  <div class="card-body">
+    <h3 class="card-title mb-3">Publication Status</h3>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="text-secondary small">Latest Benchmark Value</div>
+        <div class="h4 mb-0">1,664,000 IRR</div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-secondary small">Publication State</div>
+        <div class="h5 mb-0">Published</div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-secondary small">Last Update</div>
+        <div class="h6 mb-0">Mar 09, 2026, 22:28 UTC</div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-secondary small">Withhold Reason</div>
+        <div class="h6 mb-0">None</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h3 class="card-title mb-3">Diagnostics</h3>
+    <ul class="mb-0"><li>Degraded sources: alanchand, bonbast.</li><li>1 historical day(s) are currently withheld (2026-03-08).</li></ul>
+    
+  </div>
+</section>
+
+      <div class="text-secondary mt-4">Generated at 2026-03-09T22:28:13Z</div>
     </div>
   </div>
 </div>

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import html as html_lib
 import hashlib
 import json
 import math
@@ -1976,72 +1977,294 @@ def publish_status(
             return "No valid intraday samples in publication window"
         return "Publication withheld by methodology checks"
 
+    def fmt_status_time(value: Any) -> str:
+        parsed = try_parse_datetime(value)
+        if parsed is None:
+            return "Unknown"
+        return parsed.strftime("%b %d, %Y, %H:%M UTC")
+
+    def light_class(label: str) -> str:
+        lowered = label.strip().lower()
+        if lowered == "online":
+            return "online"
+        if lowered == "degraded":
+            return "degraded"
+        if lowered == "offline":
+            return "offline"
+        return "unknown"
+
+    def render_status_label(label: str) -> str:
+        cls = light_class(label)
+        safe = html_lib.escape(label)
+        return (
+            f'<span class="status-label"><span class="status-light status-{cls}"></span>{safe}</span>'
+        )
+
+    def humanize_source_note(value: Any) -> str:
+        if not isinstance(value, str):
+            return ""
+        text = value.strip().lower()
+        if not text:
+            return ""
+        if "no valid in-window samples" in text:
+            return "No recent valid in-window sample."
+        if "no valid samples" in text:
+            return "No recent valid sample."
+        if "source family not used" in text:
+            return "Not used for this benchmark."
+        return value.strip()
+
+    def map_pipeline_state(value: str) -> str:
+        upper = value.strip().upper()
+        if upper in {"OK", "IMMUTABLE"}:
+            return "Online"
+        if upper == "WITHHOLD":
+            return "Degraded"
+        if upper == "CONFIG NEEDED":
+            return "Offline"
+        return "Unknown"
+
     missing_html = ""
     if missing:
-        missing_html = "<ul>" + "".join(f"<li><code>{m}</code></li>" for m in missing) + "</ul>"
+        missing_html = "<ul class=\"mb-0 mt-2\">" + "".join(f"<li><code>{html_lib.escape(m)}</code></li>" for m in missing) + "</ul>"
 
-    ops_html = (
-        "<p class=\"text-secondary mb-0\">Internal publication diagnostics and source provenance appear here. "
-        "Public dashboard cards intentionally omit source/debug labels.</p>"
-    )
+    effective_latest: Dict[str, Any] = {}
     if isinstance(latest, dict):
-        computed = latest.get("computed", {})
-        if not isinstance(computed, dict):
-            computed = {}
-        benchmarks = latest.get("benchmarks", {})
-        if not isinstance(benchmarks, dict):
-            benchmarks = {}
+        effective_latest = latest
+    else:
+        latest_path = site_dir / "api" / "latest.json"
+        if latest_path.exists():
+            try:
+                loaded = json.loads(latest_path.read_text(encoding="utf-8"))
+                if isinstance(loaded, dict):
+                    effective_latest = loaded
+            except json.JSONDecodeError:
+                effective_latest = {}
 
-        internal_status = str(computed.get("status", "N/A"))
-        withheld = bool(computed.get("withheld", True))
+    computed = effective_latest.get("computed", {})
+    if not isinstance(computed, dict):
+        computed = {}
+    benchmarks = effective_latest.get("benchmarks", {})
+    if not isinstance(benchmarks, dict):
+        benchmarks = {}
+    sources = effective_latest.get("sources", {})
+    if not isinstance(sources, dict):
+        sources = {}
+
+    fix = parse_number(computed.get("fix"))
+    withheld = bool(computed.get("withheld", True))
+    publication_state = "Unknown"
+    if fix is not None:
         publication_state = "Withheld" if withheld else "Published"
-        reasons = computed.get("withhold_reasons", [])
-        humanized_reasons: List[str] = []
-        if isinstance(reasons, list):
-            for reason in reasons:
-                normalized = humanize_withhold_reason(reason)
-                if normalized:
-                    humanized_reasons.append(normalized)
-        if not humanized_reasons and withheld:
-            humanized_reasons.append("Publication withheld by methodology checks")
 
-        primary = benchmarks.get("open_market", {})
-        if not isinstance(primary, dict):
-            primary = {}
-        source_medians = primary.get("source_medians", {})
-        source_names = []
-        if isinstance(source_medians, dict):
-            source_names = sorted([name for name, val in source_medians.items() if parse_number(val) is not None])
-        source_label = ", ".join(source_names) if source_names else "None"
+    reasons = computed.get("withhold_reasons", [])
+    humanized_reasons: List[str] = []
+    if isinstance(reasons, list):
+        for reason in reasons:
+            normalized = humanize_withhold_reason(reason)
+            if normalized:
+                humanized_reasons.append(normalized)
+    publication_reason = "None"
+    if publication_state == "Withheld":
+        publication_reason = humanized_reasons[0] if humanized_reasons else "Publication withheld by methodology checks"
 
-        reason_html = (
-            "<ul class=\"mb-2\">"
-            + "".join(f"<li>{r}</li>" for r in humanized_reasons)
-            + "</ul>"
-            if humanized_reasons
-            else "<p class=\"mb-2 text-secondary\">No active withhold reasons.</p>"
+    publication_fix = f"{fmt_rate(fix)} IRR" if fix is not None else "Unavailable"
+    publication_updated = fmt_status_time(effective_latest.get("as_of") or generated_at)
+
+    source_rows: List[Dict[str, str]] = []
+    for source_name, source_data in sorted(sources.items(), key=lambda item: str(item[0]).lower()):
+        if not isinstance(source_data, dict):
+            continue
+        samples = source_data.get("samples", [])
+        if not isinstance(samples, list):
+            samples = []
+
+        latest_sample: Optional[Dict[str, Any]] = None
+        latest_sample_ts: Optional[dt.datetime] = None
+        last_success_ts: Optional[dt.datetime] = None
+        any_success = False
+        any_valid = False
+        any_error = False
+
+        for sample in samples:
+            if not isinstance(sample, dict):
+                continue
+            sample_ts = try_parse_datetime(sample.get("sampled_at"))
+            if sample_ts is None:
+                sample_ts = try_parse_datetime(sample.get("quote_time"))
+            if sample_ts is not None and (latest_sample_ts is None or sample_ts > latest_sample_ts):
+                latest_sample_ts = sample_ts
+                latest_sample = sample
+
+            if sample.get("fetch_success") is True:
+                any_success = True
+                if sample_ts is not None and (last_success_ts is None or sample_ts > last_success_ts):
+                    last_success_ts = sample_ts
+
+            if sample.get("ok") is True and sample.get("stale") is not True:
+                any_valid = True
+
+            if sample.get("error") or sample.get("failure_reason"):
+                any_error = True
+
+        source_status = "Unknown"
+        if any_valid:
+            source_status = "Online"
+        elif any_success or any_error:
+            source_status = "Degraded"
+        elif samples:
+            source_status = "Offline"
+
+        note = humanize_source_note(source_data.get("note"))
+        if not note and latest_sample:
+            failure_reason = latest_sample.get("failure_reason")
+            sample_error = latest_sample.get("error")
+            if isinstance(failure_reason, str) and failure_reason.strip():
+                note = failure_reason.strip()
+            elif isinstance(sample_error, str) and sample_error.strip():
+                note = sample_error.strip()
+        if not note:
+            note = "Collecting normally." if source_status == "Online" else "No additional notes."
+
+        source_rows.append(
+            {
+                "name": str(source_name),
+                "status": source_status,
+                "last_success": (
+                    last_success_ts.strftime("%b %d, %Y, %H:%M UTC") if last_success_ts is not None else "N/A"
+                ),
+                "note": note,
+            }
         )
-        ops_html = (
-            "<ul class=\"mb-2\">"
-            f"<li><strong>Publication state:</strong> {publication_state}</li>"
-            f"<li><strong>Internal benchmark state:</strong> {internal_status}</li>"
-            f"<li><strong>Primary-source participation:</strong> {source_label}</li>"
-            "</ul>"
-            + reason_html
-            + "<p class=\"text-secondary mb-0\">Source-level provenance and validation details are retained in "
-            "<code>/status</code>, <code>/methodology</code>, and daily JSON payloads.</p>"
+
+    if not source_rows:
+        source_rows_html = (
+            "<tr><td>N/A</td><td>"
+            + render_status_label("Unknown")
+            + "</td><td>N/A</td><td>No source sample data available yet.</td></tr>"
         )
+    else:
+        source_rows_html = "\n".join(
+            "<tr>"
+            f"<td>{html_lib.escape(row['name'])}</td>"
+            f"<td>{render_status_label(row['status'])}</td>"
+            f"<td>{html_lib.escape(row['last_success'])}</td>"
+            f"<td>{html_lib.escape(row['note'])}</td>"
+            "</tr>"
+            for row in source_rows
+        )
+
+    total_sources = len(source_rows)
+    online_sources = sum(1 for row in source_rows if row["status"] == "Online")
+    degraded_sources = [row["name"] for row in source_rows if row["status"] == "Degraded"]
+    offline_sources = [row["name"] for row in source_rows if row["status"] == "Offline"]
+
+    source_collection_state = "Unknown"
+    source_collection_note = "No source samples available."
+    if total_sources > 0:
+        if online_sources == total_sources:
+            source_collection_state = "Online"
+            source_collection_note = f"{online_sources}/{total_sources} sources online."
+        elif online_sources > 0:
+            source_collection_state = "Degraded"
+            source_collection_note = f"{online_sources}/{total_sources} sources online."
+        elif degraded_sources:
+            source_collection_state = "Degraded"
+            source_collection_note = "Sources are partially available but degraded."
+        elif offline_sources:
+            source_collection_state = "Offline"
+            source_collection_note = "No active source collection currently online."
+
+    publication_overview_state = "Unknown"
+    publication_overview_note = "No publication record available."
+    if publication_state == "Published":
+        publication_overview_state = "Online"
+        publication_overview_note = f"Published {effective_latest.get('date', 'latest')} benchmark."
+    elif publication_state == "Withheld":
+        publication_overview_state = "Degraded"
+        publication_overview_note = publication_reason
+
+    pipeline_state = map_pipeline_state(status_title)
+    deployment_state = "Online"
+
+    overview_cards = [
+        ("Benchmark Pipeline", pipeline_state, status_detail),
+        ("Latest Publication", publication_overview_state, publication_overview_note),
+        ("Source Collection", source_collection_state, source_collection_note),
+        ("Site Deployment", deployment_state, f"Static site rendered {fmt_status_time(generated_at)}"),
+    ]
+    overview_cards_html = "\n".join(
+        "<div class=\"status-overview-card\">"
+        f"<div class=\"text-secondary small\">{html_lib.escape(title)}</div>"
+        f"<div class=\"mt-1\">{render_status_label(label)}</div>"
+        f"<div class=\"status-note\">{html_lib.escape(note)}</div>"
+        "</div>"
+        for title, label, note in overview_cards
+    )
+
+    diagnostics: List[str] = []
+    mapping_path = site_dir / "api" / "mapping_audit.json"
+    if mapping_path.exists():
+        try:
+            mapping_data = json.loads(mapping_path.read_text(encoding="utf-8"))
+            if isinstance(mapping_data, dict):
+                stale_days = mapping_data.get("stale_days", [])
+                if isinstance(stale_days, list) and stale_days:
+                    diagnostics.append(f"{len(stale_days)} day(s) were generated under older mapping fingerprints.")
+        except json.JSONDecodeError:
+            diagnostics.append("Mapping audit file could not be parsed.")
+
+    if degraded_sources:
+        diagnostics.append(f"Degraded sources: {', '.join(sorted(degraded_sources))}.")
+    if offline_sources:
+        diagnostics.append(f"Offline sources: {', '.join(sorted(offline_sources))}.")
+
+    methodology = effective_latest.get("methodology", {})
+    if isinstance(methodology, dict):
+        rebuild_note = methodology.get("rebuild_note")
+        if isinstance(rebuild_note, str) and rebuild_note.strip():
+            diagnostics.append(rebuild_note.strip())
+
+    fix_dir = site_dir / "fix"
+    withheld_days: List[str] = []
+    if fix_dir.exists():
+        for path in sorted(fix_dir.glob("*.json")):
+            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
+                continue
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                continue
+            computed_row = payload.get("computed", {})
+            if isinstance(computed_row, dict) and computed_row.get("withheld") is True:
+                withheld_days.append(path.stem)
+    if withheld_days:
+        preview = ", ".join(withheld_days[-3:])
+        diagnostics.append(f"{len(withheld_days)} historical day(s) are currently withheld ({preview}).")
+
+    diagnostics_html = (
+        "<ul class=\"mb-0\">" + "".join(f"<li>{html_lib.escape(item)}</li>" for item in diagnostics) + "</ul>"
+        if diagnostics
+        else "<p class=\"text-secondary mb-0\">No active diagnostics warnings.</p>"
+    )
 
     html = render_page(
         templates_dir,
         "status.html",
         title="Status",
         generated_at=generated_at,
-        status_title=status_title,
+        status_title=html_lib.escape(status_title),
         status_class=css_class(status_title),
-        status_detail=status_detail,
+        status_detail=html_lib.escape(status_detail),
+        overview_generated_at=fmt_status_time(generated_at),
+        overview_cards=overview_cards_html,
+        source_rows=source_rows_html,
+        publication_fix=publication_fix,
+        publication_state=publication_state,
+        publication_updated=publication_updated,
+        publication_reason=publication_reason,
+        diagnostics_list=diagnostics_html,
         missing_list=missing_html,
-        ops_detail=ops_html,
     )
     write_text(site_dir / "status" / "index.html", html)
 

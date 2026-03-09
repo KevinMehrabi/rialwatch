@@ -1,22 +1,69 @@
 <div class="mb-3">
   <h1 class="page-title">System Status</h1>
-  <p class="text-secondary mb-0">Publishing and data-quality posture.</p>
+  <p class="text-secondary mb-0">Public operational status for benchmark publication and source collection.</p>
 </div>
 
 <section class="card">
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
-      <h3 class="card-title mb-0">Current State</h3>
-      <span class="status-pill status-$status_class">$status_title</span>
+      <h3 class="card-title mb-0">System Overview</h3>
+      <span class="text-secondary small">$overview_generated_at</span>
     </div>
-    <p class="mb-3">$status_detail</p>
-    $missing_list
+    <div class="status-overview-grid">
+      $overview_cards
+    </div>
   </div>
 </section>
 
 <section class="card mt-3">
   <div class="card-body">
-    <h3 class="card-title mb-3">Operational Details</h3>
-    $ops_detail
+    <h3 class="card-title mb-3">Source Status</h3>
+    <div class="table-responsive">
+      <table class="table table-dark table-vcenter source-status-table mb-0">
+        <thead>
+          <tr>
+            <th>Source</th>
+            <th>Status</th>
+            <th>Last Successful Update</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          $source_rows
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h3 class="card-title mb-3">Publication Status</h3>
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="text-secondary small">Latest Benchmark Value</div>
+        <div class="h4 mb-0">$publication_fix</div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-secondary small">Publication State</div>
+        <div class="h5 mb-0">$publication_state</div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-secondary small">Last Update</div>
+        <div class="h6 mb-0">$publication_updated</div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-secondary small">Withhold Reason</div>
+        <div class="h6 mb-0">$publication_reason</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
+    <h3 class="card-title mb-3">Diagnostics</h3>
+    $diagnostics_list
+    $missing_list
   </div>
 </section>
