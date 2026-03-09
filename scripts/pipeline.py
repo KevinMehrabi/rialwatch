@@ -981,13 +981,25 @@ def compute_benchmark_result(
             source_notes[source] = "source family not used for this benchmark"
             continue
 
-        values = [s.benchmark_values.get(benchmark_key) for s in entries if s.benchmark_values.get(benchmark_key) is not None]
+        if benchmark_key == PRIMARY_BENCHMARK:
+            # Primary benchmark publication only considers valid in-window samples.
+            values = [
+                s.benchmark_values.get(benchmark_key)
+                for s in entries
+                if s.ok and not s.stale and s.benchmark_values.get(benchmark_key) is not None
+            ]
+        else:
+            values = [s.benchmark_values.get(benchmark_key) for s in entries if s.benchmark_values.get(benchmark_key) is not None]
+
         if not values:
-            source_notes[source] = "no valid samples"
+            if benchmark_key == PRIMARY_BENCHMARK:
+                source_notes[source] = "no valid in-window samples"
+            else:
+                source_notes[source] = "no valid samples"
             continue
 
         source_medians[source] = median(values)
-        if any(s.stale for s in entries):
+        if benchmark_key != PRIMARY_BENCHMARK and any(s.stale for s in entries):
             invalid_or_stale = True
 
     medians = list(source_medians.values())
