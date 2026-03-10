@@ -46,6 +46,7 @@ BENCHMARK_LABELS: Dict[str, str] = {
 }
 
 PRIMARY_BENCHMARK = "open_market"
+PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("navasan", "bonbast")
 
 INDICATOR_LABELS: Dict[str, str] = {
     "street_official_gap_pct": "Street-Official Gap",
@@ -708,7 +709,7 @@ def build_source_configs() -> List[SourceConfig]:
             url=env_or_default("ALANCHAND_API_URL", "https://api.alanchand.com/v1/rates"),
             auth_mode="header_api_key",
             secret_fields=("ALANCHAND_API_KEY",),
-            benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("regional_transfer", "crypto_usdt", "emami_gold_coin"),
             default_unit="toman",
         ),
     ]
@@ -1507,6 +1508,8 @@ def apply_bonbast_peer_validation(samples: Dict[str, List[Sample]], max_deviatio
         for source, entries in samples.items():
             if source == "bonbast" or idx >= len(entries):
                 continue
+            if source not in PRIMARY_STREET_SOURCE_UNIVERSE:
+                continue
             peer_sample = entries[idx]
             if not peer_sample.ok or peer_sample.stale:
                 continue
@@ -1550,6 +1553,9 @@ def compute_benchmark_result(
     invalid_or_stale = False
 
     for source, entries in samples.items():
+        if benchmark_key == PRIMARY_BENCHMARK and source not in PRIMARY_STREET_SOURCE_UNIVERSE:
+            source_notes[source] = "source excluded from street benchmark universe"
+            continue
         families = benchmark_sources.get(source, ())
         if benchmark_key not in families:
             source_notes[source] = "source family not used for this benchmark"
