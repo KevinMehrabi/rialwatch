@@ -1836,6 +1836,7 @@ def compute_benchmark_result(
     samples: Dict[str, List[Sample]],
     benchmark_key: str,
     benchmark_sources: Dict[str, Tuple[str, ...]],
+    primary_allow_stale: bool = False,
 ) -> Dict[str, Any]:
     source_medians: Dict[str, float] = {}
     source_notes: Dict[str, str] = {}
@@ -1853,11 +1854,27 @@ def compute_benchmark_result(
 
         if benchmark_key == PRIMARY_BENCHMARK:
             # Primary benchmark publication only considers valid in-window samples.
-            values = [
-                s.benchmark_values.get(benchmark_key)
-                for s in entries
-                if s.ok and not s.stale and s.benchmark_values.get(benchmark_key) is not None
-            ]
+            if primary_allow_stale:
+                values = []
+                for s in entries:
+                    candidate = s.benchmark_values.get(benchmark_key)
+                    if candidate is None:
+                        continue
+                    if isinstance(s.health, dict):
+                        fetch_success = s.health.get("fetch_success")
+                        validation = s.health.get("validation_result")
+                        validation_failed = isinstance(validation, dict) and validation.get("ok") is False
+                        if fetch_success is not True or validation_failed:
+                            continue
+                    if isinstance(s.error, str) and s.error.strip() and s.error.strip().lower() != "stale quote":
+                        continue
+                    values.append(candidate)
+            else:
+                values = [
+                    s.benchmark_values.get(benchmark_key)
+                    for s in entries
+                    if s.ok and not s.stale and s.benchmark_values.get(benchmark_key) is not None
+                ]
         else:
             values = [s.benchmark_values.get(benchmark_key) for s in entries if s.benchmark_values.get(benchmark_key) is not None]
 
@@ -2123,12 +2140,22 @@ def build_normalized_market_snapshot(daily: Dict[str, Any], site_dir: Optional[P
     }
 
 
-def summarize_day(samples: Dict[str, List[Sample]], source_configs: List[SourceConfig], day: dt.date) -> Dict[str, Any]:
+def summarize_day(
+    samples: Dict[str, List[Sample]],
+    source_configs: List[SourceConfig],
+    day: dt.date,
+    primary_allow_stale: bool = False,
+) -> Dict[str, Any]:
     benchmark_sources = {cfg.name: cfg.benchmark_families for cfg in source_configs}
 
     benchmark_results: Dict[str, Dict[str, Any]] = {}
     for key in BENCHMARK_LABELS:
-        benchmark_results[key] = compute_benchmark_result(samples, key, benchmark_sources)
+        benchmark_results[key] = compute_benchmark_result(
+            samples,
+            key,
+            benchmark_sources,
+            primary_allow_stale=primary_allow_stale,
+        )
 
     primary = benchmark_results[PRIMARY_BENCHMARK]
 
@@ -3629,6 +3656,7 @@ def select_daily_from_intraday(
     day: dt.date,
     source_configs: List[SourceConfig],
     include_outside_window: bool = False,
+    primary_allow_stale: bool = False,
 ) -> Optional[Dict[str, Any]]:
     attempts = load_intraday_attempts(site_dir, day)
     if not attempts:
@@ -3642,17 +3670,24 @@ def select_daily_from_intraday(
         samples = attempt_to_samples(attempt)
         if not samples:
             continue
-        daily = summarize_day(samples, source_configs, day)
+        daily = summarize_day(samples, source_configs, day, primary_allow_stale=primary_allow_stale)
         valid = is_daily_valid(daily)
         in_window = in_publication_window(collected_at, day)
         all_attempts.append((collected_at, attempt, daily, valid, in_window))
 
-    candidates: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool]] = [
-        (collected_at, attempt, daily, valid)
-        for collected_at, attempt, daily, valid, in_window in all_attempts
-        if in_window
-    ]
-    selection_scope = "publication_window"
+    if include_outside_window and primary_allow_stale:
+        candidates: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool]] = [
+            (collected_at, attempt, daily, valid)
+            for collected_at, attempt, daily, valid, _in_window in all_attempts
+        ]
+        selection_scope = "latest_intraday_refresh"
+    else:
+        candidates = [
+            (collected_at, attempt, daily, valid)
+            for collected_at, attempt, daily, valid, in_window in all_attempts
+            if in_window
+        ]
+        selection_scope = "publication_window"
 
     if not candidates and include_outside_window:
         candidates = [(collected_at, attempt, daily, valid) for collected_at, attempt, daily, valid, _ in all_attempts]
@@ -3667,13 +3702,17 @@ def select_daily_from_intraday(
 
     if valid_candidates:
         selected = valid_candidates[-1]
-        if selection_scope == "latest_intraday_fallback":
+        if selection_scope == "latest_intraday_refresh":
+            selected_reason = "latest valid intraday attempt (current-day refresh)"
+        elif selection_scope == "latest_intraday_fallback":
             selected_reason = "latest valid intraday attempt (outside-window fallback for current-day refresh)"
         else:
             selected_reason = "latest valid intraday attempt in publication window"
     else:
         selected = latest_attempt
-        if selection_scope == "latest_intraday_fallback":
+        if selection_scope == "latest_intraday_refresh":
+            selected_reason = "no valid attempts found; used latest intraday attempt (current-day refresh)"
+        elif selection_scope == "latest_intraday_fallback":
             selected_reason = "no valid attempts found; used latest intraday attempt (outside-window fallback)"
         else:
             selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
@@ -3682,7 +3721,9 @@ def select_daily_from_intraday(
     latest_at = latest_attempt[0]
     used_fallback = bool(selected_valid and selected_at != latest_at)
     if selected_valid and not used_fallback:
-        if selection_scope == "latest_intraday_fallback":
+        if selection_scope == "latest_intraday_refresh":
+            basis_label = "Selected from latest intraday refresh sample"
+        elif selection_scope == "latest_intraday_fallback":
             basis_label = "Selected from latest intraday attempt (outside publication window)"
         else:
             basis_label = "Selected from intraday publication window"
@@ -3691,8 +3732,13 @@ def select_daily_from_intraday(
     else:
         basis_label = "No valid intraday sample in publication window (WITHHOLD)"
 
+    if selection_scope == "latest_intraday_refresh":
+        selection_rule = "current-day refresh: latest valid intraday attempt across all available samples"
+    else:
+        selection_rule = "latest valid intraday attempt in publication window, else latest attempt"
+
     daily["publication_selection"] = {
-        "rule": "latest valid intraday attempt in publication window, else latest attempt",
+        "rule": selection_rule,
         "selection_scope": selection_scope,
         "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
         "candidate_count": len(candidates),
@@ -3710,7 +3756,13 @@ def select_daily_from_intraday(
 
 def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
     source_configs = build_source_configs()
-    intraday_selected = select_daily_from_intraday(site_dir, day, source_configs, include_outside_window=True)
+    intraday_selected = select_daily_from_intraday(
+        site_dir,
+        day,
+        source_configs,
+        include_outside_window=True,
+        primary_allow_stale=(day == utc_now().date()),
+    )
     refreshed: Optional[Dict[str, Any]] = None
     if intraday_selected is not None and is_daily_valid(intraday_selected):
         publish_daily_fix(site_dir, templates_dir, generated_at=generated_at, daily=intraday_selected)
