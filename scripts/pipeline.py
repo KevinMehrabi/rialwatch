@@ -2310,9 +2310,16 @@ def publish_status(
             latest_validation_failed = isinstance(latest_validation, dict) and latest_validation.get("ok") is False
             latest_failure_text = isinstance(latest_failure_reason, str) and latest_failure_reason.strip()
             latest_error_text = isinstance(latest_sample_error, str) and latest_sample_error.strip()
+            latest_health = latest_sample.get("health")
+            latest_fallback_used = (
+                isinstance(latest_health, dict) and latest_health.get("fallback_used") is True
+            )
 
             if latest_fetch_success is True:
-                if latest_has_parsed_data and not latest_validation_failed and not latest_failure_text:
+                if latest_fallback_used:
+                    # Source is serving through a fallback, so primary health is degraded.
+                    latest_status = "Degraded"
+                elif latest_has_parsed_data and not latest_validation_failed and not latest_failure_text:
                     latest_status = "Online"
                 else:
                     latest_status = "Degraded"
@@ -2331,9 +2338,11 @@ def publish_status(
             source_status = "Offline"
 
         note = humanize_source_note(source_data.get("note"))
+        latest_fallback_active = False
         if latest_sample:
             latest_health = latest_sample.get("health")
             if isinstance(latest_health, dict) and latest_health.get("fallback_used") is True:
+                latest_fallback_active = True
                 note = "Primary endpoint unavailable; fallback feed active."
         if source_status == "Offline" and latest_sample:
             latest_failure_reason = latest_sample.get("failure_reason")
@@ -2342,7 +2351,7 @@ def publish_status(
             has_error_text = isinstance(latest_sample_error, str) and latest_sample_error.strip()
             if has_failure_text or has_error_text:
                 note = "Source request failed."
-        elif source_status == "Degraded":
+        elif source_status == "Degraded" and not latest_fallback_active:
             note = "Source responded, but returned invalid data."
 
         if not note and latest_sample and latest_sample.get("stale") is True:
