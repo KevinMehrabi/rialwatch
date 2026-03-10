@@ -1,6 +1,6 @@
 {
   "date": "2026-03-10",
-  "as_of": "2026-03-10T14:36:54Z",
+  "as_of": "2026-03-10T19:56:42Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -184,7 +184,7 @@
         "crypto_usdt": 1466000.0,
         "emami_gold_coin": 2100000.0
       },
-      "note": null
+      "note": "source excluded from street benchmark universe"
     },
     "alanchand": {
       "samples": [
@@ -233,36 +233,33 @@
       ],
       "median": null,
       "benchmark_medians": {},
-      "note": "no valid in-window samples"
+      "note": "source excluded from street benchmark universe"
     }
   },
   "benchmarks": {
     "open_market": {
       "label": "Open Market / Street Rate",
       "benchmark": "open_market",
-      "fix": 1567750.0,
+      "fix": 1471500.0,
       "band": {
-        "p25": 1519625.0,
-        "p75": 1615875.0
+        "p25": 1471500.0,
+        "p75": 1471500.0
       },
-      "dispersion": 0.06139371711050869,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "dispersion > 5%"
-      ],
+      "dispersion": 0.0,
+      "status": "Green",
+      "withheld": false,
+      "withhold_reasons": [],
       "source_medians": {
-        "bonbast": 1471500.0,
-        "navasan": 1664000.0
+        "bonbast": 1471500.0
       },
       "source_units": {
-        "bonbast": "toman",
-        "navasan": "mixed"
+        "bonbast": "toman"
       },
       "source_notes": {
-        "alanchand": "no valid in-window samples"
+        "navasan": "source excluded from street benchmark universe",
+        "alanchand": "source excluded from street benchmark universe"
       },
-      "available": false
+      "available": true
     },
     "official": {
       "label": "Official Commercial USD Rate",
@@ -284,7 +281,7 @@
       },
       "source_notes": {
         "bonbast": "no valid samples",
-        "alanchand": "no valid samples"
+        "alanchand": "source family not used for this benchmark"
       },
       "available": true
     },
@@ -367,19 +364,19 @@
   "indicators": {
     "street_official_gap_pct": {
       "label": "Street-Official Gap",
-      "value": 18.314325561177053,
+      "value": 11.050569327553522,
       "available": true,
       "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
     },
     "street_transfer_gap_pct": {
       "label": "Street-Transfer Gap",
-      "value": -7.616381850324101,
+      "value": -13.28815556865056,
       "available": true,
       "formula": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100"
     },
     "street_crypto_gap_pct": {
       "label": "Street-Crypto Gap",
-      "value": -6.490192951682347,
+      "value": -0.37376826367652055,
       "available": true,
       "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
     },
@@ -391,33 +388,29 @@
     }
   },
   "computed": {
-    "fix": 1567750.0,
+    "fix": 1471500.0,
     "band": {
-      "p25": 1519625.0,
-      "p75": 1615875.0
+      "p25": 1471500.0,
+      "p75": 1471500.0
     },
-    "dispersion": 0.06139371711050869,
-    "status": "WITHHOLD",
-    "withheld": true,
-    "withhold_reasons": [
-      "dispersion > 5%"
-    ],
+    "dispersion": 0.0,
+    "status": "Green",
+    "withheld": false,
+    "withhold_reasons": [],
     "source_medians": {
-      "bonbast": 1471500.0,
-      "navasan": 1664000.0
+      "bonbast": 1471500.0
     },
     "source_units": {
-      "bonbast": "toman",
-      "navasan": "mixed"
+      "bonbast": "toman"
     },
-    "source_unit": "mixed",
+    "source_unit": "toman",
     "normalized_unit": "rial",
     "validation_warnings": [],
     "benchmarks": {
       "open_market": {
         "label": "Open Market / Street Rate",
-        "value": 1567750.0,
-        "available": false,
+        "value": 1471500.0,
+        "available": true,
         "is_primary": true
       },
       "official": {
@@ -448,19 +441,19 @@
     "indicators": {
       "street_official_gap_pct": {
         "label": "Street-Official Gap",
-        "value": 18.314325561177053,
+        "value": 11.050569327553522,
         "available": true,
         "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
       },
       "street_transfer_gap_pct": {
         "label": "Street-Transfer Gap",
-        "value": -7.616381850324101,
+        "value": -13.28815556865056,
         "available": true,
         "formula": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100"
       },
       "street_crypto_gap_pct": {
         "label": "Street-Crypto Gap",
-        "value": -6.490192951682347,
+        "value": -0.37376826367652055,
         "available": true,
         "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
       },
@@ -473,17 +466,17 @@
     }
   },
   "normalized_metrics": {
-    "street_usd_irr": 1567750.0,
+    "street_usd_irr": 1471500.0,
     "official_commercial_usd_irr": 1325072.0,
     "regional_transfer_usd_irr": 1697000.0,
     "crypto_usdt_irr": 1466000.0,
     "emami_coin_irr": 1046050000.0,
-    "street_official_gap_pct": 18.314325561177053,
-    "street_transfer_gap_pct": -7.616381850324101,
-    "street_crypto_gap_pct": -6.490192951682347,
+    "street_official_gap_pct": 11.050569327553522,
+    "street_transfer_gap_pct": -13.28815556865056,
+    "street_crypto_gap_pct": -0.37376826367652055,
     "official_commercial_trend_7d": null,
-    "street_confidence_status": "WITHHOLD",
-    "source_unit": "mixed",
+    "street_confidence_status": "Green",
+    "source_unit": "toman",
     "normalized_unit": "rial"
   },
   "methodology": {
@@ -546,13 +539,13 @@
       "end": "14:15"
     },
     "candidate_count": 1,
-    "valid_candidate_count": 0,
+    "valid_candidate_count": 1,
     "selected_collected_at": "2026-03-10T14:06:56Z",
     "latest_candidate_collected_at": "2026-03-10T14:06:56Z",
     "selected_attempt_file": "intraday/2026-03-10/14-06-56.json",
-    "selected_valid": false,
+    "selected_valid": true,
     "used_fallback": false,
-    "basis_label": "No valid intraday sample in publication window (WITHHOLD)",
-    "selection_reason": "no valid attempts found; used latest intraday attempt in publication window"
+    "basis_label": "Selected from intraday publication window",
+    "selection_reason": "latest valid intraday attempt in publication window"
   }
 }

@@ -46,7 +46,9 @@ BENCHMARK_LABELS: Dict[str, str] = {
 }
 
 PRIMARY_BENCHMARK = "open_market"
-PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("navasan", "bonbast")
+# Primary street benchmark universe is intentionally conservative.
+# Navasan open-market symbol quality is currently under review and excluded from primary publication.
+PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("bonbast",)
 
 INDICATOR_LABELS: Dict[str, str] = {
     "street_official_gap_pct": "Street-Official Gap",
@@ -467,6 +469,20 @@ def extract_quote_time(payload: Any) -> Optional[dt.datetime]:
         return None
     scored.sort(key=lambda x: x[0], reverse=True)
     return scored[0][1]
+
+
+def extract_symbol_quote_time(payload: Any, symbols: Tuple[str, ...]) -> Optional[dt.datetime]:
+    if not isinstance(payload, dict):
+        return None
+    for symbol in symbols:
+        entry = payload.get(symbol)
+        if not isinstance(entry, dict):
+            continue
+        for field in ("timestamp", "ts", "updated", "updated_at", "time", "date"):
+            parsed = try_parse_datetime(entry.get(field))
+            if parsed is not None:
+                return parsed
+    return None
 
 
 def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
@@ -1409,6 +1425,22 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
 
     value = benchmark_values.get(PRIMARY_BENCHMARK)
     quote_time = extract_quote_time(payload)
+    if config.name == "navasan":
+        open_market_symbols = CANONICAL_SOURCE_SYMBOLS.get("navasan", {}).get("open_market", ())
+        open_market_quote_time = extract_symbol_quote_time(payload, open_market_symbols)
+        if open_market_quote_time is not None:
+            health["open_market_quote_time"] = iso_ts(open_market_quote_time)
+            open_market_stale = bool(open_market_quote_time < window_start_dt or open_market_quote_time > window_end_dt)
+            health["open_market_stale"] = open_market_stale
+            if open_market_stale:
+                # Keep companion market layers, but exclude stale street quote from primary benchmark.
+                benchmark_values[PRIMARY_BENCHMARK] = None
+                value = None
+                health["open_market_exclusion_reason"] = "stale open_market quote timestamp"
+        else:
+            health["open_market_quote_time"] = None
+            health["open_market_stale"] = None
+
     health["extracted_values"] = {k: benchmark_values.get(k) for k in benchmark_values}
     health["raw_extracted_values"] = {k: raw_extracted_values.get(k) for k in raw_extracted_values}
     health["benchmark_units"] = benchmark_units
