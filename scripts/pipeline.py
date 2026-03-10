@@ -34,7 +34,6 @@ DEFAULT_INTRADAY_SAMPLE_TIMES = ("13:45", "14:00", "14:15")
 
 REQUIRED_SECRETS = (
     "NAVASAN_API_KEY",
-    "ALANCHAND_API_KEY",
 )
 
 BENCHMARK_LABELS: Dict[str, str] = {
@@ -48,7 +47,7 @@ BENCHMARK_LABELS: Dict[str, str] = {
 PRIMARY_BENCHMARK = "open_market"
 # Primary street benchmark universe is intentionally conservative.
 # Navasan open-market symbol quality is currently under review and excluded from primary publication.
-PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("bonbast",)
+PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("bonbast", "alanchand_street")
 
 INDICATOR_LABELS: Dict[str, str] = {
     "street_official_gap_pct": "Street-Official Gap",
@@ -164,12 +163,21 @@ BONBAST_USD_SELL_PATTERNS: Tuple[str, ...] = (
 BONBAST_MAX_SPREAD_PCT_DEFAULT = 0.05
 BONBAST_PEER_DEVIATION_PCT_DEFAULT = 0.20
 
+ALANCHAND_STREET_SELL_PATTERNS: Tuple[str, ...] = (
+    r"(?is)Sell\s+rate\s+for\s+USD\s+to\s+IRR.*?<span[^>]*fs-5[^>]*>\s*([0-9][0-9,٬،.]*)\s*</span>",
+)
+ALANCHAND_STREET_BUY_PATTERNS: Tuple[str, ...] = (
+    r"(?is)Buy\s+rate\s+for\s+USD\s+to\s+IRR.*?<span[^>]*fs-5[^>]*>\s*([0-9][0-9,٬،.]*)\s*</span>",
+)
+ALANCHAND_STREET_LAST_UPDATE_PATTERN = r"(?is)Last\s*update:\s*<span>\s*Time:\s*(\d{1,2}):(\d{2})\s*\(UTC([+-]\d{1,2}:\d{2})\)"
+ALANCHAND_STREET_MAX_SPREAD_PCT_DEFAULT = 0.08
+
 
 @dataclass
 class SourceConfig:
     name: str
     url: str
-    auth_mode: str  # browser_playwright | query_api_key | header_api_key
+    auth_mode: str  # browser_playwright | query_api_key | header_api_key | public_html
     secret_fields: Tuple[str, ...]
     benchmark_families: Tuple[str, ...]
     default_unit: str = "toman"
@@ -372,6 +380,38 @@ def try_parse_datetime(value: Any) -> Optional[dt.datetime]:
         return try_parse_datetime(int(text))
 
     return None
+
+
+def parse_utc_offset(offset_text: str) -> Optional[dt.timedelta]:
+    match = re.fullmatch(r"([+-])(\d{1,2}):(\d{2})", offset_text.strip())
+    if not match:
+        return None
+    sign = 1 if match.group(1) == "+" else -1
+    hours = int(match.group(2))
+    minutes = int(match.group(3))
+    if hours > 23 or minutes > 59:
+        return None
+    return sign * dt.timedelta(hours=hours, minutes=minutes)
+
+
+def parse_alanchand_last_update(page_html: str, sampled_at: dt.datetime) -> Optional[dt.datetime]:
+    match = re.search(ALANCHAND_STREET_LAST_UPDATE_PATTERN, page_html)
+    if not match:
+        return None
+    hour = int(match.group(1))
+    minute = int(match.group(2))
+    if hour > 23 or minute > 59:
+        return None
+    offset = parse_utc_offset(match.group(3))
+    if offset is None:
+        return None
+
+    local_tz = dt.timezone(offset)
+    sampled_local = sampled_at.astimezone(local_tz)
+    candidate = dt.datetime.combine(sampled_local.date(), dt.time(hour, minute), tzinfo=local_tz)
+    if candidate > sampled_local + dt.timedelta(hours=12):
+        candidate -= dt.timedelta(days=1)
+    return candidate.astimezone(UTC)
 
 
 def flatten_json(obj: Any, prefix: str = "") -> List[Tuple[str, Any]]:
@@ -713,6 +753,14 @@ def build_source_configs() -> List[SourceConfig]:
             default_unit="toman",
         ),
         SourceConfig(
+            name="alanchand_street",
+            url=env_or_default("ALANCHAND_STREET_URL", "https://alanchand.com/en/currencies-price/usd"),
+            auth_mode="public_html",
+            secret_fields=(),
+            benchmark_families=("open_market",),
+            default_unit="rial",
+        ),
+        SourceConfig(
             name="navasan",
             url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
             auth_mode="query_api_key",
@@ -744,10 +792,11 @@ def build_request(config: SourceConfig) -> urllib.request.Request:
         raise PipelineError("browser sources do not use HTTP request builder")
 
     url = config.url
-    headers = {
-        "Accept": "application/json",
-        "User-Agent": "rialwatch-pipeline/0.2",
-    }
+    headers = {"User-Agent": "rialwatch-pipeline/0.2"}
+    if config.auth_mode == "public_html":
+        headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    else:
+        headers["Accept"] = "application/json"
 
     if config.auth_mode == "query_api_key":
         query = {"api_key": os.environ["NAVASAN_API_KEY"]}
@@ -1168,6 +1217,193 @@ def fetch_bonbast_browser(
     )
 
 
+def extract_alanchand_jsonld_price(page_html: str) -> Optional[float]:
+    for match in re.finditer(r'(?is)<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>', page_html):
+        raw = (match.group(1) or "").strip()
+        if not raw:
+            continue
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+
+        queue: List[Any] = [payload]
+        while queue:
+            node = queue.pop(0)
+            if isinstance(node, dict):
+                node_type = str(node.get("@type") or "").strip().lower()
+                if node_type == "product":
+                    offers = node.get("offers")
+                    if isinstance(offers, dict):
+                        parsed = parse_number(offers.get("price"))
+                        if parsed is not None:
+                            return parsed
+                for value in node.values():
+                    if isinstance(value, (dict, list)):
+                        queue.append(value)
+            elif isinstance(node, list):
+                queue.extend(node)
+    return None
+
+
+def fetch_alanchand_street_public(
+    config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime
+) -> Sample:
+    health: Dict[str, Any] = {
+        "collector": "http_html",
+        "fetch_mode": "public_html",
+        "scrape_timestamp": iso_ts(sampled_at),
+        "fetch_success": False,
+        "failure_reason": None,
+        "error_type": None,
+        "selector_used": None,
+    }
+    benchmark_values = blank_benchmark_values()
+    normalized_unit = "rial"
+    source_unit = config.default_unit
+
+    try:
+        req = build_request(config)
+        health["request_url"] = redact_url_for_health(req.full_url)
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            body = resp.read().decode("utf-8", errors="replace")
+            final_url = resp.geturl()
+        health["content_length"] = len(body.encode("utf-8"))
+        health["final_url"] = final_url
+        health["page_load_ok"] = True
+    except urllib.error.HTTPError as exc:
+        health["error_type"] = "http_error"
+        health["failure_reason"] = f"http {exc.code}"
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            None,
+            ok=False,
+            stale=False,
+            error=f"http {exc.code}",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
+    except urllib.error.URLError as exc:
+        health["error_type"] = "network_error"
+        health["failure_reason"] = f"network: {exc.reason}"
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            None,
+            ok=False,
+            stale=False,
+            error=f"network: {exc.reason}",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
+    except TimeoutError:
+        health["error_type"] = "timeout"
+        health["failure_reason"] = "timeout"
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            None,
+            ok=False,
+            stale=False,
+            error="timeout",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
+
+    # The USD public page publishes IRR values; page text includes FAQ mentions of toman
+    # that can confuse generic unit detection, so keep a canonical IRR unit here.
+    source_unit = config.default_unit
+    health["unit_assumption"] = "page quotes interpreted as rial"
+    quote_time = parse_alanchand_last_update(body, sampled_at)
+
+    sell_raw = extract_number_with_patterns(body, ALANCHAND_STREET_SELL_PATTERNS, 100_000, 4_000_000)
+    buy_raw = extract_number_with_patterns(body, ALANCHAND_STREET_BUY_PATTERNS, 100_000, 4_000_000)
+    selector_used: Dict[str, Optional[str]] = {"sell": None, "buy": None}
+    if sell_raw is not None:
+        selector_used["sell"] = "sell_rate_pattern"
+    if buy_raw is not None:
+        selector_used["buy"] = "buy_rate_pattern"
+
+    if sell_raw is None:
+        sell_raw = extract_alanchand_jsonld_price(body)
+        if sell_raw is not None:
+            selector_used["sell"] = "jsonld_offers_price"
+
+    sell_rial = normalize_unit(sell_raw, source_unit)
+    buy_rial = normalize_unit(buy_raw, source_unit)
+    mid_rial = ((buy_rial + sell_rial) / 2.0) if buy_rial is not None and sell_rial is not None else None
+
+    health["selector_used"] = selector_used
+    health["source_unit"] = source_unit
+    health["normalized_unit"] = normalized_unit
+    health["raw_extracted_values"] = {"open_market_sell": sell_raw, "open_market_buy": buy_raw}
+    health["extracted_values"] = {"open_market_sell": sell_rial, "open_market_buy": buy_rial, "open_market_mid": mid_rial}
+    health["quote_time"] = iso_ts(quote_time) if quote_time is not None else None
+
+    validation: Dict[str, Any] = {"ok": True, "reason": None}
+    if sell_rial is None:
+        validation = {"ok": False, "reason": "unable to parse street USD sell quote"}
+    elif buy_rial is not None:
+        if buy_rial > sell_rial:
+            validation = {"ok": False, "reason": "buy quote above sell quote"}
+        else:
+            spread_pct = (sell_rial - buy_rial) / sell_rial if sell_rial > 0 else None
+            validation["spread_pct"] = spread_pct
+            validation["max_spread_pct"] = env_pct(
+                "ALANCHAND_STREET_MAX_SPREAD_PCT", ALANCHAND_STREET_MAX_SPREAD_PCT_DEFAULT
+            )
+            if spread_pct is None or spread_pct <= 0:
+                validation = {"ok": False, "reason": "non-positive bid/ask spread"}
+            elif spread_pct > float(validation["max_spread_pct"]):
+                validation = {"ok": False, "reason": "bid/ask spread exceeds configured maximum", **validation}
+    health["validation_result"] = validation
+
+    benchmark_values["open_market"] = sell_rial
+    stale = bool(quote_time is not None and (quote_time < window_start_dt or quote_time > window_end_dt))
+    if sell_rial is None or not validation.get("ok"):
+        reason = str(validation.get("reason") or "unable to parse street USD quote")
+        health["error_type"] = "validation_failed"
+        health["failure_reason"] = reason
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=stale,
+            error=reason,
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
+
+    health["fetch_success"] = True
+    return Sample(
+        config.name,
+        sampled_at,
+        sell_rial,
+        benchmark_values,
+        quote_time,
+        ok=not stale,
+        stale=stale,
+        error="stale quote" if stale else None,
+        health=health,
+        source_unit=source_unit,
+        normalized_unit=normalized_unit,
+    )
+
+
 def fetch_alanchand_regional_fallback(
     sampled_at: dt.datetime,
     window_start_dt: dt.datetime,
@@ -1226,6 +1462,28 @@ def fetch_alanchand_regional_fallback(
 def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime) -> Sample:
     if config.auth_mode == "browser_playwright":
         return fetch_bonbast_browser(config, sampled_at, window_start_dt, window_end_dt)
+    if config.auth_mode == "public_html":
+        if config.name == "alanchand_street":
+            return fetch_alanchand_street_public(config, sampled_at, window_start_dt, window_end_dt)
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            blank_benchmark_values(),
+            None,
+            ok=False,
+            stale=False,
+            error="unsupported public_html source",
+            health={
+                "collector": "http_html",
+                "fetch_mode": "public_html",
+                "fetch_success": False,
+                "failure_reason": "unsupported public_html source",
+                "error_type": "unsupported_source",
+            },
+            source_unit=config.default_unit,
+            normalized_unit="rial",
+        )
     if config.name == "bonbast":
         return Sample(
             config.name,
@@ -2206,8 +2464,9 @@ def publish_status(
 
     def source_public_label(source_name: str, index: int) -> str:
         mapping = {
-            "navasan": "Street Market Feed",
+            "alanchand_street": "Street Market Feed",
             "bonbast": "Street Market Feed (Secondary)",
+            "navasan": "Commercial Market Feed",
             "alanchand": "Regional Market Feed",
         }
         key = source_name.strip().lower()
