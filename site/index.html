@@ -272,10 +272,27 @@
     color: var(--rw-text-muted);
   }
 
+  .indicator-value-main {
+    font-size: 2.15rem;
+    line-height: 1.05;
+    font-weight: 700;
+    color: var(--rw-text-strong);
+  }
+
   .indicator-compare {
     display: grid;
     gap: 4px;
     line-height: 1.25;
+  }
+
+  .indicator-sparkline {
+    min-height: 44px;
+  }
+
+  .indicator-sparkline-svg {
+    display: block;
+    width: 100%;
+    height: 44px;
   }
 
   .dashboard-title {
@@ -472,7 +489,7 @@
             <a href="/rialwatch/methodology/">Methodology</a>
             <a href="/rialwatch/status/">Status</a>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-11T21:08:27Z">Last update: 2026-03-11T21:08:27Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-11T21:14:22Z">Last update: 2026-03-11T21:14:22Z</div>
         </div>
       </div>
     </div>
@@ -492,7 +509,7 @@
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
           <div class="h1 mb-1">1,473,250 IRR</div>
-          <div class="text-secondary">Date: 2026-03-11 | As of: 2026-03-11T21:08:27Z</div>
+          <div class="text-secondary">Date: 2026-03-11 | As of: 2026-03-11T21:14:22Z</div>
           <div class="text-secondary small mt-1">Observed sample: 14:09 UTC (fallback from intraday window)</div>
           
         </div>
@@ -541,11 +558,12 @@
           <div class="fw-semibold mb-1">Street-Official Gap</div>
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Official Commercial USD/IRR.</div>
         </div>
-        <div class="h3 mb-0 mt-3">+11.2%</div>
+        <div class="indicator-value-main mt-3">+11.2%</div>
         <div class="indicator-compare small mt-2">
           <div><span class="text-secondary">Street:</span> 1,473,250 IRR</div>
           <div><span class="text-secondary">Official:</span> 1,325,072 IRR</div>
         </div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,3.0 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,3.0 217.0,41.0"></polyline></svg></div>
         <div class="indicator-note">Premium to official market</div>
       </div>
     </div>
@@ -556,11 +574,12 @@
           <div class="fw-semibold mb-1">Street-Transfer Gap</div>
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Regional Transfer USD/IRR.</div>
         </div>
-        <div class="h3 mb-0 mt-3">-13.2%</div>
+        <div class="indicator-value-main mt-3">-13.2%</div>
         <div class="indicator-compare small mt-2">
           <div><span class="text-secondary">Street:</span> 1,473,250 IRR</div>
           <div><span class="text-secondary">Transfer:</span> 1,697,000 IRR</div>
         </div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,3.0 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,3.0 217.0,41.0"></polyline></svg></div>
         <div class="indicator-note">Premium/discount to transfer market</div>
       </div>
     </div>
@@ -571,11 +590,12 @@
           <div class="fw-semibold mb-1">Street-Crypto Gap</div>
           <div class="text-secondary small mb-2">Percent difference between crypto USDT-implied USD/IRR and Street USD/IRR.</div>
         </div>
-        <div class="h3 mb-0 mt-3">-2.8%</div>
+        <div class="indicator-value-main mt-3">-2.8%</div>
         <div class="indicator-compare small mt-2">
           <div><span class="text-secondary">Street:</span> 1,473,250 IRR</div>
           <div><span class="text-secondary">Crypto:</span> 1,432,000 IRR</div>
         </div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,41.0 217.0,3.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,41.0 217.0,3.0"></polyline></svg></div>
         <div class="indicator-note">Premium/discount to crypto market</div>
       </div>
     </div>
@@ -810,7 +830,7 @@ async function loadSeries() {
 loadSeries();
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-11T21:08:27Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-11T21:14:22Z</div>
     </div>
   </div>
 </div>

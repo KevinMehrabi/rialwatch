@@ -2039,6 +2039,70 @@ def load_benchmark_fix_history(site_dir: Path, benchmark_key: str) -> List[Tuple
     return rows
 
 
+def extract_daily_gap_value(daily: Dict[str, Any], gap_key: str) -> Optional[float]:
+    computed = daily.get("computed", {})
+    if not isinstance(computed, dict):
+        return None
+    if computed.get("withheld") is True:
+        return None
+    street_fix = parse_number(computed.get("fix"))
+    if street_fix is None or street_fix <= 0:
+        return None
+
+    benchmarks = daily.get("benchmarks", {})
+    if not isinstance(benchmarks, dict):
+        benchmarks = {}
+
+    def benchmark_fix_value(key: str) -> Optional[float]:
+        entry = benchmarks.get(key, {})
+        if not isinstance(entry, dict):
+            return None
+        return parse_number(entry.get("fix"))
+
+    official_fix = benchmark_fix_value("official")
+    transfer_fix = benchmark_fix_value("regional_transfer")
+    crypto_fix = benchmark_fix_value("crypto_usdt")
+
+    if gap_key == "street_official_gap_pct":
+        if official_fix in (None, 0):
+            return None
+        return ((street_fix - official_fix) / official_fix) * 100
+    if gap_key == "street_transfer_gap_pct":
+        if transfer_fix in (None, 0):
+            return None
+        return ((street_fix - transfer_fix) / transfer_fix) * 100
+    if gap_key == "street_crypto_gap_pct":
+        if crypto_fix is None:
+            return None
+        return ((crypto_fix - street_fix) / street_fix) * 100
+    return None
+
+
+def load_indicator_gap_history(site_dir: Path, gap_key: str) -> List[Tuple[dt.date, float]]:
+    rows: List[Tuple[dt.date, float]] = []
+    fix_dir = site_dir / "fix"
+    if not fix_dir.exists():
+        return rows
+
+    for path in sorted(fix_dir.glob("*.json")):
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
+            continue
+        try:
+            daily = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        day = parse_iso_date_text(daily.get("date") or path.stem)
+        if day is None:
+            continue
+        value = extract_daily_gap_value(daily, gap_key)
+        if value is None:
+            continue
+        rows.append((day, value))
+
+    rows.sort(key=lambda item: item[0])
+    return rows
+
+
 def compute_official_trend_7d(site_dir: Path, latest_day: dt.date, latest_official_fix: Optional[float]) -> Optional[float]:
     if latest_official_fix is None or latest_official_fix <= 0:
         return None
@@ -3073,6 +3137,44 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             "</svg>"
         )
 
+    def indicator_gap_sparkline_html(key: str) -> str:
+        width = 220.0
+        height = 44.0
+        pad = 3.0
+
+        current = indicator_value_number(key)
+        if latest_day is None or current is None:
+            return '<div class="text-secondary small">History building</div>'
+
+        history = load_indicator_gap_history(site_dir, key)
+        by_day: Dict[dt.date, float] = {day: value for day, value in history}
+        by_day[latest_day] = current
+        ordered_values = [value for _day, value in sorted(by_day.items())][-14:]
+        if len(ordered_values) < 2:
+            return '<div class="text-secondary small">History building</div>'
+
+        min_val = min(ordered_values)
+        max_val = max(ordered_values)
+        span = max_val - min_val
+        if span <= 0:
+            span = 1.0
+
+        points: List[str] = []
+        for idx, value in enumerate(ordered_values):
+            x = pad + (idx * (width - 2 * pad) / (len(ordered_values) - 1))
+            y = pad + ((max_val - value) / span) * (height - 2 * pad)
+            points.append(f"{x:.1f},{y:.1f}")
+
+        polyline = " ".join(points)
+        fill_points = f"{pad:.1f},{height - pad:.1f} {polyline} {width - pad:.1f},{height - pad:.1f}"
+        return (
+            f'<svg class="indicator-sparkline-svg" viewBox="0 0 {int(width)} {int(height)}" preserveAspectRatio="none" '
+            'role="img" aria-label="gap trend sparkline">'
+            f'<polygon points="{fill_points}" fill="rgba(59,130,246,0.18)"></polygon>'
+            f'<polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="{polyline}"></polyline>'
+            "</svg>"
+        )
+
     publication_meta = ""
     publication_selection = latest.get("publication_selection")
     if isinstance(publication_selection, dict):
@@ -3202,14 +3304,17 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street_official_gap_note="Premium to official market",
         street_official_street_value=comparison_value_text(street),
         street_official_peer_value=comparison_value_text(official),
+        street_official_gap_sparkline=indicator_gap_sparkline_html("street_official_gap_pct"),
         street_transfer_gap_value=indicator_value_or_unavailable("street_transfer_gap_pct"),
         street_transfer_gap_note="Premium/discount to transfer market",
         street_transfer_street_value=comparison_value_text(street),
         street_transfer_peer_value=comparison_value_text(transfer),
+        street_transfer_gap_sparkline=indicator_gap_sparkline_html("street_transfer_gap_pct"),
         street_crypto_gap_value=indicator_value_or_unavailable("street_crypto_gap_pct"),
         street_crypto_gap_note="Premium/discount to crypto market",
         street_crypto_street_value=comparison_value_text(street),
         street_crypto_peer_value=comparison_value_text(crypto),
+        street_crypto_gap_sparkline=indicator_gap_sparkline_html("street_crypto_gap_pct"),
         official_trend_7d_value=indicator_value_or_unavailable("official_commercial_trend_7d"),
         official_trend_7d_note=official_trend_note,
     )
