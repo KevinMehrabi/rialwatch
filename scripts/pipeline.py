@@ -1956,6 +1956,8 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
     crypto = benchmark_results.get("crypto_usdt", {})
 
     street_fix = parse_number(street.get("fix"))
+    if street.get("withheld") is True:
+        street_fix = None
     official_fix = parse_number(official.get("fix"))
     transfer_fix = parse_number(transfer.get("fix"))
     crypto_fix = parse_number(crypto.get("fix"))
@@ -2926,7 +2928,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         indicator_map = c.get("indicators", {})
     indicator_map = indicator_map if isinstance(indicator_map, dict) else {}
 
-    street = benchmark_value_number("open_market")
+    published_street_fix = parse_number(c.get("fix"))
+    if withheld:
+        published_street_fix = None
+
+    street = published_street_fix
     official = benchmark_value_number("official")
     transfer = benchmark_value_number("regional_transfer")
     crypto = benchmark_value_number("crypto_usdt")
@@ -2956,7 +2962,13 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     if not indicator_map:
         indicator_map = {k: {"value": v} for k, v in fallback_indicator_values.items()}
 
+    street_gap_keys = {"street_official_gap_pct", "street_transfer_gap_pct", "street_crypto_gap_pct"}
+
     def indicator_value_number(key: str) -> Optional[float]:
+        if key in street_gap_keys:
+            # Always derive street-based gaps from the published primary fix to keep
+            # homepage indicators aligned with the primary benchmark card.
+            return fallback_indicator_values.get(key)
         entry = indicator_map.get(key, {})
         value = parse_float(entry.get("value")) if isinstance(entry, dict) else None
         if value is None:
@@ -2966,6 +2978,8 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     def indicator_value_or_unavailable(key: str) -> str:
         value = indicator_value_number(key)
         if value is None:
+            if key == "official_commercial_trend_7d":
+                return "History building"
             return "Unavailable"
         return f"{value:+.1f}%"
 
@@ -3074,6 +3088,48 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         as_of_ts = try_parse_datetime(latest.get("as_of"))
         if as_of_ts:
             publication_meta = f"Observed sample: {as_of_ts.strftime('%H:%M UTC')} (intraday window)"
+    observation_timestamp = "N/A"
+    if isinstance(publication_selection, dict):
+        selected_ts = try_parse_datetime(publication_selection.get("selected_collected_at"))
+        if selected_ts is not None:
+            observation_timestamp = selected_ts.strftime("%H:%M UTC")
+    if observation_timestamp == "N/A":
+        as_of_ts = try_parse_datetime(latest.get("as_of"))
+        if as_of_ts is not None:
+            observation_timestamp = as_of_ts.strftime("%H:%M UTC")
+
+    source_medians = c.get("source_medians")
+    if isinstance(source_medians, dict):
+        street_source_count = len([k for k, v in source_medians.items() if parse_number(v) is not None])
+    else:
+        street_source_count = 0
+    street_source_count_text = f"{street_source_count} source" if street_source_count == 1 else f"{street_source_count} sources"
+
+    prior_day_change_text = "History building"
+    latest_day = parse_iso_date_text(latest.get("date"))
+    if latest_day is not None and street is not None:
+        history_rows = load_series_rows(site_dir)
+        previous_rows = []
+        for row in history_rows:
+            if not is_public_series_row(row):
+                continue
+            row_day = parse_iso_date_text(row.get("date"))
+            if row_day is None or row_day >= latest_day:
+                continue
+            previous_rows.append((row_day, parse_number(row.get("fix"))))
+        previous_rows = [(d, v) for d, v in previous_rows if v is not None]
+        if previous_rows:
+            previous_rows.sort(key=lambda item: item[0])
+            previous_fix = previous_rows[-1][1]
+            if previous_fix is not None and previous_fix > 0:
+                delta = street - previous_fix
+                pct = (delta / previous_fix) * 100
+                prior_day_change_text = f"{delta:+,.0f} IRR ({pct:+.1f}%)"
+
+    def comparison_value_text(value: Optional[float], unit_suffix: str = "IRR") -> str:
+        if value is None:
+            return "Unavailable"
+        return f"{fmt_rate(value)} {unit_suffix}"
 
     withhold_reason_text = ""
     if withheld:
@@ -3121,6 +3177,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         withheld="Yes" if withheld else "No",
         publication_state=publication_state,
         publication_meta=publication_meta,
+        primary_prior_day_change=prior_day_change_text,
+        primary_street_sources=street_source_count_text,
+        primary_observation_timestamp=observation_timestamp,
         withhold_reason_short=withhold_reason_text,
         reasons=reasons_html,
         official_value=benchmark_value_or_unavailable("official"),
@@ -3141,10 +3200,16 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         emami_gold_coin_sparkline=benchmark_sparkline_html("emami_gold_coin"),
         street_official_gap_value=indicator_value_or_unavailable("street_official_gap_pct"),
         street_official_gap_note="Premium to official market",
+        street_official_street_value=comparison_value_text(street),
+        street_official_peer_value=comparison_value_text(official),
         street_transfer_gap_value=indicator_value_or_unavailable("street_transfer_gap_pct"),
         street_transfer_gap_note="Premium/discount to transfer market",
+        street_transfer_street_value=comparison_value_text(street),
+        street_transfer_peer_value=comparison_value_text(transfer),
         street_crypto_gap_value=indicator_value_or_unavailable("street_crypto_gap_pct"),
         street_crypto_gap_note="Premium/discount to crypto market",
+        street_crypto_street_value=comparison_value_text(street),
+        street_crypto_peer_value=comparison_value_text(crypto),
         official_trend_7d_value=indicator_value_or_unavailable("official_commercial_trend_7d"),
         official_trend_7d_note=official_trend_note,
     )

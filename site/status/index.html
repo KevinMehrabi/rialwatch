@@ -267,10 +267,15 @@
   }
 
   .indicator-note {
-    margin-top: auto;
-    padding-top: 10px;
+    margin-top: 10px;
     font-size: 0.75rem;
     color: var(--rw-text-muted);
+  }
+
+  .indicator-compare {
+    display: grid;
+    gap: 4px;
+    line-height: 1.25;
   }
 
   .dashboard-title {
@@ -467,7 +472,7 @@
             <a href="/rialwatch/methodology/">Methodology</a>
             <a href="/rialwatch/status/">Status</a>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-11T20:55:51Z">Last update: 2026-03-11T20:55:51Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-11T21:08:27Z">Last update: 2026-03-11T21:08:27Z</div>
         </div>
       </div>
     </div>
@@ -483,12 +488,12 @@
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h3 class="card-title mb-0">System Overview</h3>
-      <span class="text-secondary small">Status snapshot: Mar 11, 2026 · 20:55 UTC</span>
+      <span class="text-secondary small">Status snapshot: Mar 11, 2026 · 21:08 UTC</span>
     </div>
     <div class="status-overview-grid">
       <div class="status-overview-card"><div class="text-secondary small">Benchmark Pipeline</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Benchmark pipeline is operating normally.</div></div>
-<div class="status-overview-card"><div class="text-secondary small">Latest Publication</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Published 2026-03-10 benchmark.</div></div>
-<div class="status-overview-card"><div class="text-secondary small">Source Collection</div><div class="mt-1"><span class="status-label"><span class="status-light status-degraded"></span>Degraded</span></div><div class="status-note">2/4 sources online.</div></div>
+<div class="status-overview-card"><div class="text-secondary small">Latest Publication</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Published 2026-03-11 benchmark.</div></div>
+<div class="status-overview-card"><div class="text-secondary small">Source Collection</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">4/4 sources online.</div></div>
 <div class="status-overview-card"><div class="text-secondary small">Site Deployment</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Dashboard deployment is online.</div></div>
     </div>
   </div>
@@ -508,10 +513,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Regional Market Feed</td><td><span class="status-label"><span class="status-light status-offline"></span>Offline</span></td><td>N/A</td><td>Source request failed.</td></tr>
-<tr><td>Street Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 10, 2026, 20:54 UTC</td><td>Out-of-window observation.</td></tr>
-<tr><td>Street Market Feed (Secondary)</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 10, 2026, 20:54 UTC</td><td>Out-of-window observation.</td></tr>
-<tr><td>Commercial Market Feed</td><td><span class="status-label"><span class="status-light status-offline"></span>Offline</span></td><td>N/A</td><td>Source request failed.</td></tr>
+          <tr><td>Regional Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 11, 2026, 14:09 UTC</td><td>Served via backup market feed.</td></tr>
+<tr><td>Street Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 11, 2026, 14:09 UTC</td><td>Collecting normally.</td></tr>
+<tr><td>Street Market Feed (Secondary)</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 11, 2026, 14:09 UTC</td><td>Collecting normally.</td></tr>
+<tr><td>Commercial Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 11, 2026, 14:09 UTC</td><td>source excluded from street benchmark universe</td></tr>
         </tbody>
       </table>
     </div>
@@ -524,7 +529,7 @@
     <div class="row g-3">
       <div class="col-md-3">
         <div class="text-secondary small">Latest Benchmark Value</div>
-        <div class="h4 mb-0">1,473,500 IRR</div>
+        <div class="h4 mb-0">1,473,250 IRR</div>
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Publication State</div>
@@ -532,7 +537,7 @@
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Last Update</div>
-        <div class="h6 mb-0">Mar 10, 2026 · 20:54 UTC</div>
+        <div class="h6 mb-0">Mar 11, 2026 · 21:08 UTC</div>
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Withhold Reason</div>
@@ -545,12 +550,12 @@
 <section class="card mt-3">
   <div class="card-body">
     <h3 class="card-title mb-3">Diagnostics</h3>
-    <ul class="mb-0"><li>One or more market feeds are currently offline.</li><li>1 historical day(s) remain withheld due to publication-quality rules.</li></ul>
+    <ul class="mb-0"><li>1 historical day(s) remain withheld due to publication-quality rules.</li></ul>
     
   </div>
 </section>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-11T20:55:51Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-11T21:08:27Z</div>
     </div>
   </div>
 </div>

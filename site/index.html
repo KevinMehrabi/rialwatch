@@ -267,10 +267,15 @@
   }
 
   .indicator-note {
-    margin-top: auto;
-    padding-top: 10px;
+    margin-top: 10px;
     font-size: 0.75rem;
     color: var(--rw-text-muted);
+  }
+
+  .indicator-compare {
+    display: grid;
+    gap: 4px;
+    line-height: 1.25;
   }
 
   .dashboard-title {
@@ -467,7 +472,7 @@
             <a href="/rialwatch/methodology/">Methodology</a>
             <a href="/rialwatch/status/">Status</a>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-11T20:55:51Z">Last update: 2026-03-11T20:55:51Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-11T21:08:27Z">Last update: 2026-03-11T21:08:27Z</div>
         </div>
       </div>
     </div>
@@ -486,19 +491,33 @@
         <div>
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
-          <div class="h1 mb-1">1,473,500 IRR</div>
-          <div class="text-secondary">Date: 2026-03-10 | As of: 2026-03-10T20:54:21Z</div>
-          <div class="text-secondary small mt-1">Observed sample: 20:54 UTC (intraday window)</div>
+          <div class="h1 mb-1">1,473,250 IRR</div>
+          <div class="text-secondary">Date: 2026-03-11 | As of: 2026-03-11T21:08:27Z</div>
+          <div class="text-secondary small mt-1">Observed sample: 14:09 UTC (fallback from intraday window)</div>
           
         </div>
-        <div class="row mt-auto pt-4">
+        <div class="row mt-3">
           <div class="col-6">
             <div class="text-secondary">Band (P25-P75)</div>
-            <div>1,472,500 - 1,474,500</div>
+            <div>1,470,125 - 1,476,375</div>
           </div>
           <div class="col-6">
             <div class="text-secondary">Publication</div>
             <div>Published</div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-4">
+            <div class="text-secondary">Prior Day</div>
+            <div>-250 IRR (-0.0%)</div>
+          </div>
+          <div class="col-4">
+            <div class="text-secondary">Street Sources</div>
+            <div>2 sources</div>
+          </div>
+          <div class="col-4">
+            <div class="text-secondary">Observed</div>
+            <div>14:09 UTC</div>
           </div>
         </div>
       </div>
@@ -522,7 +541,11 @@
           <div class="fw-semibold mb-1">Street-Official Gap</div>
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Official Commercial USD/IRR.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
+        <div class="h3 mb-0 mt-3">+11.2%</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> 1,473,250 IRR</div>
+          <div><span class="text-secondary">Official:</span> 1,325,072 IRR</div>
+        </div>
         <div class="indicator-note">Premium to official market</div>
       </div>
     </div>
@@ -533,7 +556,11 @@
           <div class="fw-semibold mb-1">Street-Transfer Gap</div>
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Regional Transfer USD/IRR.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
+        <div class="h3 mb-0 mt-3">-13.2%</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> 1,473,250 IRR</div>
+          <div><span class="text-secondary">Transfer:</span> 1,697,000 IRR</div>
+        </div>
         <div class="indicator-note">Premium/discount to transfer market</div>
       </div>
     </div>
@@ -544,7 +571,11 @@
           <div class="fw-semibold mb-1">Street-Crypto Gap</div>
           <div class="text-secondary small mb-2">Percent difference between crypto USDT-implied USD/IRR and Street USD/IRR.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
+        <div class="h3 mb-0 mt-3">-2.8%</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> 1,473,250 IRR</div>
+          <div><span class="text-secondary">Crypto:</span> 1,432,000 IRR</div>
+        </div>
         <div class="indicator-note">Premium/discount to crypto market</div>
       </div>
     </div>
@@ -555,7 +586,7 @@
           <div class="fw-semibold mb-1">Official 7d Trend</div>
           <div class="text-secondary small mb-2">7-day percent change in Official Commercial USD/IRR.</div>
         </div>
-        <div class="h3 mb-0 mt-auto pt-3">Unavailable</div>
+        <div class="h3 mb-0 mt-3">History building</div>
         <div class="indicator-note">Direction of the official benchmark over the past week.</div>
       </div>
     </div>
@@ -573,13 +604,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">Unavailable</div>
+            <div class="panel-value">1,325,072</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small"></div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 28" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="2.0,14.0 158.0,14.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 14:09 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 28" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="#3b82f6" stroke-width="2" points="2.0,14.0 158.0,14.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -591,13 +622,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">Unavailable</div>
+            <div class="panel-value">1,697,000</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small"></div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 28" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="2.0,14.0 158.0,14.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 14:09 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 28" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="#3b82f6" stroke-width="2" points="2.0,14.0 158.0,14.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -615,13 +646,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">Unavailable</div>
+            <div class="panel-value">1,432,000</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small"></div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 28" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="2.0,14.0 158.0,14.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 14:09 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 28" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="#3b82f6" stroke-width="2" points="2.0,2.0 158.0,26.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -633,13 +664,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">2,090,000,000</div>
+            <div class="panel-value">1,046,050,000</div>
             <div class="unit-label">IRR per coin</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 20:54 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 28" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="#3b82f6" stroke-width="2" points="2.0,2.0 158.0,26.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 14:09 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 28" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="#3b82f6" stroke-width="2" points="2.0,2.0 80.0,2.1 158.0,26.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -779,7 +810,7 @@ async function loadSeries() {
 loadSeries();
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-11T20:55:51Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-11T21:08:27Z</div>
     </div>
   </div>
 </div>

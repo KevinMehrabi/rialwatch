@@ -48,14 +48,24 @@
 
   .site-title {
     color: var(--rw-text-strong);
-    font-size: 1.15rem;
-    font-weight: 700;
+    font-size: 1.75rem;
+    font-weight: 600;
     line-height: 1.2;
+    text-decoration: none;
+    margin-bottom: 4px;
+    display: inline-block;
+    transition: color 120ms ease;
+  }
+
+  .site-title:hover,
+  .site-title:focus {
+    color: #ffffff;
+    text-decoration: none;
   }
 
   .site-subtitle {
-    color: #c4d1e3;
-    font-size: 0.82rem;
+    color: #b6c6da;
+    font-size: 1rem;
     line-height: 1.2;
   }
 
@@ -70,7 +80,7 @@
   .site-nav a {
     color: #d9e4f2;
     text-decoration: none;
-    font-size: 0.88rem;
+    font-size: 14px;
   }
 
   .site-nav a:hover {
@@ -257,10 +267,15 @@
   }
 
   .indicator-note {
-    margin-top: auto;
-    padding-top: 10px;
+    margin-top: 10px;
     font-size: 0.75rem;
     color: var(--rw-text-muted);
+  }
+
+  .indicator-compare {
+    display: grid;
+    gap: 4px;
+    line-height: 1.25;
   }
 
   .dashboard-title {
@@ -457,7 +472,7 @@
             <a href="/rialwatch/methodology/">Methodology</a>
             <a href="/rialwatch/status/">Status</a>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-11T14:37:18Z">Last update: 2026-03-11T14:37:18Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-11T21:08:27Z">Last update: 2026-03-11T21:08:27Z</div>
         </div>
       </div>
     </div>
@@ -476,7 +491,7 @@
         <div>
           <div class="text-secondary text-uppercase small">Daily Fix</div>
           <div class="metric-value">1,473,250 <span class="fs-5">IRR</span></div>
-          <div class="metric-sub">As of 2026-03-11T14:37:18Z</div>
+          <div class="metric-sub">As of 2026-03-11T21:08:27Z</div>
         </div>
         <span class="status-pill status-Green">Green</span>
       </div>
@@ -532,7 +547,7 @@
   </section>
 </div>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-11T14:37:18Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-11T21:08:27Z</div>
     </div>
   </div>
 </div>
