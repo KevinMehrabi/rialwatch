@@ -1,0 +1,40 @@
+{
+  "sources": [
+    {
+      "source_name": "bonbast",
+      "market_type": "iran_open_market",
+      "quote_type": "two_way_public_rate_board",
+      "unit_type": "toman",
+      "benchmark_eligible": true,
+      "diagnostics_only": false,
+      "exclusion_reason_default": null
+    },
+    {
+      "source_name": "alanchand_street",
+      "market_type": "iran_open_market",
+      "quote_type": "public_buy_sell_web_quote",
+      "unit_type": "rial",
+      "benchmark_eligible": true,
+      "diagnostics_only": false,
+      "exclusion_reason_default": null
+    },
+    {
+      "source_name": "navasan",
+      "market_type": "mixed_market_api",
+      "quote_type": "aggregated_api_quote",
+      "unit_type": "mixed",
+      "benchmark_eligible": false,
+      "diagnostics_only": true,
+      "exclusion_reason_default": "open-market quote currently ineligible pending source quality review"
+    },
+    {
+      "source_name": "alanchand",
+      "market_type": "regional_transfer_api",
+      "quote_type": "regional_transfer_api_quote",
+      "unit_type": "toman",
+      "benchmark_eligible": false,
+      "diagnostics_only": true,
+      "exclusion_reason_default": "source family not used for open-market benchmark"
+    }
+  ]
+}

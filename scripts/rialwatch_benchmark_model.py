@@ -22,19 +22,51 @@ UTC = dt.timezone.utc
 DEFAULT_HISTORY_DAYS = 14
 TRIM_FRACTION = 0.10
 
-SOURCE_LABELS: Dict[str, str] = {
-    "bonbast": "Bonbast",
-    "navasan": "Navasan",
-    "alanchand_street": "AlanChand Street",
-    "alanchand": "AlanChand API",
+SOURCE_REGISTRY: Dict[str, Dict[str, Any]] = {
+    "bonbast": {
+        "source_label": "Bonbast",
+        "market_type": "iran_open_market",
+        "quote_type": "two_way_public_rate_board",
+        "unit_type": "toman",
+        "benchmark_eligible": True,
+        "diagnostics_only": False,
+        "exclusion_reason_default": None,
+        "base_weight": 1.00,
+    },
+    "alanchand_street": {
+        "source_label": "AlanChand Street",
+        "market_type": "iran_open_market",
+        "quote_type": "public_buy_sell_web_quote",
+        "unit_type": "rial",
+        "benchmark_eligible": True,
+        "diagnostics_only": False,
+        "exclusion_reason_default": None,
+        "base_weight": 0.92,
+    },
+    "navasan": {
+        "source_label": "Navasan",
+        "market_type": "mixed_market_api",
+        "quote_type": "aggregated_api_quote",
+        "unit_type": "mixed",
+        "benchmark_eligible": False,
+        "diagnostics_only": True,
+        "exclusion_reason_default": "open-market quote currently ineligible pending source quality review",
+        "base_weight": 0.75,
+    },
+    "alanchand": {
+        "source_label": "AlanChand API",
+        "market_type": "regional_transfer_api",
+        "quote_type": "regional_transfer_api_quote",
+        "unit_type": "toman",
+        "benchmark_eligible": False,
+        "diagnostics_only": True,
+        "exclusion_reason_default": "source family not used for open-market benchmark",
+        "base_weight": 0.70,
+    },
 }
 
-BASE_WEIGHTS: Dict[str, float] = {
-    "bonbast": 1.00,
-    "alanchand_street": 0.92,
-    "navasan": 0.75,
-    "alanchand": 0.70,
-}
+SOURCE_LABELS: Dict[str, str] = {name: str(config["source_label"]) for name, config in SOURCE_REGISTRY.items()}
+BASE_WEIGHTS: Dict[str, float] = {name: float(config["base_weight"]) for name, config in SOURCE_REGISTRY.items()}
 
 
 @dataclass
@@ -524,6 +556,7 @@ def build_daily_history_artifact(
     benchmark_json: Dict[str, Any],
     diagnostics_json: Dict[str, Any],
     card_json: Dict[str, Any],
+    confidence_components: Dict[str, float],
 ) -> Dict[str, Any]:
     eligible_sources = [
         row["source_name"]
@@ -545,6 +578,10 @@ def build_daily_history_artifact(
         "trimmed_mean_rate": benchmark_json.get("trimmed_mean_rate"),
         "weighted_rate": benchmark_json.get("weighted_rate"),
         "confidence_score": benchmark_json.get("confidence_score"),
+        "confidence_source_count_component": confidence_components.get("source_count_component"),
+        "confidence_dispersion_component": confidence_components.get("dispersion_component"),
+        "confidence_stability_component": confidence_components.get("historical_stability_component"),
+        "confidence_total": benchmark_json.get("confidence_score"),
         "source_count": benchmark_json.get("source_count"),
         "eligible_sources": eligible_sources,
         "diagnostics_summary": {
@@ -555,6 +592,88 @@ def build_daily_history_artifact(
             "diagnostics_warning": card_json.get("diagnostics_warning"),
         },
     }
+
+
+def build_source_registry_payload() -> Dict[str, Any]:
+    rows = []
+    for source_name, config in SOURCE_REGISTRY.items():
+        rows.append(
+            {
+                "source_name": source_name,
+                "market_type": config["market_type"],
+                "quote_type": config["quote_type"],
+                "unit_type": config["unit_type"],
+                "benchmark_eligible": config["benchmark_eligible"],
+                "diagnostics_only": config["diagnostics_only"],
+                "exclusion_reason_default": config["exclusion_reason_default"],
+            }
+        )
+    return {"sources": rows}
+
+
+def build_methodology_payload(current_diagnostics: Dict[str, Any]) -> Dict[str, Any]:
+    registry_payload = build_source_registry_payload()
+    current_benchmark_eligible_sources = [
+        row["source_name"]
+        for row in registry_payload["sources"]
+        if row["benchmark_eligible"] is True
+    ]
+    current_diagnostics_only_sources = [
+        row["source_name"]
+        for row in registry_payload["sources"]
+        if row["diagnostics_only"] is True
+    ]
+    return {
+        "eligibility_rules": [
+            "Only open-market USD/IRR quotes with a usable normalized value are considered for benchmark inclusion.",
+            "Sources must expose a valid non-stale open-market quote in the stored daily feed to become eligible for a given day.",
+            "Diagnostics-only sources remain visible in diagnostics and methodology artifacts but are not included in benchmark aggregation.",
+        ],
+        "quote_normalization_rules": [
+            "All quote values are normalized to IRR before aggregation.",
+            "Midpoints are preferred when both buy and sell are available.",
+            "If no midpoint exists, the best available open-market quote is used with its quote basis preserved.",
+        ],
+        "accepted_quote_bases": ["midpoint", "sell", "buy", "inferred"],
+        "outlier_handling_method": {
+            "method": "median_absolute_deviation",
+            "threshold": 3.5,
+            "notes": "MAD screening is only applied when at least three eligible benchmark candidates are available.",
+        },
+        "confidence_score_methodology": {
+            "source_count_component_max": 40.0,
+            "dispersion_component_max": 35.0,
+            "stability_component_max": 25.0,
+            "outlier_penalty_max": 15.0,
+            "notes": "Confidence score combines eligible source breadth, current dispersion, recent benchmark stability, and outlier penalties.",
+        },
+        "current_benchmark_eligible_sources": current_benchmark_eligible_sources,
+        "current_diagnostics_only_sources": current_diagnostics_only_sources,
+        "current_sample_status": current_diagnostics.get("source_values", []),
+    }
+
+
+def build_benchmark_timeseries(history_payload: Dict[str, Any]) -> Dict[str, Any]:
+    rows = []
+    for row in history_payload.get("rows", []):
+        if not isinstance(row, dict):
+            continue
+        benchmark_rate = row.get("weighted_rate")
+        if benchmark_rate is None:
+            benchmark_rate = row.get("median_rate")
+        diagnostics_summary = row.get("diagnostics_summary", {})
+        if not isinstance(diagnostics_summary, dict):
+            diagnostics_summary = {}
+        rows.append(
+            {
+                "date": row.get("date"),
+                "benchmark_rate": benchmark_rate,
+                "confidence_score": row.get("confidence_score"),
+                "source_count": row.get("source_count"),
+                "dispersion_level": diagnostics_summary.get("dispersion_level"),
+            }
+        )
+    return {"rows": rows}
 
 
 def build_benchmark_outputs(daily: Dict[str, Any], site_dir: Path, history_days: int) -> BenchmarkArtifacts:
@@ -710,6 +829,10 @@ def build_benchmark_outputs(daily: Dict[str, Any], site_dir: Path, history_days:
     diagnostics_json = {
         "timestamp": daily.get("as_of") or daily.get("date"),
         "input_date": daily.get("date"),
+        "confidence_source_count_component": confidence_components.get("source_count_component"),
+        "confidence_dispersion_component": confidence_components.get("dispersion_component"),
+        "confidence_stability_component": confidence_components.get("historical_stability_component"),
+        "confidence_total": confidence_score,
         "source_values": source_values,
         "source_deviation": source_deviation,
         "dispersion": {
@@ -750,6 +873,7 @@ def build_benchmark_outputs(daily: Dict[str, Any], site_dir: Path, history_days:
         benchmark_json=benchmark_json,
         diagnostics_json=diagnostics_json,
         card_json=card_json,
+        confidence_components=confidence_components,
     )
     return BenchmarkArtifacts(
         benchmark=benchmark_json,
@@ -783,6 +907,10 @@ def write_history_outputs(site_dir: Path, fix_paths: Sequence[Path], history_day
                 "trimmed_mean_rate": artifacts.daily_history.get("trimmed_mean_rate"),
                 "weighted_rate": artifacts.daily_history.get("weighted_rate"),
                 "confidence_score": artifacts.daily_history.get("confidence_score"),
+                "confidence_source_count_component": artifacts.daily_history.get("confidence_source_count_component"),
+                "confidence_dispersion_component": artifacts.daily_history.get("confidence_dispersion_component"),
+                "confidence_stability_component": artifacts.daily_history.get("confidence_stability_component"),
+                "confidence_total": artifacts.daily_history.get("confidence_total"),
                 "source_count": artifacts.daily_history.get("source_count"),
                 "eligible_sources": artifacts.daily_history.get("eligible_sources"),
                 "diagnostics_summary": artifacts.daily_history.get("diagnostics_summary"),
@@ -817,9 +945,18 @@ def main() -> int:
     benchmark_path = api_dir / "benchmark.json"
     diagnostics_path = api_dir / "benchmark_diagnostics.json"
     card_path = api_dir / "benchmark_card.json"
+    methodology_path = api_dir / "benchmark_methodology.json"
+    source_registry_path = api_dir / "benchmark_source_registry.json"
+    timeseries_path = api_dir / "benchmark_timeseries.json"
     benchmark_path.write_text(json.dumps(artifacts.benchmark, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     diagnostics_path.write_text(json.dumps(artifacts.diagnostics, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     card_path.write_text(json.dumps(artifacts.card, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    methodology_payload = build_methodology_payload(artifacts.diagnostics)
+    source_registry_payload = build_source_registry_payload()
+    timeseries_payload = build_benchmark_timeseries(history_payload)
+    methodology_path.write_text(json.dumps(methodology_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    source_registry_path.write_text(json.dumps(source_registry_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    timeseries_path.write_text(json.dumps(timeseries_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print(f"input_fix={fix_path.name}")
     print(f"source_count={artifacts.benchmark['source_count']}")
@@ -831,6 +968,9 @@ def main() -> int:
     print(f"benchmark_diagnostics_json={diagnostics_path}")
     print(f"benchmark_card_json={card_path}")
     print(f"benchmark_history_rows={len(history_payload['rows'])}")
+    print(f"benchmark_methodology_json={methodology_path}")
+    print(f"benchmark_source_registry_json={source_registry_path}")
+    print(f"benchmark_timeseries_json={timeseries_path}")
     return 0
 
 

@@ -148,6 +148,21 @@ class RialWatchBenchmarkModelTests(unittest.TestCase):
             self.assertFalse(navasan["included_in_benchmark"])
             self.assertIsNotNone(navasan["deviation_from_median"])
 
+    def test_confidence_decomposition_is_exposed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            site_dir = Path(tmpdir)
+            (site_dir / "fix").mkdir(parents=True)
+            daily = self.make_daily_fix()
+            (site_dir / "fix" / "2026-03-12.json").write_text(json.dumps(daily), encoding="utf-8")
+
+            artifacts = model.build_benchmark_outputs(daily, site_dir, history_days=14)
+
+            self.assertIn("confidence_source_count_component", artifacts.diagnostics)
+            self.assertIn("confidence_dispersion_component", artifacts.diagnostics)
+            self.assertIn("confidence_stability_component", artifacts.diagnostics)
+            self.assertEqual(artifacts.diagnostics["confidence_total"], artifacts.benchmark["confidence_score"])
+            self.assertEqual(artifacts.daily_history["confidence_total"], artifacts.benchmark["confidence_score"])
+
     def test_benchmark_history_persistence_writes_daily_and_aggregate_files(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             site_dir = Path(tmpdir)
@@ -166,6 +181,8 @@ class RialWatchBenchmarkModelTests(unittest.TestCase):
             self.assertTrue((site_dir / "api" / "benchmark_history.json").exists())
             self.assertIn("eligible_sources", history["rows"][0])
             self.assertIn("diagnostics_summary", history["rows"][0])
+            self.assertIn("confidence_source_count_component", history["rows"][0])
+            self.assertIn("confidence_total", history["rows"][0])
 
     def test_benchmark_card_payload_generation_surfaces_warning(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -180,6 +197,49 @@ class RialWatchBenchmarkModelTests(unittest.TestCase):
             self.assertEqual(artifacts.card["dispersion_level"], "low")
             self.assertIn("Navasan", artifacts.card["diagnostics_warning"])
             self.assertIn("moderate confidence", artifacts.card["benchmark_status_text"].lower())
+
+    def test_methodology_payload_generation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            site_dir = Path(tmpdir)
+            (site_dir / "fix").mkdir(parents=True)
+            daily = self.make_daily_fix()
+            (site_dir / "fix" / "2026-03-12.json").write_text(json.dumps(daily), encoding="utf-8")
+
+            artifacts = model.build_benchmark_outputs(daily, site_dir, history_days=14)
+            methodology = model.build_methodology_payload(artifacts.diagnostics)
+
+            self.assertIn("eligibility_rules", methodology)
+            self.assertIn("accepted_quote_bases", methodology)
+            self.assertIn("bonbast", methodology["current_benchmark_eligible_sources"])
+            self.assertIn("navasan", methodology["current_diagnostics_only_sources"])
+
+    def test_timeseries_payload_generation(self) -> None:
+        history_payload = {
+            "rows": [
+                {
+                    "date": "2026-03-11",
+                    "median_rate": 1_469_375.0,
+                    "weighted_rate": 1_469_888.66,
+                    "confidence_score": 59.28,
+                    "source_count": 2,
+                    "diagnostics_summary": {"dispersion_level": "low"},
+                },
+                {
+                    "date": "2026-03-12",
+                    "median_rate": 1_449_125.0,
+                    "weighted_rate": 1_449_922.07,
+                    "confidence_score": 68.19,
+                    "source_count": 2,
+                    "diagnostics_summary": {"dispersion_level": "low"},
+                },
+            ]
+        }
+
+        timeseries = model.build_benchmark_timeseries(history_payload)
+
+        self.assertEqual(len(timeseries["rows"]), 2)
+        self.assertEqual(timeseries["rows"][0]["benchmark_rate"], 1_469_888.66)
+        self.assertEqual(timeseries["rows"][1]["dispersion_level"], "low")
 
 
 if __name__ == "__main__":

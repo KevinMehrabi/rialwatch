@@ -1,11 +1,41 @@
 {
-  "timestamp": "2026-03-12T17:50:59Z",
-  "input_date": "2026-03-12",
-  "confidence_source_count_component": 26.67,
-  "confidence_dispersion_component": 30.51,
-  "confidence_stability_component": 11.01,
-  "confidence_total": 68.19,
-  "source_values": [
+  "eligibility_rules": [
+    "Only open-market USD/IRR quotes with a usable normalized value are considered for benchmark inclusion.",
+    "Sources must expose a valid non-stale open-market quote in the stored daily feed to become eligible for a given day.",
+    "Diagnostics-only sources remain visible in diagnostics and methodology artifacts but are not included in benchmark aggregation."
+  ],
+  "quote_normalization_rules": [
+    "All quote values are normalized to IRR before aggregation.",
+    "Midpoints are preferred when both buy and sell are available.",
+    "If no midpoint exists, the best available open-market quote is used with its quote basis preserved."
+  ],
+  "accepted_quote_bases": [
+    "midpoint",
+    "sell",
+    "buy",
+    "inferred"
+  ],
+  "outlier_handling_method": {
+    "method": "median_absolute_deviation",
+    "threshold": 3.5,
+    "notes": "MAD screening is only applied when at least three eligible benchmark candidates are available."
+  },
+  "confidence_score_methodology": {
+    "source_count_component_max": 40.0,
+    "dispersion_component_max": 35.0,
+    "stability_component_max": 25.0,
+    "outlier_penalty_max": 15.0,
+    "notes": "Confidence score combines eligible source breadth, current dispersion, recent benchmark stability, and outlier penalties."
+  },
+  "current_benchmark_eligible_sources": [
+    "bonbast",
+    "alanchand_street"
+  ],
+  "current_diagnostics_only_sources": [
+    "navasan",
+    "alanchand"
+  ],
+  "current_sample_status": [
     {
       "source_name": "alanchand",
       "source_label": "AlanChand API",
@@ -126,91 +156,5 @@
       "base_weight": 0.75,
       "final_weight": null
     }
-  ],
-  "source_deviation": {
-    "alanchand": {
-      "value_rial": null,
-      "deviation_from_median_rial": null,
-      "deviation_from_median_pct": null,
-      "deviation_from_weighted_rial": null,
-      "deviation_from_weighted_pct": null
-    },
-    "alanchand_street": {
-      "value_rial": 1434250.0,
-      "deviation_from_median_rial": -14875.0,
-      "deviation_from_median_pct": -0.010265,
-      "deviation_from_weighted_rial": -15672.07,
-      "deviation_from_weighted_pct": -0.010809
-    },
-    "bonbast": {
-      "value_rial": 1464000.0,
-      "deviation_from_median_rial": 14875.0,
-      "deviation_from_median_pct": 0.010265,
-      "deviation_from_weighted_rial": 14077.93,
-      "deviation_from_weighted_pct": 0.009709
-    },
-    "navasan": {
-      "value_rial": 1664000.0,
-      "deviation_from_median_rial": 214875.0,
-      "deviation_from_median_pct": 0.148279,
-      "deviation_from_weighted_rial": 214077.93,
-      "deviation_from_weighted_pct": 0.147648
-    }
-  },
-  "dispersion": {
-    "count": 2,
-    "min": 1434250.0,
-    "max": 1464000.0,
-    "median": 1449125.0,
-    "p25": 1441687.5,
-    "p75": 1456562.5,
-    "range": 29750.0,
-    "cv": 0.010265
-  },
-  "outliers_removed": {
-    "sources": [],
-    "details": {}
-  },
-  "divergence": {
-    "bonbast_vs_navasan": {
-      "difference_rial": -200000.0,
-      "difference_pct": -0.120192,
-      "navasan_basis": "diagnostic_only",
-      "navasan_reason": "unable to parse USD/IRR"
-    }
-  },
-  "historical_stability": {
-    "window_days": 14,
-    "history_points": 4,
-    "history_cv": 0.056656,
-    "median_abs_daily_change_pct": 0.013745,
-    "max_abs_daily_change_pct": 0.114483,
-    "history_rows": [
-      {
-        "date": "2026-03-09",
-        "fix": 1664000.0
-      },
-      {
-        "date": "2026-03-10",
-        "fix": 1473500.0
-      },
-      {
-        "date": "2026-03-11",
-        "fix": 1473250.0
-      },
-      {
-        "date": "2026-03-12",
-        "fix": 1453000.0
-      }
-    ]
-  },
-  "confidence": {
-    "score": 68.19,
-    "components": {
-      "source_count_component": 26.67,
-      "dispersion_component": 30.51,
-      "historical_stability_component": 11.01,
-      "outlier_penalty": 0.0
-    }
-  }
+  ]
 }
