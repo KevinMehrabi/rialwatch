@@ -46,6 +46,19 @@
     gap: 4px;
   }
 
+  .site-brand-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-logo {
+    height: 30px;
+    width: auto;
+    display: block;
+    flex: 0 0 auto;
+  }
+
   .site-title {
     color: var(--rw-text-strong);
     font-size: 2rem;
@@ -482,7 +495,10 @@
     <div class="container-xl">
       <div class="site-header-inner">
         <div class="site-brand">
-          <a class="site-title" href="/rialwatch/">RialWatch</a>
+          <div class="site-brand-row">
+            <img class="site-logo" src="/rialwatch/assets/rwicon_white.svg" alt="RialWatch logo">
+            <a class="site-title" href="/rialwatch/">RialWatch</a>
+          </div>
           <div class="site-subtitle">Independent USD/IRR Market Reference</div>
         </div>
         <div class="site-meta">
