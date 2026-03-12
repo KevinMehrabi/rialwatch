@@ -1,6 +1,6 @@
 {
   "date": "2026-03-12",
-  "as_of": "2026-03-12T14:37:19Z",
+  "as_of": "2026-03-12T15:58:18Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -611,20 +611,20 @@
     }
   },
   "publication_selection": {
-    "rule": "latest valid intraday attempt in publication window, else latest attempt",
-    "selection_scope": "publication_window",
+    "rule": "current-day refresh: latest valid intraday attempt across all available samples",
+    "selection_scope": "latest_intraday_refresh",
     "window_utc": {
       "start": "13:45",
       "end": "14:15"
     },
-    "candidate_count": 1,
+    "candidate_count": 3,
     "valid_candidate_count": 1,
     "selected_collected_at": "2026-03-12T14:08:05Z",
-    "latest_candidate_collected_at": "2026-03-12T14:08:05Z",
+    "latest_candidate_collected_at": "2026-03-12T14:33:32Z",
     "selected_attempt_file": "intraday/2026-03-12/14-08-05.json",
     "selected_valid": true,
-    "used_fallback": false,
-    "basis_label": "Selected from intraday publication window",
-    "selection_reason": "latest valid intraday attempt in publication window"
+    "used_fallback": true,
+    "basis_label": "Fallback to most recent valid intraday sample",
+    "selection_reason": "latest valid intraday attempt (current-day refresh)"
   }
 }
