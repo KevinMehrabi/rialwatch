@@ -55,6 +55,14 @@ class SourceObservation:
     base_weight: float
 
 
+@dataclass
+class BenchmarkArtifacts:
+    benchmark: Dict[str, Any]
+    diagnostics: Dict[str, Any]
+    card: Dict[str, Any]
+    daily_history: Dict[str, Any]
+
+
 def safe_round(value: Optional[float], digits: int = 2) -> Optional[float]:
     if value is None or not math.isfinite(value):
         return None
@@ -454,7 +462,102 @@ def summarize_dispersion(values: Sequence[float]) -> Dict[str, Optional[float]]:
     }
 
 
-def build_benchmark_outputs(daily: Dict[str, Any], site_dir: Path, history_days: int) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+def quote_basis_for_observation(observation: SourceObservation) -> Optional[str]:
+    if observation.midpoint_rial is not None:
+        return "midpoint"
+    if observation.sell_rial is not None and observation.buy_rial is None:
+        return "sell"
+    if observation.buy_rial is not None and observation.sell_rial is None:
+        return "buy"
+    if observation.selected_value_rial is not None or observation.diagnostic_value_rial is not None:
+        return "inferred"
+    return None
+
+
+def dispersion_level_from_cv(cv: Optional[float]) -> str:
+    if cv is None:
+        return "unknown"
+    if cv <= 0.015:
+        return "low"
+    if cv <= 0.03:
+        return "moderate"
+    return "high"
+
+
+def build_benchmark_status_text(
+    benchmark_rate: Optional[float],
+    confidence_score: float,
+    source_count: int,
+    dispersion_level: str,
+) -> str:
+    if benchmark_rate is None:
+        return "Benchmark unavailable"
+    if source_count >= 3 and confidence_score >= 80 and dispersion_level == "low":
+        return "High-confidence benchmark"
+    if source_count >= 2 and confidence_score >= 50 and dispersion_level in {"low", "moderate"}:
+        return "Benchmark active with moderate confidence"
+    if source_count >= 2:
+        return "Benchmark active but elevated dispersion"
+    return "Benchmark active but thinly sourced"
+
+
+def build_diagnostics_warning(
+    source_values: Sequence[Dict[str, Any]],
+    outliers_removed: Sequence[str],
+    source_count: int,
+    dispersion_level: str,
+) -> Optional[str]:
+    diagnostic_only = [row["source_label"] for row in source_values if row.get("eligible_for_benchmark") is False]
+    if source_count < 2:
+        return "Benchmark is running on fewer than two eligible sources."
+    if outliers_removed:
+        return f"Outlier screening removed: {', '.join(outliers_removed)}."
+    if dispersion_level == "high":
+        return "Eligible sources remain materially dispersed."
+    if diagnostic_only:
+        return f"Diagnostics-only sources excluded from benchmark: {', '.join(diagnostic_only)}."
+    return None
+
+
+def build_daily_history_artifact(
+    daily: Dict[str, Any],
+    benchmark_json: Dict[str, Any],
+    diagnostics_json: Dict[str, Any],
+    card_json: Dict[str, Any],
+) -> Dict[str, Any]:
+    eligible_sources = [
+        row["source_name"]
+        for row in diagnostics_json.get("source_values", [])
+        if row.get("included_in_benchmark") is True
+    ]
+    excluded_sources = [
+        {
+            "source_name": row["source_name"],
+            "exclusion_reason": row.get("exclusion_reason"),
+        }
+        for row in diagnostics_json.get("source_values", [])
+        if row.get("included_in_benchmark") is not True
+    ]
+    return {
+        "date": daily.get("date"),
+        "timestamp": benchmark_json.get("timestamp"),
+        "median_rate": benchmark_json.get("median_rate"),
+        "trimmed_mean_rate": benchmark_json.get("trimmed_mean_rate"),
+        "weighted_rate": benchmark_json.get("weighted_rate"),
+        "confidence_score": benchmark_json.get("confidence_score"),
+        "source_count": benchmark_json.get("source_count"),
+        "eligible_sources": eligible_sources,
+        "diagnostics_summary": {
+            "dispersion_level": card_json.get("dispersion_level"),
+            "dispersion_cv": diagnostics_json.get("dispersion", {}).get("cv"),
+            "outliers_removed": diagnostics_json.get("outliers_removed", {}).get("sources", []),
+            "excluded_sources": excluded_sources,
+            "diagnostics_warning": card_json.get("diagnostics_warning"),
+        },
+    }
+
+
+def build_benchmark_outputs(daily: Dict[str, Any], site_dir: Path, history_days: int) -> BenchmarkArtifacts:
     daily_sources = daily.get("sources", {})
     if not isinstance(daily_sources, dict):
         daily_sources = {}
@@ -495,35 +598,64 @@ def build_benchmark_outputs(daily: Dict[str, Any], site_dir: Path, history_days:
 
     for observation in observations:
         comparable_value = observation.selected_value_rial if observation.selected_value_rial is not None else observation.diagnostic_value_rial
-        deviation = None
-        deviation_pct = None
         if diagnostic_reference_median not in (None, 0) and comparable_value is not None:
-            deviation = comparable_value - diagnostic_reference_median
-            deviation_pct = deviation / diagnostic_reference_median
+            deviation_from_median = comparable_value - diagnostic_reference_median
+            deviation_from_median_pct = deviation_from_median / diagnostic_reference_median
+        else:
+            deviation_from_median = None
+            deviation_from_median_pct = None
+        if filtered_weighted_mean not in (None, 0) and comparable_value is not None:
+            deviation_from_weighted = comparable_value - filtered_weighted_mean
+            deviation_from_weighted_pct = deviation_from_weighted / filtered_weighted_mean
+        else:
+            deviation_from_weighted = None
+            deviation_from_weighted_pct = None
+        included_in_benchmark = observation.source in filtered_map
+        eligible_for_benchmark = observation.selected_value_rial is not None
+        outlier_flag = observation.source in outliers_removed
+        if included_in_benchmark:
+            exclusion_reason = None
+        elif outlier_flag:
+            exclusion_reason = "outlier removed by MAD filter"
+        else:
+            exclusion_reason = observation.reason
         entry = {
+            "source_name": observation.source,
+            "source_label": observation.label,
             "source": observation.source,
             "label": observation.label,
+            "normalized_value_irr": safe_round(comparable_value, 2),
             "selected_value_rial": safe_round(observation.selected_value_rial, 2),
             "diagnostic_value_rial": safe_round(observation.diagnostic_value_rial, 2),
             "buy_rial": safe_round(observation.buy_rial, 2),
             "sell_rial": safe_round(observation.sell_rial, 2),
             "midpoint_rial": safe_round(observation.midpoint_rial, 2),
             "sample_count": observation.sample_count,
+            "quote_basis": quote_basis_for_observation(observation),
             "estimate_kind": observation.estimate_kind,
             "status": observation.status,
             "reason": observation.reason,
+            "eligible_for_benchmark": eligible_for_benchmark,
+            "included_in_benchmark": included_in_benchmark,
+            "exclusion_reason": exclusion_reason,
             "quote_time": observation.quote_time,
             "sampled_at": observation.sampled_at,
-            "included_in_benchmark": observation.source in filtered_map,
-            "outlier_removed": observation.source in outliers_removed,
+            "deviation_from_median": safe_round(deviation_from_median, 2),
+            "deviation_from_median_pct": safe_round(deviation_from_median_pct, 6),
+            "deviation_from_weighted": safe_round(deviation_from_weighted, 2),
+            "deviation_from_weighted_pct": safe_round(deviation_from_weighted_pct, 6),
+            "outlier_flag": outlier_flag,
+            "outlier_removed": outlier_flag,
             "base_weight": safe_round(observation.base_weight, 4),
             "final_weight": safe_round(weights.get(observation.source), 4),
         }
         source_values.append(entry)
         source_deviation[observation.source] = {
             "value_rial": safe_round(comparable_value, 2),
-            "deviation_from_median_rial": safe_round(deviation, 2),
-            "deviation_from_median_pct": safe_round(deviation_pct, 6),
+            "deviation_from_median_rial": safe_round(deviation_from_median, 2),
+            "deviation_from_median_pct": safe_round(deviation_from_median_pct, 6),
+            "deviation_from_weighted_rial": safe_round(deviation_from_weighted, 2),
+            "deviation_from_weighted_pct": safe_round(deviation_from_weighted_pct, 6),
         }
 
     bonbast_obs = next((obs for obs in observations if obs.source == "bonbast"), None)
@@ -554,6 +686,27 @@ def build_benchmark_outputs(daily: Dict[str, Any], site_dir: Path, history_days:
         "confidence_score": confidence_score,
         "source_count": len(filtered_observations),
     }
+    dispersion_level = dispersion_level_from_cv(dispersion.get("cv"))
+    card_benchmark_rate = benchmark_json["weighted_rate"] if benchmark_json["weighted_rate"] is not None else benchmark_json["median_rate"]
+    card_json = {
+        "benchmark_rate": card_benchmark_rate,
+        "confidence_score": confidence_score,
+        "source_count": len(filtered_observations),
+        "dispersion_level": dispersion_level,
+        "benchmark_status_text": build_benchmark_status_text(
+            benchmark_rate=card_benchmark_rate,
+            confidence_score=confidence_score,
+            source_count=len(filtered_observations),
+            dispersion_level=dispersion_level,
+        ),
+        "diagnostics_warning": None,
+    }
+    card_json["diagnostics_warning"] = build_diagnostics_warning(
+        source_values=source_values,
+        outliers_removed=outliers_removed,
+        source_count=len(filtered_observations),
+        dispersion_level=dispersion_level,
+    )
     diagnostics_json = {
         "timestamp": daily.get("as_of") or daily.get("date"),
         "input_date": daily.get("date"),
@@ -592,7 +745,54 @@ def build_benchmark_outputs(daily: Dict[str, Any], site_dir: Path, history_days:
             "components": confidence_components,
         },
     }
-    return benchmark_json, diagnostics_json
+    daily_history = build_daily_history_artifact(
+        daily=daily,
+        benchmark_json=benchmark_json,
+        diagnostics_json=diagnostics_json,
+        card_json=card_json,
+    )
+    return BenchmarkArtifacts(
+        benchmark=benchmark_json,
+        diagnostics=diagnostics_json,
+        card=card_json,
+        daily_history=daily_history,
+    )
+
+
+def iter_fix_paths(site_dir: Path) -> List[Path]:
+    fix_dir = site_dir / "fix"
+    return sorted(path for path in fix_dir.glob("*.json") if path.stem.count("-") == 2)
+
+
+def write_history_outputs(site_dir: Path, fix_paths: Sequence[Path], history_days: int) -> Dict[str, Any]:
+    benchmark_dir = site_dir / "benchmark"
+    benchmark_dir.mkdir(parents=True, exist_ok=True)
+    history_rows: List[Dict[str, Any]] = []
+
+    for fix_path in fix_paths:
+        daily = json.loads(fix_path.read_text(encoding="utf-8"))
+        artifacts = build_benchmark_outputs(daily, site_dir, history_days)
+        day = str(daily.get("date") or fix_path.stem)
+        day_path = benchmark_dir / f"{day}.json"
+        day_path.write_text(json.dumps(artifacts.daily_history, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        history_rows.append(
+            {
+                "date": day,
+                "timestamp": artifacts.daily_history.get("timestamp"),
+                "median_rate": artifacts.daily_history.get("median_rate"),
+                "trimmed_mean_rate": artifacts.daily_history.get("trimmed_mean_rate"),
+                "weighted_rate": artifacts.daily_history.get("weighted_rate"),
+                "confidence_score": artifacts.daily_history.get("confidence_score"),
+                "source_count": artifacts.daily_history.get("source_count"),
+                "eligible_sources": artifacts.daily_history.get("eligible_sources"),
+                "diagnostics_summary": artifacts.daily_history.get("diagnostics_summary"),
+            }
+        )
+
+    history_payload = {"rows": history_rows}
+    history_path = site_dir / "api" / "benchmark_history.json"
+    history_path.write_text(json.dumps(history_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return history_payload
 
 
 def parse_args() -> argparse.Namespace:
@@ -607,25 +807,30 @@ def main() -> int:
     args = parse_args()
     site_dir = Path(args.site_dir).resolve()
     fix_path = select_latest_fix_path(site_dir, args.date)
-    daily = json.loads(fix_path.read_text(encoding="utf-8"))
-
-    benchmark_json, diagnostics_json = build_benchmark_outputs(daily, site_dir, args.history_days)
-
     api_dir = site_dir / "api"
     api_dir.mkdir(parents=True, exist_ok=True)
+    fix_paths = iter_fix_paths(site_dir)
+    history_payload = write_history_outputs(site_dir, fix_paths, args.history_days)
+
+    daily = json.loads(fix_path.read_text(encoding="utf-8"))
+    artifacts = build_benchmark_outputs(daily, site_dir, args.history_days)
     benchmark_path = api_dir / "benchmark.json"
     diagnostics_path = api_dir / "benchmark_diagnostics.json"
-    benchmark_path.write_text(json.dumps(benchmark_json, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    diagnostics_path.write_text(json.dumps(diagnostics_json, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    card_path = api_dir / "benchmark_card.json"
+    benchmark_path.write_text(json.dumps(artifacts.benchmark, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    diagnostics_path.write_text(json.dumps(artifacts.diagnostics, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    card_path.write_text(json.dumps(artifacts.card, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
     print(f"input_fix={fix_path.name}")
-    print(f"source_count={benchmark_json['source_count']}")
-    print(f"median_rate={benchmark_json['median_rate']}")
-    print(f"trimmed_mean_rate={benchmark_json['trimmed_mean_rate']}")
-    print(f"weighted_rate={benchmark_json['weighted_rate']}")
-    print(f"confidence_score={benchmark_json['confidence_score']}")
+    print(f"source_count={artifacts.benchmark['source_count']}")
+    print(f"median_rate={artifacts.benchmark['median_rate']}")
+    print(f"trimmed_mean_rate={artifacts.benchmark['trimmed_mean_rate']}")
+    print(f"weighted_rate={artifacts.benchmark['weighted_rate']}")
+    print(f"confidence_score={artifacts.benchmark['confidence_score']}")
     print(f"benchmark_json={benchmark_path}")
     print(f"benchmark_diagnostics_json={diagnostics_path}")
+    print(f"benchmark_card_json={card_path}")
+    print(f"benchmark_history_rows={len(history_payload['rows'])}")
     return 0
 
 

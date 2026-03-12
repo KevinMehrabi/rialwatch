@@ -1,9 +1,93 @@
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
 from scripts import rialwatch_benchmark_model as model
 
 
 class RialWatchBenchmarkModelTests(unittest.TestCase):
+    def make_daily_fix(
+        self,
+        *,
+        date: str = "2026-03-12",
+        as_of: str = "2026-03-12T16:42:19Z",
+        bonbast_mid: float = 1_464_000.0,
+        alanchand_mid: float = 1_434_250.0,
+        navasan_raw_open_market_toman: float = 166_400.0,
+    ) -> dict:
+        return {
+            "date": date,
+            "as_of": as_of,
+            "sources": {
+                "bonbast": {
+                    "samples": [
+                        {
+                            "sampled_at": f"{date}T14:08:05Z",
+                            "quote_time": f"{date}T14:08:05Z",
+                            "value": bonbast_mid + 500.0,
+                            "benchmarks": {"open_market": bonbast_mid + 500.0},
+                            "ok": True,
+                            "stale": False,
+                            "source_unit": "toman",
+                            "health": {
+                                "parse_result": {
+                                    "buy_rial": bonbast_mid - 500.0,
+                                    "sell_rial": bonbast_mid + 500.0,
+                                    "mid_rial": bonbast_mid,
+                                }
+                            },
+                        }
+                    ],
+                    "note": None,
+                },
+                "alanchand_street": {
+                    "samples": [
+                        {
+                            "sampled_at": f"{date}T14:08:05Z",
+                            "quote_time": f"{date}T14:07:00Z",
+                            "value": alanchand_mid + 7_250.0,
+                            "benchmarks": {"open_market": alanchand_mid + 7_250.0},
+                            "ok": True,
+                            "stale": False,
+                            "source_unit": "rial",
+                            "health": {
+                                "extracted_values": {
+                                    "open_market_buy": alanchand_mid - 7_250.0,
+                                    "open_market_sell": alanchand_mid + 7_250.0,
+                                    "open_market_mid": alanchand_mid,
+                                }
+                            },
+                        }
+                    ],
+                    "note": None,
+                },
+                "navasan": {
+                    "samples": [
+                        {
+                            "sampled_at": f"{date}T14:08:05Z",
+                            "quote_time": f"{date}T14:08:08Z",
+                            "value": None,
+                            "benchmarks": {"open_market": None},
+                            "ok": False,
+                            "stale": False,
+                            "error": "unable to parse USD/IRR",
+                            "source_unit": "mixed",
+                            "health": {
+                                "raw_extracted_values": {
+                                    "open_market": navasan_raw_open_market_toman,
+                                },
+                                "benchmark_units": {
+                                    "open_market": "toman",
+                                },
+                            },
+                        }
+                    ],
+                    "note": "source excluded from street benchmark universe",
+                },
+            },
+        }
+
     def test_extract_sample_point_estimate_prefers_midpoint(self) -> None:
         point = model.extract_sample_point_estimate(
             {
@@ -46,6 +130,56 @@ class RialWatchBenchmarkModelTests(unittest.TestCase):
             outlier_count=0,
         )
         self.assertGreater(high_score, low_score)
+
+    def test_source_exclusion_reason_is_explicit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            site_dir = Path(tmpdir)
+            (site_dir / "fix").mkdir(parents=True)
+            daily = self.make_daily_fix()
+            (site_dir / "fix" / "2026-03-12.json").write_text(json.dumps(daily), encoding="utf-8")
+
+            artifacts = model.build_benchmark_outputs(daily, site_dir, history_days=14)
+            source_rows = {row["source_name"]: row for row in artifacts.diagnostics["source_values"]}
+            navasan = source_rows["navasan"]
+
+            self.assertFalse(navasan["eligible_for_benchmark"])
+            self.assertEqual(navasan["quote_basis"], "inferred")
+            self.assertEqual(navasan["exclusion_reason"], "unable to parse USD/IRR")
+            self.assertFalse(navasan["included_in_benchmark"])
+            self.assertIsNotNone(navasan["deviation_from_median"])
+
+    def test_benchmark_history_persistence_writes_daily_and_aggregate_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            site_dir = Path(tmpdir)
+            (site_dir / "fix").mkdir(parents=True)
+            (site_dir / "api").mkdir(parents=True)
+            day1 = self.make_daily_fix(date="2026-03-11", as_of="2026-03-11T16:42:19Z", bonbast_mid=1_479_000.0, alanchand_mid=1_459_750.0)
+            day2 = self.make_daily_fix(date="2026-03-12", as_of="2026-03-12T16:42:19Z", bonbast_mid=1_464_000.0, alanchand_mid=1_434_250.0)
+            (site_dir / "fix" / "2026-03-11.json").write_text(json.dumps(day1), encoding="utf-8")
+            (site_dir / "fix" / "2026-03-12.json").write_text(json.dumps(day2), encoding="utf-8")
+
+            history = model.write_history_outputs(site_dir, model.iter_fix_paths(site_dir), history_days=14)
+
+            self.assertEqual(len(history["rows"]), 2)
+            self.assertTrue((site_dir / "benchmark" / "2026-03-11.json").exists())
+            self.assertTrue((site_dir / "benchmark" / "2026-03-12.json").exists())
+            self.assertTrue((site_dir / "api" / "benchmark_history.json").exists())
+            self.assertIn("eligible_sources", history["rows"][0])
+            self.assertIn("diagnostics_summary", history["rows"][0])
+
+    def test_benchmark_card_payload_generation_surfaces_warning(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            site_dir = Path(tmpdir)
+            (site_dir / "fix").mkdir(parents=True)
+            daily = self.make_daily_fix()
+            (site_dir / "fix" / "2026-03-12.json").write_text(json.dumps(daily), encoding="utf-8")
+
+            artifacts = model.build_benchmark_outputs(daily, site_dir, history_days=14)
+
+            self.assertEqual(artifacts.card["benchmark_rate"], artifacts.benchmark["weighted_rate"])
+            self.assertEqual(artifacts.card["dispersion_level"], "low")
+            self.assertIn("Navasan", artifacts.card["diagnostics_warning"])
+            self.assertIn("moderate confidence", artifacts.card["benchmark_status_text"].lower())
 
 
 if __name__ == "__main__":

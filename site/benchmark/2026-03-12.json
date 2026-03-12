@@ -1,0 +1,29 @@
+{
+  "date": "2026-03-12",
+  "timestamp": "2026-03-12T16:42:19Z",
+  "median_rate": 1449125.0,
+  "trimmed_mean_rate": 1449125.0,
+  "weighted_rate": 1449922.07,
+  "confidence_score": 68.19,
+  "source_count": 2,
+  "eligible_sources": [
+    "alanchand_street",
+    "bonbast"
+  ],
+  "diagnostics_summary": {
+    "dispersion_level": "low",
+    "dispersion_cv": 0.010265,
+    "outliers_removed": [],
+    "excluded_sources": [
+      {
+        "source_name": "alanchand",
+        "exclusion_reason": "source excluded from street benchmark universe"
+      },
+      {
+        "source_name": "navasan",
+        "exclusion_reason": "unable to parse USD/IRR"
+      }
+    ],
+    "diagnostics_warning": "Diagnostics-only sources excluded from benchmark: AlanChand API, Navasan."
+  }
+}

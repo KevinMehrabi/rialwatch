@@ -1,0 +1,28 @@
+{
+  "date": "2026-03-09",
+  "timestamp": "2026-03-09T23:51:15Z",
+  "median_rate": 1664000.0,
+  "trimmed_mean_rate": 1664000.0,
+  "weighted_rate": 1664000.0,
+  "confidence_score": 48.33,
+  "source_count": 1,
+  "eligible_sources": [
+    "navasan"
+  ],
+  "diagnostics_summary": {
+    "dispersion_level": "low",
+    "dispersion_cv": 0.0,
+    "outliers_removed": [],
+    "excluded_sources": [
+      {
+        "source_name": "alanchand",
+        "exclusion_reason": "no valid in-window samples"
+      },
+      {
+        "source_name": "bonbast",
+        "exclusion_reason": "stale"
+      }
+    ],
+    "diagnostics_warning": "Benchmark is running on fewer than two eligible sources."
+  }
+}
