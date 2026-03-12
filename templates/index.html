@@ -230,6 +230,70 @@
 </section>
 
 <script>
+let historyChart = null;
+let cachedValidRows = [];
+
+function historyThemeColors() {
+  const styles = getComputedStyle(document.documentElement);
+  return {
+    accent: styles.getPropertyValue('--rw-accent').trim() || '#3b82f6',
+    accentFill: styles.getPropertyValue('--rw-accent-fill').trim() || 'rgba(59,130,246,0.15)',
+    label: styles.getPropertyValue('--rw-chart-label').trim() || '#94a3b8',
+    grid: styles.getPropertyValue('--rw-chart-grid').trim() || '#1e293b'
+  };
+}
+
+function renderHistoryChart(validRows) {
+  const canvas = document.getElementById('historyChart');
+  if (!canvas) return;
+
+  if (historyChart) {
+    historyChart.destroy();
+    historyChart = null;
+  }
+
+  const existingNote = canvas.parentElement && canvas.parentElement.querySelector('.no-series-note');
+  if (existingNote) {
+    existingNote.remove();
+  }
+
+  if (!validRows.length) {
+    const holder = canvas.parentElement;
+    if (holder && !holder.querySelector('.no-series-note')) {
+      const note = document.createElement('div');
+      note.className = 'text-secondary mt-2 no-series-note';
+      note.textContent = 'No valid published historical fixes available yet.';
+      holder.appendChild(note);
+    }
+    return;
+  }
+
+  const colors = historyThemeColors();
+  const ctx = canvas.getContext('2d');
+  historyChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: validRows.map(r => r.date),
+      datasets: [{
+        label: 'USD/IRR',
+        data: validRows.map(r => r.fixNum),
+        borderColor: colors.accent,
+        backgroundColor: colors.accentFill,
+        tension: 0.2,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: colors.label }, grid: { color: colors.grid } },
+        y: { ticks: { color: colors.label }, grid: { color: colors.grid } }
+      }
+    }
+  });
+}
+
 async function loadSeries() {
   const seriesUrl = new URL('api/series.json', window.location.href);
   const res = await fetch(seriesUrl.toString());
@@ -291,43 +355,9 @@ async function loadSeries() {
     }
   }
 
-  const canvas = document.getElementById('historyChart');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-
-  if (!validRows.length) {
-    const holder = canvas.parentElement;
-    if (holder && !holder.querySelector('.no-series-note')) {
-      const note = document.createElement('div');
-      note.className = 'text-secondary mt-2 no-series-note';
-      note.textContent = 'No valid published historical fixes available yet.';
-      holder.appendChild(note);
-    }
-    return;
-  }
-
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: validRows.map(r => r.date),
-      datasets: [{
-        label: 'USD/IRR',
-        data: validRows.map(r => r.fixNum),
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59,130,246,0.15)',
-        tension: 0.2,
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
-        y: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } }
-      }
-    }
-  });
+  cachedValidRows = validRows;
+  renderHistoryChart(validRows);
 }
 loadSeries();
+document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
