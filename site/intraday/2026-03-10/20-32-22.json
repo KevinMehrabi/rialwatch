@@ -1,0 +1,283 @@
+{
+  "date": "2026-03-10",
+  "collected_at": "2026-03-10T20:32:22Z",
+  "window_utc": {
+    "start": "13:45",
+    "end": "14:15"
+  },
+  "sources": {
+    "bonbast": {
+      "sample": {
+        "sampled_at": "2026-03-10T20:32:22Z",
+        "value": null,
+        "benchmarks": {
+          "open_market": null,
+          "official": null,
+          "regional_transfer": null,
+          "crypto_usdt": null,
+          "emami_gold_coin": null
+        },
+        "quote_time": "2026-03-10T20:32:22Z",
+        "ok": false,
+        "stale": false,
+        "error": "bonbast browser scrape error",
+        "health": {
+          "collector": "playwright",
+          "fetch_mode": "playwright",
+          "scrape_timestamp": "2026-03-10T20:32:22Z",
+          "page_load_ok": false,
+          "selector_success": false,
+          "fetch_success": false,
+          "failure_reason": "bonbast browser scrape error",
+          "selector_used": null,
+          "fetch_duration_ms": 1023,
+          "content_length": null,
+          "final_url": null,
+          "error_type": "playwright_error",
+          "error_detail": "BrowserType.launch: Target page, context or browser has been closed\nBrowser logs:\n\n<launching> /Users/kevinmehrabi/Library/Caches/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --user-data-dir=/var/folders/n6/x_j9vj0j5j567qxqkr0y2qlm0000gn/T/playwright_chromiumdev_profile-c2o9vz --remote-debugging-pipe --no-startup-window\n<launched> pid=44084\n[pid=44084][err] [0310/133223.542094:ERROR:base/power_monitor/thermal_state_observer_mac.mm:140] ThermalStateObserverMac unable to register to power notifications. Result: 9\n[pid=44084][err] [0310/133223.582623:ERROR:net/dns/dns_config_service_posix.cc:138] DNS config watch failed to start.\n[pid=44084][err] [0310/133223.585655:WARNING:net/dns/dns_config_service_posix.cc:197] Failed to read DnsConfig.\n[pid=44084][err] [0310/133223.592936:FATAL:base/apple/mach_port_rendezvous_mac.cc:155] Check failed: kr == KERN_SUCCESS. bootstrap_check_in org.chromium.Chromium.MachPortRendezvousServer.44084: Permission denied (1100)\nCall log:\n  - <launching> /Users/kevinmehrabi/Library/Caches/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --user-data-dir=/var/folders/n6/x_j9vj0j5j567qxqkr0y2qlm0000gn/T/playwright_chromiumdev_profile-c2o9vz --remote-debugging-pipe --no-startup-window\n  - <launched> pid=44084\n  - [pid=44084][err] [0310/133223.542094:ERROR:base/power_monitor/thermal_state_observer_mac.mm:140] ThermalStateObserverMac unable to register to power notifications. Result: 9\n  - [pid=44084][err] [0310/133223.582623:ERROR:net/dns/dns_config_service_posix.cc:138] DNS config watch failed to start.\n  - [pid=44084][err] [0310/133223.585655:WARNING:net/dns/dns_config_service_posix.cc:197] Failed to read DnsConfig.\n  - [pid=44084][err] [0310/133223.592936:FATAL:base/apple/mach_port_rendezvous_mac.cc:155] Check failed: kr == KERN_SUCCESS. bootstrap_check_in org.chromium.Chromium.MachPortRendezvousServer.44084: Permission denied (1100)\n  - [pid=44084] <gracefully close start>\n  - [pid=44084] <kill>\n  - [pid=44084] <will force kill>\n  - [pid=44084] exception while trying to kill process: Error: kill EPERM\n  - [pid=44084] <process did exit: exitCode=null, signal=SIGTRAP>\n  - [pid=44084] starting temporary directories cleanup\n  - [pid=44084] finished temporary directories cleanup\n  - [pid=44084] <gracefully close end>\n",
+          "validation_result": {
+            "peer_band_result": "skipped_sample_not_valid"
+          }
+        },
+        "fetch_success": false,
+        "validation_result": {
+          "peer_band_result": "skipped_sample_not_valid"
+        },
+        "failure_reason": "bonbast browser scrape error",
+        "source_unit": "toman",
+        "normalized_unit": "rial",
+        "bonbast": {
+          "bonbast_usd_buy": null,
+          "bonbast_usd_sell": null,
+          "bonbast_usd_mid": null,
+          "source_unit": null,
+          "normalized_unit": null,
+          "fetch_mode": "playwright",
+          "selector_used": null,
+          "fetch_success": false,
+          "failure_reason": "bonbast browser scrape error"
+        }
+      },
+      "health": {
+        "collector": "playwright",
+        "fetch_mode": "playwright",
+        "scrape_timestamp": "2026-03-10T20:32:22Z",
+        "page_load_ok": false,
+        "selector_success": false,
+        "fetch_success": false,
+        "failure_reason": "bonbast browser scrape error",
+        "selector_used": null,
+        "fetch_duration_ms": 1023,
+        "content_length": null,
+        "final_url": null,
+        "error_type": "playwright_error",
+        "error_detail": "BrowserType.launch: Target page, context or browser has been closed\nBrowser logs:\n\n<launching> /Users/kevinmehrabi/Library/Caches/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --user-data-dir=/var/folders/n6/x_j9vj0j5j567qxqkr0y2qlm0000gn/T/playwright_chromiumdev_profile-c2o9vz --remote-debugging-pipe --no-startup-window\n<launched> pid=44084\n[pid=44084][err] [0310/133223.542094:ERROR:base/power_monitor/thermal_state_observer_mac.mm:140] ThermalStateObserverMac unable to register to power notifications. Result: 9\n[pid=44084][err] [0310/133223.582623:ERROR:net/dns/dns_config_service_posix.cc:138] DNS config watch failed to start.\n[pid=44084][err] [0310/133223.585655:WARNING:net/dns/dns_config_service_posix.cc:197] Failed to read DnsConfig.\n[pid=44084][err] [0310/133223.592936:FATAL:base/apple/mach_port_rendezvous_mac.cc:155] Check failed: kr == KERN_SUCCESS. bootstrap_check_in org.chromium.Chromium.MachPortRendezvousServer.44084: Permission denied (1100)\nCall log:\n  - <launching> /Users/kevinmehrabi/Library/Caches/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --no-sandbox --disable-dev-shm-usage --user-data-dir=/var/folders/n6/x_j9vj0j5j567qxqkr0y2qlm0000gn/T/playwright_chromiumdev_profile-c2o9vz --remote-debugging-pipe --no-startup-window\n  - <launched> pid=44084\n  - [pid=44084][err] [0310/133223.542094:ERROR:base/power_monitor/thermal_state_observer_mac.mm:140] ThermalStateObserverMac unable to register to power notifications. Result: 9\n  - [pid=44084][err] [0310/133223.582623:ERROR:net/dns/dns_config_service_posix.cc:138] DNS config watch failed to start.\n  - [pid=44084][err] [0310/133223.585655:WARNING:net/dns/dns_config_service_posix.cc:197] Failed to read DnsConfig.\n  - [pid=44084][err] [0310/133223.592936:FATAL:base/apple/mach_port_rendezvous_mac.cc:155] Check failed: kr == KERN_SUCCESS. bootstrap_check_in org.chromium.Chromium.MachPortRendezvousServer.44084: Permission denied (1100)\n  - [pid=44084] <gracefully close start>\n  - [pid=44084] <kill>\n  - [pid=44084] <will force kill>\n  - [pid=44084] exception while trying to kill process: Error: kill EPERM\n  - [pid=44084] <process did exit: exitCode=null, signal=SIGTRAP>\n  - [pid=44084] starting temporary directories cleanup\n  - [pid=44084] finished temporary directories cleanup\n  - [pid=44084] <gracefully close end>\n",
+        "validation_result": {
+          "peer_band_result": "skipped_sample_not_valid"
+        }
+      }
+    },
+    "alanchand_street": {
+      "sample": {
+        "sampled_at": "2026-03-10T20:32:22Z",
+        "value": null,
+        "benchmarks": {
+          "open_market": null,
+          "official": null,
+          "regional_transfer": null,
+          "crypto_usdt": null,
+          "emami_gold_coin": null
+        },
+        "quote_time": null,
+        "ok": false,
+        "stale": false,
+        "error": "network: [Errno 8] nodename nor servname provided, or not known",
+        "health": {
+          "collector": "http_html",
+          "fetch_mode": "public_html",
+          "scrape_timestamp": "2026-03-10T20:32:22Z",
+          "fetch_success": false,
+          "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known",
+          "error_type": "network_error",
+          "selector_used": null,
+          "request_url": "https://alanchand.com/en/currencies-price/usd"
+        },
+        "fetch_success": false,
+        "validation_result": null,
+        "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known",
+        "source_unit": "rial",
+        "normalized_unit": "rial"
+      },
+      "health": {
+        "collector": "http_html",
+        "fetch_mode": "public_html",
+        "scrape_timestamp": "2026-03-10T20:32:22Z",
+        "fetch_success": false,
+        "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known",
+        "error_type": "network_error",
+        "selector_used": null,
+        "request_url": "https://alanchand.com/en/currencies-price/usd"
+      }
+    },
+    "navasan": {
+      "sample": {
+        "sampled_at": "2026-03-10T20:32:22Z",
+        "value": null,
+        "benchmarks": {
+          "open_market": null,
+          "official": null,
+          "regional_transfer": null,
+          "crypto_usdt": null,
+          "emami_gold_coin": null
+        },
+        "quote_time": null,
+        "ok": false,
+        "stale": false,
+        "error": "network: [Errno 8] nodename nor servname provided, or not known",
+        "health": {
+          "collector": "http_json",
+          "scrape_timestamp": "2026-03-10T20:32:22Z",
+          "page_load_ok": null,
+          "selector_success": null,
+          "error_type": "network_error",
+          "request_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
+          "fetch_success": false,
+          "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known"
+        },
+        "fetch_success": false,
+        "validation_result": null,
+        "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known",
+        "source_unit": "toman",
+        "normalized_unit": "rial"
+      },
+      "health": {
+        "collector": "http_json",
+        "scrape_timestamp": "2026-03-10T20:32:22Z",
+        "page_load_ok": null,
+        "selector_success": null,
+        "error_type": "network_error",
+        "request_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
+        "fetch_success": false,
+        "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known"
+      }
+    },
+    "alanchand": {
+      "sample": {
+        "sampled_at": "2026-03-10T20:32:22Z",
+        "value": null,
+        "benchmarks": {
+          "open_market": null,
+          "official": null,
+          "regional_transfer": null,
+          "crypto_usdt": null,
+          "emami_gold_coin": null
+        },
+        "quote_time": null,
+        "ok": false,
+        "stale": false,
+        "error": "network: [Errno 8] nodename nor servname provided, or not known",
+        "health": {
+          "collector": "http_json",
+          "scrape_timestamp": "2026-03-10T20:32:22Z",
+          "page_load_ok": null,
+          "selector_success": null,
+          "error_type": "network_error",
+          "request_url": "https://api.alanchand.com/?type=currency&symbols=usd-hav",
+          "fetch_success": false,
+          "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known"
+        },
+        "fetch_success": false,
+        "validation_result": null,
+        "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known",
+        "source_unit": "toman",
+        "normalized_unit": "rial"
+      },
+      "health": {
+        "collector": "http_json",
+        "scrape_timestamp": "2026-03-10T20:32:22Z",
+        "page_load_ok": null,
+        "selector_success": null,
+        "error_type": "network_error",
+        "request_url": "https://api.alanchand.com/?type=currency&symbols=usd-hav",
+        "fetch_success": false,
+        "failure_reason": "network: [Errno 8] nodename nor servname provided, or not known"
+      }
+    }
+  },
+  "computed": {
+    "fix": null,
+    "band": {
+      "p25": null,
+      "p75": null
+    },
+    "dispersion": null,
+    "status": "WITHHOLD",
+    "withheld": true,
+    "withhold_reasons": [
+      "no valid sources available"
+    ],
+    "source_medians": {},
+    "source_units": {},
+    "source_unit": "unknown",
+    "normalized_unit": "rial",
+    "validation_warnings": [],
+    "benchmarks": {
+      "open_market": {
+        "label": "Open Market / Street Rate",
+        "value": null,
+        "available": false,
+        "is_primary": true
+      },
+      "official": {
+        "label": "Official Commercial USD Rate",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      },
+      "regional_transfer": {
+        "label": "Regional Transfer Rate",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      },
+      "crypto_usdt": {
+        "label": "Crypto Dollar (USDT)",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      },
+      "emami_gold_coin": {
+        "label": "Emami Gold Coin",
+        "value": null,
+        "available": false,
+        "is_primary": false
+      }
+    },
+    "indicators": {
+      "street_official_gap_pct": {
+        "label": "Street-Official Gap",
+        "value": null,
+        "available": false,
+        "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
+      },
+      "street_transfer_gap_pct": {
+        "label": "Street-Transfer Gap",
+        "value": null,
+        "available": false,
+        "formula": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100"
+      },
+      "street_crypto_gap_pct": {
+        "label": "Street-Crypto Gap",
+        "value": null,
+        "available": false,
+        "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
+      },
+      "official_commercial_trend_7d": {
+        "label": "Official 7d Trend",
+        "value": null,
+        "available": false,
+        "formula": "7-day percent change of official_commercial_usd_irr"
+      }
+    }
+  }
+}
