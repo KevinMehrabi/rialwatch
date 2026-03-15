@@ -2011,7 +2011,41 @@ def parse_iso_date_text(value: Any) -> Optional[dt.date]:
         return None
 
 
-def load_benchmark_fix_history(site_dir: Path, benchmark_key: str) -> List[Tuple[dt.date, float]]:
+def benchmark_series_path(site_dir: Path, benchmark_key: str) -> Path:
+    return site_dir / "api" / "benchmarks" / f"{benchmark_key}.json"
+
+
+def indicator_series_path(site_dir: Path, indicator_key: str) -> Path:
+    return site_dir / "api" / "indicators" / f"{indicator_key}.json"
+
+
+def load_public_value_series(path: Path) -> List[Tuple[dt.date, float]]:
+    if not path.exists():
+        return []
+
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+
+    if not isinstance(payload, list):
+        return []
+
+    rows: List[Tuple[dt.date, float]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        day = parse_iso_date_text(item.get("date"))
+        value = parse_number(item.get("value"))
+        if day is None or value is None:
+            continue
+        rows.append((day, value))
+
+    rows.sort(key=lambda item: item[0])
+    return rows
+
+
+def reconstruct_benchmark_fix_history(site_dir: Path, benchmark_key: str) -> List[Tuple[dt.date, float]]:
     rows: List[Tuple[dt.date, float]] = []
     fix_dir = site_dir / "fix"
     if not fix_dir.exists():
@@ -2037,6 +2071,13 @@ def load_benchmark_fix_history(site_dir: Path, benchmark_key: str) -> List[Tuple
 
     rows.sort(key=lambda item: item[0])
     return rows
+
+
+def load_benchmark_fix_history(site_dir: Path, benchmark_key: str) -> List[Tuple[dt.date, float]]:
+    rows = load_public_value_series(benchmark_series_path(site_dir, benchmark_key))
+    if rows:
+        return rows
+    return reconstruct_benchmark_fix_history(site_dir, benchmark_key)
 
 
 def extract_daily_gap_value(daily: Dict[str, Any], gap_key: str) -> Optional[float]:
@@ -2078,7 +2119,7 @@ def extract_daily_gap_value(daily: Dict[str, Any], gap_key: str) -> Optional[flo
     return None
 
 
-def load_indicator_gap_history(site_dir: Path, gap_key: str) -> List[Tuple[dt.date, float]]:
+def reconstruct_indicator_gap_history(site_dir: Path, gap_key: str) -> List[Tuple[dt.date, float]]:
     rows: List[Tuple[dt.date, float]] = []
     fix_dir = site_dir / "fix"
     if not fix_dir.exists():
@@ -2103,13 +2144,18 @@ def load_indicator_gap_history(site_dir: Path, gap_key: str) -> List[Tuple[dt.da
     return rows
 
 
-def compute_official_trend_7d(site_dir: Path, latest_day: dt.date, latest_official_fix: Optional[float]) -> Optional[float]:
+def load_indicator_gap_history(site_dir: Path, gap_key: str) -> List[Tuple[dt.date, float]]:
+    rows = load_public_value_series(indicator_series_path(site_dir, gap_key))
+    if rows:
+        return rows
+    return reconstruct_indicator_gap_history(site_dir, gap_key)
+
+
+def compute_official_trend_from_history_map(
+    by_day: Dict[dt.date, float], latest_day: dt.date, latest_official_fix: Optional[float]
+) -> Optional[float]:
     if latest_official_fix is None or latest_official_fix <= 0:
         return None
-    history = load_benchmark_fix_history(site_dir, "official")
-    by_day: Dict[dt.date, float] = {day: fix for day, fix in history}
-    by_day[latest_day] = latest_official_fix
-
     target_day = latest_day - dt.timedelta(days=7)
     base_candidates = [day for day in by_day if day <= target_day]
     if not base_candidates:
@@ -2119,6 +2165,13 @@ def compute_official_trend_7d(site_dir: Path, latest_day: dt.date, latest_offici
     if base_fix is None or base_fix <= 0:
         return None
     return ((latest_official_fix - base_fix) / base_fix) * 100
+
+
+def compute_official_trend_7d(site_dir: Path, latest_day: dt.date, latest_official_fix: Optional[float]) -> Optional[float]:
+    history = load_benchmark_fix_history(site_dir, "official")
+    by_day: Dict[dt.date, float] = {day: fix for day, fix in history}
+    by_day[latest_day] = latest_official_fix
+    return compute_official_trend_from_history_map(by_day, latest_day, latest_official_fix)
 
 
 def evaluate_official_sanity_warnings(benchmark_results: Dict[str, Dict[str, Any]]) -> List[str]:
@@ -3080,8 +3133,8 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
 
     def benchmark_sparkline_html(key: str) -> str:
         width = 160.0
-        height = 28.0
-        pad = 2.0
+        height = 32.0
+        pad = 3.0
         baseline_y = height / 2.0
 
         if latest_day is None:
@@ -3130,10 +3183,12 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             points.append(f"{x:.1f},{y:.1f}")
 
         polyline = " ".join(points)
+        fill_points = f"{pad:.1f},{height - pad:.1f} {polyline} {width - pad:.1f},{height - pad:.1f}"
         return (
             f'<svg class="sparkline-svg" viewBox="0 0 {int(width)} {int(height)}" preserveAspectRatio="none" '
             'role="img" aria-label="mini line chart">'
-            f'<polyline fill="none" stroke="#3b82f6" stroke-width="2" points="{polyline}"></polyline>'
+            f'<polygon points="{fill_points}" fill="rgba(59,130,246,0.12)"></polygon>'
+            f'<polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="{polyline}"></polyline>'
             "</svg>"
         )
 
@@ -3418,6 +3473,79 @@ def publish_series(site_dir: Path) -> None:
     rows = load_series_rows(site_dir)
     public_rows = [row for row in rows if is_public_series_row(row)]
     write_json(site_dir / "api" / "series.json", {"rows": public_rows})
+
+
+def publish_benchmark_series(site_dir: Path) -> None:
+    for benchmark_key in BENCHMARK_LABELS:
+        rows = [
+            {"date": day.isoformat(), "value": value}
+            for day, value in reconstruct_benchmark_fix_history(site_dir, benchmark_key)
+        ]
+        write_json(benchmark_series_path(site_dir, benchmark_key), rows)
+
+
+def publish_indicator_series(site_dir: Path) -> None:
+    for indicator_key in (
+        "street_official_gap_pct",
+        "street_transfer_gap_pct",
+        "street_crypto_gap_pct",
+    ):
+        rows = [
+            {"date": day.isoformat(), "value": value}
+            for day, value in reconstruct_indicator_gap_history(site_dir, indicator_key)
+        ]
+        write_json(indicator_series_path(site_dir, indicator_key), rows)
+
+    official_history = reconstruct_benchmark_fix_history(site_dir, "official")
+    official_by_day: Dict[dt.date, float] = {day: value for day, value in official_history}
+    trend_rows: List[Dict[str, Any]] = []
+    for day, value in official_history:
+        trend = compute_official_trend_from_history_map(official_by_day, day, value)
+        if trend is None:
+            continue
+        trend_rows.append({"date": day.isoformat(), "value": trend})
+    write_json(indicator_series_path(site_dir, "official_commercial_trend_7d"), trend_rows)
+
+
+def publish_public_series_artifacts(site_dir: Path) -> None:
+    publish_series(site_dir)
+    publish_benchmark_series(site_dir)
+    publish_indicator_series(site_dir)
+
+
+def publish_intraday_latest(site_dir: Path, day: dt.date) -> None:
+    attempts = load_intraday_attempts(site_dir, day)
+    latest_path = site_dir / "api" / "intraday" / "latest.json"
+    if not attempts:
+        return
+
+    latest_attempt = attempts[-1]
+    computed = latest_attempt.get("computed", {}) if isinstance(latest_attempt.get("computed"), dict) else {}
+    computed_benchmarks = computed.get("benchmarks", {}) if isinstance(computed.get("benchmarks"), dict) else {}
+
+    benchmarks_payload: Dict[str, Optional[float]] = {}
+    for key in BENCHMARK_LABELS:
+        entry = computed_benchmarks.get(key, {})
+        if not isinstance(entry, dict):
+            benchmarks_payload[key] = None
+            continue
+        benchmarks_payload[key] = parse_number(entry.get("value"))
+
+    payload = {
+        "date": latest_attempt.get("date"),
+        "collected_at": latest_attempt.get("collected_at"),
+        "window_utc": latest_attempt.get("window_utc"),
+        "normalized_unit": "rial",
+        "benchmarks": benchmarks_payload,
+        "computed": {
+            "fix": parse_number(computed.get("fix")),
+            "status": computed.get("status"),
+            "withheld": computed.get("withheld"),
+            "band": computed.get("band"),
+            "dispersion": computed.get("dispersion"),
+        },
+    }
+    write_json(latest_path, payload)
 
 
 def publish_mapping_audit(site_dir: Path) -> None:
@@ -3971,9 +4099,10 @@ def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: 
         latest=latest,
     )
     publish_latest(site_dir, latest)
+    publish_public_series_artifacts(site_dir)
+    publish_intraday_latest(site_dir, day)
     publish_home(site_dir, templates_dir, generated_at, latest)
     publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
-    publish_series(site_dir)
     publish_mapping_audit(site_dir)
     return 0
 
@@ -4015,6 +4144,7 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
         "computed": summary.get("computed", {}),
     }
     path = write_intraday_attempt(site_dir, attempt_payload)
+    publish_intraday_latest(site_dir, day)
 
     publish_status(
         site_dir,
@@ -4041,9 +4171,10 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
         latest_path = site_dir / "api" / "latest.json"
         if latest_path.exists():
             latest = json.loads(latest_path.read_text(encoding="utf-8"))
+            publish_public_series_artifacts(site_dir)
+            publish_intraday_latest(site_dir, day)
             publish_home(site_dir, templates_dir, generated_at, latest)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
-        publish_series(site_dir)
         publish_mapping_audit(site_dir)
         return 0
 
@@ -4058,10 +4189,11 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
             missing=missing,
         )
         placeholder = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "missing secrets")
+        publish_latest(site_dir, placeholder)
+        publish_public_series_artifacts(site_dir)
+        publish_intraday_latest(site_dir, day)
         publish_home(site_dir, templates_dir, generated_at, placeholder)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
-        publish_latest(site_dir, placeholder)
-        publish_series(site_dir)
         publish_mapping_audit(site_dir)
         return 0
 
@@ -4076,7 +4208,8 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
         )
         publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=placeholder)
         publish_latest(site_dir, placeholder)
-        publish_series(site_dir)
+        publish_public_series_artifacts(site_dir)
+        publish_intraday_latest(site_dir, day)
         publish_mapping_audit(site_dir)
         publish_status(
             site_dir,
@@ -4092,7 +4225,8 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
 
     publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
     publish_latest(site_dir, daily)
-    publish_series(site_dir)
+    publish_public_series_artifacts(site_dir)
+    publish_intraday_latest(site_dir, day)
     publish_mapping_audit(site_dir)
     publish_status(
         site_dir,
@@ -4152,10 +4286,11 @@ def run(args: argparse.Namespace) -> int:
             missing=missing,
         )
         placeholder = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "missing secrets")
+        publish_latest(site_dir, placeholder)
+        publish_public_series_artifacts(site_dir)
+        publish_intraday_latest(site_dir, day)
         publish_home(site_dir, templates_dir, generated_at, placeholder)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
-        publish_latest(site_dir, placeholder)
-        publish_series(site_dir)
         publish_mapping_audit(site_dir)
         return 0
 
@@ -4174,9 +4309,10 @@ def run(args: argparse.Namespace) -> int:
         latest_path = site_dir / "api" / "latest.json"
         if latest_path.exists():
             latest = json.loads(latest_path.read_text(encoding="utf-8"))
+            publish_public_series_artifacts(site_dir)
+            publish_intraday_latest(site_dir, day)
             publish_home(site_dir, templates_dir, generated_at, latest)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
-        publish_series(site_dir)
         publish_mapping_audit(site_dir)
         return 0
 
@@ -4212,7 +4348,8 @@ def run(args: argparse.Namespace) -> int:
     }
     publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
     publish_latest(site_dir, daily)
-    publish_series(site_dir)
+    publish_public_series_artifacts(site_dir)
+    publish_intraday_latest(site_dir, day)
     publish_mapping_audit(site_dir)
 
     publish_status(

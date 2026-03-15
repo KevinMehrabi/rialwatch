@@ -51,7 +51,7 @@ jobs:
         if: github.event_name == 'schedule'
         run: |
           targets=()
-          for path in site/fix site/api/latest.json site/api/series.json site/archive/index.html; do
+          for path in site/fix site/api/latest.json site/api/series.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do
             if [ -e "$path" ]; then
               targets+=("$path")
             fi

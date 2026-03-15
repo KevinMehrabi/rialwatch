@@ -47,19 +47,26 @@ jobs:
         run: |
           today="$(date -u +%F)"
           target_dir="site/intraday/${today}"
+          targets=()
+          if [ -d "$target_dir" ]; then
+            targets+=("$target_dir")
+          fi
+          if [ -e "site/api/intraday/latest.json" ]; then
+            targets+=("site/api/intraday/latest.json")
+          fi
 
-          if [ ! -d "$target_dir" ]; then
-            echo "No intraday directory for ${today}."
+          if [ "${#targets[@]}" -eq 0 ]; then
+            echo "No intraday artifacts for ${today}."
             exit 0
           fi
 
-          if [ -z "$(git status --porcelain -- "$target_dir")" ]; then
+          if [ -z "$(git status --porcelain -- "${targets[@]}")" ]; then
             echo "No intraday changes to commit."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "$target_dir"
+          git add "${targets[@]}"
           git commit -m "collect: intraday USD/IRR sample ${today} [skip ci]"
           git push origin main
