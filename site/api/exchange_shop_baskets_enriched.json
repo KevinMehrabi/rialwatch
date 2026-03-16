@@ -1,0 +1,125 @@
+{
+  "generated_at": "2026-03-16T03:16:43Z",
+  "diagnostics_only": true,
+  "benchmark_weighted_rate": 1449922.07,
+  "baskets": [
+    {
+      "basket_name": "Iran",
+      "signal_type_used": "exchange_shop",
+      "weighted_rate": 1416917.85,
+      "median_rate": 1409950.0,
+      "spread_vs_benchmark_pct": -2.2763,
+      "usable_record_count": 121,
+      "contributing_source_count": 15,
+      "basket_confidence": 64.16,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.248919,
+      "outliers_removed": 0,
+      "top_sources": [
+        "mazanehnet",
+        "mellalex",
+        "fardaei_tehran"
+      ]
+    },
+    {
+      "basket_name": "UAE",
+      "signal_type_used": null,
+      "weighted_rate": null,
+      "median_rate": null,
+      "spread_vs_benchmark_pct": null,
+      "usable_record_count": 0,
+      "contributing_source_count": 0,
+      "basket_confidence": 0.0,
+      "publishable": false,
+      "suppression_reason": "no_usable_records",
+      "top_sources": []
+    },
+    {
+      "basket_name": "Turkey",
+      "signal_type_used": "exchange_shop",
+      "weighted_rate": 1448558.06,
+      "median_rate": 1448200.0,
+      "spread_vs_benchmark_pct": -0.0941,
+      "usable_record_count": 33,
+      "contributing_source_count": 2,
+      "basket_confidence": 89.07,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.008424,
+      "outliers_removed": 2,
+      "top_sources": [
+        "istanbulim_com",
+        "istanbulexchange_com"
+      ]
+    },
+    {
+      "basket_name": "Iraq",
+      "signal_type_used": null,
+      "weighted_rate": null,
+      "median_rate": null,
+      "spread_vs_benchmark_pct": null,
+      "usable_record_count": 0,
+      "contributing_source_count": 0,
+      "basket_confidence": 0.0,
+      "publishable": false,
+      "suppression_reason": "no_usable_records",
+      "top_sources": []
+    },
+    {
+      "basket_name": "Afghanistan",
+      "signal_type_used": "exchange_shop",
+      "weighted_rate": 1090599.82,
+      "median_rate": 1060000.0,
+      "spread_vs_benchmark_pct": -24.7822,
+      "usable_record_count": 16,
+      "contributing_source_count": 6,
+      "basket_confidence": 66.68,
+      "publishable": false,
+      "suppression_reason": "stale_signal",
+      "dispersion_cv": 0.157922,
+      "outliers_removed": 0,
+      "top_sources": [
+        "ldollar",
+        "dolarian",
+        "fardaei_tehran"
+      ]
+    },
+    {
+      "basket_name": "UK",
+      "signal_type_used": "exchange_shop",
+      "weighted_rate": 1862657.9,
+      "median_rate": 1865000.0,
+      "spread_vs_benchmark_pct": 28.4661,
+      "usable_record_count": 18,
+      "contributing_source_count": 3,
+      "basket_confidence": 87.69,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.029718,
+      "outliers_removed": 1,
+      "top_sources": [
+        "sarafionline7groupuk",
+        "groupsarafilondonuk",
+        "exchangeratescountries"
+      ]
+    },
+    {
+      "basket_name": "Germany",
+      "signal_type_used": "aggregator",
+      "weighted_rate": 820357.14,
+      "median_rate": 830000.0,
+      "spread_vs_benchmark_pct": -43.4206,
+      "usable_record_count": 7,
+      "contributing_source_count": 1,
+      "basket_confidence": 59.36,
+      "publishable": false,
+      "suppression_reason": "stale_signal",
+      "dispersion_cv": 0.042678,
+      "outliers_removed": 1,
+      "top_sources": [
+        "frankfurt_euro"
+      ]
+    }
+  ]
+}
