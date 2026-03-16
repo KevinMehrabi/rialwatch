@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-15T21:35:14Z",
+  "generated_at": "2026-03-16T17:30:39Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
   "total_usable_records": 112,
@@ -40,6 +40,9 @@
     "market_channel": 46,
     "regional_market_channel": 13
   },
+  "locality_internal_status": {
+    "UAE": "watchlist_only"
+  },
   "locality_summary": [
     {
       "basket_name": "Iran",
@@ -47,15 +50,17 @@
       "usable_record_count": 15,
       "contributing_channel_count": 1,
       "basket_confidence": 76.22,
-      "suppression_reason": "single_channel_concentration"
+      "suppression_reason": "single_channel_concentration",
+      "internal_status": ""
     },
     {
       "basket_name": "Turkey",
       "publishable": true,
       "usable_record_count": 33,
       "contributing_channel_count": 2,
-      "basket_confidence": 82.88,
-      "suppression_reason": ""
+      "basket_confidence": 82.87,
+      "suppression_reason": "",
+      "internal_status": ""
     },
     {
       "basket_name": "UAE",
@@ -63,7 +68,8 @@
       "usable_record_count": 0,
       "contributing_channel_count": 0,
       "basket_confidence": 0.0,
-      "suppression_reason": "no_usable_records"
+      "suppression_reason": "no_usable_records",
+      "internal_status": "watchlist_only"
     },
     {
       "basket_name": "Iraq",
@@ -71,7 +77,8 @@
       "usable_record_count": 0,
       "contributing_channel_count": 0,
       "basket_confidence": 0.0,
-      "suppression_reason": "no_usable_records"
+      "suppression_reason": "no_usable_records",
+      "internal_status": ""
     },
     {
       "basket_name": "Afghanistan",
@@ -79,7 +86,8 @@
       "usable_record_count": 0,
       "contributing_channel_count": 0,
       "basket_confidence": 0.0,
-      "suppression_reason": "no_usable_records"
+      "suppression_reason": "no_usable_records",
+      "internal_status": ""
     },
     {
       "basket_name": "UK",
@@ -87,7 +95,8 @@
       "usable_record_count": 6,
       "contributing_channel_count": 1,
       "basket_confidence": 62.88,
-      "suppression_reason": "single_channel_concentration"
+      "suppression_reason": "single_channel_concentration",
+      "internal_status": ""
     },
     {
       "basket_name": "Germany",
@@ -95,7 +104,8 @@
       "usable_record_count": 0,
       "contributing_channel_count": 0,
       "basket_confidence": 0.0,
-      "suppression_reason": "no_usable_records"
+      "suppression_reason": "no_usable_records",
+      "internal_status": ""
     },
     {
       "basket_name": "unknown",
@@ -103,7 +113,8 @@
       "usable_record_count": 32,
       "contributing_channel_count": 2,
       "basket_confidence": 76.65,
-      "suppression_reason": ""
+      "suppression_reason": "",
+      "internal_status": ""
     }
   ],
   "channels": [
@@ -158,8 +169,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 13,
-      "average_quality": 90.69,
-      "average_freshness": 87.08,
+      "average_quality": 92.62,
+      "average_freshness": 91.69,
       "from_new_p1": true
     },
     {

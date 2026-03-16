@@ -373,7 +373,8 @@ async function loadSeries() {
 function renderExchangeShopCards(payload) {
   const holder = document.getElementById('exchange-shop-cards');
   if (!holder) return;
-  const cards = Array.isArray(payload && payload.cards) ? payload.cards : [];
+  const cards = (Array.isArray(payload && payload.cards) ? payload.cards : [])
+    .filter(card => card && card.render_on_homepage !== false);
   if (!cards.length) {
     holder.innerHTML = `
       <div class="card bg-dark text-white dashboard-card">

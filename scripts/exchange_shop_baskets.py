@@ -109,6 +109,24 @@ def write_json(path: Path, payload: Dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
+def load_locality_internal_status(survey_dir: Path) -> Dict[str, str]:
+    statuses: Dict[str, str] = {}
+    uae_summary_path = survey_dir / "uae_basket_review_summary.json"
+    if uae_summary_path.exists():
+        try:
+            payload = json.loads(uae_summary_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            payload = {}
+        support = str(payload.get("uae_card_support", "")).strip()
+        if support == "still_hidden":
+            statuses["UAE"] = "watchlist_only"
+        elif support == "monitor_card":
+            statuses["UAE"] = "monitor_card"
+        elif support == "full_card":
+            statuses["UAE"] = "active"
+    return statuses
+
+
 def build_lookup(rows: Sequence[Dict[str, str]], key: str) -> Dict[str, Dict[str, str]]:
     lookup: Dict[str, Dict[str, str]] = {}
     for row in rows:
@@ -605,10 +623,16 @@ def contributing_channel_rows(records: Sequence[BasketRecord]) -> List[Dict[str,
 def build_card_payload(
     basket_rows: Sequence[Dict[str, Any]],
     network_summary: Dict[str, Any],
+    locality_internal_status: Optional[Dict[str, str]] = None,
 ) -> Dict[str, Any]:
+    locality_internal_status = locality_internal_status or {}
     cards = []
     for row in basket_rows:
         if row["basket_name"] == "unknown":
+            continue
+        internal_status = locality_internal_status.get(row["basket_name"], "")
+        render_on_homepage = internal_status != "watchlist_only"
+        if not render_on_homepage:
             continue
         weighted_rate = row.get("weighted_rate")
         spread = row.get("spread_vs_benchmark_pct")
@@ -623,6 +647,8 @@ def build_card_payload(
                 "basket_confidence": row.get("basket_confidence", 0.0),
                 "publishable": bool(row.get("publishable")),
                 "suppression_reason": row.get("suppression_reason", ""),
+                "internal_status": internal_status,
+                "render_on_homepage": render_on_homepage,
                 "status_text": (
                     "Diagnostics basket available"
                     if row.get("publishable")
@@ -636,6 +662,7 @@ def build_card_payload(
         "generated_at": network_summary["generated_at"],
         "diagnostics_only": True,
         "benchmark_weighted_rate": network_summary["benchmark_weighted_rate"],
+        "locality_internal_status": locality_internal_status,
         "cards": cards,
     }
 
@@ -645,7 +672,9 @@ def build_network_summary(
     all_records: Sequence[BasketRecord],
     p1_ingestion: Sequence[Dict[str, Any]],
     benchmark_value: float,
+    locality_internal_status: Optional[Dict[str, str]] = None,
 ) -> Dict[str, Any]:
+    locality_internal_status = locality_internal_status or {}
     publishable_count = sum(1 for row in basket_rows if row.get("publishable") and row.get("basket_name") != "unknown")
     rows_by_locality = {row["basket_name"]: row for row in basket_rows}
     locality_summary = []
@@ -659,6 +688,7 @@ def build_network_summary(
                 "contributing_channel_count": row.get("contributing_channel_count", 0) if row else 0,
                 "basket_confidence": row.get("basket_confidence", 0.0) if row else 0.0,
                 "suppression_reason": row.get("suppression_reason", "no_usable_records") if row else "no_usable_records",
+                "internal_status": locality_internal_status.get(locality, ""),
             }
         )
 
@@ -671,6 +701,7 @@ def build_network_summary(
         "publishable_basket_count": publishable_count,
         "added_p1_candidates": list(p1_ingestion),
         "source_category_mix": source_category_mix(all_records),
+        "locality_internal_status": locality_internal_status,
         "locality_summary": locality_summary,
         "channels": contributing_channel_rows(all_records),
     }
@@ -691,6 +722,7 @@ def build_exchange_shop_baskets(
     survey_by_handle = build_lookup(channel_rows, "handle")
     ranked_by_handle = build_lookup(ranking_rows, "handle_or_url")
     benchmark_value = benchmark_rate(site_api_dir)
+    locality_internal_status = load_locality_internal_status(survey_dir)
 
     existing_records = normalize_existing_records(
         quote_rows=quote_rows,
@@ -723,8 +755,13 @@ def build_exchange_shop_baskets(
         all_records=all_records,
         p1_ingestion=p1_ingestion,
         benchmark_value=benchmark_value,
+        locality_internal_status=locality_internal_status,
     )
-    card_payload = build_card_payload(basket_rows=basket_rows, network_summary=network_summary)
+    card_payload = build_card_payload(
+        basket_rows=basket_rows,
+        network_summary=network_summary,
+        locality_internal_status=locality_internal_status,
+    )
     return baskets_payload, card_payload, network_summary
 
 

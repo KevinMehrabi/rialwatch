@@ -102,6 +102,37 @@ class ExchangeShopBasketTests(unittest.TestCase):
         self.assertEqual(payload["cards"][0]["rate_text"], "1,496,200 IRR")
         self.assertEqual(payload["cards"][0]["spread_text"], "+3.88%")
 
+    def test_build_card_payload_hides_watchlist_only_locality(self) -> None:
+        payload = baskets.build_card_payload(
+            basket_rows=[
+                {
+                    "basket_name": "Turkey",
+                    "weighted_rate": 1_496_200.0,
+                    "median_rate": 1_495_800.0,
+                    "spread_vs_benchmark_pct": 3.88,
+                    "usable_record_count": 8,
+                    "contributing_channel_count": 2,
+                    "basket_confidence": 67.5,
+                    "publishable": True,
+                    "suppression_reason": "",
+                },
+                {
+                    "basket_name": "UAE",
+                    "weighted_rate": None,
+                    "median_rate": None,
+                    "spread_vs_benchmark_pct": None,
+                    "usable_record_count": 0,
+                    "contributing_channel_count": 0,
+                    "basket_confidence": 0.0,
+                    "publishable": False,
+                    "suppression_reason": "no_usable_records",
+                },
+            ],
+            network_summary={"generated_at": "2026-03-15T18:10:00Z", "benchmark_weighted_rate": 1_449_922.07},
+            locality_internal_status={"UAE": "watchlist_only"},
+        )
+        self.assertEqual([card["basket_name"] for card in payload["cards"]], ["Turkey"])
+
 
 if __name__ == "__main__":
     unittest.main()
