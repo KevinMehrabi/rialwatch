@@ -4,6 +4,12 @@ from scripts import regional_market_signals_card as cards
 
 
 class RegionalMarketSignalsCardTests(unittest.TestCase):
+    def test_alignment_label_from_spread(self) -> None:
+        self.assertEqual(cards.alignment_label_from_spread(1.9), "Aligned")
+        self.assertEqual(cards.alignment_label_from_spread(2.0), "Mild divergence")
+        self.assertEqual(cards.alignment_label_from_spread(-10.0), "Mild divergence")
+        self.assertEqual(cards.alignment_label_from_spread(10.01), "Divergent")
+
     def test_display_state_from_publishable_hides_stale(self) -> None:
         self.assertEqual(cards.display_state_from_publishable(True, 0, ""), "publish")
         self.assertEqual(cards.display_state_from_publishable(False, 4, "limited_coverage"), "monitor")
@@ -153,17 +159,34 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
             enriched_payload,
             legacy_payload,
         )
+        self.assertEqual(
+            [row["basket_name"] for row in payload["cards"]],
+            ["Iran", "UAE", "Turkey", "Afghanistan", "UK", "Iraq", "Germany"],
+        )
         by_locality = {row["basket_name"]: row for row in payload["cards"]}
 
         self.assertEqual(by_locality["Iran"]["display_state"], "publish")
         self.assertEqual(by_locality["Iran"]["source_artifact"], "exchange_shop_baskets_enriched")
+        self.assertEqual(by_locality["Iran"]["signal_label"], "Exchange network signal")
+        self.assertEqual(by_locality["Iran"]["alignment_label"], "Mild divergence")
         self.assertEqual(by_locality["Turkey"]["display_state"], "publish")
+        self.assertEqual(by_locality["Turkey"]["signal_label"], "Exchange network signal")
+        self.assertEqual(by_locality["Turkey"]["alignment_label"], "Aligned")
         self.assertEqual(by_locality["UK"]["display_state"], "publish")
+        self.assertEqual(by_locality["UK"]["signal_label"], "Exchange network signal")
+        self.assertEqual(by_locality["UK"]["alignment_label"], "Divergent")
         self.assertEqual(by_locality["UAE"]["display_state"], "publish")
+        self.assertEqual(by_locality["UAE"]["signal_label"], "Dubai settlement signal")
+        self.assertEqual(by_locality["UAE"]["alignment_label"], "Aligned")
         self.assertEqual(by_locality["Afghanistan"]["display_state"], "publish")
+        self.assertEqual(by_locality["Afghanistan"]["signal_label"], "Herat market signal")
+        self.assertEqual(by_locality["Afghanistan"]["alignment_label"], "Divergent")
         self.assertEqual(by_locality["Iraq"]["display_state"], "monitor")
+        self.assertEqual(by_locality["Iraq"]["signal_label"], "Sulaymaniyah market (monitoring)")
+        self.assertEqual(by_locality["Iraq"]["alignment_label"], "Mild divergence")
         self.assertEqual(by_locality["Germany"]["display_state"], "hide")
         self.assertFalse(by_locality["Germany"]["render_on_homepage"])
+        self.assertEqual(by_locality["Germany"]["alignment_label"], "Divergent")
 
         self.assertEqual(payload["summary"]["publish_count"], 5)
         self.assertEqual(payload["summary"]["monitor_count"], 1)

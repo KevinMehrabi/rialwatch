@@ -197,7 +197,7 @@
 
 <section class="dashboard-section references-section">
   <div class="text-secondary fw-semibold dashboard-title">Regional Market Signals</div>
-  <div class="text-secondary small mb-3">Best available public locality signals for rial-related regional markets. Diagnostic only.</div>
+  <div class="text-secondary small mb-3">Best available public locality signals relative to the RialWatch benchmark. Diagnostic only.</div>
   <div class="signals-grid" id="regional-market-cards">
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
@@ -375,6 +375,14 @@ function humanizeToken(value, fallback = 'unknown') {
   return text || fallback;
 }
 
+function alignmentBadgeClass(label) {
+  const normalized = String(label || '').trim().toLowerCase();
+  if (normalized === 'aligned') return 'alignment-aligned';
+  if (normalized === 'mild divergence') return 'alignment-mild';
+  if (normalized === 'divergent') return 'alignment-divergent';
+  return '';
+}
+
 function renderRegionalMarketCards(payload) {
   const holder = document.getElementById('regional-market-cards');
   if (!holder) return;
@@ -394,23 +402,16 @@ function renderRegionalMarketCards(payload) {
     return;
   }
 
-  const stateRank = { publish: 2, monitor: 1 };
-  const sortedCards = cards.slice().sort((left, right) => {
-    const stateDiff = (stateRank[right.display_state] || 0) - (stateRank[left.display_state] || 0);
-    if (stateDiff !== 0) return stateDiff;
-    return Number(right.usable_record_count || 0) - Number(left.usable_record_count || 0);
-  });
-
-  holder.innerHTML = sortedCards.map(card => `
+  holder.innerHTML = cards.map(card => `
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
         <div class="panel-top">
-          <div class="fw-semibold mb-1">${card.basket_name}</div>
-          <div class="text-secondary small mb-2">${card.display_state === 'monitor' ? 'Monitoring' : 'Diagnostics signal available'} • Signal type: ${humanizeToken(card.signal_type_used)}</div>
+          <div class="fw-semibold mb-1">${card.basket_name}${card.display_state === 'monitor' ? ' (monitoring)' : ''}</div>
+          <div class="text-secondary small mb-2">${card.display_state === 'monitor' ? 'Monitoring' : 'Diagnostics signal available'} • Signal type: ${card.signal_label || humanizeToken(card.signal_type_used)}</div>
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">${card.rate_text || (typeof card.weighted_rate === 'number' ? Math.round(card.weighted_rate).toLocaleString() + ' IRR' : 'Unavailable')}</div>
+            <div class="panel-value ${card.dispersion_level === 'high' ? 'panel-value-soft' : ''}">${card.rate_text || (typeof card.weighted_rate === 'number' ? Math.round(card.weighted_rate).toLocaleString() + ' IRR' : 'Unavailable')}</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
@@ -418,6 +419,7 @@ function renderRegionalMarketCards(payload) {
           <div class="panel-meta-row">
             <span>Median: ${typeof card.median_rate === 'number' ? Math.round(card.median_rate).toLocaleString() + ' IRR' : 'Unavailable'}</span>
             <span>Spread vs benchmark: ${card.spread_text || 'N/A'}</span>
+            <span class="signal-badge ${alignmentBadgeClass(card.alignment_label)}">${card.alignment_label || 'Unknown'}</span>
           </div>
           <div class="panel-meta-row mt-2">
             <span>Usable records: ${card.usable_record_count}</span>
@@ -428,6 +430,7 @@ function renderRegionalMarketCards(payload) {
             <span>Freshness: ${humanizeToken(card.freshness_status)}</span>
             <span>Dispersion: ${humanizeToken(card.dispersion_level)}</span>
           </div>
+          ${card.dispersion_level === 'high' ? `<div class="text-warning small mt-2">High dispersion &mdash; indicative signal only</div>` : ''}
           ${card.display_state === 'monitor' ? `<div class="text-warning small mt-2">Monitoring only. Reason: ${humanizeToken(card.suppression_reason, 'limited coverage')}</div>` : ''}
         </div>
       </div>

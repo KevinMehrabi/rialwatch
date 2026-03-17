@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 
-TARGET_LOCALITIES = ["Iran", "Turkey", "UK", "UAE", "Afghanistan", "Iraq", "Germany"]
+TARGET_LOCALITIES = ["Iran", "UAE", "Turkey", "Afghanistan", "UK", "Iraq", "Germany"]
 STATE_RANK = {"publish": 3, "monitor": 2, "hide": 1}
 SOURCE_RANK = {
     "regional_fx_board_basket_review": 3,
@@ -118,6 +118,33 @@ def format_spread(value: Any) -> str:
     if spread is None:
         return "N/A"
     return f"{spread:+.2f}%"
+
+
+def alignment_label_from_spread(value: Any) -> str:
+    spread = to_float(value)
+    if spread is None:
+        return "Unknown"
+    abs_spread = abs(spread)
+    if abs_spread < 2.0:
+        return "Aligned"
+    if abs_spread <= 10.0:
+        return "Mild divergence"
+    return "Divergent"
+
+
+def signal_label_for_locality(locality: str, display_state: str, signal_type_used: Any) -> str:
+    normalized = locality.strip()
+    if normalized in {"Iran", "Turkey", "UK"}:
+        return "Exchange network signal"
+    if normalized == "UAE":
+        return "Dubai settlement signal"
+    if normalized == "Afghanistan":
+        return "Herat market signal"
+    if normalized == "Iraq":
+        if display_state == "monitor":
+            return "Sulaymaniyah market (monitoring)"
+        return "Sulaymaniyah market signal"
+    return humanize_token(signal_type_used, fallback="Locality signal")
 
 
 def normalize_locality(value: Any) -> str:
@@ -278,6 +305,12 @@ def finalize_card(candidate: Dict[str, Any]) -> Dict[str, Any]:
         status_text = "Hidden (no usable diagnostics signal)"
 
     card = dict(candidate)
+    card["alignment_label"] = alignment_label_from_spread(candidate.get("spread_vs_benchmark_pct"))
+    card["signal_label"] = signal_label_for_locality(
+        locality=str(candidate.get("basket_name") or ""),
+        display_state=state,
+        signal_type_used=candidate.get("signal_type_used"),
+    )
     card["publishable"] = state == "publish"
     card["render_on_homepage"] = state in {"publish", "monitor"}
     card["status_text"] = status_text
