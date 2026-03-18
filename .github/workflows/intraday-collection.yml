@@ -2,10 +2,10 @@ name: Intraday USD/IRR Collection
 
 on:
   schedule:
-    # Initial cadence around publication window.
-    - cron: "45 13 * * *"
-    - cron: "0 14 * * *"
-    - cron: "15 14 * * *"
+    # Buffered cadence within the publication window to absorb workflow startup delay.
+    - cron: "47 13 * * *"
+    - cron: "2 14 * * *"
+    - cron: "10 14 * * *"
   workflow_dispatch:
 
 permissions:

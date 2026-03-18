@@ -2672,6 +2672,40 @@ def publish_status(
     if publication_state == "Withheld":
         publication_reason = humanized_reasons[0] if humanized_reasons else "Publication withheld by methodology checks"
 
+    publication_selection = effective_latest.get("publication_selection", {})
+    if not isinstance(publication_selection, dict):
+        publication_selection = {}
+    valid_candidate_count_raw = publication_selection.get("valid_candidate_count")
+    valid_candidate_count: Optional[int] = None
+    if isinstance(valid_candidate_count_raw, (int, float)) and math.isfinite(float(valid_candidate_count_raw)):
+        valid_candidate_count = int(valid_candidate_count_raw)
+
+    street_source_count_raw = publication_selection.get("street_source_count_used")
+    street_source_count_used: Optional[int] = None
+    if isinstance(street_source_count_raw, (int, float)) and math.isfinite(float(street_source_count_raw)):
+        street_source_count_used = int(street_source_count_raw)
+    if street_source_count_used is None:
+        source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
+        street_source_count_used = len([k for k, v in source_medians.items() if parse_number(v) is not None])
+
+    same_as_previous_day = bool(publication_selection.get("same_as_previous_day"))
+    delta_pct_vs_previous_day = parse_float(publication_selection.get("delta_pct_vs_previous_day"))
+
+    publication_selection_parts: List[str] = []
+    if valid_candidate_count is not None:
+        label = "candidate" if valid_candidate_count == 1 else "candidates"
+        publication_selection_parts.append(f"{valid_candidate_count} valid intraday {label}")
+    if street_source_count_used is not None:
+        source_label = "source" if street_source_count_used == 1 else "sources"
+        publication_selection_parts.append(f"{street_source_count_used} street {source_label} used")
+    if publication_state == "Published" and same_as_previous_day:
+        publication_selection_parts.append("Freshly selected, unchanged vs prior day")
+    elif publication_state == "Published" and delta_pct_vs_previous_day is not None:
+        publication_selection_parts.append(f"Delta vs prior day {delta_pct_vs_previous_day:+.1f}%")
+    publication_selection_context = (
+        " · ".join(publication_selection_parts) if publication_selection_parts else "Selection context unavailable."
+    )
+
     publication_fix = f"{fmt_rate(fix)} IRR" if fix is not None else "Unavailable"
     publication_updated = fmt_status_time(effective_latest.get("as_of") or generated_at)
 
@@ -2859,6 +2893,9 @@ def publish_status(
     if publication_state == "Published":
         publication_overview_state = "Online"
         publication_overview_note = f"Published {effective_latest.get('date', 'latest')} benchmark."
+        if valid_candidate_count is not None:
+            candidate_label = "candidate" if valid_candidate_count == 1 else "candidates"
+            publication_overview_note += f" {valid_candidate_count} valid intraday {candidate_label}."
     elif publication_state == "Withheld":
         publication_overview_state = "Degraded"
         publication_overview_note = publication_reason
@@ -2954,6 +2991,7 @@ def publish_status(
         publication_state=publication_state,
         publication_updated=publication_updated,
         publication_reason=publication_reason,
+        publication_selection_context=publication_selection_context,
         diagnostics_list=diagnostics_html,
         missing_list=missing_html,
     )
@@ -3232,10 +3270,18 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
 
     publication_meta = ""
     publication_selection = latest.get("publication_selection")
+    same_as_previous_day = False
+    previous_day_fix: Optional[float] = None
+    delta_vs_previous_day: Optional[float] = None
+    delta_pct_vs_previous_day: Optional[float] = None
     if isinstance(publication_selection, dict):
         selected_ts = try_parse_datetime(publication_selection.get("selected_collected_at"))
         selected_sample = selected_ts.strftime("%H:%M UTC") if selected_ts else None
         used_fallback = bool(publication_selection.get("used_fallback"))
+        same_as_previous_day = bool(publication_selection.get("same_as_previous_day"))
+        previous_day_fix = parse_number(publication_selection.get("previous_day_fix"))
+        delta_vs_previous_day = parse_number(publication_selection.get("delta_vs_previous_day"))
+        delta_pct_vs_previous_day = parse_float(publication_selection.get("delta_pct_vs_previous_day"))
         if selected_sample:
             if used_fallback:
                 publication_meta = f"Observed sample: {selected_sample} (fallback from intraday window)"
@@ -3261,27 +3307,23 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     else:
         street_source_count = 0
     street_source_count_text = f"{street_source_count} source" if street_source_count == 1 else f"{street_source_count} sources"
+    publication_state = "Withheld" if withheld else "Published"
 
     prior_day_change_text = "History building"
-    latest_day = parse_iso_date_text(latest.get("date"))
-    if latest_day is not None and street is not None:
-        history_rows = load_series_rows(site_dir)
-        previous_rows = []
-        for row in history_rows:
-            if not is_public_series_row(row):
-                continue
-            row_day = parse_iso_date_text(row.get("date"))
-            if row_day is None or row_day >= latest_day:
-                continue
-            previous_rows.append((row_day, parse_number(row.get("fix"))))
-        previous_rows = [(d, v) for d, v in previous_rows if v is not None]
-        if previous_rows:
-            previous_rows.sort(key=lambda item: item[0])
-            previous_fix = previous_rows[-1][1]
-            if previous_fix is not None and previous_fix > 0:
-                delta = street - previous_fix
-                pct = (delta / previous_fix) * 100
-                prior_day_change_text = f"{delta:+,.0f} IRR ({pct:+.1f}%)"
+    if delta_vs_previous_day is None or delta_pct_vs_previous_day is None:
+        delta_meta = compute_previous_day_delta_metadata(site_dir, latest_day, street)
+        same_as_previous_day = bool(delta_meta.get("same_as_previous_day"))
+        previous_day_fix = parse_number(delta_meta.get("previous_day_fix"))
+        delta_vs_previous_day = parse_number(delta_meta.get("delta_vs_previous_day"))
+        delta_pct_vs_previous_day = parse_float(delta_meta.get("delta_pct_vs_previous_day"))
+    if delta_vs_previous_day is not None and delta_pct_vs_previous_day is not None:
+        prior_day_change_text = f"{delta_vs_previous_day:+,.0f} IRR ({delta_pct_vs_previous_day:+.1f}%)"
+
+    publication_change_meta = ""
+    if publication_state == "Published" and same_as_previous_day:
+        publication_change_meta = "Freshly selected, unchanged vs prior day."
+    elif publication_state == "Published" and previous_day_fix is not None:
+        publication_change_meta = "Freshly selected from today's intraday samples."
 
     def comparison_value_text(value: Optional[float], unit_suffix: str = "IRR") -> str:
         if value is None:
@@ -3315,7 +3357,6 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         primary_reason_html = ""
 
     official_trend_note = "Direction of the official benchmark over the past week."
-    publication_state = "Withheld" if withheld else "Published"
 
     html = render_page(
         templates_dir,
@@ -3334,6 +3375,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         withheld="Yes" if withheld else "No",
         publication_state=publication_state,
         publication_meta=publication_meta,
+        publication_change_meta=publication_change_meta,
         primary_prior_day_change=prior_day_change_text,
         primary_street_sources=street_source_count_text,
         primary_observation_timestamp=observation_timestamp,
@@ -3378,6 +3420,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
 
 def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, daily: Dict[str, Any]) -> None:
     daily_out = json.loads(json.dumps(daily))
+    enrich_publication_selection_metadata(site_dir, daily_out)
     daily_out["normalized_metrics"] = build_normalized_market_snapshot(daily_out, site_dir=site_dir)
 
     indicators = daily_out.get("indicators", {})
@@ -3444,6 +3487,7 @@ def render_source_table(daily: Dict[str, Any]) -> str:
 
 def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
     payload = json.loads(json.dumps(daily))
+    enrich_publication_selection_metadata(site_dir, payload)
     benchmark_results = payload.get("benchmarks", {})
     if isinstance(benchmark_results, dict):
         new_indicators = compute_indicator_results(benchmark_results)
@@ -3794,6 +3838,67 @@ def load_samples_from_daily_payload(daily: Dict[str, Any], source_configs: List[
     return samples
 
 
+def compute_previous_day_delta_metadata(
+    site_dir: Path,
+    latest_day: Optional[dt.date],
+    current_fix: Optional[float],
+) -> Dict[str, Any]:
+    metadata: Dict[str, Any] = {
+        "same_as_previous_day": False,
+        "previous_day_fix": None,
+        "delta_vs_previous_day": None,
+        "delta_pct_vs_previous_day": None,
+    }
+    if latest_day is None or current_fix is None:
+        return metadata
+
+    previous_rows: List[Tuple[dt.date, float]] = []
+    for row in load_series_rows(site_dir):
+        if not is_public_series_row(row):
+            continue
+        row_day = parse_iso_date_text(row.get("date"))
+        row_fix = parse_number(row.get("fix"))
+        if row_day is None or row_fix is None or row_day >= latest_day:
+            continue
+        previous_rows.append((row_day, row_fix))
+
+    if not previous_rows:
+        return metadata
+
+    previous_rows.sort(key=lambda item: item[0])
+    previous_fix = previous_rows[-1][1]
+    if previous_fix <= 0:
+        return metadata
+
+    delta = float(current_fix) - float(previous_fix)
+    delta_pct = (delta / float(previous_fix)) * 100.0
+    metadata["same_as_previous_day"] = math.isclose(float(current_fix), float(previous_fix), abs_tol=1e-9)
+    metadata["previous_day_fix"] = float(previous_fix)
+    metadata["delta_vs_previous_day"] = float(delta)
+    metadata["delta_pct_vs_previous_day"] = float(delta_pct)
+    return metadata
+
+
+def enrich_publication_selection_metadata(site_dir: Path, payload: Dict[str, Any]) -> None:
+    selection = payload.get("publication_selection")
+    if not isinstance(selection, dict):
+        return
+
+    computed = payload.get("computed", {}) if isinstance(payload.get("computed"), dict) else {}
+    source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
+    if parse_number(selection.get("street_source_count_used")) is None:
+        selection["street_source_count_used"] = len([k for k, v in source_medians.items() if parse_number(v) is not None])
+
+    day = parse_iso_date_text(payload.get("date"))
+    fix = parse_number(computed.get("fix"))
+    delta_meta = compute_previous_day_delta_metadata(site_dir, day, fix)
+    for key in ("same_as_previous_day", "previous_day_fix", "delta_vs_previous_day", "delta_pct_vs_previous_day"):
+        if selection.get(key) is None:
+            selection[key] = delta_meta.get(key)
+
+    payload["publication_selection"] = selection
+
+
 def refresh_existing_day_payload(
     site_dir: Path,
     templates_dir: Path,
@@ -4035,6 +4140,12 @@ def select_daily_from_intraday(
     else:
         selection_rule = "latest valid intraday attempt in publication window, else latest attempt"
 
+    computed = daily.get("computed", {}) if isinstance(daily.get("computed"), dict) else {}
+    source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
+    street_source_count_used = len([k for k, v in source_medians.items() if parse_number(v) is not None])
+    current_fix = parse_number(computed.get("fix"))
+    delta_meta = compute_previous_day_delta_metadata(site_dir, day, current_fix)
+
     daily["publication_selection"] = {
         "rule": selection_rule,
         "selection_scope": selection_scope,
@@ -4048,6 +4159,11 @@ def select_daily_from_intraday(
         "used_fallback": used_fallback,
         "basis_label": basis_label,
         "selection_reason": selected_reason,
+        "street_source_count_used": street_source_count_used,
+        "same_as_previous_day": delta_meta.get("same_as_previous_day", False),
+        "previous_day_fix": delta_meta.get("previous_day_fix"),
+        "delta_vs_previous_day": delta_meta.get("delta_vs_previous_day"),
+        "delta_pct_vs_previous_day": delta_meta.get("delta_pct_vs_previous_day"),
     }
     return daily
 
@@ -4332,6 +4448,11 @@ def run(args: argparse.Namespace) -> int:
     should_sleep_until(publish_dt, skip_waits=args.skip_waits)
 
     daily = summarize_day(samples, source_configs, day)
+    computed = daily.get("computed", {}) if isinstance(daily.get("computed"), dict) else {}
+    source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
+    street_source_count_used = len([k for k, v in source_medians.items() if parse_number(v) is not None])
+    current_fix = parse_number(computed.get("fix"))
+    delta_meta = compute_previous_day_delta_metadata(site_dir, day, current_fix)
     latest_sampled_at: Optional[dt.datetime] = None
     for entries in samples.values():
         for sample in entries:
@@ -4345,6 +4466,13 @@ def run(args: argparse.Namespace) -> int:
         "used_fallback": False,
         "selected_valid": is_daily_valid(daily),
         "selection_reason": "legacy mode aggregates all configured collection times",
+        "candidate_count": len(sample_times),
+        "valid_candidate_count": len(sample_times) if is_daily_valid(daily) else 0,
+        "street_source_count_used": street_source_count_used,
+        "same_as_previous_day": delta_meta.get("same_as_previous_day", False),
+        "previous_day_fix": delta_meta.get("previous_day_fix"),
+        "delta_vs_previous_day": delta_meta.get("delta_vs_previous_day"),
+        "delta_pct_vs_previous_day": delta_meta.get("delta_pct_vs_previous_day"),
     }
     publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=daily)
     publish_latest(site_dir, daily)
