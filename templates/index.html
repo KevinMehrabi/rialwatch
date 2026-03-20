@@ -102,11 +102,16 @@
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
         <div>
-          <div class="fw-semibold mb-1">Official 7d Trend</div>
-          <div class="text-secondary small mb-2">7-day percent change in Official Commercial USD/IRR.</div>
+          <div class="fw-semibold mb-1">Gold FX Gap</div>
+          <div class="text-secondary small mb-2">Gold-derived FX signal (indicative)</div>
         </div>
-        <div class="h3 mb-0 mt-3">${official_trend_7d_value}</div>
-        <div class="indicator-note">${official_trend_7d_note}</div>
+        <div class="indicator-value-main mt-3">${street_gold_gap_value}</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> ${street_gold_street_value}</div>
+          <div><span class="text-secondary">Gold-implied:</span> ${street_gold_peer_value}</div>
+        </div>
+        <div class="indicator-sparkline mt-2">${street_gold_gap_sparkline}</div>
+        <div class="indicator-note">${street_gold_gap_note}</div>
       </div>
     </div>
   </div>

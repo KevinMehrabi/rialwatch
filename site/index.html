@@ -664,7 +664,7 @@
             </div>
             <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">Light mode</button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-20T16:11:38Z">Last update: 2026-03-20T16:11:38Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-20T21:06:43Z">Last update: 2026-03-20T21:06:43Z</div>
         </div>
       </div>
     </div>
@@ -684,7 +684,7 @@
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
           <div class="h1 mb-1">1,551,250 IRR</div>
-          <div class="text-secondary">Date: 2026-03-20 | As of: 2026-03-20T16:11:38Z</div>
+          <div class="text-secondary">Date: 2026-03-20 | As of: 2026-03-20T21:06:43Z</div>
           <div class="text-secondary small mt-1">Observed sample: 14:05 UTC (fallback from intraday window)</div>
           <div class="text-secondary small mt-1">Freshly selected from today's intraday samples.</div>
           
@@ -775,11 +775,16 @@
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
         <div>
-          <div class="fw-semibold mb-1">Official 7d Trend</div>
-          <div class="text-secondary small mb-2">7-day percent change in Official Commercial USD/IRR.</div>
+          <div class="fw-semibold mb-1">Gold FX Gap</div>
+          <div class="text-secondary small mb-2">Gold-derived FX signal (indicative)</div>
         </div>
-        <div class="h3 mb-0 mt-3">+0.0%</div>
-        <div class="indicator-note">Direction of the official benchmark over the past week.</div>
+        <div class="indicator-value-main mt-3">-4.4%</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> 1,551,250 IRR</div>
+          <div><span class="text-secondary">Gold-implied:</span> 1,483,759 IRR</div>
+        </div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,11.1 24.4,3.0 45.8,39.2 67.2,38.7 88.6,38.8 110.0,39.2 131.4,39.0 152.8,39.0 174.2,39.0 195.6,39.0 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,11.1 24.4,3.0 45.8,39.2 67.2,38.7 88.6,38.8 110.0,39.2 131.4,39.0 152.8,39.0 174.2,39.0 195.6,39.0 217.0,41.0"></polyline></svg></div>
+        <div class="indicator-note">Gold-derived FX signal (indicative)</div>
       </div>
     </div>
   </div>
@@ -1128,7 +1133,7 @@ loadRegionalMarketCards();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-20T16:11:38Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-20T21:06:43Z</div>
     </div>
   </div>
 </div>

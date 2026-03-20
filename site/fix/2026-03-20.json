@@ -1,6 +1,6 @@
 {
   "date": "2026-03-20",
-  "as_of": "2026-03-20T16:11:38Z",
+  "as_of": "2026-03-20T21:06:43Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -457,6 +457,12 @@
       "available": true,
       "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
     },
+    "street_gold_gap_pct": {
+      "label": "Gold FX Gap",
+      "value": -4.350758082306074,
+      "available": true,
+      "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
+    },
     "official_commercial_trend_7d": {
       "label": "Official 7d Trend",
       "value": 0.0,
@@ -536,6 +542,12 @@
         "available": true,
         "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
       },
+      "street_gold_gap_pct": {
+        "label": "Gold FX Gap",
+        "value": -4.350758082306074,
+        "available": true,
+        "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
+      },
       "official_commercial_trend_7d": {
         "label": "Official 7d Trend",
         "value": 0.0,
@@ -553,6 +565,9 @@
     "street_official_gap_pct": 17.06911020684159,
     "street_transfer_gap_pct": -8.588685916322923,
     "street_crypto_gap_pct": 0.49959709911361805,
+    "street_gold_gap_pct": -4.350758082306074,
+    "gold_implied_usd_irr": 1483758.865248227,
+    "gold_usd_per_oz": 3000.0,
     "official_commercial_trend_7d": 0.0,
     "street_confidence_status": "Green",
     "source_unit": "mixed",

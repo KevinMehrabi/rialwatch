@@ -53,6 +53,7 @@ INDICATOR_LABELS: Dict[str, str] = {
     "street_official_gap_pct": "Street-Official Gap",
     "street_transfer_gap_pct": "Street-Transfer Gap",
     "street_crypto_gap_pct": "Street-Crypto Gap",
+    "street_gold_gap_pct": "Gold FX Gap",
     "official_commercial_trend_7d": "Official 7d Trend",
 }
 
@@ -60,8 +61,12 @@ INDICATOR_FORMULAS: Dict[str, str] = {
     "street_official_gap_pct": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100",
     "street_transfer_gap_pct": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100",
     "street_crypto_gap_pct": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100",
+    "street_gold_gap_pct": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100",
     "official_commercial_trend_7d": "7-day percent change of official_commercial_usd_irr",
 }
+
+EMAMI_COIN_GOLD_OZ = 0.235
+DEFAULT_GOLD_USD_PER_OZ = 3000.0
 
 STRICT_CANONICAL_BENCHMARKS = {"official", "regional_transfer"}
 
@@ -237,6 +242,29 @@ def parse_number(value: Any) -> Optional[float]:
         return None
 
     return v
+
+
+def resolve_gold_usd_per_oz(daily: Optional[Dict[str, Any]] = None) -> Optional[float]:
+    if isinstance(daily, dict):
+        normalized = daily.get("normalized_metrics")
+        if isinstance(normalized, dict):
+            parsed = parse_number(normalized.get("gold_usd_per_oz"))
+            if parsed is not None:
+                return parsed
+    env_value = parse_number(os.environ.get("GOLD_USD_PER_OZ"))
+    if env_value is not None:
+        return env_value
+    return DEFAULT_GOLD_USD_PER_OZ
+
+
+def compute_gold_implied_fx(emami_coin_irr: Optional[float], gold_usd_per_oz: Optional[float]) -> Optional[float]:
+    if emami_coin_irr is None or gold_usd_per_oz in (None, 0):
+        return None
+    denom = float(gold_usd_per_oz) * EMAMI_COIN_GOLD_OZ
+    if denom <= 0:
+        return None
+    implied = float(emami_coin_irr) / denom
+    return implied if math.isfinite(implied) and implied > 0 else None
 
 
 def blank_benchmark_values() -> Dict[str, Optional[float]]:
@@ -1954,6 +1982,7 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
     official = benchmark_results.get("official", {})
     transfer = benchmark_results.get("regional_transfer", {})
     crypto = benchmark_results.get("crypto_usdt", {})
+    emami = benchmark_results.get("emami_gold_coin", {})
 
     street_fix = parse_number(street.get("fix"))
     if street.get("withheld") is True:
@@ -1961,6 +1990,7 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
     official_fix = parse_number(official.get("fix"))
     transfer_fix = parse_number(transfer.get("fix"))
     crypto_fix = parse_number(crypto.get("fix"))
+    emami_fix = parse_number(emami.get("fix"))
 
     street_official_gap_pct: Optional[float] = None
     if street_fix is not None and official_fix not in (None, 0):
@@ -1973,6 +2003,12 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
     street_crypto_gap_pct: Optional[float] = None
     if street_fix not in (None, 0) and crypto_fix is not None:
         street_crypto_gap_pct = ((crypto_fix - street_fix) / street_fix) * 100
+
+    gold_usd_per_oz = resolve_gold_usd_per_oz()
+    gold_implied_fx = compute_gold_implied_fx(emami_fix, gold_usd_per_oz)
+    street_gold_gap_pct: Optional[float] = None
+    if street_fix not in (None, 0) and gold_implied_fx is not None:
+        street_gold_gap_pct = ((gold_implied_fx - street_fix) / street_fix) * 100
 
     return {
         "street_official_gap_pct": {
@@ -1992,6 +2028,12 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
             "value": street_crypto_gap_pct,
             "available": street_crypto_gap_pct is not None,
             "formula": INDICATOR_FORMULAS["street_crypto_gap_pct"],
+        },
+        "street_gold_gap_pct": {
+            "label": INDICATOR_LABELS["street_gold_gap_pct"],
+            "value": street_gold_gap_pct,
+            "available": street_gold_gap_pct is not None,
+            "formula": INDICATOR_FORMULAS["street_gold_gap_pct"],
         },
         "official_commercial_trend_7d": {
             "label": INDICATOR_LABELS["official_commercial_trend_7d"],
@@ -2086,6 +2128,15 @@ def extract_daily_gap_value(daily: Dict[str, Any], gap_key: str) -> Optional[flo
         return None
     if computed.get("withheld") is True:
         return None
+
+    indicators = daily.get("indicators", {})
+    if isinstance(indicators, dict):
+        entry = indicators.get(gap_key, {})
+        if isinstance(entry, dict):
+            stored = parse_float(entry.get("value"))
+            if stored is not None:
+                return stored
+
     street_fix = parse_number(computed.get("fix"))
     if street_fix is None or street_fix <= 0:
         return None
@@ -2103,6 +2154,7 @@ def extract_daily_gap_value(daily: Dict[str, Any], gap_key: str) -> Optional[flo
     official_fix = benchmark_fix_value("official")
     transfer_fix = benchmark_fix_value("regional_transfer")
     crypto_fix = benchmark_fix_value("crypto_usdt")
+    emami_fix = benchmark_fix_value("emami_gold_coin")
 
     if gap_key == "street_official_gap_pct":
         if official_fix in (None, 0):
@@ -2116,6 +2168,11 @@ def extract_daily_gap_value(daily: Dict[str, Any], gap_key: str) -> Optional[flo
         if crypto_fix is None:
             return None
         return ((crypto_fix - street_fix) / street_fix) * 100
+    if gap_key == "street_gold_gap_pct":
+        gold_implied_fx = compute_gold_implied_fx(emami_fix, resolve_gold_usd_per_oz(daily))
+        if gold_implied_fx is None:
+            return None
+        return ((gold_implied_fx - street_fix) / street_fix) * 100
     return None
 
 
@@ -2227,6 +2284,12 @@ def build_normalized_market_snapshot(daily: Dict[str, Any], site_dir: Optional[P
     if street_crypto_gap is None and street not in (None, 0) and crypto is not None:
         street_crypto_gap = ((crypto - street) / street) * 100
 
+    street_gold_gap = indicator_value("street_gold_gap_pct")
+    gold_usd_per_oz = resolve_gold_usd_per_oz(daily)
+    gold_implied_fx = compute_gold_implied_fx(emami, gold_usd_per_oz)
+    if street_gold_gap is None and street not in (None, 0) and gold_implied_fx is not None:
+        street_gold_gap = ((gold_implied_fx - street) / street) * 100
+
     official_trend = indicator_value("official_commercial_trend_7d")
     latest_day = parse_iso_date_text(daily.get("date"))
     if official_trend is None and site_dir is not None and latest_day is not None:
@@ -2252,6 +2315,9 @@ def build_normalized_market_snapshot(daily: Dict[str, Any], site_dir: Optional[P
         "street_official_gap_pct": street_official_gap,
         "street_transfer_gap_pct": street_transfer_gap,
         "street_crypto_gap_pct": street_crypto_gap,
+        "street_gold_gap_pct": street_gold_gap,
+        "gold_implied_usd_irr": gold_implied_fx,
+        "gold_usd_per_oz": gold_usd_per_oz,
         "official_commercial_trend_7d": official_trend,
         "street_confidence_status": str(status) if status is not None else None,
         "source_unit": source_unit,
@@ -3091,6 +3157,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     official = benchmark_value_number("official")
     transfer = benchmark_value_number("regional_transfer")
     crypto = benchmark_value_number("crypto_usdt")
+    emami_coin = benchmark_value_number("emami_gold_coin")
+    gold_usd_per_oz = resolve_gold_usd_per_oz(latest)
+    gold_implied_fx = compute_gold_implied_fx(emami_coin, gold_usd_per_oz)
     fallback_indicator_values: Dict[str, Optional[float]] = {
         "street_official_gap_pct": (
             ((street - official) / official) * 100
@@ -3107,6 +3176,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             if crypto is not None and street not in (None, 0)
             else None
         ),
+        "street_gold_gap_pct": (
+            ((gold_implied_fx - street) / street) * 100
+            if gold_implied_fx is not None and street not in (None, 0)
+            else None
+        ),
         "official_commercial_trend_7d": None,
     }
 
@@ -3117,7 +3191,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     if not indicator_map:
         indicator_map = {k: {"value": v} for k, v in fallback_indicator_values.items()}
 
-    street_gap_keys = {"street_official_gap_pct", "street_transfer_gap_pct", "street_crypto_gap_pct"}
+    street_gap_keys = {"street_official_gap_pct", "street_transfer_gap_pct", "street_crypto_gap_pct", "street_gold_gap_pct"}
 
     def indicator_value_number(key: str) -> Optional[float]:
         if key in street_gap_keys:
@@ -3356,8 +3430,6 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         primary_value_html = f'<div class="h1 mb-1">{fmt_rate(fix)} IRR</div>'
         primary_reason_html = ""
 
-    official_trend_note = "Direction of the official benchmark over the past week."
-
     html = render_page(
         templates_dir,
         "index.html",
@@ -3412,8 +3484,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street_crypto_street_value=comparison_value_text(street),
         street_crypto_peer_value=comparison_value_text(crypto),
         street_crypto_gap_sparkline=indicator_gap_sparkline_html("street_crypto_gap_pct"),
-        official_trend_7d_value=indicator_value_or_unavailable("official_commercial_trend_7d"),
-        official_trend_7d_note=official_trend_note,
+        street_gold_gap_value=indicator_value_or_unavailable("street_gold_gap_pct"),
+        street_gold_gap_note="Gold-derived FX signal (indicative)",
+        street_gold_street_value=comparison_value_text(street),
+        street_gold_peer_value=comparison_value_text(gold_implied_fx),
+        street_gold_gap_sparkline=indicator_gap_sparkline_html("street_gold_gap_pct"),
     )
     write_text(site_dir / "index.html", html)
 
@@ -3533,6 +3608,7 @@ def publish_indicator_series(site_dir: Path) -> None:
         "street_official_gap_pct",
         "street_transfer_gap_pct",
         "street_crypto_gap_pct",
+        "street_gold_gap_pct",
     ):
         rows = [
             {"date": day.isoformat(), "value": value}
