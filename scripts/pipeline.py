@@ -3078,25 +3078,35 @@ def publish_status(
             if isinstance(mapping_data, dict):
                 stale_days = mapping_data.get("stale_days", [])
                 if isinstance(stale_days, list) and stale_days:
+                    stale_count = len(stale_days)
+                    stale_label = "day" if stale_count == 1 else "days"
+                    verb = "is" if stale_count == 1 else "are"
                     diagnostics.append(
-                        f"{len(stale_days)} historical day(s) were generated under an older mapping version and are flagged for review."
+                        f"{stale_count} historical {stale_label} {verb} flagged for mapping-audit review."
                     )
         except json.JSONDecodeError:
             diagnostics.append("Methodology mapping audit data could not be read.")
 
     if degraded_count > 0:
-        diagnostics.append("One or more market feeds are currently degraded.")
+        degraded_label = "feed" if degraded_count == 1 else "feeds"
+        degraded_verb = "is" if degraded_count == 1 else "are"
+        diagnostics.append(f"{degraded_count} market {degraded_label} {degraded_verb} currently degraded.")
     if offline_count > 0:
-        diagnostics.append("One or more market feeds are currently offline.")
+        offline_label = "feed" if offline_count == 1 else "feeds"
+        offline_verb = "is" if offline_count == 1 else "are"
+        diagnostics.append(f"{offline_count} market {offline_label} {offline_verb} currently offline.")
 
     methodology = effective_latest.get("methodology", {})
     if isinstance(methodology, dict):
         rebuild_note = methodology.get("rebuild_note")
         if isinstance(rebuild_note, str) and rebuild_note.strip():
-            diagnostics.append("A historical correction note is active for one or more records.")
+            diagnostics.append("Historical correction note is active.")
 
     if missing:
-        diagnostics.append("One or more required configuration items are currently missing.")
+        missing_count = len(missing)
+        missing_label = "item" if missing_count == 1 else "items"
+        missing_verb = "is" if missing_count == 1 else "are"
+        diagnostics.append(f"{missing_count} required configuration {missing_label} {missing_verb} currently missing.")
 
     diagnostics_html = (
         "<ul class=\"mb-0\">" + "".join(f"<li>{html_lib.escape(item)}</li>" for item in diagnostics) + "</ul>"
