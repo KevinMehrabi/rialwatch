@@ -45,7 +45,6 @@
     --rw-toggle-bg: rgba(226, 232, 240, 0.14);
     --rw-toggle-border: rgba(248, 250, 252, 0.24);
     --rw-toggle-hover: rgba(226, 232, 240, 0.2);
-    --rw-toggle-icon-inactive: rgba(203, 213, 225, 0.55);
     --rw-toggle-icon-active: #f8fbff;
   }
 
@@ -73,7 +72,6 @@
     --rw-toggle-bg: rgba(15, 23, 42, 0.04);
     --rw-toggle-border: rgba(15, 23, 42, 0.12);
     --rw-toggle-hover: rgba(15, 23, 42, 0.08);
-    --rw-toggle-icon-inactive: rgba(51, 65, 85, 0.48);
     --rw-toggle-icon-active: #0f172a;
   }
 
@@ -200,39 +198,6 @@
     transition: background 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
   }
 
-  .theme-toggle-icon {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 9px;
-    height: 9px;
-    color: var(--rw-toggle-icon-inactive);
-    opacity: 1;
-    z-index: 3;
-    pointer-events: none;
-    user-select: none;
-    transition: color 200ms ease, opacity 200ms ease;
-  }
-
-  .theme-toggle-icon-moon {
-    right: 5px;
-  }
-
-  .theme-toggle-icon-sun {
-    left: 5px;
-  }
-
-  .theme-toggle-icon svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    stroke: currentColor;
-    stroke-width: 2;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
   .theme-toggle-thumb {
     position: absolute;
     top: 2px;
@@ -247,6 +212,28 @@
       0 1px 1px rgba(15, 23, 42, 0.16);
     transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 220ms ease;
     z-index: 2;
+    display: grid;
+    place-items: center;
+  }
+
+  .theme-toggle-thumb-icon {
+    width: 9px;
+    height: 9px;
+    color: var(--rw-toggle-icon-active);
+    display: block;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .theme-toggle-thumb-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   html[data-theme="dark"] .theme-toggle-thumb {
@@ -255,16 +242,6 @@
 
   html[data-theme="light"] .theme-toggle-thumb {
     transform: translateX(0);
-  }
-
-  html[data-theme="dark"] .theme-toggle-icon-moon {
-    color: var(--rw-toggle-icon-active);
-    opacity: 1;
-  }
-
-  html[data-theme="light"] .theme-toggle-icon-sun {
-    color: var(--rw-toggle-icon-active);
-    opacity: 1;
   }
 
   .theme-toggle:hover .theme-toggle-track {
@@ -756,29 +733,13 @@
             </div>
             <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">
               <span class="theme-toggle-track" aria-hidden="true">
-                <span class="theme-toggle-icon theme-toggle-icon-sun">
-                  <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-                    <circle cx="12" cy="12" r="4.25"></circle>
-                    <path d="M12 2.75v2.25"></path>
-                    <path d="M12 19v2.25"></path>
-                    <path d="M21.25 12H19"></path>
-                    <path d="M5 12H2.75"></path>
-                    <path d="M18.35 5.65l-1.6 1.6"></path>
-                    <path d="M7.25 16.75l-1.6 1.6"></path>
-                    <path d="M18.35 18.35l-1.6-1.6"></path>
-                    <path d="M7.25 7.25l-1.6-1.6"></path>
-                  </svg>
+                <span class="theme-toggle-thumb">
+                  <span class="theme-toggle-thumb-icon" id="theme-toggle-state-icon" aria-hidden="true"></span>
                 </span>
-                <span class="theme-toggle-icon theme-toggle-icon-moon">
-                  <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-                    <path d="M20.45 14.7A8.65 8.65 0 1 1 9.3 3.55a7.1 7.1 0 1 0 11.15 11.15z"></path>
-                  </svg>
-                </span>
-                <span class="theme-toggle-thumb"></span>
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T17:15:26Z">Last update: 2026-03-21T17:15:26Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T17:20:14Z">Last update: 2026-03-21T17:20:14Z</div>
         </div>
       </div>
     </div>
@@ -832,7 +793,7 @@
   </section>
 </div>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-21T17:15:26Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-21T17:20:14Z</div>
     </div>
   </div>
 </div>
@@ -842,6 +803,9 @@
   const root = document.documentElement;
   const toggle = document.getElementById('theme-toggle');
   const logo = document.getElementById('site-logo');
+  const toggleStateIcon = document.getElementById('theme-toggle-state-icon');
+  const sunIconSvg = '<svg viewBox="0 0 24 24" role="img" aria-hidden="true"><circle cx="12" cy="12" r="4.25"></circle><path d="M12 2.75v2.25"></path><path d="M12 19v2.25"></path><path d="M21.25 12H19"></path><path d="M5 12H2.75"></path><path d="M18.35 5.65l-1.6 1.6"></path><path d="M7.25 16.75l-1.6 1.6"></path><path d="M18.35 18.35l-1.6-1.6"></path><path d="M7.25 7.25l-1.6-1.6"></path></svg>';
+  const moonIconSvg = '<svg viewBox="0 0 24 24" role="img" aria-hidden="true"><path d="M20.45 14.7A8.65 8.65 0 1 1 9.3 3.55a7.1 7.1 0 1 0 11.15 11.15z"></path></svg>';
   const applyTheme = (theme) => {
     root.setAttribute('data-theme', theme);
     try {
@@ -859,6 +823,9 @@
       toggle.setAttribute('aria-label', nextLabel);
       toggle.setAttribute('title', nextLabel);
       toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    }
+    if (toggleStateIcon) {
+      toggleStateIcon.innerHTML = theme === 'light' ? sunIconSvg : moonIconSvg;
     }
     document.dispatchEvent(new CustomEvent('rw-theme-change', { detail: { theme } }));
   };
