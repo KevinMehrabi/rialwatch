@@ -173,8 +173,8 @@
     background: transparent;
     color: var(--rw-text-primary);
     padding: 0;
-    width: 84px;
-    height: 40px;
+    width: 90px;
+    height: 42px;
     display: inline-block;
     cursor: pointer;
     transition: opacity 120ms ease;
@@ -199,26 +199,37 @@
     position: absolute;
     top: 50%;
     transform: translate(-50%, -50%);
-    font-size: 1.05rem;
-    line-height: 1;
     color: var(--rw-text-muted);
     z-index: 1;
     pointer-events: none;
     user-select: none;
+    width: 19px;
+    height: 19px;
   }
 
   .theme-toggle-symbol-sun {
-    left: 22px;
+    left: 24px;
   }
 
   .theme-toggle-symbol-moon {
-    left: 62px;
+    left: 66px;
+  }
+
+  .theme-toggle-symbol svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   .theme-toggle-knob {
     position: relative;
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     top: 2px;
     left: 2px;
     border-radius: 999px;
@@ -233,14 +244,14 @@
   }
 
   html[data-theme="light"] .theme-toggle-knob {
-    transform: translateX(44px);
+    transform: translateX(48px);
   }
 
-  html[data-theme="light"] .theme-toggle-sun {
+  html[data-theme="light"] .theme-toggle-symbol-sun {
     color: var(--rw-text-strong);
   }
 
-  html[data-theme="dark"] .theme-toggle-moon {
+  html[data-theme="dark"] .theme-toggle-symbol-moon {
     color: var(--rw-text-strong);
   }
 
@@ -726,13 +737,29 @@
             </div>
             <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">
               <span class="theme-toggle-switch" aria-hidden="true">
-                <span class="theme-toggle-symbol theme-toggle-sun">☀</span>
-                <span class="theme-toggle-symbol theme-toggle-moon">☾</span>
+                <span class="theme-toggle-symbol theme-toggle-symbol-sun">
+                  <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4.25"></circle>
+                    <path d="M12 2.75v2.25"></path>
+                    <path d="M12 19v2.25"></path>
+                    <path d="M21.25 12H19"></path>
+                    <path d="M5 12H2.75"></path>
+                    <path d="M18.35 5.65l-1.6 1.6"></path>
+                    <path d="M7.25 16.75l-1.6 1.6"></path>
+                    <path d="M18.35 18.35l-1.6-1.6"></path>
+                    <path d="M7.25 7.25l-1.6-1.6"></path>
+                  </svg>
+                </span>
+                <span class="theme-toggle-symbol theme-toggle-symbol-moon">
+                  <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                    <path d="M20.45 14.7A8.65 8.65 0 1 1 9.3 3.55a7.1 7.1 0 1 0 11.15 11.15z"></path>
+                  </svg>
+                </span>
                 <span class="theme-toggle-knob"></span>
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T16:29:45Z">Last update: 2026-03-21T16:29:45Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T16:37:41Z">Last update: 2026-03-21T16:37:41Z</div>
         </div>
       </div>
     </div>
@@ -752,7 +779,7 @@
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
           <div class="h1 mb-1">1,548,250 IRR</div>
-          <div class="text-secondary">Date: 2026-03-21 | As of: 2026-03-21T16:29:45Z</div>
+          <div class="text-secondary">Date: 2026-03-21 | As of: 2026-03-21T16:37:41Z</div>
           <div class="text-secondary small mt-1">Observed sample: 14:12 UTC (fallback from intraday window)</div>
           <div class="text-secondary small mt-1">Freshly selected from today's intraday samples.</div>
           
@@ -1201,7 +1228,7 @@ loadRegionalMarketCards();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-21T16:29:45Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-21T16:37:41Z</div>
     </div>
   </div>
 </div>
