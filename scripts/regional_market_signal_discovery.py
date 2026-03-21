@@ -165,6 +165,37 @@ SOURCE_TYPE_WEIGHTS = {
     "unknown": 0.55,
 }
 
+MANUAL_TELEGRAM_SEEDS: Tuple[Dict[str, str], ...] = (
+    {
+        "handle": "berlin_pay",
+        "title": "Berlin Pay",
+        "city_guess": "Germany",
+        "source_type_guess": "regional_market_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "hmtransfer",
+        "title": "HmTransfer",
+        "city_guess": "Germany",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "hamburg_euro",
+        "title": "Hamburg Euro",
+        "city_guess": "Hamburg",
+        "source_type_guess": "regional_market_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "koln_euro",
+        "title": "Koln Euro",
+        "city_guess": "Germany",
+        "source_type_guess": "regional_market_channel",
+        "origin": "manual_germany_seed",
+    },
+)
+
 
 @dataclass
 class DiscoverySource:
@@ -515,6 +546,27 @@ def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySour
     return seeded
 
 
+def seed_from_manual_handles() -> Dict[str, DiscoverySource]:
+    seeded: Dict[str, DiscoverySource] = {}
+    for entry in MANUAL_TELEGRAM_SEEDS:
+        handle = str(entry.get("handle", "")).strip().lower()
+        if not handle:
+            continue
+        key = f"telegram:{handle}"
+        seeded[key] = DiscoverySource(
+            key=key,
+            platform="telegram",
+            url=f"https://t.me/s/{handle}",
+            handle_or_url=handle,
+            origins={str(entry.get("origin", "manual_seed"))},
+            seed_title=str(entry.get("title", "")).strip(),
+            country_guess="Germany",
+            city_guess=str(entry.get("city_guess", "Germany")).strip() or "Germany",
+            source_type_guess=str(entry.get("source_type_guess", "unknown")).strip() or "unknown",
+        )
+    return seeded
+
+
 def extract_page_title(page: str) -> str:
     match = re.search(r"<title[^>]*>(.*?)</title>", page, flags=re.IGNORECASE | re.DOTALL)
     return clean_text(match.group(1)) if match else ""
@@ -823,11 +875,39 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
     cleaned, outliers_removed = remove_mad_outliers(records)
     # Diagnostics baskets should not collapse to a single source only because MAD
     # pruning removed one locality-specific stream. Keep diversity when possible.
+    by_source: Dict[str, List[BasketRecord]] = {}
+    for rec in records:
+        by_source.setdefault(rec.handle, []).append(rec)
     original_sources = {rec.handle for rec in records}
     cleaned_sources = {rec.handle for rec in cleaned}
     if len(original_sources) >= 2 and len(cleaned_sources) < 2:
         cleaned = list(records)
         outliers_removed = 0
+    elif len(original_sources) >= 3 and len(cleaned_sources) < 3 and cleaned:
+        # Keep one representative from missing sources so locality-level diagnostics
+        # still reflect multi-source coverage even under strong MAD trimming.
+        center = statistics.median([rec.normalized_rate_rial for rec in cleaned])
+        missing_sources = [handle for handle in sorted(original_sources) if handle not in cleaned_sources]
+        added = 0
+        for handle in missing_sources:
+            candidates = by_source.get(handle, [])
+            if not candidates:
+                continue
+            representative = min(
+                candidates,
+                key=lambda rec: (
+                    abs(rec.normalized_rate_rial - center),
+                    -rec.overall_quality,
+                    -rec.freshness_score,
+                ),
+            )
+            cleaned.append(representative)
+            cleaned_sources.add(handle)
+            added += 1
+            if len(cleaned_sources) >= 3:
+                break
+        if added > 0:
+            outliers_removed = max(0, outliers_removed - added)
     if not cleaned:
         return base
 
@@ -881,7 +961,7 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
 
     spread_pct = ((weighted_rate - benchmark_value) / benchmark_value) * 100.0 if benchmark_value > 0 else None
     spread_abs = abs(spread_pct) if spread_pct is not None else 0.0
-    if publishable and dominant_category == "aggregator" and spread_abs > 35.0:
+    if publishable and spread_abs > 35.0 and len(source_weights) < 4:
         publishable = False
         suppression_reason = "extreme_divergence"
     top_sources = sorted(source_weights.items(), key=lambda item: (-item[1], item[0]))[:3]
@@ -1011,8 +1091,10 @@ def main() -> int:
     )
     existing_seeded = seed_from_existing_registry(channel_rows)
     germany_hint_seeded = seed_from_quote_message_samples(survey_dir)
+    manual_seeded = seed_from_manual_handles()
     merge_discovery_sources(discovered_sources, existing_seeded)
     merge_discovery_sources(discovered_sources, germany_hint_seeded)
+    merge_discovery_sources(discovered_sources, manual_seeded)
 
     ordered_sources = sorted(discovered_sources.values(), key=lambda item: (item.platform, item.url))
     if args.max_discovered_sources > 0:

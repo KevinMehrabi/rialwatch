@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-03-21T20:24:59Z",
+  "generated_at": "2026-03-21T21:47:48Z",
   "diagnostics_only": true,
   "cards": [
     {
       "basket_name": "Iran",
       "signal_type_used": "exchange_shop",
-      "weighted_rate": 1427637.12,
-      "median_rate": 1162500.0,
-      "spread_vs_benchmark_pct": -1.537,
-      "usable_record_count": 170,
-      "contributing_source_count": 22,
-      "basket_confidence": 63.68,
+      "weighted_rate": 1436527.62,
+      "median_rate": 1172682.5,
+      "spread_vs_benchmark_pct": -0.9238,
+      "usable_record_count": 138,
+      "contributing_source_count": 16,
+      "basket_confidence": 63.93,
       "freshness_status": "unknown",
       "dispersion_level": "high",
       "display_state": "publish",
@@ -21,8 +21,8 @@
       "publishable": true,
       "render_on_homepage": true,
       "status_text": "Diagnostics signal available (exchange shop)",
-      "rate_text": "1,427,637 IRR",
-      "spread_text": "-1.54%"
+      "rate_text": "1,436,528 IRR",
+      "spread_text": "-0.92%"
     },
     {
       "basket_name": "UAE",
@@ -93,12 +93,12 @@
     {
       "basket_name": "UK",
       "signal_type_used": "exchange_shop",
-      "weighted_rate": 1828150.98,
+      "weighted_rate": 1858635.05,
       "median_rate": 1860000.0,
-      "spread_vs_benchmark_pct": 26.0862,
-      "usable_record_count": 60,
-      "contributing_source_count": 8,
-      "basket_confidence": 89.56,
+      "spread_vs_benchmark_pct": 28.1886,
+      "usable_record_count": 18,
+      "contributing_source_count": 3,
+      "basket_confidence": 95.13,
       "freshness_status": "unknown",
       "dispersion_level": "low",
       "display_state": "publish",
@@ -109,8 +109,8 @@
       "publishable": true,
       "render_on_homepage": true,
       "status_text": "Diagnostics signal available (exchange shop)",
-      "rate_text": "1,828,151 IRR",
-      "spread_text": "+26.09%"
+      "rate_text": "1,858,635 IRR",
+      "spread_text": "+28.19%"
     },
     {
       "basket_name": "Iraq",
@@ -136,30 +136,30 @@
     },
     {
       "basket_name": "Germany",
-      "signal_type_used": "aggregator",
-      "weighted_rate": 779064.39,
-      "median_rate": 830000.0,
-      "spread_vs_benchmark_pct": -46.2685,
-      "usable_record_count": 18,
-      "contributing_source_count": 2,
-      "basket_confidence": 63.05,
+      "signal_type_used": "settlement_channel",
+      "weighted_rate": 1671949.44,
+      "median_rate": 1700000.0,
+      "spread_vs_benchmark_pct": 15.3131,
+      "usable_record_count": 44,
+      "contributing_source_count": 5,
+      "basket_confidence": 76.65,
       "freshness_status": "unknown",
-      "dispersion_level": "high",
-      "display_state": "monitor",
-      "suppression_reason": "extreme_divergence",
+      "dispersion_level": "medium",
+      "display_state": "publish",
+      "suppression_reason": "",
       "source_artifact": "exchange_shop_baskets_enriched",
       "alignment_label": "Divergent",
-      "signal_label": "aggregator",
-      "publishable": false,
+      "signal_label": "settlement channel",
+      "publishable": true,
       "render_on_homepage": true,
-      "status_text": "Monitoring (extreme divergence)",
-      "rate_text": "779,064 IRR",
-      "spread_text": "-46.27%"
+      "status_text": "Diagnostics signal available (settlement channel)",
+      "rate_text": "1,671,949 IRR",
+      "spread_text": "+15.31%"
     }
   ],
   "summary": {
-    "publish_count": 6,
-    "monitor_count": 1,
+    "publish_count": 7,
+    "monitor_count": 0,
     "hide_count": 0
   },
   "source_artifacts": {

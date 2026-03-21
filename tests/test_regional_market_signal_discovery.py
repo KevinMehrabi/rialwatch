@@ -126,6 +126,91 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
             self.assertEqual(source.country_guess, "Germany")
             self.assertIn("quote_sample_hint", source.origins)
 
+    def test_seed_from_manual_handles_includes_berlin_pay(self) -> None:
+        seeded = regional.seed_from_manual_handles()
+        self.assertIn("telegram:berlin_pay", seeded)
+        self.assertIn("telegram:hmtransfer", seeded)
+        source = seeded["telegram:berlin_pay"]
+        self.assertEqual(source.country_guess, "Germany")
+        self.assertIn("manual_germany_seed", source.origins)
+        hmtransfer = seeded["telegram:hmtransfer"]
+        self.assertEqual(hmtransfer.source_type_guess, "settlement_channel")
+        self.assertIn("manual_germany_seed", hmtransfer.origins)
+
+    def test_summarize_enriched_basket_keeps_min_three_source_coverage(self) -> None:
+        records = []
+        for offset in (0.0, 1200.0, -900.0, 700.0):
+            records.append(
+                regional.BasketRecord(
+                    handle="source_a",
+                    title="A",
+                    locality="Germany",
+                    source_category="regional_market_channel",
+                    source_priority="regional_discovery",
+                    likely_individual_shop=False,
+                    channel_type_guess="regional_market_channel",
+                    normalized_rate_rial=1_550_000.0 + offset,
+                    quote_basis="midpoint",
+                    overall_quality=76.0,
+                    freshness_score=78.0,
+                    structure_score=76.0,
+                    directness_score=70.0,
+                    timestamp_iso="2026-03-21T12:00:00Z",
+                    dedup_keep=True,
+                    duplication_flag="none",
+                    from_new_p1=False,
+                    channel_readiness_score=74.0,
+                )
+            )
+        for offset in (0.0, 900.0, -800.0):
+            records.append(
+                regional.BasketRecord(
+                    handle="source_b",
+                    title="B",
+                    locality="Germany",
+                    source_category="regional_market_channel",
+                    source_priority="regional_discovery",
+                    likely_individual_shop=False,
+                    channel_type_guess="regional_market_channel",
+                    normalized_rate_rial=1_560_000.0 + offset,
+                    quote_basis="midpoint",
+                    overall_quality=74.0,
+                    freshness_score=74.0,
+                    structure_score=74.0,
+                    directness_score=68.0,
+                    timestamp_iso="2026-03-21T12:00:00Z",
+                    dedup_keep=True,
+                    duplication_flag="none",
+                    from_new_p1=False,
+                    channel_readiness_score=72.0,
+                )
+            )
+        # Third source is an outlier candidate that MAD trimming can remove.
+        records.append(
+            regional.BasketRecord(
+                handle="source_c",
+                title="C",
+                locality="Germany",
+                source_category="aggregator",
+                source_priority="regional_discovery",
+                likely_individual_shop=False,
+                channel_type_guess="aggregator",
+                normalized_rate_rial=2_450_000.0,
+                quote_basis="midpoint",
+                overall_quality=65.0,
+                freshness_score=62.0,
+                structure_score=65.0,
+                directness_score=55.0,
+                timestamp_iso="2026-03-21T12:00:00Z",
+                dedup_keep=True,
+                duplication_flag="none",
+                from_new_p1=False,
+                channel_readiness_score=60.0,
+            )
+        )
+        row = regional.summarize_enriched_basket("Germany", records, benchmark_value=1_449_922.07)
+        self.assertGreaterEqual(row["contributing_source_count"], 3)
+
 
 if __name__ == "__main__":
     unittest.main()

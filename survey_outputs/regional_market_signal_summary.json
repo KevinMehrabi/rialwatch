@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-03-21T19:37:28Z",
-  "new_regional_signal_sources_discovered": 1,
-  "existing_registry_signal_sources_used": 56,
+  "generated_at": "2026-03-21T21:47:48Z",
+  "new_regional_signal_sources_discovered": 5,
+  "existing_registry_signal_sources_used": 31,
   "which_locality_baskets_gained_usable_data": [
     "Afghanistan",
     "Germany"
@@ -14,7 +14,7 @@
     "UAE": false,
     "Iraq": false,
     "Afghanistan": false,
-    "Germany": false
+    "Germany": true
   },
   "top_sources_contributing_to_each_improved_basket": {
     "Afghanistan": [
@@ -23,8 +23,9 @@
       "ppellehh"
     ],
     "Germany": [
-      "frankfurt_euro",
-      "eurobazaar"
+      "hmtransfer",
+      "berlin_pay",
+      "frankfurt_euro"
     ]
   },
   "search_debug": {
@@ -61,7 +62,7 @@
       },
       "site:t.me نرخ دلار سلیمانیه": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 2
       },
       "site:t.me نرخ دلار دبی": {
         "group": "persian",
@@ -174,5 +175,5 @@
     }
   },
   "queries_run": 35,
-  "sources_crawled": 125
+  "sources_crawled": 90
 }
