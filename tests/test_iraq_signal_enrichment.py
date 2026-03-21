@@ -1,4 +1,7 @@
 import unittest
+import json
+import tempfile
+from pathlib import Path
 
 from scripts import iraq_signal_enrichment as enrichment
 
@@ -133,6 +136,52 @@ class IraqSignalEnrichmentTests(unittest.TestCase):
         self.assertEqual(summary["recommended_display_state"], "publish")
         self.assertGreaterEqual(summary["contributing_source_count"], 2)
         self.assertEqual(summary["usable_record_count"], 4)
+
+    def test_seed_candidates_from_quote_samples_adds_iraq_hint_channels(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            quote_samples_path = Path(tmp_dir) / "quote_message_samples.json"
+            quote_samples_path.write_text(
+                json.dumps(
+                    [
+                        {
+                            "handle": "live_rate_ir",
+                            "title": "Live Rate",
+                            "public_url": "https://t.me/s/live_rate_ir",
+                            "channel_type_guess": "market_price_channel",
+                            "quote_message_records": [
+                                {"message_text_sample": "سلیمانیه 154,500"},
+                                {"message_text_sample": "Iraq 154800"},
+                            ],
+                        },
+                        {
+                            "handle": "not_iraq",
+                            "title": "No Iraq",
+                            "public_url": "https://t.me/s/not_iraq",
+                            "channel_type_guess": "market_price_channel",
+                            "quote_message_records": [
+                                {"message_text_sample": "تهران 144,000"},
+                            ],
+                        },
+                    ],
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            channel_rows = [
+                {"handle": "live_rate_ir", "public_url": "https://t.me/s/live_rate_ir", "parseable_score": "71"},
+                {"handle": "not_iraq", "public_url": "https://t.me/s/not_iraq", "parseable_score": "50"},
+            ]
+            seeded = enrichment.seed_candidates_from_quote_samples(
+                quote_samples_path=quote_samples_path,
+                channel_rows=channel_rows,
+                existing_handles=[],
+            )
+            handles = {row.handle for row in seeded}
+            self.assertIn("live_rate_ir", handles)
+            self.assertNotIn("not_iraq", handles)
+            seeded_row = next(row for row in seeded if row.handle == "live_rate_ir")
+            self.assertEqual(seeded_row.source_type, "regional_market_channel")
+            self.assertGreaterEqual(seeded_row.quote_density_score, 59.0)
 
 
 if __name__ == "__main__":

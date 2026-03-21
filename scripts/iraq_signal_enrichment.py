@@ -414,6 +414,101 @@ def load_csv(path: Path) -> List[Dict[str, str]]:
         return list(csv.DictReader(fh))
 
 
+def channel_type_to_source_type(channel_type: str) -> str:
+    lowered = str(channel_type or "").strip().lower()
+    if lowered in {"dealer_network_channel", "market_price_channel", "regional_market_channel"}:
+        return "regional_market_channel"
+    if lowered in {"individual_exchange_shop", "exchange_shop"}:
+        return "exchange_shop"
+    if lowered == "aggregator":
+        return "aggregator"
+    return "unknown"
+
+
+def seed_candidates_from_quote_samples(
+    quote_samples_path: Path,
+    channel_rows: Sequence[Dict[str, str]],
+    existing_handles: Sequence[str],
+) -> List[CandidateSource]:
+    if not quote_samples_path.exists():
+        return []
+    try:
+        payload = json.loads(quote_samples_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+    if not isinstance(payload, list):
+        return []
+
+    channel_lookup = {
+        str(row.get("handle", "")).strip().lower(): row
+        for row in channel_rows
+        if str(row.get("handle", "")).strip()
+    }
+    existing = {handle.strip().lower() for handle in existing_handles if handle}
+    iraq_tokens = tuple(alias.lower() for alias in IRAQ_ALIASES)
+    selected: Dict[str, CandidateSource] = {}
+
+    for entry in payload:
+        if not isinstance(entry, dict):
+            continue
+        handle = str(entry.get("handle", "")).strip().lower()
+        if not handle:
+            continue
+        records = entry.get("quote_message_records", [])
+        if not isinstance(records, list) or not records:
+            continue
+
+        iraq_hint_count = 0
+        for rec in records:
+            if not isinstance(rec, dict):
+                continue
+            text = normalize_text(str(rec.get("message_text_sample", ""))).lower()
+            cities = [str(city).strip().lower() for city in (rec.get("city_mentions") or [])]
+            if any(token in text for token in iraq_tokens) or any(city in {"sulaymaniyah", "iraq"} for city in cities):
+                iraq_hint_count += 1
+
+        if iraq_hint_count < 2 and handle not in existing:
+            continue
+
+        row = channel_lookup.get(handle, {})
+        channel_type = str(entry.get("channel_type_guess", "")).strip() or str(row.get("channel_type_guess", "")).strip()
+        source_type = channel_type_to_source_type(channel_type)
+        title = str(entry.get("title", "")).strip() or str(row.get("title", "")).strip() or handle
+        public_url = normalize_public_url(
+            handle,
+            str(entry.get("public_url", "")).strip() or str(row.get("public_url", "")).strip() or f"https://t.me/s/{handle}",
+        )
+        density_floor = parse_float(row.get("parseable_score"), 40.0)
+        quote_density = min(100.0, max(density_floor, 45.0 + (iraq_hint_count * 7.0)))
+        selected[handle] = CandidateSource(
+            handle=handle,
+            title=title,
+            public_url=public_url,
+            source_type=source_type,
+            quote_density_score=quote_density,
+        )
+
+    return sorted(selected.values(), key=lambda item: item.handle)
+
+
+def merge_candidates(primary: Sequence[CandidateSource], extra: Sequence[CandidateSource]) -> List[CandidateSource]:
+    merged: Dict[str, CandidateSource] = {item.handle: item for item in primary}
+    for item in extra:
+        incumbent = merged.get(item.handle)
+        if incumbent is None:
+            merged[item.handle] = item
+            continue
+        if incumbent.source_type in {"unknown", "aggregator"} and item.source_type not in {"unknown", "aggregator"}:
+            incumbent.source_type = item.source_type
+        if item.quote_density_score > incumbent.quote_density_score:
+            incumbent.quote_density_score = item.quote_density_score
+        if not incumbent.title or incumbent.title == incumbent.handle:
+            incumbent.title = item.title
+        if incumbent.public_url.endswith(f"/{incumbent.handle}") and item.public_url and item.public_url != incumbent.public_url:
+            incumbent.public_url = item.public_url
+    return sorted(merged.values(), key=lambda item: item.handle)
+
+
 def select_candidates(candidate_rows: Sequence[Dict[str, str]], existing_iraq_handles: Sequence[str]) -> List[CandidateSource]:
     existing = {handle.strip().lower() for handle in existing_iraq_handles if handle}
     selected: Dict[str, CandidateSource] = {}
@@ -809,10 +904,21 @@ def main() -> int:
     benchmark_value = benchmark_rate(benchmark_json.parent)
     existing_rows = load_csv(records_csv)
     candidate_rows = load_csv(candidates_csv)
+    survey_dir = records_csv.parent
+    channel_rows: List[Dict[str, str]] = []
+    channel_survey_csv = survey_dir / "channel_survey.csv"
+    if channel_survey_csv.exists():
+        channel_rows = load_csv(channel_survey_csv)
 
     existing_enriched = enrich_from_existing_records(existing_rows)
     existing_iraq_handles = sorted({row.handle for row in existing_enriched})
     candidates = select_candidates(candidate_rows, existing_iraq_handles)
+    sample_seeded_candidates = seed_candidates_from_quote_samples(
+        quote_samples_path=survey_dir / "quote_message_samples.json",
+        channel_rows=channel_rows,
+        existing_handles=existing_iraq_handles,
+    )
+    candidates = merge_candidates(candidates, sample_seeded_candidates)
 
     fetched_records, fetch_errors = fetch_enriched_iraq_records(
         candidates=candidates,

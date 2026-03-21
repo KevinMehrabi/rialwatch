@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-21T19:37:28Z",
+  "generated_at": "2026-03-21T20:24:59Z",
   "diagnostics_only": true,
   "cards": [
     {
@@ -115,24 +115,24 @@
     {
       "basket_name": "Iraq",
       "signal_type_used": "regional_market_channel",
-      "weighted_rate": 1545444.35,
-      "median_rate": 1544750.0,
-      "spread_vs_benchmark_pct": 6.5881,
-      "usable_record_count": 14,
-      "contributing_source_count": 1,
-      "basket_confidence": 80.21,
-      "freshness_status": "fresh",
-      "dispersion_level": "low",
-      "display_state": "monitor",
-      "suppression_reason": "limited_coverage",
+      "weighted_rate": 1482794.19,
+      "median_rate": 1545500.0,
+      "spread_vs_benchmark_pct": 2.2672,
+      "usable_record_count": 20,
+      "contributing_source_count": 2,
+      "basket_confidence": 67.17,
+      "freshness_status": "recent",
+      "dispersion_level": "high",
+      "display_state": "publish",
+      "suppression_reason": "",
       "source_artifact": "regional_fx_board_basket_review",
       "alignment_label": "Mild divergence",
-      "signal_label": "Sulaymaniyah market (monitoring)",
-      "publishable": false,
+      "signal_label": "Sulaymaniyah market signal",
+      "publishable": true,
       "render_on_homepage": true,
-      "status_text": "Monitoring (limited coverage)",
-      "rate_text": "1,545,444 IRR",
-      "spread_text": "+6.59%"
+      "status_text": "Diagnostics signal available (regional market channel)",
+      "rate_text": "1,482,794 IRR",
+      "spread_text": "+2.27%"
     },
     {
       "basket_name": "Germany",
@@ -158,8 +158,8 @@
     }
   ],
   "summary": {
-    "publish_count": 5,
-    "monitor_count": 2,
+    "publish_count": 6,
+    "monitor_count": 1,
     "hide_count": 0
   },
   "source_artifacts": {
