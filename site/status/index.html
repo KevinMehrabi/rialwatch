@@ -173,10 +173,11 @@
     background: var(--rw-toggle-bg);
     color: var(--rw-text-primary);
     border-radius: 999px;
-    padding: 6px 12px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    line-height: 1;
+    padding: 4px 8px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     cursor: pointer;
     transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
   }
@@ -184,6 +185,50 @@
   .theme-toggle:hover,
   .theme-toggle:focus {
     background: var(--rw-toggle-hover);
+    color: var(--rw-text-strong);
+  }
+
+  .theme-toggle-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+    color: var(--rw-text-muted);
+    user-select: none;
+  }
+
+  .theme-toggle-track {
+    position: relative;
+    width: 36px;
+    height: 18px;
+    border-radius: 999px;
+    border: 1px solid var(--rw-toggle-border);
+    background: var(--rw-surface-3);
+    flex: 0 0 auto;
+  }
+
+  .theme-toggle-knob {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--rw-link-hover);
+    transition: transform 140ms ease;
+  }
+
+  html[data-theme="dark"] .theme-toggle-knob {
+    transform: translateX(18px);
+  }
+
+  html[data-theme="light"] .theme-toggle-knob {
+    transform: translateX(0);
+  }
+
+  html[data-theme="light"] .theme-toggle-sun {
+    color: var(--rw-text-strong);
+  }
+
+  html[data-theme="dark"] .theme-toggle-moon {
     color: var(--rw-text-strong);
   }
 
@@ -662,9 +707,13 @@
               <a href="/methodology/">Methodology</a>
               <a href="/status/">Status</a>
             </div>
-            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">Light mode</button>
+            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">
+              <span class="theme-toggle-icon theme-toggle-sun" aria-hidden="true">☀</span>
+              <span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-knob"></span></span>
+              <span class="theme-toggle-icon theme-toggle-moon" aria-hidden="true">🌙</span>
+            </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-20T21:06:43Z">Last update: 2026-03-20T21:06:43Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T16:25:09Z">Last update: 2026-03-21T16:25:09Z</div>
         </div>
       </div>
     </div>
@@ -680,11 +729,11 @@
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h3 class="card-title mb-0">System Overview</h3>
-      <span class="text-secondary small">Status snapshot: Mar 20, 2026 · 21:06 UTC</span>
+      <span class="text-secondary small">Status snapshot: Mar 21, 2026 · 16:25 UTC</span>
     </div>
     <div class="status-overview-grid">
       <div class="status-overview-card"><div class="text-secondary small">Benchmark Pipeline</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Benchmark pipeline is operating normally.</div></div>
-<div class="status-overview-card"><div class="text-secondary small">Latest Publication</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Published 2026-03-20 benchmark. 1 valid intraday candidate.</div></div>
+<div class="status-overview-card"><div class="text-secondary small">Latest Publication</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Published 2026-03-21 benchmark. 2 valid intraday candidates.</div></div>
 <div class="status-overview-card"><div class="text-secondary small">Source Collection</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">4/4 sources online.</div></div>
 <div class="status-overview-card"><div class="text-secondary small">Site Deployment</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Dashboard deployment is online.</div></div>
     </div>
@@ -705,10 +754,10 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Regional Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 20, 2026, 14:05 UTC</td><td>Served via backup market feed.</td></tr>
-<tr><td>Street Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 20, 2026, 14:05 UTC</td><td>Collecting normally.</td></tr>
-<tr><td>Street Market Feed (Secondary)</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 20, 2026, 14:05 UTC</td><td>Collecting normally.</td></tr>
-<tr><td>Commercial Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 20, 2026, 14:05 UTC</td><td>source excluded from street benchmark universe</td></tr>
+          <tr><td>Regional Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 21, 2026, 14:12 UTC</td><td>Served via backup market feed.</td></tr>
+<tr><td>Street Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 21, 2026, 14:12 UTC</td><td>Collecting normally.</td></tr>
+<tr><td>Street Market Feed (Secondary)</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 21, 2026, 14:12 UTC</td><td>Collecting normally.</td></tr>
+<tr><td>Commercial Market Feed</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>Mar 21, 2026, 14:12 UTC</td><td>source excluded from street benchmark universe</td></tr>
         </tbody>
       </table>
     </div>
@@ -721,7 +770,7 @@
     <div class="row g-3">
       <div class="col-md-3">
         <div class="text-secondary small">Latest Benchmark Value</div>
-        <div class="h4 mb-0">1,551,250 IRR</div>
+        <div class="h4 mb-0">1,548,250 IRR</div>
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Publication State</div>
@@ -729,14 +778,14 @@
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Last Update</div>
-        <div class="h5 mb-0">Mar 20, 2026 · 21:06 UTC</div>
+        <div class="h5 mb-0">Mar 21, 2026 · 16:25 UTC</div>
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Withhold Reason</div>
         <div class="h5 mb-0">None</div>
       </div>
     </div>
-    <div class="text-secondary small mt-2">1 valid intraday candidate · 2 street sources used · Delta vs prior day +1.2%</div>
+    <div class="text-secondary small mt-2">2 valid intraday candidates · 2 street sources used · Delta vs prior day -0.2%</div>
   </div>
 </section>
 
@@ -748,7 +797,7 @@
   </div>
 </section>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-20T21:06:43Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-21T16:25:09Z</div>
     </div>
   </div>
 </div>
@@ -771,9 +820,10 @@
       logo.src = theme === 'light' ? lightLogo : darkLogo;
     }
     if (toggle) {
-      const nextLabel = theme === 'light' ? 'Dark mode' : 'Light mode';
-      toggle.textContent = nextLabel;
-      toggle.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
+      const nextLabel = theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+      toggle.setAttribute('aria-label', nextLabel);
+      toggle.setAttribute('title', nextLabel);
+      toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
     }
     document.dispatchEvent(new CustomEvent('rw-theme-change', { detail: { theme } }));
   };

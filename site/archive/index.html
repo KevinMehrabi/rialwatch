@@ -173,10 +173,11 @@
     background: var(--rw-toggle-bg);
     color: var(--rw-text-primary);
     border-radius: 999px;
-    padding: 6px 12px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    line-height: 1;
+    padding: 4px 8px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     cursor: pointer;
     transition: background 120ms ease, border-color 120ms ease, color 120ms ease;
   }
@@ -184,6 +185,50 @@
   .theme-toggle:hover,
   .theme-toggle:focus {
     background: var(--rw-toggle-hover);
+    color: var(--rw-text-strong);
+  }
+
+  .theme-toggle-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+    color: var(--rw-text-muted);
+    user-select: none;
+  }
+
+  .theme-toggle-track {
+    position: relative;
+    width: 36px;
+    height: 18px;
+    border-radius: 999px;
+    border: 1px solid var(--rw-toggle-border);
+    background: var(--rw-surface-3);
+    flex: 0 0 auto;
+  }
+
+  .theme-toggle-knob {
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    background: var(--rw-link-hover);
+    transition: transform 140ms ease;
+  }
+
+  html[data-theme="dark"] .theme-toggle-knob {
+    transform: translateX(18px);
+  }
+
+  html[data-theme="light"] .theme-toggle-knob {
+    transform: translateX(0);
+  }
+
+  html[data-theme="light"] .theme-toggle-sun {
+    color: var(--rw-text-strong);
+  }
+
+  html[data-theme="dark"] .theme-toggle-moon {
     color: var(--rw-text-strong);
   }
 
@@ -662,9 +707,13 @@
               <a href="/methodology/">Methodology</a>
               <a href="/status/">Status</a>
             </div>
-            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">Light mode</button>
+            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle color theme">
+              <span class="theme-toggle-icon theme-toggle-sun" aria-hidden="true">☀</span>
+              <span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-knob"></span></span>
+              <span class="theme-toggle-icon theme-toggle-moon" aria-hidden="true">🌙</span>
+            </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T14:31:59Z">Last update: 2026-03-21T14:31:59Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T16:25:09Z">Last update: 2026-03-21T16:25:09Z</div>
         </div>
       </div>
     </div>
@@ -707,7 +756,7 @@
   </div>
 </section>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-21T14:31:59Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-21T16:25:09Z</div>
     </div>
   </div>
 </div>
@@ -730,9 +779,10 @@
       logo.src = theme === 'light' ? lightLogo : darkLogo;
     }
     if (toggle) {
-      const nextLabel = theme === 'light' ? 'Dark mode' : 'Light mode';
-      toggle.textContent = nextLabel;
-      toggle.setAttribute('aria-pressed', theme === 'light' ? 'true' : 'false');
+      const nextLabel = theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode';
+      toggle.setAttribute('aria-label', nextLabel);
+      toggle.setAttribute('title', nextLabel);
+      toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
     }
     document.dispatchEvent(new CustomEvent('rw-theme-change', { detail: { theme } }));
   };
