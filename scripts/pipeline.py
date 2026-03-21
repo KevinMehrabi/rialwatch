@@ -3095,22 +3095,6 @@ def publish_status(
         if isinstance(rebuild_note, str) and rebuild_note.strip():
             diagnostics.append("A historical correction note is active for one or more records.")
 
-    fix_dir = site_dir / "fix"
-    withheld_days: List[str] = []
-    if fix_dir.exists():
-        for path in sorted(fix_dir.glob("*.json")):
-            if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", path.stem):
-                continue
-            try:
-                payload = json.loads(path.read_text(encoding="utf-8"))
-            except json.JSONDecodeError:
-                continue
-            computed_row = payload.get("computed", {})
-            if isinstance(computed_row, dict) and computed_row.get("withheld") is True:
-                withheld_days.append(path.stem)
-    if withheld_days:
-        diagnostics.append(f"{len(withheld_days)} historical day(s) remain withheld due to publication-quality rules.")
-
     if missing:
         diagnostics.append("One or more required configuration items are currently missing.")
 

@@ -75,6 +75,33 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertIn("Monitoring: limited coverage.", rendered)
             self.assertIn("Hidden: no usable records.", rendered)
 
+    def test_publish_status_does_not_show_historical_withheld_day_note(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            site_dir = Path(tmp_dir) / "site"
+            api_dir = site_dir / "api"
+            fix_dir = site_dir / "fix"
+            api_dir.mkdir(parents=True, exist_ok=True)
+            fix_dir.mkdir(parents=True, exist_ok=True)
+
+            (api_dir / "regional_market_signals_card.json").write_text('{"cards": []}', encoding="utf-8")
+            (fix_dir / "2026-03-01.json").write_text(
+                '{"computed":{"withheld":true}}',
+                encoding="utf-8",
+            )
+
+            pipeline.publish_status(
+                site_dir=site_dir,
+                templates_dir=self.templates_dir,
+                generated_at="2026-03-21T17:36:00Z",
+                status_title="OK",
+                status_detail="Published daily benchmark.",
+                latest={"computed": {}, "sources": {}},
+            )
+
+            rendered = (site_dir / "status" / "index.html").read_text(encoding="utf-8")
+            self.assertNotIn("historical day(s) remain withheld", rendered)
+            self.assertNotIn("publication-quality rules", rendered)
+
 
 if __name__ == "__main__":
     unittest.main()
