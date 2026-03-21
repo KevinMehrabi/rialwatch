@@ -73,6 +73,7 @@ CITY_TO_BASKET = {
     "London": "UK",
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
+    "Germany": "Germany",
 }
 
 QUERY_GROUPS: Dict[str, List[str]] = {
@@ -94,6 +95,10 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me دبی دلار",
         "site:t.me فرانکفورت صرافی",
         "site:t.me هامبورگ صرافی",
+        "site:t.me فرانکفورت یورو",
+        "site:t.me هامبورگ یورو",
+        "site:t.me آلمان حواله",
+        "site:t.me/s آلمان حواله",
     ],
     "english": [
         "herat dollar telegram",
@@ -112,6 +117,8 @@ QUERY_GROUPS: Dict[str, List[str]] = {
     "german": [
         "iran wechselstube frankfurt telegram",
         "iran geldwechsel hamburg telegram",
+        "iran geldtransfer deutschland telegram",
+        "iran geldwechsel deutschland telegram",
     ],
 }
 
@@ -126,6 +133,7 @@ REGION_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Dubai": ("dubai", "دبی", "دوبی"),
     "Frankfurt": ("frankfurt", "فرانکفورت"),
     "Hamburg": ("hamburg", "هامبورگ"),
+    "Germany": ("germany", "deutschland", "آلمان"),
     "London": ("london", "لندن"),
     "Istanbul": ("istanbul", "استانبول"),
 }
@@ -339,6 +347,36 @@ def region_to_basket(region: str) -> str:
     return CITY_TO_BASKET.get(region, "unknown")
 
 
+def has_germany_hint(text: str) -> bool:
+    lowered = translit_digits(text or "").lower()
+    germany_aliases = (
+        *REGION_ALIASES.get("Germany", ()),
+        *REGION_ALIASES.get("Frankfurt", ()),
+        *REGION_ALIASES.get("Hamburg", ()),
+    )
+    return any(alias.lower() in lowered for alias in germany_aliases)
+
+
+def merge_discovery_sources(target: Dict[str, DiscoverySource], incoming: Dict[str, DiscoverySource]) -> None:
+    for key, source in incoming.items():
+        existing = target.get(key)
+        if existing is None:
+            target[key] = source
+            continue
+        existing.query_hits.update(source.query_hits)
+        existing.origins.update(source.origins)
+        if not existing.seed_title and source.seed_title:
+            existing.seed_title = source.seed_title
+        if (not existing.city_guess or existing.city_guess == "unknown") and source.city_guess and source.city_guess != "unknown":
+            existing.city_guess = source.city_guess
+        if (
+            not existing.source_type_guess
+            or existing.source_type_guess == "unknown"
+            or existing.source_type_guess == "unclear"
+        ) and source.source_type_guess and source.source_type_guess != "unknown":
+            existing.source_type_guess = source.source_type_guess
+
+
 def search_discovery(query_plan: Sequence[Tuple[str, str]], pages_per_query: int, timeout: int, sleep_seconds: float) -> Tuple[Dict[str, DiscoverySource], Dict[str, Any]]:
     discovered: Dict[str, DiscoverySource] = {}
     debug: Dict[str, Any] = {"successful_search_requests": 0, "failed_search_requests": 0, "query_stats": {}}
@@ -389,7 +427,7 @@ def seed_from_existing_registry(channel_rows: Sequence[Dict[str, str]]) -> Dict[
         channel_type = str(row.get("channel_type_guess", "")).strip()
         sample = str(row.get("last_seen_text_sample", "")).strip()
         joined = " ".join(filter(None, [title, city_guess, sample]))
-        has_target_locality = bool(detect_regions(joined)) or city_guess in {"Dubai", "Frankfurt", "Hamburg"}
+        has_target_locality = bool(detect_regions(joined)) or city_guess in {"Dubai", "Frankfurt", "Hamburg", "Germany"}
         if not has_target_locality:
             continue
         if not handle or not public_url:
@@ -404,6 +442,75 @@ def seed_from_existing_registry(channel_rows: Sequence[Dict[str, str]]) -> Dict[
             seed_title=title,
             city_guess=city_guess or "unknown",
             source_type_guess=channel_type or "unknown",
+        )
+    return seeded
+
+
+def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySource]:
+    seeded: Dict[str, DiscoverySource] = {}
+    samples_path = survey_dir / "quote_message_samples.json"
+    if not samples_path.exists():
+        return seeded
+    try:
+        payload = json.loads(samples_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return seeded
+    if not isinstance(payload, list):
+        return seeded
+
+    for channel in payload:
+        if not isinstance(channel, dict):
+            continue
+        handle = str(channel.get("handle", "")).strip()
+        if not handle:
+            continue
+        public_url = normalize_public_url(handle, str(channel.get("public_url", "")).strip() or f"https://t.me/s/{handle}")
+        if not public_url:
+            continue
+        records = channel.get("quote_message_records", [])
+        if not isinstance(records, list) or not records:
+            continue
+
+        germany_hit = False
+        city_guess = "unknown"
+        for rec in records:
+            if not isinstance(rec, dict):
+                continue
+            text = str(rec.get("message_text_sample", ""))
+            if has_germany_hint(text):
+                germany_hit = True
+            regions = detect_regions(text)
+            if "Frankfurt" in regions:
+                germany_hit = True
+                city_guess = "Frankfurt"
+            elif "Hamburg" in regions:
+                germany_hit = True
+                city_guess = "Hamburg"
+            elif "Germany" in regions:
+                germany_hit = True
+            city_mentions = rec.get("city_mentions", [])
+            if isinstance(city_mentions, list):
+                normalized_mentions = {str(item).strip().lower() for item in city_mentions}
+                if "frankfurt" in normalized_mentions:
+                    germany_hit = True
+                    city_guess = "Frankfurt"
+                elif "hamburg" in normalized_mentions:
+                    germany_hit = True
+                    city_guess = "Hamburg"
+        if not germany_hit:
+            continue
+
+        key = f"telegram:{handle}"
+        seeded[key] = DiscoverySource(
+            key=key,
+            platform="telegram",
+            url=public_url,
+            handle_or_url=handle,
+            origins={"quote_sample_hint"},
+            seed_title=str(channel.get("title", "")).strip(),
+            country_guess="Germany",
+            city_guess=city_guess,
+            source_type_guess=str(channel.get("channel_type_guess", "")).strip() or "unknown",
         )
     return seeded
 
@@ -574,7 +681,7 @@ def extract_quote_records_for_source(
         country_guess = "Iraq"
     elif "Herat" in locality_hints:
         country_guess = "Afghanistan"
-    elif "Frankfurt" in locality_hints or "Hamburg" in locality_hints:
+    elif "Frankfurt" in locality_hints or "Hamburg" in locality_hints or "Germany" in locality_hints:
         country_guess = "Germany"
     elif "London" in locality_hints:
         country_guess = "UK"
@@ -714,6 +821,13 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
         return base
 
     cleaned, outliers_removed = remove_mad_outliers(records)
+    # Diagnostics baskets should not collapse to a single source only because MAD
+    # pruning removed one locality-specific stream. Keep diversity when possible.
+    original_sources = {rec.handle for rec in records}
+    cleaned_sources = {rec.handle for rec in cleaned}
+    if len(original_sources) >= 2 and len(cleaned_sources) < 2:
+        cleaned = list(records)
+        outliers_removed = 0
     if not cleaned:
         return base
 
@@ -728,17 +842,21 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
 
     source_weights: Dict[str, float] = {}
     source_categories: Dict[str, float] = {}
+    source_freshness: Dict[str, float] = {}
     for rec, weight in zip(cleaned, weights):
         source_weights[rec.handle] = source_weights.get(rec.handle, 0.0) + weight
         source_categories[rec.source_category] = source_categories.get(rec.source_category, 0.0) + weight
+        source_freshness[rec.handle] = max(source_freshness.get(rec.handle, 0.0), rec.freshness_score)
     top_share = (max(source_weights.values()) / sum(source_weights.values())) if source_weights else 1.0
     dominant_category = max(source_categories, key=source_categories.get)
+    source_freshness_median = statistics.median(source_freshness.values()) if source_freshness else freshness_avg
+    freshness_signal = max(freshness_avg, source_freshness_median)
 
     confidence = (
         min(32.0, len(cleaned) * 3.5)
         + min(18.0, len(source_weights) * 6.0)
         + max(0.0, 20.0 - (dispersion_cv * 90.0))
-        + min(15.0, freshness_avg / 6.5)
+        + min(15.0, freshness_signal / 6.5)
         + min(15.0, structure_avg / 7.0)
     )
     confidence = round(max(0.0, min(100.0, confidence)), 2)
@@ -751,7 +869,7 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
     elif confidence < 42.0:
         publishable = False
         suppression_reason = "low_confidence"
-    elif freshness_avg < 35.0:
+    elif freshness_signal < 35.0:
         publishable = False
         suppression_reason = "stale_signal"
     elif dispersion_cv > 0.28:
@@ -762,6 +880,10 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
         suppression_reason = "single_source_dominance"
 
     spread_pct = ((weighted_rate - benchmark_value) / benchmark_value) * 100.0 if benchmark_value > 0 else None
+    spread_abs = abs(spread_pct) if spread_pct is not None else 0.0
+    if publishable and dominant_category == "aggregator" and spread_abs > 35.0:
+        publishable = False
+        suppression_reason = "extreme_divergence"
     top_sources = sorted(source_weights.items(), key=lambda item: (-item[1], item[0]))[:3]
     signal_type_label = {
         "direct_shop": "exchange_shop",
@@ -888,7 +1010,9 @@ def main() -> int:
         sleep_seconds=args.sleep_seconds,
     )
     existing_seeded = seed_from_existing_registry(channel_rows)
-    discovered_sources.update({k: v for k, v in existing_seeded.items() if k not in discovered_sources})
+    germany_hint_seeded = seed_from_quote_message_samples(survey_dir)
+    merge_discovery_sources(discovered_sources, existing_seeded)
+    merge_discovery_sources(discovered_sources, germany_hint_seeded)
 
     ordered_sources = sorted(discovered_sources.values(), key=lambda item: (item.platform, item.url))
     if args.max_discovered_sources > 0:

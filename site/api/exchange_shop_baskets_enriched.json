@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-03-16T03:16:43Z",
+  "generated_at": "2026-03-21T19:37:28Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
   "baskets": [
     {
       "basket_name": "Iran",
       "signal_type_used": "exchange_shop",
-      "weighted_rate": 1416917.85,
-      "median_rate": 1409950.0,
-      "spread_vs_benchmark_pct": -2.2763,
-      "usable_record_count": 121,
-      "contributing_source_count": 15,
-      "basket_confidence": 64.16,
+      "weighted_rate": 1427637.12,
+      "median_rate": 1162500.0,
+      "spread_vs_benchmark_pct": -1.537,
+      "usable_record_count": 170,
+      "contributing_source_count": 22,
+      "basket_confidence": 63.68,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.248919,
+      "dispersion_cv": 0.250965,
       "outliers_removed": 0,
       "top_sources": [
         "mazanehnet",
         "mellalex",
-        "fardaei_tehran"
+        "qheimat_dolar_sabze"
       ]
     },
     {
@@ -38,16 +38,16 @@
     {
       "basket_name": "Turkey",
       "signal_type_used": "exchange_shop",
-      "weighted_rate": 1448558.06,
-      "median_rate": 1448200.0,
-      "spread_vs_benchmark_pct": -0.0941,
-      "usable_record_count": 33,
+      "weighted_rate": 1456155.87,
+      "median_rate": 1463100.0,
+      "spread_vs_benchmark_pct": 0.4299,
+      "usable_record_count": 32,
       "contributing_source_count": 2,
-      "basket_confidence": 89.07,
+      "basket_confidence": 87.08,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.008424,
-      "outliers_removed": 2,
+      "dispersion_cv": 0.014106,
+      "outliers_removed": 0,
       "top_sources": [
         "istanbulim_com",
         "istanbulexchange_com"
@@ -69,56 +69,57 @@
     {
       "basket_name": "Afghanistan",
       "signal_type_used": "exchange_shop",
-      "weighted_rate": 1090599.82,
+      "weighted_rate": 1030341.6,
       "median_rate": 1060000.0,
-      "spread_vs_benchmark_pct": -24.7822,
-      "usable_record_count": 16,
-      "contributing_source_count": 6,
-      "basket_confidence": 66.68,
+      "spread_vs_benchmark_pct": -28.9381,
+      "usable_record_count": 19,
+      "contributing_source_count": 8,
+      "basket_confidence": 66.6,
       "publishable": false,
       "suppression_reason": "stale_signal",
-      "dispersion_cv": 0.157922,
+      "dispersion_cv": 0.155418,
       "outliers_removed": 0,
       "top_sources": [
         "ldollar",
         "dolarian",
-        "fardaei_tehran"
+        "ppellehh"
       ]
     },
     {
       "basket_name": "UK",
       "signal_type_used": "exchange_shop",
-      "weighted_rate": 1862657.9,
-      "median_rate": 1865000.0,
-      "spread_vs_benchmark_pct": 28.4661,
-      "usable_record_count": 18,
-      "contributing_source_count": 3,
-      "basket_confidence": 87.69,
+      "weighted_rate": 1828150.98,
+      "median_rate": 1860000.0,
+      "spread_vs_benchmark_pct": 26.0862,
+      "usable_record_count": 60,
+      "contributing_source_count": 8,
+      "basket_confidence": 89.56,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.029718,
-      "outliers_removed": 1,
+      "dispersion_cv": 0.05385,
+      "outliers_removed": 0,
       "top_sources": [
         "sarafionline7groupuk",
-        "groupsarafilondonuk",
-        "exchangeratescountries"
+        "exchangeratescountries",
+        "groupsarafilondonuk"
       ]
     },
     {
       "basket_name": "Germany",
       "signal_type_used": "aggregator",
-      "weighted_rate": 820357.14,
+      "weighted_rate": 779064.39,
       "median_rate": 830000.0,
-      "spread_vs_benchmark_pct": -43.4206,
-      "usable_record_count": 7,
-      "contributing_source_count": 1,
-      "basket_confidence": 59.36,
+      "spread_vs_benchmark_pct": -46.2685,
+      "usable_record_count": 18,
+      "contributing_source_count": 2,
+      "basket_confidence": 63.05,
       "publishable": false,
-      "suppression_reason": "stale_signal",
-      "dispersion_cv": 0.042678,
-      "outliers_removed": 1,
+      "suppression_reason": "extreme_divergence",
+      "dispersion_cv": 0.218755,
+      "outliers_removed": 0,
       "top_sources": [
-        "frankfurt_euro"
+        "frankfurt_euro",
+        "eurobazaar"
       ]
     }
   ]

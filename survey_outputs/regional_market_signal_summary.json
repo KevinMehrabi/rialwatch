@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-03-16T03:16:43Z",
+  "generated_at": "2026-03-21T19:37:28Z",
   "new_regional_signal_sources_discovered": 1,
-  "existing_registry_signal_sources_used": 30,
+  "existing_registry_signal_sources_used": 56,
   "which_locality_baskets_gained_usable_data": [
     "Afghanistan",
     "Germany"
@@ -20,15 +20,16 @@
     "Afghanistan": [
       "ldollar",
       "dolarian",
-      "fardaei_tehran"
+      "ppellehh"
     ],
     "Germany": [
-      "frankfurt_euro"
+      "frankfurt_euro",
+      "eurobazaar"
     ]
   },
   "search_debug": {
-    "successful_search_requests": 30,
-    "failed_search_requests": 28,
+    "successful_search_requests": 20,
+    "failed_search_requests": 50,
     "query_stats": {
       "site:t.me دلار هرات": {
         "group": "persian",
@@ -98,6 +99,22 @@
         "group": "persian",
         "candidate_hits": 0
       },
+      "site:t.me فرانکفورت یورو": {
+        "group": "persian",
+        "candidate_hits": 0
+      },
+      "site:t.me هامبورگ یورو": {
+        "group": "persian",
+        "candidate_hits": 0
+      },
+      "site:t.me آلمان حواله": {
+        "group": "persian",
+        "candidate_hits": 0
+      },
+      "site:t.me/s آلمان حواله": {
+        "group": "persian",
+        "candidate_hits": 0
+      },
       "herat dollar telegram": {
         "group": "english",
         "candidate_hits": 0
@@ -145,9 +162,17 @@
       "iran geldwechsel hamburg telegram": {
         "group": "german",
         "candidate_hits": 0
+      },
+      "iran geldtransfer deutschland telegram": {
+        "group": "german",
+        "candidate_hits": 0
+      },
+      "iran geldwechsel deutschland telegram": {
+        "group": "german",
+        "candidate_hits": 0
       }
     }
   },
-  "queries_run": 29,
-  "sources_crawled": 70
+  "queries_run": 35,
+  "sources_crawled": 125
 }
