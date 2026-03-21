@@ -38,6 +38,31 @@
 
 <section class="card mt-3">
   <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h3 class="card-title mb-0">Diagnostics Signal Coverage</h3>
+      <span class="text-secondary small">$diagnostics_source_note</span>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-dark table-vcenter source-status-table mb-0">
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Status</th>
+            <th>Contributing Sources</th>
+            <th>Usable Records</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          $diagnostics_source_rows
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="card mt-3">
+  <div class="card-body">
     <h3 class="card-title mb-3">Publication Status</h3>
     <div class="row g-3">
       <div class="col-md-3">

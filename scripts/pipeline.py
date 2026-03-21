@@ -2684,6 +2684,12 @@ def publish_status(
         key = source_name.strip().lower()
         return mapping.get(key, f"Market Feed {index}")
 
+    def parse_nonnegative_count(value: Any) -> int:
+        parsed = parse_number(value)
+        if parsed is None:
+            return 0
+        return max(0, int(parsed))
+
     def map_pipeline_state(value: str) -> str:
         upper = value.strip().upper()
         if upper in {"OK", "IMMUTABLE"}:
@@ -2933,6 +2939,78 @@ def publish_status(
             for row in source_rows
         )
 
+    diagnostics_source_rows_html = (
+        "<tr><td>N/A</td><td>"
+        + render_status_label("Unknown")
+        + "</td><td>0</td><td>0</td><td>No diagnostics locality-signal artifact found.</td></tr>"
+    )
+    diagnostics_source_note = "No diagnostics locality-signal artifact found."
+    diagnostics_cards_path = site_dir / "api" / "regional_market_signals_card.json"
+    if diagnostics_cards_path.exists():
+        try:
+            diagnostics_payload = json.loads(diagnostics_cards_path.read_text(encoding="utf-8"))
+            cards = diagnostics_payload.get("cards", []) if isinstance(diagnostics_payload, dict) else []
+            if isinstance(cards, list) and cards:
+                diagnostics_rows: List[Dict[str, str]] = []
+                publish_count = 0
+                monitor_count = 0
+                active_count = 0
+                for card in cards:
+                    if not isinstance(card, dict):
+                        continue
+                    basket_name = str(card.get("basket_name", "")).strip() or "Unknown"
+                    signal_label = str(card.get("signal_label", "")).strip()
+                    display_state = str(card.get("display_state", "")).strip().lower()
+                    suppression_reason = str(card.get("suppression_reason", "")).strip()
+
+                    status = "Unknown"
+                    if display_state == "publish":
+                        status = "Online"
+                        publish_count += 1
+                        active_count += 1
+                    elif display_state == "monitor":
+                        status = "Degraded"
+                        monitor_count += 1
+                        active_count += 1
+                    elif display_state == "hide":
+                        status = "Offline"
+
+                    if status == "Online":
+                        note = "Diagnostics signal available."
+                    elif status == "Degraded":
+                        reason = suppression_reason.replace("_", " ") if suppression_reason else "limited coverage"
+                        note = f"Monitoring: {reason}."
+                    else:
+                        reason = suppression_reason.replace("_", " ") if suppression_reason else "not available"
+                        note = f"Hidden: {reason}."
+
+                    diagnostics_rows.append(
+                        {
+                            "name": f"{basket_name} — {signal_label}" if signal_label else basket_name,
+                            "status": status,
+                            "sources": str(parse_nonnegative_count(card.get("contributing_source_count"))),
+                            "records": str(parse_nonnegative_count(card.get("usable_record_count"))),
+                            "note": note,
+                        }
+                    )
+                if diagnostics_rows:
+                    diagnostics_source_rows_html = "\n".join(
+                        "<tr>"
+                        f"<td>{html_lib.escape(row['name'])}</td>"
+                        f"<td>{render_status_label(row['status'])}</td>"
+                        f"<td>{html_lib.escape(row['sources'])}</td>"
+                        f"<td>{html_lib.escape(row['records'])}</td>"
+                        f"<td>{html_lib.escape(row['note'])}</td>"
+                        "</tr>"
+                        for row in diagnostics_rows
+                    )
+                    diagnostics_source_note = (
+                        f"{active_count}/{len(diagnostics_rows)} locality signals active. "
+                        f"{publish_count} publish, {monitor_count} monitor."
+                    )
+        except json.JSONDecodeError:
+            diagnostics_source_note = "Diagnostics locality-signal artifact could not be parsed."
+
     total_sources = len(source_rows)
     online_sources = sum(1 for row in source_rows if row["status"] == "Online")
     degraded_count = sum(1 for row in source_rows if row["status"] == "Degraded")
@@ -3053,6 +3131,8 @@ def publish_status(
         overview_generated_at=fmt_status_time(generated_at),
         overview_cards=overview_cards_html,
         source_rows=source_rows_html,
+        diagnostics_source_note=diagnostics_source_note,
+        diagnostics_source_rows=diagnostics_source_rows_html,
         publication_fix=publication_fix,
         publication_state=publication_state,
         publication_updated=publication_updated,
