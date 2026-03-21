@@ -42,9 +42,11 @@
     --rw-code-bg: rgba(148, 163, 184, 0.12);
     --rw-table-head-text: #d6e3f3;
     --rw-status-ring: rgba(255, 255, 255, 0.08);
-    --rw-toggle-bg: rgba(148, 163, 184, 0.08);
-    --rw-toggle-border: rgba(148, 163, 184, 0.2);
-    --rw-toggle-hover: rgba(148, 163, 184, 0.16);
+    --rw-toggle-bg: rgba(226, 232, 240, 0.14);
+    --rw-toggle-border: rgba(248, 250, 252, 0.24);
+    --rw-toggle-hover: rgba(226, 232, 240, 0.2);
+    --rw-toggle-icon-inactive: rgba(203, 213, 225, 0.55);
+    --rw-toggle-icon-active: #f8fbff;
   }
 
   html[data-theme="light"] {
@@ -71,6 +73,8 @@
     --rw-toggle-bg: rgba(15, 23, 42, 0.04);
     --rw-toggle-border: rgba(15, 23, 42, 0.12);
     --rw-toggle-hover: rgba(15, 23, 42, 0.08);
+    --rw-toggle-icon-inactive: rgba(51, 65, 85, 0.48);
+    --rw-toggle-icon-active: #0f172a;
   }
 
   body {
@@ -202,9 +206,9 @@
     transform: translateY(-50%);
     width: 9px;
     height: 9px;
-    color: var(--rw-text-muted);
-    opacity: 0.44;
-    z-index: 1;
+    color: var(--rw-toggle-icon-inactive);
+    opacity: 1;
+    z-index: 3;
     pointer-events: none;
     user-select: none;
     transition: color 200ms ease, opacity 200ms ease;
@@ -254,13 +258,13 @@
   }
 
   html[data-theme="dark"] .theme-toggle-icon-moon {
-    color: var(--rw-text-strong);
-    opacity: 0.96;
+    color: var(--rw-toggle-icon-active);
+    opacity: 1;
   }
 
   html[data-theme="light"] .theme-toggle-icon-sun {
-    color: var(--rw-text-strong);
-    opacity: 0.96;
+    color: var(--rw-toggle-icon-active);
+    opacity: 1;
   }
 
   .theme-toggle:hover .theme-toggle-track {
@@ -774,7 +778,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T17:09:22Z">Last update: 2026-03-21T17:09:22Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T17:15:26Z">Last update: 2026-03-21T17:15:26Z</div>
         </div>
       </div>
     </div>
@@ -1000,7 +1004,7 @@
   </div>
 </section>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-21T17:09:22Z</div>
+      <div class="text-secondary mt-4">Generated at 2026-03-21T17:15:26Z</div>
     </div>
   </div>
 </div>
