@@ -277,6 +277,18 @@
     white-space: nowrap;
   }
 
+  .site-footer {
+    margin-top: 22px;
+    text-align: center;
+    color: var(--rw-text-muted);
+    font-size: 0.82rem;
+  }
+
+  .site-footer-credit {
+    color: var(--rw-text-primary);
+    font-weight: 500;
+  }
+
   .page-wrapper {
     background: var(--rw-bg) !important;
     min-height: 100vh;
@@ -702,6 +714,10 @@
       white-space: normal;
     }
 
+    .site-footer {
+      margin-top: 18px;
+    }
+
     .top-grid,
     .indicators-grid,
     .readings-grid,
@@ -752,7 +768,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T18:36:45Z">Last update: 2026-03-21T18:36:45Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-22T03:06:55Z">Last update: 2026-03-22T03:06:55Z</div>
         </div>
       </div>
     </div>
@@ -768,7 +784,7 @@
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h3 class="card-title mb-0">System Overview</h3>
-      <span class="text-secondary small">Status snapshot: Mar 21, 2026 · 18:36 UTC</span>
+      <span class="text-secondary small">Status snapshot: Mar 22, 2026 · 03:06 UTC</span>
     </div>
     <div class="status-overview-grid">
       <div class="status-overview-card"><div class="text-secondary small">Benchmark Pipeline</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Benchmark pipeline is operating normally.</div></div>
@@ -807,7 +823,7 @@
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h3 class="card-title mb-0">Diagnostics Signal Coverage</h3>
-      <span class="text-secondary small">6/7 locality signals active. 5 publish, 1 monitor.</span>
+      <span class="text-secondary small">7/7 locality signals active. 7 publish, 0 monitor.</span>
     </div>
     <div class="table-responsive">
       <table class="table table-dark table-vcenter source-status-table mb-0">
@@ -821,13 +837,13 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>Iran — Exchange network signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>15</td><td>121</td><td>Diagnostics signal available.</td></tr>
+          <tr><td>Iran — Exchange network signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>16</td><td>138</td><td>Diagnostics signal available.</td></tr>
 <tr><td>UAE — Dubai settlement signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>2</td><td>12</td><td>Diagnostics signal available.</td></tr>
 <tr><td>Turkey — Exchange network signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>2</td><td>33</td><td>Diagnostics signal available.</td></tr>
 <tr><td>Afghanistan — Herat market signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>5</td><td>33</td><td>Diagnostics signal available.</td></tr>
 <tr><td>UK — Exchange network signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>3</td><td>18</td><td>Diagnostics signal available.</td></tr>
-<tr><td>Iraq — Sulaymaniyah market (monitoring)</td><td><span class="status-label"><span class="status-light status-degraded"></span>Degraded</span></td><td>1</td><td>12</td><td>Monitoring: limited coverage.</td></tr>
-<tr><td>Germany — aggregator</td><td><span class="status-label"><span class="status-light status-offline"></span>Offline</span></td><td>1</td><td>7</td><td>Hidden: stale signal.</td></tr>
+<tr><td>Iraq — Sulaymaniyah market signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>2</td><td>20</td><td>Diagnostics signal available.</td></tr>
+<tr><td>Germany — settlement channel</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>5</td><td>44</td><td>Diagnostics signal available.</td></tr>
         </tbody>
       </table>
     </div>
@@ -848,7 +864,7 @@
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Last Update</div>
-        <div class="h5 mb-0">Mar 21, 2026 · 18:36 UTC</div>
+        <div class="h5 mb-0">Mar 21, 2026 · 17:35 UTC</div>
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Withhold Reason</div>
@@ -867,7 +883,10 @@
   </div>
 </section>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-21T18:36:45Z</div>
+      <div class="site-footer">
+        <div class="site-footer-credit">A Kevin Mehrabi Production</div>
+        <div class="text-secondary mt-1">Generated at 2026-03-22T03:06:55Z</div>
+      </div>
     </div>
   </div>
 </div>

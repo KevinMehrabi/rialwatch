@@ -277,6 +277,18 @@
     white-space: nowrap;
   }
 
+  .site-footer {
+    margin-top: 22px;
+    text-align: center;
+    color: var(--rw-text-muted);
+    font-size: 0.82rem;
+  }
+
+  .site-footer-credit {
+    color: var(--rw-text-primary);
+    font-weight: 500;
+  }
+
   .page-wrapper {
     background: var(--rw-bg) !important;
     min-height: 100vh;
@@ -702,6 +714,10 @@
       white-space: normal;
     }
 
+    .site-footer {
+      margin-top: 18px;
+    }
+
     .top-grid,
     .indicators-grid,
     .readings-grid,
@@ -752,7 +768,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-21T17:35:48Z">Last update: 2026-03-21T17:35:48Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-03-22T03:06:55Z">Last update: 2026-03-22T03:06:55Z</div>
         </div>
       </div>
     </div>
@@ -1221,7 +1237,10 @@ loadRegionalMarketCards();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
 
-      <div class="text-secondary mt-4">Generated at 2026-03-21T17:35:48Z</div>
+      <div class="site-footer">
+        <div class="site-footer-credit">A Kevin Mehrabi Production</div>
+        <div class="text-secondary mt-1">Generated at 2026-03-22T03:06:55Z</div>
+      </div>
     </div>
   </div>
 </div>
