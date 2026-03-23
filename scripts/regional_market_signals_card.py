@@ -81,6 +81,20 @@ def normalize_state(value: Any) -> str:
     return "hide"
 
 
+def normalize_freshness(freshness_status: Any, suppression_reason: str, display_state: str) -> str:
+    text = str(freshness_status or "").strip().lower()
+    if text in {"fresh", "recent", "stale", "old"}:
+        return text
+    reason = str(suppression_reason or "").strip().lower()
+    if "stale" in reason:
+        return "old"
+    if display_state == "publish":
+        return "recent"
+    if display_state == "monitor":
+        return "stale"
+    return "unknown"
+
+
 def display_state_from_publishable(publishable: Any, usable_records: int, suppression_reason: str) -> str:
     if bool(publishable):
         return "publish"
@@ -173,7 +187,7 @@ def build_candidate(
     suppression = str(suppression_reason or "").strip()
     state = normalize_state(display_state)
     signal_type = str(signal_type_used or "").strip() or "unknown"
-    freshness = str(freshness_status or "").strip() or "unknown"
+    freshness = normalize_freshness(freshness_status, suppression, state)
     dispersion = str(dispersion_level or "").strip() or "unknown"
 
     return {
@@ -243,7 +257,7 @@ def build_enriched_candidates(payload: Dict[str, Any]) -> Dict[str, List[Dict[st
             basket_confidence=row.get("basket_confidence"),
             suppression_reason=suppression_reason,
             display_state=display_state,
-            freshness_status="unknown",
+            freshness_status=row.get("freshness_status"),
             dispersion_level=dispersion_level_from_cv(row.get("dispersion_cv")),
         )
         result.setdefault(locality, []).append(candidate)
@@ -283,11 +297,13 @@ def build_legacy_candidates(payload: Dict[str, Any]) -> Dict[str, List[Dict[str,
 
 
 def candidate_sort_key(candidate: Dict[str, Any]) -> tuple:
+    has_rate = 1 if to_float(candidate.get("weighted_rate")) is not None else 0
     return (
         STATE_RANK.get(candidate.get("display_state"), 0),
+        has_rate,
+        SOURCE_RANK.get(candidate.get("source_artifact"), 0),
         to_int(candidate.get("usable_record_count")),
         to_float(candidate.get("basket_confidence")) or 0.0,
-        SOURCE_RANK.get(candidate.get("source_artifact"), 0),
     )
 
 
