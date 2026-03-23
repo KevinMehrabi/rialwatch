@@ -1194,7 +1194,7 @@ def fetch_bonbast_browser(
     health["validation_result"] = validation
 
     value = benchmark_values.get(PRIMARY_BENCHMARK)
-    stale = bool(sampled_at < window_start_dt or sampled_at > window_end_dt)
+    stale = not is_within_window_minute(sampled_at, window_start_dt, window_end_dt)
     if value is None:
         health["error_type"] = "selector_parse_failed"
         health["failure_reason"] = "unable to parse USD/IRR"
@@ -1397,7 +1397,9 @@ def fetch_alanchand_street_public(
     health["validation_result"] = validation
 
     benchmark_values["open_market"] = sell_rial
-    stale = bool(quote_time is not None and (quote_time < window_start_dt or quote_time > window_end_dt))
+    stale = bool(
+        quote_time is not None and not is_within_window_minute(quote_time, window_start_dt, window_end_dt)
+    )
     if sell_rial is None or not validation.get("ok"):
         reason = str(validation.get("reason") or "unable to parse street USD quote")
         health["error_type"] = "validation_failed"
@@ -1716,7 +1718,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         open_market_quote_time = extract_symbol_quote_time(payload, open_market_symbols)
         if open_market_quote_time is not None:
             health["open_market_quote_time"] = iso_ts(open_market_quote_time)
-            open_market_stale = bool(open_market_quote_time < window_start_dt or open_market_quote_time > window_end_dt)
+            open_market_stale = not is_within_window_minute(open_market_quote_time, window_start_dt, window_end_dt)
             health["open_market_stale"] = open_market_stale
             if open_market_stale:
                 # Keep companion market layers, but exclude stale street quote from primary benchmark.
@@ -1734,9 +1736,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     health["normalized_unit"] = normalized_unit
     health["fetch_success"] = True
 
-    stale = False
-    if quote_time is not None and (quote_time < window_start_dt or quote_time > window_end_dt):
-        stale = True
+    stale = bool(quote_time is not None and not is_within_window_minute(quote_time, window_start_dt, window_end_dt))
 
     if value is None:
         return Sample(
@@ -1791,7 +1791,7 @@ def collect_samples(
 
         for cfg in source_configs:
             sample = fetch_one(cfg, sampled_at, window_start_dt, window_end_dt)
-            if not allow_outside_window and (sampled_at < window_start_dt or sampled_at > window_end_dt):
+            if not allow_outside_window and not is_within_window_minute(sampled_at, window_start_dt, window_end_dt):
                 sample.ok = False
                 sample.stale = True
                 sample.error = "sample outside observation window"
@@ -1894,8 +1894,10 @@ def compute_benchmark_result(
                         validation_failed = isinstance(validation, dict) and validation.get("ok") is False
                         if fetch_success is not True or validation_failed:
                             continue
-                    if isinstance(s.error, str) and s.error.strip() and s.error.strip().lower() != "stale quote":
-                        continue
+                    if isinstance(s.error, str) and s.error.strip():
+                        normalized_error = s.error.strip().lower()
+                        if normalized_error not in {"stale quote", "sample outside observation window"}:
+                            continue
                     values.append(candidate)
             else:
                 values = [
@@ -1924,7 +1926,9 @@ def compute_benchmark_result(
         elif len(units_seen) > 1:
             source_units[source] = "mixed"
         if benchmark_key != PRIMARY_BENCHMARK and any(s.stale for s in entries):
-            invalid_or_stale = True
+            # In current-day refresh mode, allow companion benchmark values from stale samples.
+            if not primary_allow_stale:
+                invalid_or_stale = True
 
     medians = list(source_medians.values())
     reasons: List[str] = []
@@ -3838,7 +3842,7 @@ def collect_one_attempt(
     samples: Dict[str, List[Sample]] = {}
     for cfg in source_configs:
         sample = fetch_one(cfg, sampled_at, window_start_dt, window_end_dt)
-        if not allow_outside_window and (sampled_at < window_start_dt or sampled_at > window_end_dt):
+        if not allow_outside_window and not is_within_window_minute(sampled_at, window_start_dt, window_end_dt):
             sample.ok = False
             sample.stale = True
             sample.error = "sample outside observation window"
@@ -4117,12 +4121,16 @@ def attempt_to_samples(attempt: Dict[str, Any]) -> Dict[str, List[Sample]]:
     return output
 
 
+def is_within_window_minute(ts: dt.datetime, start: dt.datetime, end: dt.datetime) -> bool:
+    ts_minute = ts.replace(second=0, microsecond=0)
+    return start <= ts_minute <= end
+
+
 def in_publication_window(ts: dt.datetime, day: dt.date) -> bool:
     start = dt.datetime.combine(day, WINDOW_START, tzinfo=UTC)
     end = dt.datetime.combine(day, WINDOW_END, tzinfo=UTC)
     # Window checks are minute-based: include the full end minute (e.g. 14:15:59).
-    ts_minute = ts.replace(second=0, microsecond=0)
-    return start <= ts_minute <= end
+    return is_within_window_minute(ts, start, end)
 
 
 def is_daily_valid(daily: Dict[str, Any]) -> bool:
