@@ -7,6 +7,8 @@ on:
   schedule:
     # Publish official daily benchmark at 14:20 UTC from intraday history.
     - cron: "20 14 * * *"
+    # Self-heal pass: rebuild current-day artifacts from intraday attempts after collection completes.
+    - cron: "30 14 * * *"
   workflow_dispatch:
 
 permissions:
@@ -41,11 +43,71 @@ jobs:
           NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "20 14 * * *" ]; then
             python3 scripts/pipeline.py --mode publish-daily --site-dir site --templates-dir templates
+          elif [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "30 14 * * *" ]; then
+            python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
           else
             python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
           fi
+
+      - name: Guardrail checks
+        if: github.event_name == 'schedule'
+        run: |
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          import pathlib
+          import sys
+
+          today = dt.datetime.now(dt.timezone.utc).date().isoformat()
+          latest_path = pathlib.Path("site/api/latest.json")
+          intraday_dir = pathlib.Path("site/intraday") / today
+          intraday_files = sorted(intraday_dir.glob("*.json")) if intraday_dir.exists() else []
+
+          if not latest_path.exists():
+              print("::error::Guardrail failed: site/api/latest.json missing after pipeline run.")
+              sys.exit(1)
+
+          latest = json.loads(latest_path.read_text(encoding="utf-8"))
+          computed = latest.get("computed", {}) if isinstance(latest.get("computed"), dict) else {}
+          reasons_raw = computed.get("withhold_reasons", [])
+          reasons = [str(reason).strip().lower() for reason in reasons_raw if isinstance(reason, str)]
+          no_intraday_reason = any("no intraday samples available in publication window" in reason for reason in reasons)
+
+          benchmarks = latest.get("benchmarks", {})
+          numeric_benchmark_count = 0
+          if isinstance(benchmarks, dict):
+              for entry in benchmarks.values():
+                  if not isinstance(entry, dict):
+                      continue
+                  value = entry.get("fix")
+                  if isinstance(value, (int, float)):
+                      numeric_benchmark_count += 1
+
+          failures = []
+          if intraday_files and no_intraday_reason:
+              failures.append(
+                  f"WITHHOLD reason says no intraday samples, but {len(intraday_files)} intraday attempt file(s) exist for {today}."
+              )
+
+          if intraday_files and numeric_benchmark_count == 0:
+              failures.append(
+                  f"All benchmarks are null in latest.json while intraday attempts exist for {today}."
+              )
+
+          if failures:
+              for failure in failures:
+                  print(f"::error::{failure}")
+              sys.exit(1)
+
+          print(
+              "Guardrails passed:"
+              f" intraday_files={len(intraday_files)},"
+              f" numeric_benchmarks={numeric_benchmark_count},"
+              f" no_intraday_reason={no_intraday_reason}"
+          )
+          PY
 
       - name: Persist daily snapshots
         if: github.event_name == 'schedule'
