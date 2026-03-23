@@ -4120,7 +4120,9 @@ def attempt_to_samples(attempt: Dict[str, Any]) -> Dict[str, List[Sample]]:
 def in_publication_window(ts: dt.datetime, day: dt.date) -> bool:
     start = dt.datetime.combine(day, WINDOW_START, tzinfo=UTC)
     end = dt.datetime.combine(day, WINDOW_END, tzinfo=UTC)
-    return start <= ts <= end
+    # Window checks are minute-based: include the full end minute (e.g. 14:15:59).
+    ts_minute = ts.replace(second=0, microsecond=0)
+    return start <= ts_minute <= end
 
 
 def is_daily_valid(daily: Dict[str, Any]) -> bool:
