@@ -23,6 +23,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
       - name: Setup Python
         uses: actions/setup-python@v5
@@ -71,4 +74,15 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "${targets[@]}"
           git commit -m "collect: intraday USD/IRR sample ${today} [skip ci]"
-          git push origin main
+
+          for attempt in 1 2 3; do
+            if git push origin main; then
+              echo "Push succeeded on attempt ${attempt}."
+              exit 0
+            fi
+            echo "Push rejected on attempt ${attempt}; rebasing onto origin/main and retrying..."
+            git pull --rebase origin main
+          done
+
+          echo "::error::Failed to push intraday snapshots after 3 attempts."
+          exit 1
