@@ -1,0 +1,538 @@
+{
+  "date": "2026-03-28",
+  "collected_at": "2026-03-28T14:03:13Z",
+  "window_utc": {
+    "start": "13:45",
+    "end": "14:15"
+  },
+  "sources": {
+    "bonbast": {
+      "sample": {
+        "sampled_at": "2026-03-28T14:03:13Z",
+        "value": 1549500.0,
+        "benchmarks": {
+          "open_market": 1549500.0,
+          "official": null,
+          "regional_transfer": null,
+          "crypto_usdt": null,
+          "emami_gold_coin": 2090000000.0
+        },
+        "quote_time": "2026-03-28T14:03:13Z",
+        "ok": true,
+        "stale": false,
+        "error": null,
+        "health": {
+          "collector": "playwright",
+          "fetch_mode": "playwright",
+          "scrape_timestamp": "2026-03-28T14:03:13Z",
+          "page_load_ok": true,
+          "selector_success": true,
+          "fetch_success": true,
+          "failure_reason": null,
+          "selector_used": {
+            "buy": "#usd2",
+            "sell": "#usd1"
+          },
+          "fetch_duration_ms": 2066,
+          "content_length": 388617,
+          "final_url": "https://bonbast.com/",
+          "error_type": null,
+          "http_status": 200,
+          "extracted_values": {
+            "open_market": 1549500.0,
+            "crypto_usdt": null,
+            "emami_gold_coin": 2090000000.0
+          },
+          "bonbast_usd_buy": 1548500.0,
+          "bonbast_usd_sell": 1549500.0,
+          "bonbast_usd_mid": 1549000.0,
+          "parse_result": {
+            "buy_raw": 154850.0,
+            "sell_raw": 154950.0,
+            "buy_rial": 1548500.0,
+            "sell_rial": 1549500.0,
+            "mid_rial": 1549000.0
+          },
+          "source_unit": "toman",
+          "normalized_unit": "rial",
+          "selector_result_counts": {
+            "open_market": 2,
+            "open_market_buy": 1,
+            "crypto_usdt": 0,
+            "emami_gold_coin": 0
+          },
+          "validation_result": {
+            "ok": true,
+            "reason": null,
+            "spread_pct": 0.0006453694740238787,
+            "max_spread_pct": 0.05,
+            "peer_median": 1564500.0,
+            "peer_deviation_pct": 0.009587727708533078,
+            "peer_max_deviation_pct": 0.2,
+            "peer_band_result": "passed"
+          }
+        },
+        "fetch_success": true,
+        "validation_result": {
+          "ok": true,
+          "reason": null,
+          "spread_pct": 0.0006453694740238787,
+          "max_spread_pct": 0.05,
+          "peer_median": 1564500.0,
+          "peer_deviation_pct": 0.009587727708533078,
+          "peer_max_deviation_pct": 0.2,
+          "peer_band_result": "passed"
+        },
+        "failure_reason": null,
+        "source_unit": "toman",
+        "normalized_unit": "rial",
+        "bonbast": {
+          "bonbast_usd_buy": 1548500.0,
+          "bonbast_usd_sell": 1549500.0,
+          "bonbast_usd_mid": 1549000.0,
+          "source_unit": "toman",
+          "normalized_unit": "rial",
+          "fetch_mode": "playwright",
+          "selector_used": {
+            "buy": "#usd2",
+            "sell": "#usd1"
+          },
+          "fetch_success": true,
+          "failure_reason": null
+        }
+      },
+      "health": {
+        "collector": "playwright",
+        "fetch_mode": "playwright",
+        "scrape_timestamp": "2026-03-28T14:03:13Z",
+        "page_load_ok": true,
+        "selector_success": true,
+        "fetch_success": true,
+        "failure_reason": null,
+        "selector_used": {
+          "buy": "#usd2",
+          "sell": "#usd1"
+        },
+        "fetch_duration_ms": 2066,
+        "content_length": 388617,
+        "final_url": "https://bonbast.com/",
+        "error_type": null,
+        "http_status": 200,
+        "extracted_values": {
+          "open_market": 1549500.0,
+          "crypto_usdt": null,
+          "emami_gold_coin": 2090000000.0
+        },
+        "bonbast_usd_buy": 1548500.0,
+        "bonbast_usd_sell": 1549500.0,
+        "bonbast_usd_mid": 1549000.0,
+        "parse_result": {
+          "buy_raw": 154850.0,
+          "sell_raw": 154950.0,
+          "buy_rial": 1548500.0,
+          "sell_rial": 1549500.0,
+          "mid_rial": 1549000.0
+        },
+        "source_unit": "toman",
+        "normalized_unit": "rial",
+        "selector_result_counts": {
+          "open_market": 2,
+          "open_market_buy": 1,
+          "crypto_usdt": 0,
+          "emami_gold_coin": 0
+        },
+        "validation_result": {
+          "ok": true,
+          "reason": null,
+          "spread_pct": 0.0006453694740238787,
+          "max_spread_pct": 0.05,
+          "peer_median": 1564500.0,
+          "peer_deviation_pct": 0.009587727708533078,
+          "peer_max_deviation_pct": 0.2,
+          "peer_band_result": "passed"
+        }
+      }
+    },
+    "alanchand_street": {
+      "sample": {
+        "sampled_at": "2026-03-28T14:03:13Z",
+        "value": 1564500.0,
+        "benchmarks": {
+          "open_market": 1564500.0,
+          "official": null,
+          "regional_transfer": null,
+          "crypto_usdt": null,
+          "emami_gold_coin": null
+        },
+        "quote_time": "2026-03-28T14:00:00Z",
+        "ok": true,
+        "stale": false,
+        "error": null,
+        "health": {
+          "collector": "http_html",
+          "fetch_mode": "public_html",
+          "scrape_timestamp": "2026-03-28T14:03:13Z",
+          "fetch_success": true,
+          "failure_reason": null,
+          "error_type": null,
+          "selector_used": {
+            "sell": "sell_rate_pattern",
+            "buy": "buy_rate_pattern"
+          },
+          "request_url": "https://alanchand.com/en/currencies-price/usd",
+          "content_length": 118046,
+          "final_url": "https://alanchand.com/en/currencies-price/usd",
+          "page_load_ok": true,
+          "unit_assumption": "page quotes interpreted as rial",
+          "source_unit": "rial",
+          "normalized_unit": "rial",
+          "raw_extracted_values": {
+            "open_market_sell": 1564500.0,
+            "open_market_buy": 1549000.0
+          },
+          "extracted_values": {
+            "open_market_sell": 1564500.0,
+            "open_market_buy": 1549000.0,
+            "open_market_mid": 1556750.0
+          },
+          "quote_time": "2026-03-28T14:00:00Z",
+          "validation_result": {
+            "ok": true,
+            "reason": null,
+            "spread_pct": 0.009907318632150847,
+            "max_spread_pct": 0.08
+          }
+        },
+        "fetch_success": true,
+        "validation_result": {
+          "ok": true,
+          "reason": null,
+          "spread_pct": 0.009907318632150847,
+          "max_spread_pct": 0.08
+        },
+        "failure_reason": null,
+        "source_unit": "rial",
+        "normalized_unit": "rial"
+      },
+      "health": {
+        "collector": "http_html",
+        "fetch_mode": "public_html",
+        "scrape_timestamp": "2026-03-28T14:03:13Z",
+        "fetch_success": true,
+        "failure_reason": null,
+        "error_type": null,
+        "selector_used": {
+          "sell": "sell_rate_pattern",
+          "buy": "buy_rate_pattern"
+        },
+        "request_url": "https://alanchand.com/en/currencies-price/usd",
+        "content_length": 118046,
+        "final_url": "https://alanchand.com/en/currencies-price/usd",
+        "page_load_ok": true,
+        "unit_assumption": "page quotes interpreted as rial",
+        "source_unit": "rial",
+        "normalized_unit": "rial",
+        "raw_extracted_values": {
+          "open_market_sell": 1564500.0,
+          "open_market_buy": 1549000.0
+        },
+        "extracted_values": {
+          "open_market_sell": 1564500.0,
+          "open_market_buy": 1549000.0,
+          "open_market_mid": 1556750.0
+        },
+        "quote_time": "2026-03-28T14:00:00Z",
+        "validation_result": {
+          "ok": true,
+          "reason": null,
+          "spread_pct": 0.009907318632150847,
+          "max_spread_pct": 0.08
+        }
+      }
+    },
+    "navasan": {
+      "sample": {
+        "sampled_at": "2026-03-28T14:03:13Z",
+        "value": 1548500.0,
+        "benchmarks": {
+          "open_market": 1548500.0,
+          "official": 1325072.0,
+          "regional_transfer": 1579400.0,
+          "crypto_usdt": 1555000.0,
+          "emami_gold_coin": 2100000.0
+        },
+        "quote_time": "2026-03-28T14:03:15Z",
+        "ok": true,
+        "stale": false,
+        "error": null,
+        "health": {
+          "collector": "http_json",
+          "scrape_timestamp": "2026-03-28T14:03:13Z",
+          "page_load_ok": true,
+          "selector_success": null,
+          "error_type": null,
+          "request_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
+          "content_length": 42812,
+          "final_url": "https://api.navasan.tech/latest/?api_key=freeUDvWfa3EhMWQl58qCeQPfT4a8471",
+          "payload_mode": "json",
+          "source_fields": {
+            "open_market": [
+              "usd_sell",
+              "usd"
+            ],
+            "official": [
+              "mex_usd_sell"
+            ],
+            "regional_transfer": [
+              "usd_shakhs",
+              "usd_sherkat"
+            ],
+            "crypto_usdt": [
+              "usdt"
+            ],
+            "emami_gold_coin": [
+              "sekkeh"
+            ]
+          },
+          "open_market_quote_time": "2026-03-28T14:03:09Z",
+          "open_market_stale": false,
+          "extracted_values": {
+            "open_market": 1548500.0,
+            "official": 1325072.0,
+            "regional_transfer": 1579400.0,
+            "crypto_usdt": 1555000.0,
+            "emami_gold_coin": 2100000.0
+          },
+          "raw_extracted_values": {
+            "open_market": 154850.0,
+            "official": 1325072.0,
+            "regional_transfer": 157940.0,
+            "crypto_usdt": 155500.0,
+            "emami_gold_coin": 210000.0
+          },
+          "benchmark_units": {
+            "open_market": "toman",
+            "official": "rial",
+            "regional_transfer": "toman",
+            "crypto_usdt": "toman",
+            "emami_gold_coin": "toman"
+          },
+          "source_unit": "mixed",
+          "normalized_unit": "rial",
+          "fetch_success": true
+        },
+        "fetch_success": true,
+        "validation_result": null,
+        "failure_reason": null,
+        "source_unit": "mixed",
+        "normalized_unit": "rial"
+      },
+      "health": {
+        "collector": "http_json",
+        "scrape_timestamp": "2026-03-28T14:03:13Z",
+        "page_load_ok": true,
+        "selector_success": null,
+        "error_type": null,
+        "request_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
+        "content_length": 42812,
+        "final_url": "https://api.navasan.tech/latest/?api_key=freeUDvWfa3EhMWQl58qCeQPfT4a8471",
+        "payload_mode": "json",
+        "source_fields": {
+          "open_market": [
+            "usd_sell",
+            "usd"
+          ],
+          "official": [
+            "mex_usd_sell"
+          ],
+          "regional_transfer": [
+            "usd_shakhs",
+            "usd_sherkat"
+          ],
+          "crypto_usdt": [
+            "usdt"
+          ],
+          "emami_gold_coin": [
+            "sekkeh"
+          ]
+        },
+        "open_market_quote_time": "2026-03-28T14:03:09Z",
+        "open_market_stale": false,
+        "extracted_values": {
+          "open_market": 1548500.0,
+          "official": 1325072.0,
+          "regional_transfer": 1579400.0,
+          "crypto_usdt": 1555000.0,
+          "emami_gold_coin": 2100000.0
+        },
+        "raw_extracted_values": {
+          "open_market": 154850.0,
+          "official": 1325072.0,
+          "regional_transfer": 157940.0,
+          "crypto_usdt": 155500.0,
+          "emami_gold_coin": 210000.0
+        },
+        "benchmark_units": {
+          "open_market": "toman",
+          "official": "rial",
+          "regional_transfer": "toman",
+          "crypto_usdt": "toman",
+          "emami_gold_coin": "toman"
+        },
+        "source_unit": "mixed",
+        "normalized_unit": "rial",
+        "fetch_success": true
+      }
+    },
+    "alanchand": {
+      "sample": {
+        "sampled_at": "2026-03-28T14:03:13Z",
+        "value": null,
+        "benchmarks": {
+          "open_market": null,
+          "official": null,
+          "regional_transfer": null,
+          "crypto_usdt": null,
+          "emami_gold_coin": null
+        },
+        "quote_time": "2026-03-28T14:03:15Z",
+        "ok": true,
+        "stale": false,
+        "error": null,
+        "health": {
+          "collector": "http_json_fallback",
+          "fetch_success": true,
+          "failure_reason": null,
+          "error_type": null,
+          "fallback_used": true,
+          "fallback_source": "navasan",
+          "fallback_reason": "http 401",
+          "fallback_error_type": "http_error",
+          "request_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
+          "final_url": "https://api.navasan.tech/latest/?api_key=freeUDvWfa3EhMWQl58qCeQPfT4a8471",
+          "content_length": 42812,
+          "raw_extracted_values": {
+            "regional_transfer": 157940.0
+          },
+          "extracted_values": {
+            "regional_transfer": 1579400.0
+          },
+          "source_unit": "mixed",
+          "normalized_unit": "rial"
+        },
+        "fetch_success": true,
+        "validation_result": null,
+        "failure_reason": null,
+        "source_unit": "mixed",
+        "normalized_unit": "rial"
+      },
+      "health": {
+        "collector": "http_json_fallback",
+        "fetch_success": true,
+        "failure_reason": null,
+        "error_type": null,
+        "fallback_used": true,
+        "fallback_source": "navasan",
+        "fallback_reason": "http 401",
+        "fallback_error_type": "http_error",
+        "request_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
+        "final_url": "https://api.navasan.tech/latest/?api_key=freeUDvWfa3EhMWQl58qCeQPfT4a8471",
+        "content_length": 42812,
+        "raw_extracted_values": {
+          "regional_transfer": 157940.0
+        },
+        "extracted_values": {
+          "regional_transfer": 1579400.0
+        },
+        "source_unit": "mixed",
+        "normalized_unit": "rial"
+      }
+    }
+  },
+  "computed": {
+    "fix": 1557000.0,
+    "band": {
+      "p25": 1553250.0,
+      "p75": 1560750.0
+    },
+    "dispersion": 0.004816955684007707,
+    "status": "Green",
+    "withheld": false,
+    "withhold_reasons": [],
+    "source_medians": {
+      "bonbast": 1549500.0,
+      "alanchand_street": 1564500.0
+    },
+    "source_units": {
+      "bonbast": "toman",
+      "alanchand_street": "rial"
+    },
+    "source_unit": "mixed",
+    "normalized_unit": "rial",
+    "validation_warnings": [],
+    "benchmarks": {
+      "open_market": {
+        "label": "Open Market / Street Rate",
+        "value": 1557000.0,
+        "available": true,
+        "is_primary": true
+      },
+      "official": {
+        "label": "Official Commercial USD Rate",
+        "value": 1325072.0,
+        "available": true,
+        "is_primary": false
+      },
+      "regional_transfer": {
+        "label": "Regional Transfer Rate",
+        "value": 1579400.0,
+        "available": true,
+        "is_primary": false
+      },
+      "crypto_usdt": {
+        "label": "Crypto Dollar (USDT)",
+        "value": 1555000.0,
+        "available": true,
+        "is_primary": false
+      },
+      "emami_gold_coin": {
+        "label": "Emami Gold Coin",
+        "value": 1046050000.0,
+        "available": false,
+        "is_primary": false
+      }
+    },
+    "indicators": {
+      "street_official_gap_pct": {
+        "label": "Street-Official Gap",
+        "value": 17.50304889092819,
+        "available": true,
+        "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
+      },
+      "street_transfer_gap_pct": {
+        "label": "Street-Transfer Gap",
+        "value": -1.4182600987716854,
+        "available": true,
+        "formula": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100"
+      },
+      "street_crypto_gap_pct": {
+        "label": "Street-Crypto Gap",
+        "value": -0.12845215157353884,
+        "available": true,
+        "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
+      },
+      "street_gold_gap_pct": {
+        "label": "Gold FX Gap",
+        "value": -4.7039906712763635,
+        "available": true,
+        "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
+      },
+      "official_commercial_trend_7d": {
+        "label": "Official 7d Trend",
+        "value": null,
+        "available": false,
+        "formula": "7-day percent change of official_commercial_usd_irr"
+      }
+    }
+  }
+}
