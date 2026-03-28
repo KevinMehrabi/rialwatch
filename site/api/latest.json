@@ -1,6 +1,6 @@
 {
   "date": "2026-03-28",
-  "as_of": "2026-03-28T14:32:26Z",
+  "as_of": "2026-03-28T14:44:20Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -13,7 +13,7 @@
           "health": {
             "collector": "playwright",
             "fetch_mode": "playwright",
-            "scrape_timestamp": "2026-03-28T14:03:13Z",
+            "scrape_timestamp": "2026-03-28T14:24:47Z",
             "page_load_ok": true,
             "selector_success": true,
             "fetch_success": true,
@@ -22,8 +22,8 @@
               "buy": "#usd2",
               "sell": "#usd1"
             },
-            "fetch_duration_ms": 2066,
-            "content_length": 388617,
+            "fetch_duration_ms": 2127,
+            "content_length": 208594,
             "final_url": "https://bonbast.com/",
             "error_type": null,
             "http_status": 200,
@@ -55,13 +55,10 @@
               "reason": null,
               "spread_pct": 0.0006453694740238787,
               "max_spread_pct": 0.05,
-              "peer_median": 1564500.0,
-              "peer_deviation_pct": 0.009587727708533078,
-              "peer_max_deviation_pct": 0.2,
-              "peer_band_result": "passed"
+              "peer_band_result": "skipped_sample_not_valid"
             }
           },
-          "sampled_at": "2026-03-28T14:03:13Z",
+          "sampled_at": "2026-03-28T14:24:47Z",
           "value": 1549500.0,
           "benchmarks": {
             "open_market": 1549500.0,
@@ -70,20 +67,17 @@
             "crypto_usdt": null,
             "emami_gold_coin": 2090000000.0
           },
-          "quote_time": "2026-03-28T14:03:13Z",
-          "ok": true,
-          "stale": false,
-          "error": null,
+          "quote_time": "2026-03-28T14:24:47Z",
+          "ok": false,
+          "stale": true,
+          "error": "sample outside observation window",
           "fetch_success": true,
           "validation_result": {
             "ok": true,
             "reason": null,
             "spread_pct": 0.0006453694740238787,
             "max_spread_pct": 0.05,
-            "peer_median": 1564500.0,
-            "peer_deviation_pct": 0.009587727708533078,
-            "peer_max_deviation_pct": 0.2,
-            "peer_band_result": "passed"
+            "peer_band_result": "skipped_sample_not_valid"
           },
           "failure_reason": null,
           "source_unit": "toman",
@@ -103,7 +97,7 @@
           "health": {
             "collector": "http_html",
             "fetch_mode": "public_html",
-            "scrape_timestamp": "2026-03-28T14:03:13Z",
+            "scrape_timestamp": "2026-03-28T14:24:47Z",
             "fetch_success": true,
             "failure_reason": null,
             "error_type": null,
@@ -119,40 +113,40 @@
             "source_unit": "rial",
             "normalized_unit": "rial",
             "raw_extracted_values": {
-              "open_market_sell": 1564500.0,
-              "open_market_buy": 1549000.0
+              "open_market_sell": 1565000.0,
+              "open_market_buy": 1549500.0
             },
             "extracted_values": {
-              "open_market_sell": 1564500.0,
-              "open_market_buy": 1549000.0,
-              "open_market_mid": 1556750.0
+              "open_market_sell": 1565000.0,
+              "open_market_buy": 1549500.0,
+              "open_market_mid": 1557250.0
             },
-            "quote_time": "2026-03-28T14:00:00Z",
+            "quote_time": "2026-03-28T14:20:00Z",
             "validation_result": {
               "ok": true,
               "reason": null,
-              "spread_pct": 0.009907318632150847,
+              "spread_pct": 0.009904153354632588,
               "max_spread_pct": 0.08
             }
           },
-          "sampled_at": "2026-03-28T14:03:13Z",
-          "value": 1564500.0,
+          "sampled_at": "2026-03-28T14:24:47Z",
+          "value": 1565000.0,
           "benchmarks": {
-            "open_market": 1564500.0,
+            "open_market": 1565000.0,
             "official": null,
             "regional_transfer": null,
             "crypto_usdt": null,
             "emami_gold_coin": null
           },
-          "quote_time": "2026-03-28T14:00:00Z",
-          "ok": true,
-          "stale": false,
-          "error": null,
+          "quote_time": "2026-03-28T14:20:00Z",
+          "ok": false,
+          "stale": true,
+          "error": "sample outside observation window",
           "fetch_success": true,
           "validation_result": {
             "ok": true,
             "reason": null,
-            "spread_pct": 0.009907318632150847,
+            "spread_pct": 0.009904153354632588,
             "max_spread_pct": 0.08
           },
           "failure_reason": null,
@@ -160,9 +154,9 @@
           "normalized_unit": "rial"
         }
       ],
-      "median": 1564500.0,
+      "median": 1565000.0,
       "benchmark_medians": {
-        "open_market": 1564500.0
+        "open_market": 1565000.0
       },
       "note": null
     },
@@ -171,12 +165,12 @@
         {
           "health": {
             "collector": "http_json",
-            "scrape_timestamp": "2026-03-28T14:03:13Z",
+            "scrape_timestamp": "2026-03-28T14:24:47Z",
             "page_load_ok": true,
             "selector_success": null,
             "error_type": null,
             "request_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
-            "content_length": 42812,
+            "content_length": 42804,
             "final_url": "https://api.navasan.tech/latest/?api_key=freeUDvWfa3EhMWQl58qCeQPfT4a8471",
             "payload_mode": "json",
             "source_fields": {
@@ -198,20 +192,21 @@
                 "sekkeh"
               ]
             },
-            "open_market_quote_time": "2026-03-28T14:03:09Z",
-            "open_market_stale": false,
+            "open_market_quote_time": "2026-03-28T14:23:08Z",
+            "open_market_stale": true,
+            "open_market_exclusion_reason": "stale open_market quote timestamp",
             "extracted_values": {
-              "open_market": 1548500.0,
+              "open_market": null,
               "official": 1325072.0,
               "regional_transfer": 1579400.0,
-              "crypto_usdt": 1555000.0,
+              "crypto_usdt": 1551000.0,
               "emami_gold_coin": 2100000.0
             },
             "raw_extracted_values": {
               "open_market": 154850.0,
               "official": 1325072.0,
               "regional_transfer": 157940.0,
-              "crypto_usdt": 155500.0,
+              "crypto_usdt": 155100.0,
               "emami_gold_coin": 210000.0
             },
             "benchmark_units": {
@@ -227,19 +222,19 @@
             "validation_result": null,
             "failure_reason": null
           },
-          "sampled_at": "2026-03-28T14:03:13Z",
-          "value": 1548500.0,
+          "sampled_at": "2026-03-28T14:24:47Z",
+          "value": null,
           "benchmarks": {
-            "open_market": 1548500.0,
+            "open_market": null,
             "official": 1325072.0,
             "regional_transfer": 1579400.0,
-            "crypto_usdt": 1555000.0,
+            "crypto_usdt": 1551000.0,
             "emami_gold_coin": 2100000.0
           },
-          "quote_time": "2026-03-28T14:03:15Z",
-          "ok": true,
-          "stale": false,
-          "error": null,
+          "quote_time": "2026-03-28T14:23:13Z",
+          "ok": false,
+          "stale": true,
+          "error": "sample outside observation window",
           "fetch_success": true,
           "validation_result": null,
           "failure_reason": null,
@@ -247,12 +242,11 @@
           "normalized_unit": "rial"
         }
       ],
-      "median": 1548500.0,
+      "median": null,
       "benchmark_medians": {
-        "open_market": 1548500.0,
         "official": 1325072.0,
         "regional_transfer": 1579400.0,
-        "crypto_usdt": 1555000.0,
+        "crypto_usdt": 1551000.0,
         "emami_gold_coin": 2100000.0
       },
       "note": "source excluded from street benchmark universe"
@@ -271,7 +265,7 @@
             "fallback_error_type": "http_error",
             "request_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
             "final_url": "https://api.navasan.tech/latest/?api_key=freeUDvWfa3EhMWQl58qCeQPfT4a8471",
-            "content_length": 42812,
+            "content_length": 42804,
             "raw_extracted_values": {
               "regional_transfer": 157940.0
             },
@@ -282,7 +276,7 @@
             "normalized_unit": "rial",
             "validation_result": null
           },
-          "sampled_at": "2026-03-28T14:03:13Z",
+          "sampled_at": "2026-03-28T14:24:47Z",
           "value": null,
           "benchmarks": {
             "open_market": null,
@@ -291,10 +285,10 @@
             "crypto_usdt": null,
             "emami_gold_coin": null
           },
-          "quote_time": "2026-03-28T14:03:15Z",
-          "ok": true,
-          "stale": false,
-          "error": null,
+          "quote_time": "2026-03-28T14:23:13Z",
+          "ok": false,
+          "stale": true,
+          "error": "sample outside observation window",
           "fetch_success": true,
           "validation_result": null,
           "failure_reason": null,
@@ -311,18 +305,18 @@
     "open_market": {
       "label": "Open Market / Street Rate",
       "benchmark": "open_market",
-      "fix": 1557000.0,
+      "fix": 1557250.0,
       "band": {
-        "p25": 1553250.0,
-        "p75": 1560750.0
+        "p25": 1553375.0,
+        "p75": 1561125.0
       },
-      "dispersion": 0.004816955684007707,
+      "dispersion": 0.004976721785198267,
       "status": "Green",
       "withheld": false,
       "withhold_reasons": [],
       "source_medians": {
         "bonbast": 1549500.0,
-        "alanchand_street": 1564500.0
+        "alanchand_street": 1565000.0
       },
       "source_units": {
         "bonbast": "toman",
@@ -387,17 +381,17 @@
     "crypto_usdt": {
       "label": "Crypto Dollar (USDT)",
       "benchmark": "crypto_usdt",
-      "fix": 1555000.0,
+      "fix": 1551000.0,
       "band": {
-        "p25": 1555000.0,
-        "p75": 1555000.0
+        "p25": 1551000.0,
+        "p75": 1551000.0
       },
       "dispersion": 0.0,
       "status": "Green",
       "withheld": false,
       "withhold_reasons": [],
       "source_medians": {
-        "navasan": 1555000.0
+        "navasan": 1551000.0
       },
       "source_units": {
         "navasan": "mixed"
@@ -441,25 +435,25 @@
   "indicators": {
     "street_official_gap_pct": {
       "label": "Street-Official Gap",
-      "value": 17.50304889092819,
+      "value": 17.521915790236303,
       "available": true,
       "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
     },
     "street_transfer_gap_pct": {
       "label": "Street-Transfer Gap",
-      "value": -1.4182600987716854,
+      "value": -1.4024313030264657,
       "available": true,
       "formula": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100"
     },
     "street_crypto_gap_pct": {
       "label": "Street-Crypto Gap",
-      "value": -0.12845215157353884,
+      "value": -0.4013485310643763,
       "available": true,
       "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
     },
     "street_gold_gap_pct": {
       "label": "Gold FX Gap",
-      "value": -4.7039906712763635,
+      "value": -4.719289436620516,
       "available": true,
       "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
     },
@@ -471,18 +465,18 @@
     }
   },
   "computed": {
-    "fix": 1557000.0,
+    "fix": 1557250.0,
     "band": {
-      "p25": 1553250.0,
-      "p75": 1560750.0
+      "p25": 1553375.0,
+      "p75": 1561125.0
     },
-    "dispersion": 0.004816955684007707,
+    "dispersion": 0.004976721785198267,
     "status": "Green",
     "withheld": false,
     "withhold_reasons": [],
     "source_medians": {
       "bonbast": 1549500.0,
-      "alanchand_street": 1564500.0
+      "alanchand_street": 1565000.0
     },
     "source_units": {
       "bonbast": "toman",
@@ -494,7 +488,7 @@
     "benchmarks": {
       "open_market": {
         "label": "Open Market / Street Rate",
-        "value": 1557000.0,
+        "value": 1557250.0,
         "available": true,
         "is_primary": true
       },
@@ -512,7 +506,7 @@
       },
       "crypto_usdt": {
         "label": "Crypto Dollar (USDT)",
-        "value": 1555000.0,
+        "value": 1551000.0,
         "available": true,
         "is_primary": false
       },
@@ -526,25 +520,25 @@
     "indicators": {
       "street_official_gap_pct": {
         "label": "Street-Official Gap",
-        "value": 17.50304889092819,
+        "value": 17.521915790236303,
         "available": true,
         "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
       },
       "street_transfer_gap_pct": {
         "label": "Street-Transfer Gap",
-        "value": -1.4182600987716854,
+        "value": -1.4024313030264657,
         "available": true,
         "formula": "((street_usd_irr - regional_transfer_usd_irr) / regional_transfer_usd_irr) * 100"
       },
       "street_crypto_gap_pct": {
         "label": "Street-Crypto Gap",
-        "value": -0.12845215157353884,
+        "value": -0.4013485310643763,
         "available": true,
         "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
       },
       "street_gold_gap_pct": {
         "label": "Gold FX Gap",
-        "value": -4.7039906712763635,
+        "value": -4.719289436620516,
         "available": true,
         "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
       },
@@ -557,15 +551,15 @@
     }
   },
   "normalized_metrics": {
-    "street_usd_irr": 1557000.0,
+    "street_usd_irr": 1557250.0,
     "official_commercial_usd_irr": 1325072.0,
     "regional_transfer_usd_irr": 1579400.0,
-    "crypto_usdt_irr": 1555000.0,
+    "crypto_usdt_irr": 1551000.0,
     "emami_coin_irr": 1046050000.0,
-    "street_official_gap_pct": 17.50304889092819,
-    "street_transfer_gap_pct": -1.4182600987716854,
-    "street_crypto_gap_pct": -0.12845215157353884,
-    "street_gold_gap_pct": -4.7039906712763635,
+    "street_official_gap_pct": 17.521915790236303,
+    "street_transfer_gap_pct": -1.4024313030264657,
+    "street_crypto_gap_pct": -0.4013485310643763,
+    "street_gold_gap_pct": -4.719289436620516,
     "gold_implied_usd_irr": 1483758.865248227,
     "gold_usd_per_oz": 3000.0,
     "official_commercial_trend_7d": 0.0,
@@ -626,25 +620,25 @@
     }
   },
   "publication_selection": {
-    "rule": "latest valid intraday attempt in publication window, else latest attempt",
-    "selection_scope": "publication_window",
+    "rule": "current-day refresh: latest valid intraday attempt across all available samples",
+    "selection_scope": "latest_intraday_refresh",
     "window_utc": {
       "start": "13:45",
       "end": "14:15"
     },
-    "candidate_count": 2,
-    "valid_candidate_count": 2,
-    "selected_collected_at": "2026-03-28T14:03:13Z",
-    "latest_candidate_collected_at": "2026-03-28T14:03:13Z",
-    "selected_attempt_file": "intraday/2026-03-28/14-03-13.json",
+    "candidate_count": 5,
+    "valid_candidate_count": 5,
+    "selected_collected_at": "2026-03-28T14:24:47Z",
+    "latest_candidate_collected_at": "2026-03-28T14:24:47Z",
+    "selected_attempt_file": "intraday/2026-03-28/14-24-47.json",
     "selected_valid": true,
     "used_fallback": false,
-    "basis_label": "Selected from intraday publication window",
-    "selection_reason": "latest valid intraday attempt in publication window",
+    "basis_label": "Selected from latest intraday refresh sample",
+    "selection_reason": "latest valid intraday attempt (current-day refresh)",
     "street_source_count_used": 2,
     "same_as_previous_day": false,
     "previous_day_fix": 1560750.0,
-    "delta_vs_previous_day": -3750.0,
-    "delta_pct_vs_previous_day": -0.2402691013935608
+    "delta_vs_previous_day": -3500.0,
+    "delta_pct_vs_previous_day": -0.22425116130065673
   }
 }
