@@ -261,19 +261,26 @@ const latestPointPulsePlugin = {
 
     const colors = historyThemeColors();
     const now = Date.now();
-    const cycleMs = 1400;
+    const cycleMs = 1100;
     const phase = (now % cycleMs) / cycleMs;
-    const radius = 6 + phase * 10;
-    const alpha = 0.35 * (1 - phase);
+    const radius = 9 + phase * 14;
+    const alpha = 0.52 * (1 - phase);
     const pulseColor = colors.accentRgb || '59,130,246';
     const coords = point.getProps(['x', 'y'], true);
 
     const ctx = chart.ctx;
     ctx.save();
+    // Expanding halo pulse.
     ctx.beginPath();
     ctx.arc(coords.x, coords.y, radius, 0, Math.PI * 2);
     ctx.fillStyle = `rgba(${pulseColor}, ${alpha.toFixed(3)})`;
     ctx.fill();
+    // Persistent outer ring keeps the latest point obvious between pulses.
+    ctx.beginPath();
+    ctx.arc(coords.x, coords.y, 8.5, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(${pulseColor}, 0.48)`;
+    ctx.lineWidth = 1.9;
+    ctx.stroke();
     ctx.restore();
 
     if (document.hidden) return;
@@ -336,10 +343,10 @@ function renderHistoryChart(validRows) {
         borderColor: colors.accent,
         backgroundColor: colors.accentFill,
         pointBackgroundColor: colors.accent,
-        pointBorderColor: colors.accent,
-        pointBorderWidth: 0,
-        pointRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 3.5 : 0),
-        pointHoverRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 5 : 0),
+        pointBorderColor: (ctx) => (ctx.dataIndex === validRows.length - 1 ? '#ffffff' : 'transparent'),
+        pointBorderWidth: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 1.3 : 0),
+        pointRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 5.2 : 0),
+        pointHoverRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 6.8 : 0),
         tension: 0.2,
         fill: true
       }]
