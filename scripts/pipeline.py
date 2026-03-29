@@ -76,6 +76,14 @@ BENCHMARK_SYMBOL_CANDIDATES: Dict[str, Tuple[str, ...]] = {
     "emami_gold_coin": ("sekkeh", "sekke", "emami", "coin_emami", "sekeh_emami"),
 }
 
+TGJU_CALL_SOURCE_NAMES: Tuple[str, ...] = ("tgju_call2", "tgju_call3", "tgju_call4")
+TGJU_LEGACY_SOURCE_ALIASES: Tuple[str, ...] = ("tgju_call",)
+TGJU_CALL_SOURCE_SET = frozenset((*TGJU_CALL_SOURCE_NAMES, *TGJU_LEGACY_SOURCE_ALIASES))
+TGJU_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
+    # Iran Exchange Center / remittance sell quote on TGJU.
+    "official": ("ice_transfer_usd_sell",),
+}
+
 # Exact source-to-symbol mappings for production-safe parsing.
 # If a strict benchmark has no entry for a source, we intentionally return unavailable.
 CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
@@ -87,6 +95,7 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
         "crypto_usdt": ("usdt",),
         "emami_gold_coin": ("sekkeh",),
     },
+    **{name: dict(TGJU_OFFICIAL_SYMBOLS) for name in TGJU_CALL_SOURCE_SET},
     "alanchand": {
         "regional_transfer": ("usd-hav", "usd_hav"),
         "crypto_usdt": ("usdt",),
@@ -182,7 +191,7 @@ ALANCHAND_STREET_MAX_SPREAD_PCT_DEFAULT = 0.08
 class SourceConfig:
     name: str
     url: str
-    auth_mode: str  # browser_playwright | query_api_key | header_api_key | public_html
+    auth_mode: str  # browser_playwright | query_api_key | header_api_key | public_html | public_json
     secret_fields: Tuple[str, ...]
     benchmark_families: Tuple[str, ...]
     default_unit: str = "toman"
@@ -462,7 +471,7 @@ def normalize_symbol_token(value: str) -> str:
 
 
 def extract_numeric_from_quote_obj(obj: Dict[str, Any]) -> Optional[float]:
-    for field in ("value", "price", "last", "close", "sell", "buy", "rate", "amount"):
+    for field in ("value", "price", "last", "close", "sell", "buy", "rate", "amount", "p"):
         if field in obj:
             parsed = parse_number(obj.get(field))
             if parsed is not None:
@@ -540,17 +549,54 @@ def extract_quote_time(payload: Any) -> Optional[dt.datetime]:
 
 
 def extract_symbol_quote_time(payload: Any, symbols: Tuple[str, ...]) -> Optional[dt.datetime]:
-    if not isinstance(payload, dict):
+    target_tokens = {normalize_symbol_token(item) for item in symbols}
+    if not target_tokens:
         return None
-    for symbol in symbols:
-        entry = payload.get(symbol)
-        if not isinstance(entry, dict):
-            continue
+
+    def matches(text: Any) -> bool:
+        if not isinstance(text, str):
+            return False
+        token = normalize_symbol_token(text)
+        return bool(token and token in target_tokens)
+
+    def parse_ts_from_obj(obj: Dict[str, Any]) -> Optional[dt.datetime]:
         for field in ("timestamp", "ts", "updated", "updated_at", "time", "date"):
-            parsed = try_parse_datetime(entry.get(field))
+            parsed = try_parse_datetime(obj.get(field))
             if parsed is not None:
                 return parsed
-    return None
+        return None
+
+    found: List[dt.datetime] = []
+
+    def walk(node: Any) -> None:
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if matches(key):
+                    if isinstance(value, dict):
+                        parsed = parse_ts_from_obj(value)
+                        if parsed is not None:
+                            found.append(parsed)
+                    else:
+                        parsed = try_parse_datetime(value)
+                        if parsed is not None:
+                            found.append(parsed)
+
+            id_fields = ("symbol", "name", "slug", "code", "title", "label", "item", "id")
+            if any(matches(node.get(field)) for field in id_fields):
+                parsed = parse_ts_from_obj(node)
+                if parsed is not None:
+                    found.append(parsed)
+
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(payload)
+    if not found:
+        return None
+    return max(found)
 
 
 def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
@@ -770,6 +816,10 @@ def env_or_default(name: str, default: str) -> str:
     return default
 
 
+def is_tgju_call_source(name: str) -> bool:
+    return name.strip().lower() in TGJU_CALL_SOURCE_SET
+
+
 def build_source_configs() -> List[SourceConfig]:
     return [
         SourceConfig(
@@ -795,6 +845,38 @@ def build_source_configs() -> List[SourceConfig]:
             secret_fields=("NAVASAN_API_KEY",),
             benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
             default_unit="toman",
+        ),
+        SourceConfig(
+            name="tgju_call2",
+            url=env_or_default("TGJU_CALL2_URL", "https://call2.tgju.org/ajax.json"),
+            auth_mode="public_json",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        ),
+        SourceConfig(
+            name="tgju_call3",
+            url=env_or_default("TGJU_CALL3_URL", "https://call3.tgju.org/ajax.json"),
+            auth_mode="public_json",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        ),
+        SourceConfig(
+            name="tgju_call4",
+            url=env_or_default("TGJU_CALL4_URL", "https://call4.tgju.org/ajax.json"),
+            auth_mode="public_json",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        ),
+        SourceConfig(
+            name="tgju_call",
+            url=env_or_default("TGJU_CALL_URL", "https://call.tgju.org/ajax.json"),
+            auth_mode="public_json",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
         ),
         SourceConfig(
             name="alanchand",
@@ -853,6 +935,9 @@ def build_request(config: SourceConfig) -> urllib.request.Request:
         else:
             headers["X-API-Key"] = key
             url = with_query(url, {"api_key": key})
+    elif is_tgju_call_source(config.name):
+        # TGJU call endpoint is aggressively cached at edge on some hosts; force a fresh variant key.
+        url = with_query(url, {"rev": str(time.time_ns())})
 
     return urllib.request.Request(url=url, headers=headers, method="GET")
 
@@ -1700,6 +1785,15 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         for key in BENCHMARK_LABELS
         if canonical_map.get(key)
     }
+    benchmark_quote_times: Dict[str, str] = {}
+    for benchmark_key, symbols in canonical_map.items():
+        if not symbols:
+            continue
+        benchmark_quote_time = extract_symbol_quote_time(payload, symbols)
+        if benchmark_quote_time is not None:
+            benchmark_quote_times[benchmark_key] = iso_ts(benchmark_quote_time)
+    if benchmark_quote_times:
+        health["benchmark_quote_times"] = benchmark_quote_times
     if config.name == "navasan":
         benchmark_units = {key: NAVASAN_BENCHMARK_UNITS.get(key, config.default_unit) for key in BENCHMARK_LABELS}
         benchmark_values = normalize_benchmark_values_with_units(
@@ -1860,6 +1954,67 @@ def apply_bonbast_peer_validation(samples: Dict[str, List[Sample]], max_deviatio
         health["validation_result"] = validation
 
 
+def sample_benchmark_quote_time(sample: Sample, benchmark_key: str) -> Optional[dt.datetime]:
+    if isinstance(sample.health, dict):
+        bqt = sample.health.get("benchmark_quote_times")
+        if isinstance(bqt, dict):
+            parsed = try_parse_datetime(bqt.get(benchmark_key))
+            if parsed is not None:
+                return parsed
+    if sample.quote_time is not None:
+        return sample.quote_time
+    return None
+
+
+def latest_sample_value_for_benchmark(
+    entries: List[Sample], benchmark_key: str
+) -> Optional[Tuple[float, Optional[dt.datetime], dt.datetime, str]]:
+    ranked: List[Tuple[dt.datetime, dt.datetime, float, str]] = []
+    for s in entries:
+        value = parse_number(s.benchmark_values.get(benchmark_key))
+        if value is None:
+            continue
+        if isinstance(s.health, dict):
+            fetch_success = s.health.get("fetch_success")
+            if fetch_success is False:
+                continue
+            validation = s.health.get("validation_result")
+            if isinstance(validation, dict) and validation.get("ok") is False:
+                continue
+        quote_time = sample_benchmark_quote_time(s, benchmark_key)
+        effective_time = quote_time if quote_time is not None else s.sampled_at
+        ranked.append((effective_time, s.sampled_at, value, s.source_unit or "unknown"))
+    if not ranked:
+        return None
+    ranked.sort(key=lambda row: (row[0], row[1]), reverse=True)
+    effective_time, sampled_at, value, source_unit = ranked[0]
+    quote_time = effective_time if effective_time != sampled_at else None
+    return value, quote_time, sampled_at, source_unit
+
+
+def benchmark_update_cadence_count(entries: List[Sample], benchmark_key: str) -> int:
+    quote_times: set[str] = set()
+    has_valid_sample = False
+    for s in entries:
+        value = parse_number(s.benchmark_values.get(benchmark_key))
+        if value is None:
+            continue
+        if isinstance(s.health, dict):
+            fetch_success = s.health.get("fetch_success")
+            if fetch_success is False:
+                continue
+            validation = s.health.get("validation_result")
+            if isinstance(validation, dict) and validation.get("ok") is False:
+                continue
+        has_valid_sample = True
+        quote_time = sample_benchmark_quote_time(s, benchmark_key)
+        if quote_time is not None:
+            quote_times.add(iso_ts(quote_time))
+    if quote_times:
+        return len(quote_times)
+    return 1 if has_valid_sample else 0
+
+
 def compute_benchmark_result(
     samples: Dict[str, List[Sample]],
     benchmark_key: str,
@@ -1869,6 +2024,8 @@ def compute_benchmark_result(
     source_medians: Dict[str, float] = {}
     source_notes: Dict[str, str] = {}
     source_units: Dict[str, str] = {}
+    source_latest_quote_times: Dict[str, dt.datetime] = {}
+    source_update_counts: Dict[str, int] = {}
     invalid_or_stale = False
 
     for source, entries in samples.items():
@@ -1878,6 +2035,21 @@ def compute_benchmark_result(
         families = benchmark_sources.get(source, ())
         if benchmark_key not in families:
             source_notes[source] = "source family not used for this benchmark"
+            continue
+
+        if benchmark_key == "official":
+            latest = latest_sample_value_for_benchmark(entries, benchmark_key)
+            if latest is None:
+                source_notes[source] = "no valid samples"
+                continue
+            latest_value, latest_quote_time, latest_sampled_at, latest_source_unit = latest
+            source_medians[source] = latest_value
+            source_units[source] = latest_source_unit
+            effective_quote_time = latest_quote_time if latest_quote_time is not None else latest_sampled_at
+            source_latest_quote_times[source] = effective_quote_time
+            cadence_count = benchmark_update_cadence_count(entries, benchmark_key)
+            source_update_counts[source] = cadence_count
+            source_notes[source] = f"latest valid quote selected at {iso_ts(effective_quote_time)}"
             continue
 
         if benchmark_key == PRIMARY_BENCHMARK:
@@ -1925,7 +2097,7 @@ def compute_benchmark_result(
             source_units[source] = next(iter(units_seen))
         elif len(units_seen) > 1:
             source_units[source] = "mixed"
-        if benchmark_key != PRIMARY_BENCHMARK and any(s.stale for s in entries):
+        if benchmark_key not in {PRIMARY_BENCHMARK, "official"} and any(s.stale for s in entries):
             # In current-day refresh mode, allow companion benchmark values from stale samples.
             if not primary_allow_stale:
                 invalid_or_stale = True
@@ -1942,6 +2114,45 @@ def compute_benchmark_result(
     p25: Optional[float] = None
     p75: Optional[float] = None
     dispersion: Optional[float] = None
+    selected_sources: Optional[List[str]] = None
+    selected_quote_time: Optional[str] = None
+    selection_method: Optional[str] = None
+
+    if benchmark_key == "official" and source_latest_quote_times:
+        freshest_time = max(source_latest_quote_times.values())
+        freshest_sources = [src for src, ts in source_latest_quote_times.items() if ts == freshest_time]
+        selected_candidates = list(freshest_sources)
+        best_update_count: Optional[int] = None
+        if freshest_sources:
+            best_update_count = max(source_update_counts.get(src, 0) for src in freshest_sources)
+            if best_update_count > 0:
+                cadence_winners = [
+                    src for src in freshest_sources if source_update_counts.get(src, 0) == best_update_count
+                ]
+                if cadence_winners:
+                    selected_candidates = cadence_winners
+            selection_method = (
+                "freshest_quote_time_then_update_cadence"
+                if len(selected_candidates) < len(freshest_sources)
+                else "freshest_quote_time"
+            )
+        freshest_values = [source_medians[src] for src in selected_candidates if src in source_medians]
+        if freshest_values:
+            medians = freshest_values
+            selected_sources = sorted(selected_candidates)
+            selected_quote_time = iso_ts(freshest_time)
+            for source, ts in source_latest_quote_times.items():
+                if source in selected_candidates:
+                    continue
+                if source in freshest_sources and best_update_count is not None:
+                    source_notes[source] = (
+                        f"same freshest quote ({iso_ts(ts)}) but lower update cadence "
+                        f"({source_update_counts.get(source, 0)} vs {best_update_count})"
+                    )
+                else:
+                    source_notes[source] = (
+                        f"older quote ({iso_ts(ts)}) than freshest source ({iso_ts(freshest_time)})"
+                    )
 
     if not withheld:
         fix_value = median(medians)
@@ -1976,7 +2187,11 @@ def compute_benchmark_result(
         "withhold_reasons": reasons,
         "source_medians": source_medians,
         "source_units": source_units,
+        "source_update_counts": source_update_counts,
         "source_notes": source_notes,
+        "selected_sources": selected_sources,
+        "selected_quote_time": selected_quote_time,
+        "selection_method": selection_method,
         "available": (fix_value is not None and not withheld),
     }
 
@@ -2683,6 +2898,10 @@ def publish_status(
             "alanchand_street": "Street Market Feed",
             "bonbast": "Street Market Feed (Secondary)",
             "navasan": "Commercial Market Feed",
+            "tgju_call": "Commercial Market Feed (TGJU ICE)",
+            "tgju_call2": "Commercial Market Feed (TGJU ICE Call2)",
+            "tgju_call3": "Commercial Market Feed (TGJU ICE Call3)",
+            "tgju_call4": "Commercial Market Feed (TGJU ICE Call4)",
             "alanchand": "Regional Market Feed",
         }
         key = source_name.strip().lower()
