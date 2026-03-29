@@ -2990,9 +2990,30 @@ def publish_status(
     benchmarks = effective_latest.get("benchmarks", {})
     if not isinstance(benchmarks, dict):
         benchmarks = {}
-    sources = effective_latest.get("sources", {})
-    if not isinstance(sources, dict):
-        sources = {}
+    raw_sources = effective_latest.get("sources", {})
+    if not isinstance(raw_sources, dict):
+        raw_sources = {}
+    sources: Dict[str, Dict[str, Any]] = {}
+    for source_name, source_data in raw_sources.items():
+        source_key = canonical_source_name(str(source_name))
+        normalized_data = source_data if isinstance(source_data, dict) else {}
+        existing = sources.get(source_key)
+        if existing is None:
+            sources[source_key] = dict(normalized_data)
+            continue
+        existing_samples = existing.get("samples")
+        incoming_samples = normalized_data.get("samples")
+        if not isinstance(existing_samples, list):
+            existing_samples = []
+        if isinstance(incoming_samples, list) and incoming_samples:
+            existing["samples"] = existing_samples + incoming_samples
+        if not isinstance(existing.get("note"), str) and isinstance(normalized_data.get("note"), str):
+            existing["note"] = normalized_data.get("note")
+
+    # Status page should show the full configured source universe, even when
+    # the latest published day is based on older artifacts with fewer source keys.
+    for cfg in build_source_configs():
+        sources.setdefault(cfg.name, {"samples": []})
 
     fix = parse_number(computed.get("fix"))
     withheld = bool(computed.get("withheld", True))
@@ -3049,9 +3070,11 @@ def publish_status(
     publication_updated = fmt_status_time(effective_latest.get("as_of") or generated_at)
 
     source_rows: List[Dict[str, str]] = []
-    for idx, (source_name, source_data) in enumerate(sorted(sources.items(), key=lambda item: str(item[0]).lower()), start=1):
+    ordered_source_names = sorted(sources.keys(), key=lambda item: str(item).lower())
+    for idx, source_name in enumerate(ordered_source_names, start=1):
+        source_data = sources.get(source_name, {})
         if not isinstance(source_data, dict):
-            continue
+            source_data = {}
         samples = source_data.get("samples", [])
         if not isinstance(samples, list):
             samples = []
@@ -3175,6 +3198,8 @@ def publish_status(
                     note = "Source request failed."
                 elif isinstance(sample_error, str) and sample_error.strip():
                     note = "Source request failed."
+        if not note and not samples:
+            note = "No sample in latest published day."
         if not note:
             note = "Collecting normally." if source_status == "Online" else "No additional notes."
 
