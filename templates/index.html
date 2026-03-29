@@ -249,11 +249,49 @@
 <script>
 let historyChart = null;
 let cachedValidRows = [];
+const latestPointPulsePlugin = {
+  id: 'rwLatestPointPulse',
+  afterDatasetsDraw(chart, _args, pluginOptions) {
+    if (!pluginOptions || pluginOptions.enabled === false) return;
+    const dataset = chart.getDatasetMeta(0);
+    if (!dataset || !Array.isArray(dataset.data) || !dataset.data.length) return;
+
+    const point = dataset.data[dataset.data.length - 1];
+    if (!point) return;
+
+    const colors = historyThemeColors();
+    const now = Date.now();
+    const cycleMs = 1400;
+    const phase = (now % cycleMs) / cycleMs;
+    const radius = 6 + phase * 10;
+    const alpha = 0.35 * (1 - phase);
+    const pulseColor = colors.accentRgb || '59,130,246';
+    const coords = point.getProps(['x', 'y'], true);
+
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(coords.x, coords.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${pulseColor}, ${alpha.toFixed(3)})`;
+    ctx.fill();
+    ctx.restore();
+
+    if (document.hidden) return;
+    if (!chart.$rwPulseFrameRequested) {
+      chart.$rwPulseFrameRequested = true;
+      requestAnimationFrame(() => {
+        chart.$rwPulseFrameRequested = false;
+        if (!chart._destroyed) chart.draw();
+      });
+    }
+  }
+};
 
 function historyThemeColors() {
   const styles = getComputedStyle(document.documentElement);
   return {
     accent: styles.getPropertyValue('--rw-accent').trim() || '#3b82f6',
+    accentRgb: styles.getPropertyValue('--rw-accent-rgb').trim() || '59,130,246',
     accentFill: styles.getPropertyValue('--rw-accent-fill').trim() || 'rgba(59,130,246,0.15)',
     label: styles.getPropertyValue('--rw-chart-label').trim() || '#94a3b8',
     grid: styles.getPropertyValue('--rw-chart-grid').trim() || '#1e293b'
@@ -289,6 +327,7 @@ function renderHistoryChart(validRows) {
   const ctx = canvas.getContext('2d');
   historyChart = new Chart(ctx, {
     type: 'line',
+    plugins: [latestPointPulsePlugin],
     data: {
       labels: validRows.map(r => r.date),
       datasets: [{
@@ -296,13 +335,21 @@ function renderHistoryChart(validRows) {
         data: validRows.map(r => r.fixNum),
         borderColor: colors.accent,
         backgroundColor: colors.accentFill,
+        pointBackgroundColor: colors.accent,
+        pointBorderColor: colors.accent,
+        pointBorderWidth: 0,
+        pointRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 3.5 : 0),
+        pointHoverRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 5 : 0),
         tension: 0.2,
         fill: true
       }]
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: false } },
+      plugins: {
+        legend: { display: false },
+        rwLatestPointPulse: { enabled: true }
+      },
       scales: {
         x: { ticks: { color: colors.label }, grid: { color: colors.grid } },
         y: { ticks: { color: colors.label }, grid: { color: colors.grid } }
