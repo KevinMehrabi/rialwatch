@@ -84,7 +84,7 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(sample.value, 1_535_000.0)
         self.assertEqual(sample.source_unit, "mixed")
 
-    def test_extract_value_by_symbol_candidates_supports_tgju_p_field(self) -> None:
+    def test_extract_value_by_symbol_candidates_supports_aux_p_field(self) -> None:
         payload = {
             "current": {
                 "ice_transfer_usd_sell": {
@@ -126,7 +126,7 @@ class RegimeModelTests(unittest.TestCase):
             source_unit="rial",
         )
         fresher = pipeline.Sample(
-            source="tgju_call3",
+            source="commercial_aux_b",
             sampled_at=dt.datetime(2026, 3, 29, 12, 11, tzinfo=dt.timezone.utc),
             value=None,
             benchmark_values={"official": 1_403_083.0},
@@ -141,17 +141,17 @@ class RegimeModelTests(unittest.TestCase):
         )
         samples = {
             "navasan": [older],
-            "tgju_call3": [fresher],
+            "commercial_aux_b": [fresher],
         }
         benchmark_sources = {
             "navasan": ("official",),
-            "tgju_call3": ("official",),
+            "commercial_aux_b": ("official",),
         }
         result = pipeline.compute_benchmark_result(samples, "official", benchmark_sources)
         self.assertEqual(result["fix"], 1_403_083.0)
         self.assertEqual(result["selection_method"], "freshest_quote_time")
-        self.assertEqual(result["selected_sources"], ["tgju_call3"])
-        self.assertEqual(result["source_update_counts"]["tgju_call3"], 1)
+        self.assertEqual(result["selected_sources"], ["commercial_aux_b"])
+        self.assertEqual(result["source_update_counts"]["commercial_aux_b"], 1)
         self.assertFalse(result["withheld"])
 
     def test_official_benchmark_breaks_freshest_ties_by_update_cadence(self) -> None:
@@ -169,8 +169,8 @@ class RegimeModelTests(unittest.TestCase):
             },
             source_unit="rial",
         )
-        tgju_older = pipeline.Sample(
-            source="tgju_call4",
+        aux_older = pipeline.Sample(
+            source="commercial_aux_c",
             sampled_at=dt.datetime(2026, 3, 29, 12, 9, tzinfo=dt.timezone.utc),
             value=None,
             benchmark_values={"official": 1_402_500.0},
@@ -183,8 +183,8 @@ class RegimeModelTests(unittest.TestCase):
             },
             source_unit="rial",
         )
-        tgju_latest = pipeline.Sample(
-            source="tgju_call4",
+        aux_latest = pipeline.Sample(
+            source="commercial_aux_c",
             sampled_at=dt.datetime(2026, 3, 29, 12, 11, tzinfo=dt.timezone.utc),
             value=None,
             benchmark_values={"official": 1_403_083.0},
@@ -199,23 +199,23 @@ class RegimeModelTests(unittest.TestCase):
         )
         samples = {
             "navasan": [navasan_only_latest],
-            "tgju_call4": [tgju_older, tgju_latest],
+            "commercial_aux_c": [aux_older, aux_latest],
         }
         benchmark_sources = {
             "navasan": ("official",),
-            "tgju_call4": ("official",),
+            "commercial_aux_c": ("official",),
         }
         result = pipeline.compute_benchmark_result(samples, "official", benchmark_sources)
         self.assertEqual(result["fix"], 1_403_083.0)
         self.assertEqual(result["selection_method"], "freshest_quote_time_then_update_cadence")
-        self.assertEqual(result["selected_sources"], ["tgju_call4"])
-        self.assertEqual(result["source_update_counts"]["tgju_call4"], 2)
+        self.assertEqual(result["selected_sources"], ["commercial_aux_c"])
+        self.assertEqual(result["source_update_counts"]["commercial_aux_c"], 2)
         self.assertEqual(result["source_update_counts"]["navasan"], 1)
         self.assertFalse(result["withheld"])
 
-    def test_build_source_configs_includes_multiple_tgju_call_hosts(self) -> None:
+    def test_build_source_configs_includes_multiple_aux_hosts(self) -> None:
         source_names = {cfg.name for cfg in pipeline.build_source_configs()}
-        self.assertTrue({"tgju_call2", "tgju_call3", "tgju_call4"}.issubset(source_names))
+        self.assertTrue({"commercial_aux_a", "commercial_aux_b", "commercial_aux_c", "commercial_aux"}.issubset(source_names))
 
 
 if __name__ == "__main__":

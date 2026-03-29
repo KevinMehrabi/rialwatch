@@ -76,11 +76,21 @@ BENCHMARK_SYMBOL_CANDIDATES: Dict[str, Tuple[str, ...]] = {
     "emami_gold_coin": ("sekkeh", "sekke", "emami", "coin_emami", "sekeh_emami"),
 }
 
-TGJU_CALL_SOURCE_NAMES: Tuple[str, ...] = ("tgju_call2", "tgju_call3", "tgju_call4")
-TGJU_LEGACY_SOURCE_ALIASES: Tuple[str, ...] = ("tgju_call",)
-TGJU_CALL_SOURCE_SET = frozenset((*TGJU_CALL_SOURCE_NAMES, *TGJU_LEGACY_SOURCE_ALIASES))
-TGJU_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
-    # Iran Exchange Center / remittance sell quote on TGJU.
+COMMERCIAL_AUX_SOURCE_NAMES: Tuple[str, ...] = (
+    "commercial_aux_a",
+    "commercial_aux_b",
+    "commercial_aux_c",
+    "commercial_aux",
+)
+LEGACY_SOURCE_ALIASES: Dict[str, str] = {
+    "tgju_call2": "commercial_aux_a",
+    "tgju_call3": "commercial_aux_b",
+    "tgju_call4": "commercial_aux_c",
+    "tgju_call": "commercial_aux",
+}
+COMMERCIAL_AUX_SOURCE_SET = frozenset(COMMERCIAL_AUX_SOURCE_NAMES)
+COMMERCIAL_AUX_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
+    # Iran Exchange Center / remittance sell quote on auxiliary commercial endpoints.
     "official": ("ice_transfer_usd_sell",),
 }
 
@@ -95,7 +105,7 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
         "crypto_usdt": ("usdt",),
         "emami_gold_coin": ("sekkeh",),
     },
-    **{name: dict(TGJU_OFFICIAL_SYMBOLS) for name in TGJU_CALL_SOURCE_SET},
+    **{name: dict(COMMERCIAL_AUX_OFFICIAL_SYMBOLS) for name in COMMERCIAL_AUX_SOURCE_SET},
     "alanchand": {
         "regional_transfer": ("usd-hav", "usd_hav"),
         "crypto_usdt": ("usdt",),
@@ -816,8 +826,21 @@ def env_or_default(name: str, default: str) -> str:
     return default
 
 
-def is_tgju_call_source(name: str) -> bool:
-    return name.strip().lower() in TGJU_CALL_SOURCE_SET
+def env_first(*names: str, default: str) -> str:
+    for name in names:
+        value = os.environ.get(name)
+        if value and value.strip():
+            return value
+    return default
+
+
+def canonical_source_name(name: str) -> str:
+    normalized = name.strip().lower()
+    return LEGACY_SOURCE_ALIASES.get(normalized, normalized)
+
+
+def is_commercial_aux_source(name: str) -> bool:
+    return canonical_source_name(name) in COMMERCIAL_AUX_SOURCE_SET
 
 
 def build_source_configs() -> List[SourceConfig]:
@@ -847,32 +870,48 @@ def build_source_configs() -> List[SourceConfig]:
             default_unit="toman",
         ),
         SourceConfig(
-            name="tgju_call2",
-            url=env_or_default("TGJU_CALL2_URL", "https://call2.tgju.org/ajax.json"),
+            name="commercial_aux_a",
+            url=env_first(
+                "COMMERCIAL_AUX_A_URL",
+                "TGJU_CALL2_URL",
+                default="https://call2.tgju.org/ajax.json",
+            ),
             auth_mode="public_json",
             secret_fields=(),
             benchmark_families=("official",),
             default_unit="rial",
         ),
         SourceConfig(
-            name="tgju_call3",
-            url=env_or_default("TGJU_CALL3_URL", "https://call3.tgju.org/ajax.json"),
+            name="commercial_aux_b",
+            url=env_first(
+                "COMMERCIAL_AUX_B_URL",
+                "TGJU_CALL3_URL",
+                default="https://call3.tgju.org/ajax.json",
+            ),
             auth_mode="public_json",
             secret_fields=(),
             benchmark_families=("official",),
             default_unit="rial",
         ),
         SourceConfig(
-            name="tgju_call4",
-            url=env_or_default("TGJU_CALL4_URL", "https://call4.tgju.org/ajax.json"),
+            name="commercial_aux_c",
+            url=env_first(
+                "COMMERCIAL_AUX_C_URL",
+                "TGJU_CALL4_URL",
+                default="https://call4.tgju.org/ajax.json",
+            ),
             auth_mode="public_json",
             secret_fields=(),
             benchmark_families=("official",),
             default_unit="rial",
         ),
         SourceConfig(
-            name="tgju_call",
-            url=env_or_default("TGJU_CALL_URL", "https://call.tgju.org/ajax.json"),
+            name="commercial_aux",
+            url=env_first(
+                "COMMERCIAL_AUX_URL",
+                "TGJU_CALL_URL",
+                default="https://call.tgju.org/ajax.json",
+            ),
             auth_mode="public_json",
             secret_fields=(),
             benchmark_families=("official",),
@@ -935,8 +974,8 @@ def build_request(config: SourceConfig) -> urllib.request.Request:
         else:
             headers["X-API-Key"] = key
             url = with_query(url, {"api_key": key})
-    elif is_tgju_call_source(config.name):
-        # TGJU call endpoint is aggressively cached at edge on some hosts; force a fresh variant key.
+    elif is_commercial_aux_source(config.name):
+        # Auxiliary commercial endpoints are aggressively cached at edge on some hosts; force a fresh variant key.
         url = with_query(url, {"rev": str(time.time_ns())})
 
     return urllib.request.Request(url=url, headers=headers, method="GET")
@@ -2898,10 +2937,15 @@ def publish_status(
             "alanchand_street": "Street Market Feed",
             "bonbast": "Street Market Feed (Secondary)",
             "navasan": "Commercial Market Feed",
-            "tgju_call": "Commercial Market Feed (TGJU ICE)",
-            "tgju_call2": "Commercial Market Feed (TGJU ICE Call2)",
-            "tgju_call3": "Commercial Market Feed (TGJU ICE Call3)",
-            "tgju_call4": "Commercial Market Feed (TGJU ICE Call4)",
+            "commercial_aux": "Commercial Market Feed (Auxiliary)",
+            "commercial_aux_a": "Commercial Market Feed (Auxiliary A)",
+            "commercial_aux_b": "Commercial Market Feed (Auxiliary B)",
+            "commercial_aux_c": "Commercial Market Feed (Auxiliary C)",
+            # Backward-compatible display for legacy persisted source names.
+            "tgju_call": "Commercial Market Feed (Auxiliary)",
+            "tgju_call2": "Commercial Market Feed (Auxiliary A)",
+            "tgju_call3": "Commercial Market Feed (Auxiliary B)",
+            "tgju_call4": "Commercial Market Feed (Auxiliary C)",
             "alanchand": "Regional Market Feed",
         }
         key = source_name.strip().lower()
@@ -4192,7 +4236,8 @@ def load_samples_from_daily_payload(daily: Dict[str, Any], source_configs: List[
         return samples
 
     for source, source_data in sources.items():
-        if source not in samples:
+        source_key = canonical_source_name(str(source))
+        if source_key not in samples:
             continue
         if not isinstance(source_data, dict):
             continue
@@ -4203,10 +4248,10 @@ def load_samples_from_daily_payload(daily: Dict[str, Any], source_configs: List[
         for row in rows:
             if not isinstance(row, dict):
                 continue
-            parsed = parse_sample_record(source, row)
+            parsed = parse_sample_record(source_key, row)
             if parsed is not None:
                 parsed_rows.append(parsed)
-        samples[source] = parsed_rows
+        samples[source_key].extend(parsed_rows)
 
     return samples
 
@@ -4328,15 +4373,16 @@ def attempt_to_samples(attempt: Dict[str, Any]) -> Dict[str, List[Sample]]:
 
     output: Dict[str, List[Sample]] = {}
     for source, data in sources.items():
+        source_key = canonical_source_name(str(source))
         if not isinstance(data, dict):
             continue
         sample_data = data.get("sample")
         if not isinstance(sample_data, dict):
             continue
-        parsed = parse_sample_record(source, sample_data)
+        parsed = parse_sample_record(source_key, sample_data)
         if parsed is None:
             continue
-        output[source] = [parsed]
+        output.setdefault(source_key, []).append(parsed)
     return output
 
 
