@@ -3,12 +3,13 @@ from __future__ import annotations
 
 import argparse
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 
 TARGET_LOCALITIES = ["Iran", "UAE", "Turkey", "Afghanistan", "UK", "Iraq", "Germany"]
+DEFAULT_HISTORY_DAYS = 365
 STATE_RANK = {"publish": 3, "monitor": 2, "hide": 1}
 SOURCE_RANK = {
     "regional_fx_board_basket_review": 3,
@@ -405,6 +406,160 @@ def write_json(path: Path, payload: Dict[str, Any]) -> None:
         handle.write("\n")
 
 
+def history_row_from_card(card: Dict[str, Any], generated_at: str) -> Dict[str, Any]:
+    ts = generated_at.strip() if isinstance(generated_at, str) else ""
+    parsed = parse_iso(ts)
+    date_text = parsed.date().isoformat() if parsed else ""
+    return {
+        "timestamp": ts,
+        "date": date_text,
+        "basket_name": str(card.get("basket_name") or "").strip(),
+        "display_state": str(card.get("display_state") or "").strip(),
+        "signal_type_used": str(card.get("signal_type_used") or "").strip(),
+        "signal_label": str(card.get("signal_label") or "").strip(),
+        "source_artifact": str(card.get("source_artifact") or "").strip(),
+        "weighted_rate": to_float(card.get("weighted_rate")),
+        "median_rate": to_float(card.get("median_rate")),
+        "spread_vs_benchmark_pct": to_float(card.get("spread_vs_benchmark_pct")),
+        "usable_record_count": to_int(card.get("usable_record_count")),
+        "contributing_source_count": to_int(card.get("contributing_source_count")),
+        "basket_confidence": to_float(card.get("basket_confidence")),
+        "freshness_status": str(card.get("freshness_status") or "").strip(),
+        "dispersion_level": str(card.get("dispersion_level") or "").strip(),
+        "suppression_reason": str(card.get("suppression_reason") or "").strip(),
+        "alignment_label": str(card.get("alignment_label") or "").strip(),
+    }
+
+
+def _history_key(row: Dict[str, Any]) -> tuple:
+    return (
+        str(row.get("timestamp") or ""),
+        str(row.get("basket_name") or ""),
+    )
+
+
+def _history_sort_key(row: Dict[str, Any]) -> tuple:
+    return (
+        str(row.get("timestamp") or ""),
+        str(row.get("basket_name") or ""),
+    )
+
+
+def prune_history_rows(rows: List[Dict[str, Any]], history_days: int, latest_timestamp: str) -> List[Dict[str, Any]]:
+    if history_days <= 0:
+        return rows
+    latest = parse_iso(latest_timestamp)
+    if latest is None:
+        return rows
+    cutoff = latest - timedelta(days=max(history_days - 1, 0))
+    out: List[Dict[str, Any]] = []
+    for row in rows:
+        ts = parse_iso(row.get("timestamp"))
+        if ts is None or ts >= cutoff:
+            out.append(row)
+    return out
+
+
+def build_regional_history_payload(
+    cards_payload: Dict[str, Any],
+    existing_history_payload: Dict[str, Any],
+    history_days: int,
+) -> Dict[str, Any]:
+    generated_at = str(cards_payload.get("generated_at") or "").strip()
+    cards = cards_payload.get("cards", [])
+    existing_rows = existing_history_payload.get("rows", []) if isinstance(existing_history_payload, dict) else []
+    merged: Dict[tuple, Dict[str, Any]] = {}
+    if isinstance(existing_rows, list):
+        for row in existing_rows:
+            if not isinstance(row, dict):
+                continue
+            key = _history_key(row)
+            if key[0] and key[1]:
+                merged[key] = row
+
+    if isinstance(cards, list):
+        for card in cards:
+            if not isinstance(card, dict):
+                continue
+            row = history_row_from_card(card, generated_at)
+            key = _history_key(row)
+            if key[0] and key[1]:
+                merged[key] = row
+
+    rows = sorted(merged.values(), key=_history_sort_key)
+    rows = prune_history_rows(rows, history_days, generated_at)
+
+    localities = sorted({str(row.get("basket_name") or "").strip() for row in rows if str(row.get("basket_name") or "").strip()})
+    return {
+        "generated_at": generated_at,
+        "history_days": history_days,
+        "rows": rows,
+        "row_count": len(rows),
+        "localities": localities,
+    }
+
+
+def build_regional_timeseries_payload(history_payload: Dict[str, Any]) -> Dict[str, Any]:
+    rows = history_payload.get("rows", [])
+    series_map: Dict[str, List[Dict[str, Any]]] = {}
+    if isinstance(rows, list):
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            locality = str(row.get("basket_name") or "").strip()
+            if not locality:
+                continue
+            point = {
+                "timestamp": str(row.get("timestamp") or "").strip(),
+                "date": str(row.get("date") or "").strip(),
+                "weighted_rate": to_float(row.get("weighted_rate")),
+                "median_rate": to_float(row.get("median_rate")),
+                "spread_vs_benchmark_pct": to_float(row.get("spread_vs_benchmark_pct")),
+                "basket_confidence": to_float(row.get("basket_confidence")),
+                "usable_record_count": to_int(row.get("usable_record_count")),
+                "contributing_source_count": to_int(row.get("contributing_source_count")),
+                "display_state": str(row.get("display_state") or "").strip(),
+                "freshness_status": str(row.get("freshness_status") or "").strip(),
+                "dispersion_level": str(row.get("dispersion_level") or "").strip(),
+                "alignment_label": str(row.get("alignment_label") or "").strip(),
+            }
+            series_map.setdefault(locality, []).append(point)
+
+    localities_payload: Dict[str, Dict[str, Any]] = {}
+    for locality in sorted(series_map.keys()):
+        points = sorted(
+            series_map[locality],
+            key=lambda p: (str(p.get("timestamp") or ""), str(p.get("date") or "")),
+        )
+        daily_latest: Dict[str, Dict[str, Any]] = {}
+        for point in points:
+            day = str(point.get("date") or "")
+            if not day:
+                continue
+            prior = daily_latest.get(day)
+            if prior is None or str(point.get("timestamp") or "") >= str(prior.get("timestamp") or ""):
+                daily_latest[day] = point
+        daily_points = [daily_latest[day] for day in sorted(daily_latest.keys())]
+        localities_payload[locality] = {
+            "point_count": len(points),
+            "daily_point_count": len(daily_points),
+            "latest_point": points[-1] if points else None,
+            "points": points,
+            "daily_points": daily_points,
+        }
+
+    return {
+        "generated_at": str(history_payload.get("generated_at") or ""),
+        "history_days": to_int(history_payload.get("history_days")),
+        "localities": localities_payload,
+        "summary": {
+            "locality_count": len(localities_payload),
+            "total_points": sum(int(item.get("point_count", 0)) for item in localities_payload.values()),
+            "total_daily_points": sum(int(item.get("daily_point_count", 0)) for item in localities_payload.values()),
+        },
+    }
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build merged regional market signals card payload.")
     parser.add_argument(
@@ -431,6 +586,24 @@ def parse_args() -> argparse.Namespace:
         default=Path("site/api/regional_market_signals_card.json"),
         help="Output path for merged homepage card payload.",
     )
+    parser.add_argument(
+        "--history-out",
+        type=Path,
+        default=Path("site/api/regional_market_signals_history.json"),
+        help="Output path for regional signal history artifact.",
+    )
+    parser.add_argument(
+        "--timeseries-out",
+        type=Path,
+        default=Path("site/api/regional_market_signals_timeseries.json"),
+        help="Output path for regional signal timeseries artifact.",
+    )
+    parser.add_argument(
+        "--history-days",
+        type=int,
+        default=DEFAULT_HISTORY_DAYS,
+        help="Retention window in days for regional signal history (0 = keep all).",
+    )
     return parser.parse_args()
 
 
@@ -442,6 +615,11 @@ def main() -> None:
 
     payload = build_regional_market_cards_payload(regional_payload, enriched_payload, legacy_payload)
     write_json(args.out, payload)
+    existing_history = read_json(args.history_out)
+    history_payload = build_regional_history_payload(payload, existing_history, args.history_days)
+    write_json(args.history_out, history_payload)
+    timeseries_payload = build_regional_timeseries_payload(history_payload)
+    write_json(args.timeseries_out, timeseries_payload)
 
     summary = payload.get("summary", {})
     print(
@@ -450,6 +628,9 @@ def main() -> None:
         f"monitor={summary.get('monitor_count', 0)}",
         f"hide={summary.get('hide_count', 0)}",
         f"out={args.out}",
+        f"history_rows={history_payload.get('row_count', 0)}",
+        f"history_out={args.history_out}",
+        f"timeseries_out={args.timeseries_out}",
     )
 
 

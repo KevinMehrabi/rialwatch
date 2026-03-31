@@ -192,6 +192,110 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["monitor_count"], 1)
         self.assertEqual(payload["summary"]["hide_count"], 1)
 
+    def test_build_regional_history_payload_upserts_and_prunes(self) -> None:
+        cards_payload = {
+            "generated_at": "2026-03-31T10:00:00Z",
+            "cards": [
+                {
+                    "basket_name": "Iran",
+                    "display_state": "publish",
+                    "signal_type_used": "exchange_shop",
+                    "signal_label": "Exchange network signal",
+                    "source_artifact": "exchange_shop_baskets_enriched",
+                    "weighted_rate": 1_450_000.0,
+                    "median_rate": 1_448_000.0,
+                    "spread_vs_benchmark_pct": 0.21,
+                    "usable_record_count": 100,
+                    "contributing_source_count": 8,
+                    "basket_confidence": 82.5,
+                    "freshness_status": "fresh",
+                    "dispersion_level": "low",
+                    "suppression_reason": "",
+                    "alignment_label": "Aligned",
+                },
+                {
+                    "basket_name": "UK",
+                    "display_state": "publish",
+                    "signal_type_used": "exchange_shop",
+                    "signal_label": "Exchange network signal",
+                    "source_artifact": "exchange_shop_baskets_enriched",
+                    "weighted_rate": 1_860_000.0,
+                    "median_rate": 1_858_000.0,
+                    "spread_vs_benchmark_pct": 28.0,
+                    "usable_record_count": 20,
+                    "contributing_source_count": 3,
+                    "basket_confidence": 91.1,
+                    "freshness_status": "recent",
+                    "dispersion_level": "low",
+                    "suppression_reason": "",
+                    "alignment_label": "Divergent",
+                },
+            ],
+        }
+        existing_history = {
+            "generated_at": "2026-03-30T10:00:00Z",
+            "rows": [
+                {
+                    "timestamp": "2026-03-29T10:00:00Z",
+                    "date": "2026-03-29",
+                    "basket_name": "Iran",
+                    "weighted_rate": 1_430_000.0,
+                },
+                {
+                    "timestamp": "2026-03-31T10:00:00Z",
+                    "date": "2026-03-31",
+                    "basket_name": "Iran",
+                    "weighted_rate": 1_200_000.0,
+                },
+            ],
+        }
+
+        history = cards.build_regional_history_payload(cards_payload, existing_history, history_days=2)
+        self.assertEqual(history["row_count"], 2)
+        by_locality = {row["basket_name"]: row for row in history["rows"]}
+        self.assertIn("Iran", by_locality)
+        self.assertIn("UK", by_locality)
+        self.assertEqual(by_locality["Iran"]["weighted_rate"], 1_450_000.0)
+        self.assertEqual(by_locality["Iran"]["date"], "2026-03-31")
+
+    def test_build_regional_timeseries_payload_produces_daily_points(self) -> None:
+        history_payload = {
+            "generated_at": "2026-03-31T10:00:00Z",
+            "history_days": 365,
+            "rows": [
+                {
+                    "timestamp": "2026-03-30T08:00:00Z",
+                    "date": "2026-03-30",
+                    "basket_name": "Iran",
+                    "weighted_rate": 1_440_000.0,
+                    "display_state": "publish",
+                },
+                {
+                    "timestamp": "2026-03-30T20:00:00Z",
+                    "date": "2026-03-30",
+                    "basket_name": "Iran",
+                    "weighted_rate": 1_445_000.0,
+                    "display_state": "publish",
+                },
+                {
+                    "timestamp": "2026-03-31T09:00:00Z",
+                    "date": "2026-03-31",
+                    "basket_name": "Iran",
+                    "weighted_rate": 1_450_000.0,
+                    "display_state": "publish",
+                },
+            ],
+        }
+
+        payload = cards.build_regional_timeseries_payload(history_payload)
+        iran = payload["localities"]["Iran"]
+        self.assertEqual(iran["point_count"], 3)
+        self.assertEqual(iran["daily_point_count"], 2)
+        self.assertEqual(iran["daily_points"][0]["timestamp"], "2026-03-30T20:00:00Z")
+        self.assertEqual(iran["latest_point"]["timestamp"], "2026-03-31T09:00:00Z")
+        self.assertEqual(payload["summary"]["total_points"], 3)
+        self.assertEqual(payload["summary"]["total_daily_points"], 2)
+
 
 if __name__ == "__main__":
     unittest.main()
