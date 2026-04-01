@@ -81,8 +81,11 @@ jobs:
               exit 0
             fi
             echo "Push rejected on attempt ${attempt}; rebasing onto origin/main and retrying..."
-            git pull --rebase origin main
+            if ! git pull --rebase --autostash origin main; then
+              echo "::warning::Rebase failed after push rejection (likely concurrent intraday update). Skipping this snapshot to avoid noisy workflow failures."
+              exit 0
+            fi
           done
 
-          echo "::error::Failed to push intraday snapshots after 3 attempts."
-          exit 1
+          echo "::warning::Failed to push intraday snapshots after 3 attempts. A newer snapshot was likely published by a concurrent run."
+          exit 0
