@@ -422,6 +422,7 @@
 
   .top-grid .dashboard-card {
     min-height: 0;
+    height: auto;
   }
 
   .dashboard-card .card-body {
@@ -751,8 +752,14 @@
       grid-template-columns: 1fr;
     }
 
-    .top-grid .dashboard-card {
-      min-height: 320px;
+    .top-grid .chart-card {
+      order: 1;
+      min-height: 270px;
+    }
+
+    .top-grid .primary-card {
+      order: 2;
+      min-height: 0;
     }
   }
 </style>
