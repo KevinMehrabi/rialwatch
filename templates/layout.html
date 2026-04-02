@@ -399,7 +399,7 @@
 
   .top-grid {
     grid-template-columns: 4fr 8fr;
-    align-items: start;
+    align-items: stretch;
   }
 
   .indicators-grid {
@@ -422,7 +422,7 @@
 
   .top-grid .dashboard-card {
     min-height: 0;
-    height: auto;
+    height: 100%;
   }
 
   .dashboard-card .card-body {
@@ -561,7 +561,11 @@
   }
 
   .chart-card #historyChart {
-    max-height: 320px;
+    width: 100%;
+    height: 100% !important;
+    min-height: 320px;
+    max-height: none;
+    flex: 1 1 auto;
   }
 
   .recent-table-wrap {
@@ -755,11 +759,17 @@
     .top-grid .chart-card {
       order: 1;
       min-height: 270px;
+      height: auto;
     }
 
     .top-grid .primary-card {
       order: 2;
       min-height: 0;
+      height: auto;
+    }
+
+    .chart-card #historyChart {
+      min-height: 260px;
     }
   }
 </style>
