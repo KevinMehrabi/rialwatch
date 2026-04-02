@@ -398,12 +398,24 @@
   }
 
   .top-grid {
-    grid-template-columns: 4fr 8fr;
+    grid-template-columns: 3.2fr 8.8fr;
     align-items: start;
   }
 
+  .top-left-column {
+    display: grid;
+    gap: 20px;
+    align-items: start;
+  }
+
+  .top-left-indicators {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
   .indicators-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
   }
 
@@ -539,6 +551,14 @@
     line-height: 1.05;
     font-weight: 700;
     color: var(--rw-text-strong);
+  }
+
+  .indicator-value-main.compact {
+    font-size: 1.95rem;
+  }
+
+  .indicator-compact-card {
+    min-height: 0;
   }
 
   .indicator-compare {
@@ -766,10 +786,8 @@
       height: auto;
     }
 
-    .top-grid .primary-card {
+    .top-grid .top-left-column {
       order: 2;
-      min-height: 0;
-      height: auto;
     }
 
     .chart-card #historyChart {
