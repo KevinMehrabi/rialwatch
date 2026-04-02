@@ -292,6 +292,25 @@
     text-align: center;
   }
 
+  .site-footer-contact {
+    margin-top: 6px;
+    color: var(--rw-text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .site-footer-contact a {
+    color: var(--rw-link);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .site-footer-contact a:hover,
+  .site-footer-contact a:focus {
+    color: var(--rw-link-hover);
+    text-decoration: underline;
+  }
+
   .page-wrapper {
     background: var(--rw-bg) !important;
     min-height: 100vh;
@@ -781,6 +800,7 @@
       ${content}
       <div class="text-secondary site-generated-at">Generated at ${generated_at}</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
+      <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
   </div>
 </div>
