@@ -41,7 +41,7 @@
 
     <div class="card bg-dark text-white dashboard-card chart-card">
       <div class="card-body">
-        <div class="text-secondary mb-2">HISTORICAL SERIES</div>
+        <div class="text-secondary mb-2">STREET RATE TIMELINE</div>
         <canvas id="historyChart" height="320"></canvas>
       </div>
     </div>
@@ -331,6 +331,9 @@ function renderHistoryChart(validRows) {
   }
 
   const colors = historyThemeColors();
+  const isCompactViewport = window.matchMedia('(max-width: 700px)').matches;
+  const tickLimit = isCompactViewport ? 6 : 10;
+  const tickRotation = isCompactViewport ? 35 : 0;
   const ctx = canvas.getContext('2d');
   historyChart = new Chart(ctx, {
     type: 'line',
@@ -358,7 +361,23 @@ function renderHistoryChart(validRows) {
         rwLatestPointPulse: { enabled: true }
       },
       scales: {
-        x: { ticks: { color: colors.label }, grid: { color: colors.grid } },
+        x: {
+          ticks: {
+            color: colors.label,
+            autoSkip: true,
+            maxTicksLimit: tickLimit,
+            minRotation: tickRotation,
+            maxRotation: tickRotation,
+            callback(value) {
+              const raw = this.getLabelForValue(value);
+              if (typeof raw !== 'string') return raw;
+              const parts = raw.split('-');
+              if (parts.length === 3) return `${parts[1]}-${parts[2]}`;
+              return raw;
+            }
+          },
+          grid: { color: colors.grid }
+        },
         y: { ticks: { color: colors.label }, grid: { color: colors.grid } }
       }
     }
