@@ -109,6 +109,38 @@
         <div class="indicator-note">${street_gold_gap_note}</div>
       </div>
     </div>
+
+    <div class="card bg-dark text-white dashboard-card">
+      <div class="card-body">
+        <div>
+          <div class="fw-semibold mb-1">Street-Official Spread</div>
+          <div class="text-secondary small mb-2">Absolute IRR difference between Street and Official Commercial rates.</div>
+        </div>
+        <div class="indicator-value-main indicator-value-secondary mt-3">${street_official_spread_value}</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> ${street_official_spread_street_value}</div>
+          <div><span class="text-secondary">Official:</span> ${street_official_spread_peer_value}</div>
+        </div>
+        <div class="indicator-sparkline mt-2">${street_official_spread_sparkline}</div>
+        <div class="indicator-note">${street_official_spread_note}</div>
+      </div>
+    </div>
+
+    <div class="card bg-dark text-white dashboard-card">
+      <div class="card-body">
+        <div>
+          <div class="fw-semibold mb-1">Street-Transfer Spread</div>
+          <div class="text-secondary small mb-2">Absolute IRR difference between Street and Regional Transfer rates.</div>
+        </div>
+        <div class="indicator-value-main indicator-value-secondary mt-3">${street_transfer_spread_value}</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> ${street_transfer_spread_street_value}</div>
+          <div><span class="text-secondary">Transfer:</span> ${street_transfer_spread_peer_value}</div>
+        </div>
+        <div class="indicator-sparkline mt-2">${street_transfer_spread_sparkline}</div>
+        <div class="indicator-note">${street_transfer_spread_note}</div>
+      </div>
+    </div>
   </div>
 </section>
 

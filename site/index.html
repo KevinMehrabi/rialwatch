@@ -36,6 +36,7 @@
     --rw-link: #d9e4f2;
     --rw-link-hover: #ffffff;
     --rw-accent: #3b82f6;
+    --rw-accent-rgb: 59,130,246;
     --rw-accent-fill: rgba(59, 130, 246, 0.15);
     --rw-chart-grid: rgba(148, 163, 184, 0.16);
     --rw-chart-label: #94a3b8;
@@ -63,6 +64,7 @@
     --rw-link: #233247;
     --rw-link-hover: #0f172a;
     --rw-accent: #2563eb;
+    --rw-accent-rgb: 37,99,235;
     --rw-accent-fill: rgba(37, 99, 235, 0.12);
     --rw-chart-grid: rgba(71, 85, 105, 0.15);
     --rw-chart-label: #64748b;
@@ -290,6 +292,25 @@
     text-align: center;
   }
 
+  .site-footer-contact {
+    margin-top: 6px;
+    color: var(--rw-text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .site-footer-contact a {
+    color: var(--rw-link);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .site-footer-contact a:hover,
+  .site-footer-contact a:focus {
+    color: var(--rw-link-hover);
+    text-decoration: underline;
+  }
+
   .page-wrapper {
     background: var(--rw-bg) !important;
     min-height: 100vh;
@@ -377,12 +398,12 @@
   }
 
   .top-grid {
-    grid-template-columns: 4fr 8fr;
+    grid-template-columns: 3fr 9fr;
     align-items: start;
   }
 
   .indicators-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
   }
 
@@ -401,6 +422,31 @@
 
   .top-grid .dashboard-card {
     min-height: 0;
+    height: auto;
+  }
+
+  .primary-card {
+    align-self: start;
+  }
+
+  .primary-metrics-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+    margin-top: 16px;
+    max-width: 280px;
+  }
+
+  .primary-metric-block {
+    line-height: 1.25;
+  }
+
+  .primary-rate-value {
+    font-size: 3.2rem;
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--rw-text-strong);
   }
 
   .dashboard-card .card-body {
@@ -515,6 +561,10 @@
     color: var(--rw-text-strong);
   }
 
+  .indicator-value-secondary {
+    font-size: 1.9rem;
+  }
+
   .indicator-compare {
     display: grid;
     gap: 4px;
@@ -539,7 +589,11 @@
   }
 
   .chart-card #historyChart {
-    max-height: 320px;
+    width: 100%;
+    height: auto !important;
+    min-height: 0;
+    max-height: none;
+    flex: 0 0 auto;
   }
 
   .recent-table-wrap {
@@ -730,8 +784,29 @@
       grid-template-columns: 1fr;
     }
 
-    .top-grid .dashboard-card {
-      min-height: 320px;
+    .top-grid .chart-card {
+      order: 1;
+      min-height: 270px;
+      height: auto;
+    }
+
+    .top-grid .primary-card {
+      order: 2;
+      min-height: 0;
+      height: auto;
+    }
+
+    .primary-metrics-stack {
+      max-width: none;
+      row-gap: 10px;
+    }
+
+    .primary-rate-value {
+      font-size: 2.6rem;
+    }
+
+    .chart-card #historyChart {
+      min-height: 0;
     }
   }
 </style>
@@ -769,7 +844,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-29T12:59:16Z">Last update: 2026-03-29T12:59:16Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-04-03T16:56:56Z">Last update: 2026-04-03T16:56:56Z</div>
         </div>
       </div>
     </div>
@@ -783,35 +858,30 @@
 
 <section class="dashboard-section">
   <div class="top-grid">
-    <div class="card bg-dark text-white dashboard-card">
+    <div class="card bg-dark text-white dashboard-card primary-card">
       <div class="card-body">
         <div>
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
-          <div class="h1 mb-1">1,557,250 IRR</div>
-          <div class="text-secondary">Date: 2026-03-28 | As of: 2026-03-28T15:13:50Z</div>
-          <div class="text-secondary small mt-1">Observed sample: 14:24 UTC (intraday window)</div>
-          <div class="text-secondary small mt-1">Freshly selected from today's intraday samples.</div>
+          <div class="primary-rate-value mb-1">N/A IRR</div>
           
         </div>
-        <div class="row mt-3">
-          <div class="col-6">
+        <div class="primary-metrics-stack">
+          <div class="primary-metric-block">
             <div class="text-secondary">Band (P25-P75)</div>
-            <div>1,553,375 - 1,561,125</div>
+            <div>N/A - N/A</div>
           </div>
-          <div class="col-6">
+          <div class="primary-metric-block">
             <div class="text-secondary">Publication</div>
-            <div>Published</div>
+            <div>Withheld</div>
           </div>
-        </div>
-        <div class="row mt-3">
-          <div class="col-6">
+          <div class="primary-metric-block">
             <div class="text-secondary">Prior Day</div>
             <div>History building</div>
           </div>
-          <div class="col-6">
+          <div class="primary-metric-block">
             <div class="text-secondary">Observed</div>
-            <div>14:24 UTC</div>
+            <div>16:56 UTC</div>
           </div>
         </div>
       </div>
@@ -819,7 +889,7 @@
 
     <div class="card bg-dark text-white dashboard-card chart-card">
       <div class="card-body">
-        <div class="text-secondary mb-2">HISTORICAL SERIES</div>
+        <div class="text-secondary mb-2">STREET RATE TIMELINE</div>
         <canvas id="historyChart" height="320"></canvas>
       </div>
     </div>
@@ -835,12 +905,12 @@
           <div class="fw-semibold mb-1">Street-Official Gap</div>
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Official Commercial USD/IRR.</div>
         </div>
-        <div class="indicator-value-main mt-3">+17.5%</div>
+        <div class="indicator-value-main mt-3">Unavailable</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> 1,557,250 IRR</div>
-          <div><span class="text-secondary">Official:</span> 1,325,072 IRR</div>
+          <div><span class="text-secondary">Street:</span> Unavailable</div>
+          <div><span class="text-secondary">Official:</span> Unavailable</div>
         </div>
-        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,41.0 19.5,41.0 35.9,41.0 52.4,41.0 68.8,20.6 85.3,14.9 101.8,15.8 118.2,3.0 134.7,3.7 151.2,4.7 167.6,17.5 184.1,12.7 200.5,12.0 217.0,13.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,41.0 19.5,41.0 35.9,41.0 52.4,41.0 68.8,20.6 85.3,14.9 101.8,15.8 118.2,3.0 134.7,3.7 151.2,4.7 167.6,17.5 184.1,12.7 200.5,12.0 217.0,13.0"></polyline></svg></div>
+        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
         <div class="indicator-note">Premium to official market</div>
       </div>
     </div>
@@ -851,12 +921,12 @@
           <div class="fw-semibold mb-1">Street-Transfer Gap</div>
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Regional Transfer USD/IRR.</div>
         </div>
-        <div class="indicator-value-main mt-3">-1.4%</div>
+        <div class="indicator-value-main mt-3">Unavailable</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> 1,557,250 IRR</div>
-          <div><span class="text-secondary">Transfer:</span> 1,579,400 IRR</div>
+          <div><span class="text-secondary">Street:</span> Unavailable</div>
+          <div><span class="text-secondary">Transfer:</span> Unavailable</div>
         </div>
-        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,41.0 19.5,41.0 35.9,41.0 52.4,41.0 68.8,29.1 85.3,25.8 101.8,26.4 118.2,18.9 134.7,19.3 151.2,19.9 167.6,27.3 184.1,24.5 200.5,3.0 217.0,3.7 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,41.0 19.5,41.0 35.9,41.0 52.4,41.0 68.8,29.1 85.3,25.8 101.8,26.4 118.2,18.9 134.7,19.3 151.2,19.9 167.6,27.3 184.1,24.5 200.5,3.0 217.0,3.7"></polyline></svg></div>
+        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
         <div class="indicator-note">Premium/discount to transfer market</div>
       </div>
     </div>
@@ -867,12 +937,12 @@
           <div class="fw-semibold mb-1">Street-Crypto Gap</div>
           <div class="text-secondary small mb-2">Percent difference between crypto USDT-implied USD/IRR and Street USD/IRR.</div>
         </div>
-        <div class="indicator-value-main mt-3">-0.4%</div>
+        <div class="indicator-value-main mt-3">Unavailable</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> 1,557,250 IRR</div>
-          <div><span class="text-secondary">Crypto:</span> 1,551,000 IRR</div>
+          <div><span class="text-secondary">Street:</span> Unavailable</div>
+          <div><span class="text-secondary">Crypto:</span> Unavailable</div>
         </div>
-        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,3.0 56.5,32.6 110.0,37.1 163.5,34.5 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,3.0 56.5,32.6 110.0,37.1 163.5,34.5 217.0,41.0"></polyline></svg></div>
+        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
         <div class="indicator-note">Premium/discount to crypto market</div>
       </div>
     </div>
@@ -883,13 +953,45 @@
           <div class="fw-semibold mb-1">Gold FX Gap</div>
           <div class="text-secondary small mb-2">Gold-derived FX signal (indicative)</div>
         </div>
-        <div class="indicator-value-main mt-3">-4.7%</div>
+        <div class="indicator-value-main mt-3">Unavailable</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> 1,557,250 IRR</div>
-          <div><span class="text-secondary">Gold-implied:</span> 1,483,759 IRR</div>
+          <div><span class="text-secondary">Street:</span> Unavailable</div>
+          <div><span class="text-secondary">Gold-implied:</span> Unavailable</div>
         </div>
-        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,11.1 24.4,3.0 45.8,39.1 67.2,38.5 88.6,38.6 110.0,39.1 131.4,38.9 152.8,38.9 174.2,38.9 195.6,38.9 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,11.1 24.4,3.0 45.8,39.1 67.2,38.5 88.6,38.6 110.0,39.1 131.4,38.9 152.8,38.9 174.2,38.9 195.6,38.9 217.0,41.0"></polyline></svg></div>
+        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
         <div class="indicator-note">Gold-derived FX signal (indicative)</div>
+      </div>
+    </div>
+
+    <div class="card bg-dark text-white dashboard-card">
+      <div class="card-body">
+        <div>
+          <div class="fw-semibold mb-1">Street-Official Spread</div>
+          <div class="text-secondary small mb-2">Absolute IRR difference between Street and Official Commercial rates.</div>
+        </div>
+        <div class="indicator-value-main indicator-value-secondary mt-3">Unavailable</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> Unavailable</div>
+          <div><span class="text-secondary">Official:</span> Unavailable</div>
+        </div>
+        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
+        <div class="indicator-note">Street minus official (absolute spread)</div>
+      </div>
+    </div>
+
+    <div class="card bg-dark text-white dashboard-card">
+      <div class="card-body">
+        <div>
+          <div class="fw-semibold mb-1">Street-Transfer Spread</div>
+          <div class="text-secondary small mb-2">Absolute IRR difference between Street and Regional Transfer rates.</div>
+        </div>
+        <div class="indicator-value-main indicator-value-secondary mt-3">Unavailable</div>
+        <div class="indicator-compare small mt-2">
+          <div><span class="text-secondary">Street:</span> Unavailable</div>
+          <div><span class="text-secondary">Transfer:</span> Unavailable</div>
+        </div>
+        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
+        <div class="indicator-note">Street minus transfer (absolute spread)</div>
       </div>
     </div>
   </div>
@@ -906,13 +1008,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">1,325,072</div>
+            <div class="panel-value">Unavailable</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 14:24 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,16.0 28.7,16.0 54.3,16.0 80.0,16.0 105.7,16.0 131.3,16.0 157.0,16.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,16.0 28.7,16.0 54.3,16.0 80.0,16.0 105.7,16.0 131.3,16.0 157.0,16.0"></polyline></svg></div>
+          <div class="text-secondary small"></div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="3.0,16.0 157.0,16.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -924,13 +1026,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">1,579,400</div>
+            <div class="panel-value">Unavailable</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 14:24 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,3.0 28.7,3.0 54.3,3.0 80.0,3.0 105.7,3.0 131.3,29.0 157.0,29.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,3.0 28.7,3.0 54.3,3.0 80.0,3.0 105.7,3.0 131.3,29.0 157.0,29.0"></polyline></svg></div>
+          <div class="text-secondary small"></div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="3.0,16.0 157.0,16.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -948,13 +1050,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">1,551,000</div>
+            <div class="panel-value">Unavailable</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 14:24 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,10.6 28.7,3.0 54.3,25.2 80.0,29.0 105.7,19.2 131.3,16.4 157.0,18.7 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,10.6 28.7,3.0 54.3,25.2 80.0,29.0 105.7,19.2 131.3,16.4 157.0,18.7"></polyline></svg></div>
+          <div class="text-secondary small"></div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="3.0,16.0 157.0,16.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -966,13 +1068,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">1,046,050,000</div>
+            <div class="panel-value">Unavailable</div>
             <div class="unit-label">IRR per coin</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 14:24 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,29.0 28.7,3.0 54.3,3.0 80.0,3.0 105.7,3.0 131.3,3.0 157.0,3.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,29.0 28.7,3.0 54.3,3.0 80.0,3.0 105.7,3.0 131.3,3.0 157.0,3.0"></polyline></svg></div>
+          <div class="text-secondary small"></div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="3.0,16.0 157.0,16.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1027,11 +1129,56 @@
 <script>
 let historyChart = null;
 let cachedValidRows = [];
+const latestPointPulsePlugin = {
+  id: 'rwLatestPointPulse',
+  afterDatasetsDraw(chart, _args, pluginOptions) {
+    if (!pluginOptions || pluginOptions.enabled === false) return;
+    const dataset = chart.getDatasetMeta(0);
+    if (!dataset || !Array.isArray(dataset.data) || !dataset.data.length) return;
+
+    const point = dataset.data[dataset.data.length - 1];
+    if (!point) return;
+
+    const colors = historyThemeColors();
+    const now = Date.now();
+    const cycleMs = 1100;
+    const phase = (now % cycleMs) / cycleMs;
+    const radius = 9 + phase * 14;
+    const alpha = 0.52 * (1 - phase);
+    const pulseColor = colors.accentRgb || '59,130,246';
+    const coords = point.getProps(['x', 'y'], true);
+
+    const ctx = chart.ctx;
+    ctx.save();
+    // Expanding halo pulse.
+    ctx.beginPath();
+    ctx.arc(coords.x, coords.y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${pulseColor}, ${alpha.toFixed(3)})`;
+    ctx.fill();
+    // Persistent outer ring keeps the latest point obvious between pulses.
+    ctx.beginPath();
+    ctx.arc(coords.x, coords.y, 8.5, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(${pulseColor}, 0.48)`;
+    ctx.lineWidth = 1.9;
+    ctx.stroke();
+    ctx.restore();
+
+    if (document.hidden) return;
+    if (!chart.$rwPulseFrameRequested) {
+      chart.$rwPulseFrameRequested = true;
+      requestAnimationFrame(() => {
+        chart.$rwPulseFrameRequested = false;
+        if (!chart._destroyed) chart.draw();
+      });
+    }
+  }
+};
 
 function historyThemeColors() {
   const styles = getComputedStyle(document.documentElement);
   return {
     accent: styles.getPropertyValue('--rw-accent').trim() || '#3b82f6',
+    accentRgb: styles.getPropertyValue('--rw-accent-rgb').trim() || '59,130,246',
     accentFill: styles.getPropertyValue('--rw-accent-fill').trim() || 'rgba(59,130,246,0.15)',
     label: styles.getPropertyValue('--rw-chart-label').trim() || '#94a3b8',
     grid: styles.getPropertyValue('--rw-chart-grid').trim() || '#1e293b'
@@ -1064,9 +1211,14 @@ function renderHistoryChart(validRows) {
   }
 
   const colors = historyThemeColors();
+  const isCompactViewport = window.matchMedia('(max-width: 700px)').matches;
+  const tickLimit = isCompactViewport ? 6 : 10;
+  const tickRotation = isCompactViewport ? 35 : 0;
+  const chartAspectRatio = isCompactViewport ? 1.45 : 2.15;
   const ctx = canvas.getContext('2d');
   historyChart = new Chart(ctx, {
     type: 'line',
+    plugins: [latestPointPulsePlugin],
     data: {
       labels: validRows.map(r => r.date),
       datasets: [{
@@ -1074,15 +1226,41 @@ function renderHistoryChart(validRows) {
         data: validRows.map(r => r.fixNum),
         borderColor: colors.accent,
         backgroundColor: colors.accentFill,
+        pointBackgroundColor: colors.accent,
+        pointBorderColor: (ctx) => (ctx.dataIndex === validRows.length - 1 ? '#ffffff' : 'transparent'),
+        pointBorderWidth: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 1.3 : 0),
+        pointRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 5.2 : 0),
+        pointHoverRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 6.8 : 0),
         tension: 0.2,
         fill: true
       }]
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: false } },
+      maintainAspectRatio: true,
+      aspectRatio: chartAspectRatio,
+      plugins: {
+        legend: { display: false },
+        rwLatestPointPulse: { enabled: true }
+      },
       scales: {
-        x: { ticks: { color: colors.label }, grid: { color: colors.grid } },
+        x: {
+          ticks: {
+            color: colors.label,
+            autoSkip: true,
+            maxTicksLimit: tickLimit,
+            minRotation: tickRotation,
+            maxRotation: tickRotation,
+            callback(value) {
+              const raw = this.getLabelForValue(value);
+              if (typeof raw !== 'string') return raw;
+              const parts = raw.split('-');
+              if (parts.length === 3) return `${parts[1]}-${parts[2]}`;
+              return raw;
+            }
+          },
+          grid: { color: colors.grid }
+        },
         y: { ticks: { color: colors.label }, grid: { color: colors.grid } }
       }
     }
@@ -1238,8 +1416,9 @@ loadRegionalMarketCards();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
 
-      <div class="text-secondary site-generated-at">Generated at 2026-03-29T12:59:16Z</div>
+      <div class="text-secondary site-generated-at">Generated at 2026-04-03T16:56:56Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
+      <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
   </div>
 </div>

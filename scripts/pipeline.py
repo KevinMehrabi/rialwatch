@@ -3708,6 +3708,62 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             "</svg>"
         )
 
+    def spread_value_or_unavailable(base: Optional[float], peer: Optional[float]) -> str:
+        if base is None or peer is None:
+            return "Unavailable"
+        return f"{base - peer:+,.0f} IRR"
+
+    def derived_spread_sparkline_html(peer_key: str, current_spread: Optional[float]) -> str:
+        width = 220.0
+        height = 44.0
+        pad = 3.0
+
+        if latest_day is None or current_spread is None:
+            return '<div class="text-secondary small">History building</div>'
+
+        street_history = load_benchmark_fix_history(site_dir, "open_market")
+        peer_history = load_benchmark_fix_history(site_dir, peer_key)
+        if not street_history or not peer_history:
+            return '<div class="text-secondary small">History building</div>'
+
+        street_by_day = {day: value for day, value in street_history}
+        peer_by_day = {day: value for day, value in peer_history}
+        common_days = sorted(set(street_by_day) & set(peer_by_day))
+        if not common_days:
+            return '<div class="text-secondary small">History building</div>'
+
+        by_day: Dict[dt.date, float] = {}
+        for day in common_days:
+            spread = street_by_day.get(day, 0.0) - peer_by_day.get(day, 0.0)
+            by_day[day] = spread
+        by_day[latest_day] = current_spread
+
+        ordered_values = [value for _day, value in sorted(by_day.items())][-14:]
+        if len(ordered_values) < 2:
+            return '<div class="text-secondary small">History building</div>'
+
+        min_val = min(ordered_values)
+        max_val = max(ordered_values)
+        span = max_val - min_val
+        if span <= 0:
+            span = 1.0
+
+        points: List[str] = []
+        for idx, value in enumerate(ordered_values):
+            x = pad + (idx * (width - 2 * pad) / (len(ordered_values) - 1))
+            y = pad + ((max_val - value) / span) * (height - 2 * pad)
+            points.append(f"{x:.1f},{y:.1f}")
+
+        polyline = " ".join(points)
+        fill_points = f"{pad:.1f},{height - pad:.1f} {polyline} {width - pad:.1f},{height - pad:.1f}"
+        return (
+            f'<svg class="indicator-sparkline-svg" viewBox="0 0 {int(width)} {int(height)}" preserveAspectRatio="none" '
+            'role="img" aria-label="spread trend sparkline">'
+            f'<polygon points="{fill_points}" fill="rgba(59,130,246,0.18)"></polygon>'
+            f'<polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="{polyline}"></polyline>'
+            "</svg>"
+        )
+
     publication_meta = ""
     publication_selection = latest.get("publication_selection")
     same_as_previous_day = False
@@ -3793,7 +3849,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             else ""
         )
     else:
-        primary_value_html = f'<div class="h1 mb-1">{fmt_rate(fix)} IRR</div>'
+        primary_value_html = f'<div class="primary-rate-value mb-1">{fmt_rate(fix)} IRR</div>'
         primary_reason_html = ""
 
     html = render_page(
@@ -3855,6 +3911,16 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street_gold_street_value=comparison_value_text(street),
         street_gold_peer_value=comparison_value_text(gold_implied_fx),
         street_gold_gap_sparkline=indicator_gap_sparkline_html("street_gold_gap_pct"),
+        street_official_spread_value=spread_value_or_unavailable(street, official),
+        street_official_spread_note="Street minus official (absolute spread)",
+        street_official_spread_street_value=comparison_value_text(street),
+        street_official_spread_peer_value=comparison_value_text(official),
+        street_official_spread_sparkline=derived_spread_sparkline_html("official", parse_number(street - official) if street is not None and official is not None else None),
+        street_transfer_spread_value=spread_value_or_unavailable(street, transfer),
+        street_transfer_spread_note="Street minus transfer (absolute spread)",
+        street_transfer_spread_street_value=comparison_value_text(street),
+        street_transfer_spread_peer_value=comparison_value_text(transfer),
+        street_transfer_spread_sparkline=derived_spread_sparkline_html("regional_transfer", parse_number(street - transfer) if street is not None and transfer is not None else None),
     )
     write_text(site_dir / "index.html", html)
 

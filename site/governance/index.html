@@ -36,6 +36,7 @@
     --rw-link: #d9e4f2;
     --rw-link-hover: #ffffff;
     --rw-accent: #3b82f6;
+    --rw-accent-rgb: 59,130,246;
     --rw-accent-fill: rgba(59, 130, 246, 0.15);
     --rw-chart-grid: rgba(148, 163, 184, 0.16);
     --rw-chart-label: #94a3b8;
@@ -63,6 +64,7 @@
     --rw-link: #233247;
     --rw-link-hover: #0f172a;
     --rw-accent: #2563eb;
+    --rw-accent-rgb: 37,99,235;
     --rw-accent-fill: rgba(37, 99, 235, 0.12);
     --rw-chart-grid: rgba(71, 85, 105, 0.15);
     --rw-chart-label: #64748b;
@@ -290,6 +292,25 @@
     text-align: center;
   }
 
+  .site-footer-contact {
+    margin-top: 6px;
+    color: var(--rw-text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .site-footer-contact a {
+    color: var(--rw-link);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .site-footer-contact a:hover,
+  .site-footer-contact a:focus {
+    color: var(--rw-link-hover);
+    text-decoration: underline;
+  }
+
   .page-wrapper {
     background: var(--rw-bg) !important;
     min-height: 100vh;
@@ -377,12 +398,12 @@
   }
 
   .top-grid {
-    grid-template-columns: 4fr 8fr;
+    grid-template-columns: 3fr 9fr;
     align-items: start;
   }
 
   .indicators-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
   }
 
@@ -401,6 +422,31 @@
 
   .top-grid .dashboard-card {
     min-height: 0;
+    height: auto;
+  }
+
+  .primary-card {
+    align-self: start;
+  }
+
+  .primary-metrics-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+    margin-top: 16px;
+    max-width: 280px;
+  }
+
+  .primary-metric-block {
+    line-height: 1.25;
+  }
+
+  .primary-rate-value {
+    font-size: 3.2rem;
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--rw-text-strong);
   }
 
   .dashboard-card .card-body {
@@ -515,6 +561,10 @@
     color: var(--rw-text-strong);
   }
 
+  .indicator-value-secondary {
+    font-size: 1.9rem;
+  }
+
   .indicator-compare {
     display: grid;
     gap: 4px;
@@ -539,7 +589,11 @@
   }
 
   .chart-card #historyChart {
-    max-height: 320px;
+    width: 100%;
+    height: auto !important;
+    min-height: 0;
+    max-height: none;
+    flex: 0 0 auto;
   }
 
   .recent-table-wrap {
@@ -730,8 +784,29 @@
       grid-template-columns: 1fr;
     }
 
-    .top-grid .dashboard-card {
-      min-height: 320px;
+    .top-grid .chart-card {
+      order: 1;
+      min-height: 270px;
+      height: auto;
+    }
+
+    .top-grid .primary-card {
+      order: 2;
+      min-height: 0;
+      height: auto;
+    }
+
+    .primary-metrics-stack {
+      max-width: none;
+      row-gap: 10px;
+    }
+
+    .primary-rate-value {
+      font-size: 2.6rem;
+    }
+
+    .chart-card #historyChart {
+      min-height: 0;
     }
   }
 </style>
@@ -769,7 +844,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-29T12:59:16Z">Last update: 2026-03-29T12:59:16Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-04-03T16:56:56Z">Last update: 2026-04-03T16:56:56Z</div>
         </div>
       </div>
     </div>
@@ -823,8 +898,9 @@
   </section>
 </div>
 
-      <div class="text-secondary site-generated-at">Generated at 2026-03-29T12:59:16Z</div>
+      <div class="text-secondary site-generated-at">Generated at 2026-04-03T16:56:56Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
+      <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
   </div>
 </div>
