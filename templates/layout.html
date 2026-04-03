@@ -398,7 +398,7 @@
   }
 
   .top-grid {
-    grid-template-columns: 4fr 8fr;
+    grid-template-columns: 3fr 9fr;
     align-items: start;
   }
 
@@ -427,31 +427,14 @@
 
   .primary-card {
     align-self: start;
-    min-height: 320px;
   }
 
-  .primary-metrics-grid {
+  .primary-metrics-stack {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 190px;
-    column-gap: 28px;
-    margin-top: 12px;
-    flex: 1 1 auto;
-    min-height: 0;
-    align-items: stretch;
-  }
-
-  .primary-metrics-left {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-
-  .primary-metrics-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    text-align: left;
-    padding-bottom: 2px;
+    grid-template-columns: 1fr;
+    row-gap: 12px;
+    margin-top: 16px;
+    max-width: 280px;
   }
 
   .primary-metric-block {
@@ -801,14 +784,9 @@
       height: auto;
     }
 
-    .primary-metrics-grid {
-      grid-template-columns: 1fr 1fr;
-      column-gap: 16px;
-      min-height: 0;
-    }
-
-    .primary-metrics-right {
-      justify-content: flex-start;
+    .primary-metrics-stack {
+      max-width: none;
+      row-gap: 10px;
     }
 
     .chart-card #historyChart {

@@ -13,26 +13,22 @@
           ${primary_value_html}
           ${primary_reason_html}
         </div>
-        <div class="primary-metrics-grid">
-          <div class="primary-metrics-left">
-            <div class="primary-metric-block">
-              <div class="text-secondary">Band (P25-P75)</div>
-              <div>${p25} - ${p75}</div>
-            </div>
-            <div class="primary-metric-block mt-3">
-              <div class="text-secondary">Prior Day</div>
-              <div>${primary_prior_day_change}</div>
-            </div>
+        <div class="primary-metrics-stack">
+          <div class="primary-metric-block">
+            <div class="text-secondary">Band (P25-P75)</div>
+            <div>${p25} - ${p75}</div>
           </div>
-          <div class="primary-metrics-right">
-            <div class="primary-metric-block">
-              <div class="text-secondary">Publication</div>
-              <div>${publication_state}</div>
-            </div>
-            <div class="primary-metric-block mt-3">
-              <div class="text-secondary">Observed</div>
-              <div>${primary_observation_timestamp}</div>
-            </div>
+          <div class="primary-metric-block">
+            <div class="text-secondary">Publication</div>
+            <div>${publication_state}</div>
+          </div>
+          <div class="primary-metric-block">
+            <div class="text-secondary">Prior Day</div>
+            <div>${primary_prior_day_change}</div>
+          </div>
+          <div class="primary-metric-block">
+            <div class="text-secondary">Observed</div>
+            <div>${primary_observation_timestamp}</div>
           </div>
         </div>
       </div>
