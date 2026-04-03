@@ -399,7 +399,7 @@
 
   .top-grid {
     grid-template-columns: 3fr 9fr;
-    align-items: start;
+    align-items: stretch;
   }
 
   .indicators-grid {
@@ -422,11 +422,11 @@
 
   .top-grid .dashboard-card {
     min-height: 0;
-    height: auto;
+    height: 100%;
   }
 
   .primary-card {
-    align-self: start;
+    align-self: stretch;
   }
 
   .primary-metrics-stack {
@@ -439,6 +439,14 @@
 
   .primary-metric-block {
     line-height: 1.25;
+  }
+
+  .primary-extra-list {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rw-border);
+    display: grid;
+    row-gap: 10px;
   }
 
   .primary-rate-value {

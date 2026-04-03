@@ -399,7 +399,7 @@
 
   .top-grid {
     grid-template-columns: 3fr 9fr;
-    align-items: start;
+    align-items: stretch;
   }
 
   .indicators-grid {
@@ -422,11 +422,11 @@
 
   .top-grid .dashboard-card {
     min-height: 0;
-    height: auto;
+    height: 100%;
   }
 
   .primary-card {
-    align-self: start;
+    align-self: stretch;
   }
 
   .primary-metrics-stack {
@@ -441,8 +441,16 @@
     line-height: 1.25;
   }
 
+  .primary-extra-list {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--rw-border);
+    display: grid;
+    row-gap: 10px;
+  }
+
   .primary-rate-value {
-    font-size: 3.2rem;
+    font-size: 3rem;
     line-height: 1.02;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -802,7 +810,7 @@
     }
 
     .primary-rate-value {
-      font-size: 2.6rem;
+      font-size: 2.4rem;
     }
 
     .chart-card #historyChart {
@@ -844,7 +852,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-04-03T16:56:56Z">Last update: 2026-04-03T16:56:56Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-04-03T22:34:40Z">Last update: 2026-04-03T22:34:40Z</div>
         </div>
       </div>
     </div>
@@ -860,7 +868,7 @@
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h3 class="card-title mb-0">System Overview</h3>
-      <span class="text-secondary small">Status snapshot: Apr 03, 2026 · 16:56 UTC</span>
+      <span class="text-secondary small">Status snapshot: Apr 03, 2026 · 22:34 UTC</span>
     </div>
     <div class="status-overview-grid">
       <div class="status-overview-card"><div class="text-secondary small">Benchmark Pipeline</div><div class="mt-1"><span class="status-label"><span class="status-light status-offline"></span>Offline</span></div><div class="status-note">Benchmark pipeline is currently unavailable.</div></div>
@@ -944,7 +952,7 @@
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Last Update</div>
-        <div class="h5 mb-0">Apr 03, 2026 · 16:56 UTC</div>
+        <div class="h5 mb-0">Apr 03, 2026 · 22:27 UTC</div>
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Withhold Reason</div>
@@ -963,7 +971,7 @@
   </div>
 </section>
 
-      <div class="text-secondary site-generated-at">Generated at 2026-04-03T16:56:56Z</div>
+      <div class="text-secondary site-generated-at">Generated at 2026-04-03T22:34:40Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
       <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>

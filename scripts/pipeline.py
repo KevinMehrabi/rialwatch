@@ -3796,6 +3796,13 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         as_of_ts = try_parse_datetime(latest.get("as_of"))
         if as_of_ts is not None:
             observation_timestamp = as_of_ts.strftime("%H:%M UTC")
+    primary_as_of_display = "N/A"
+    as_of_raw = latest.get("as_of")
+    as_of_ts = try_parse_datetime(as_of_raw)
+    if as_of_ts is not None:
+        primary_as_of_display = as_of_ts.strftime("%b %d, %Y %H:%M UTC")
+    elif isinstance(as_of_raw, str) and as_of_raw.strip():
+        primary_as_of_display = as_of_raw.strip()
 
     source_medians = c.get("source_medians")
     if isinstance(source_medians, dict):
@@ -3820,6 +3827,10 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         publication_change_meta = "Freshly selected, unchanged vs prior day."
     elif publication_state == "Published" and previous_day_fix is not None:
         publication_change_meta = "Freshly selected from today's intraday samples."
+    primary_publication_basis = publication_meta if publication_meta else "N/A"
+    primary_selection_note = publication_change_meta if publication_change_meta else (
+        "Withheld by methodology checks." if publication_state == "Withheld" else "N/A"
+    )
 
     def comparison_value_text(value: Optional[float], unit_suffix: str = "IRR") -> str:
         if value is None:
@@ -3873,6 +3884,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         primary_prior_day_change=prior_day_change_text,
         primary_street_sources=street_source_count_text,
         primary_observation_timestamp=observation_timestamp,
+        primary_as_of_display=primary_as_of_display,
+        primary_publication_basis=primary_publication_basis,
+        primary_selection_note=primary_selection_note,
         withhold_reason_short=withhold_reason_text,
         reasons=reasons_html,
         official_value=benchmark_value_or_unavailable("official"),
