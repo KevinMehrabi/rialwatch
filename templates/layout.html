@@ -432,21 +432,13 @@
   .primary-metrics-stack {
     display: grid;
     grid-template-columns: 1fr;
-    row-gap: 12px;
-    margin-top: 16px;
+    row-gap: 26px;
+    margin-top: 22px;
     max-width: 280px;
   }
 
   .primary-metric-block {
     line-height: 1.25;
-  }
-
-  .primary-extra-list {
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid var(--rw-border);
-    display: grid;
-    row-gap: 10px;
   }
 
   .primary-rate-value {
@@ -455,6 +447,10 @@
     font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--rw-text-strong);
+  }
+
+  .primary-card .card-body {
+    justify-content: space-between;
   }
 
   .dashboard-card .card-body {
@@ -807,6 +803,10 @@
     .primary-metrics-stack {
       max-width: none;
       row-gap: 10px;
+    }
+
+    .primary-card .card-body {
+      justify-content: flex-start;
     }
 
     .primary-rate-value {
