@@ -429,9 +429,29 @@
     align-self: start;
   }
 
-  .primary-bottom-meta {
-    margin-top: auto;
-    padding-top: 14px;
+  .primary-metrics-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 190px;
+    column-gap: 28px;
+    margin-top: 14px;
+    min-height: 130px;
+  }
+
+  .primary-metrics-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .primary-metrics-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-align: left;
+  }
+
+  .primary-metric-block {
+    line-height: 1.25;
   }
 
   .dashboard-card .card-body {
@@ -775,6 +795,16 @@
       order: 2;
       min-height: 0;
       height: auto;
+    }
+
+    .primary-metrics-grid {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 16px;
+      min-height: 0;
+    }
+
+    .primary-metrics-right {
+      justify-content: flex-start;
     }
 
     .chart-card #historyChart {
