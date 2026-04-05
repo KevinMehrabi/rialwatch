@@ -442,11 +442,12 @@
   }
 
   .primary-rate-value {
-    font-size: 2.25rem;
+    font-size: clamp(1.55rem, 1.9vw, 2.25rem);
     line-height: 1.02;
     font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--rw-text-strong);
+    white-space: nowrap;
   }
 
   .primary-card .card-body {
@@ -810,7 +811,7 @@
     }
 
     .primary-rate-value {
-      font-size: 1.8rem;
+      font-size: clamp(1.4rem, 6.2vw, 1.8rem);
     }
 
     .chart-card #historyChart {
