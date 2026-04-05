@@ -450,6 +450,26 @@
     white-space: nowrap;
   }
 
+  @media (max-width: 1280px) {
+    .top-grid {
+      grid-template-columns: 3.8fr 8.2fr;
+    }
+
+    .primary-rate-value {
+      font-size: clamp(1.35rem, 1.25vw + 0.5rem, 2rem);
+    }
+  }
+
+  @media (max-width: 1160px) {
+    .top-grid {
+      grid-template-columns: 4fr 8fr;
+    }
+
+    .primary-rate-value {
+      font-size: clamp(1.18rem, 1.05vw + 0.45rem, 1.7rem);
+    }
+  }
+
   .primary-card .card-body {
     justify-content: space-between;
   }
