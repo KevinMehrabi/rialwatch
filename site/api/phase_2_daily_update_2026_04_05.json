@@ -1,0 +1,154 @@
+{
+  "dataset_name": "phase_2_daily_update_2026_04_05",
+  "date": "2026-04-05",
+  "as_of_utc": "2026-04-05 18:26 UTC",
+  "campaign_phases": [
+    "Phase 1 - Strategic Shock",
+    "Phase 2 - Counterforce Degradation",
+    "Phase 3 - Strategic Exhaustion / Political Pressure",
+    "Phase 4 - Endgame / Political Resolution"
+  ],
+  "day_labels": {
+    "news_headline": "Heavy continued pressure on missile, UAV, and air-defense targets leaves the internal Phase 2 board unchanged",
+    "news_explainer": "April 5 brought continued official reporting on large-scale strikes against ballistic-missile array sites, UAV production and launching sites, and air-defense sites, while repeated Iranian missile-launch alerts through the day showed that meaningful surviving strike capacity remained.",
+    "progress_headline": "Hold day on the internal Phase 2 board",
+    "progress_explainer": "April 5 reinforced pressure on the active strike chain and on support architecture, but it did not produce a new bucket-specific breakpoint strong enough to move the internal board off the April 4 baseline."
+  },
+  "what_changed_today": [
+    {
+      "event": "Large-scale strikes continued against missile, UAV, and air-defense targets",
+      "description": "Official reporting said the Israeli Air Force struck more than 120 targets in central and western Iran over the previous 24 hours, including ballistic-missile array sites in the IRGC, UAV production and launching sites, and air-defense sites.",
+      "impact_on_model": "Reinforces continued pressure on missiles, drones, and air defenses, but not enough by itself to create a fresh same-day breakpoint in any one lane."
+    },
+    {
+      "event": "Repeated Iranian missile-launch alerts continued through the day",
+      "description": "Official reporting recorded missile-launch alerts at multiple points during the day, including 01:37, 04:08, 09:59, 13:27, and 18:09.",
+      "impact_on_model": "Keeps the surviving strike-capacity floor clearly meaningful and supports a hold in the missile lane rather than another increase."
+    },
+    {
+      "event": "Support-architecture pressure expanded into IRGC oil-finance operations",
+      "description": "Official reporting described the elimination of Mohammad Reza Ashrafi Kahi, head of commerce at the IRGC's Oil Headquarters, which was described as helping fund the IRGC's ballistic-missile and UAV arrays.",
+      "impact_on_model": "Reinforces command and support-architecture pressure, but is not by itself strong enough to justify another same-day command increase."
+    },
+    {
+      "event": "Air superiority claims remained tied to continued system dismantling",
+      "description": "Official reporting said dismantled air-defense systems had threatened Israeli fighter jets and that their dismantling contributed to maintaining Israeli air superiority over Iran.",
+      "impact_on_model": "Keeps air defenses clearly passed, but without a new air-defense-specific breakpoint large enough to move the bucket higher."
+    }
+  ],
+  "phase_2_checklist": [
+    {
+      "item": "Air defenses",
+      "threshold": "60-70%",
+      "current_range": "75-85%",
+      "one_day_delta_vs_2026_04_04": "0%",
+      "checked": true,
+      "status_label": "passed",
+      "reason_for_today_read": "Sustained deep-strike access remained clearly present, and additional air-defense targets were struck, but no new air-defense-specific breakpoint justified another increase."
+    },
+    {
+      "item": "Missile launches",
+      "threshold": "70-80%",
+      "current_range": "69-82%",
+      "one_day_delta_vs_2026_04_04": "0%",
+      "checked": false,
+      "status_label": "near threshold but not passed",
+      "reason_for_today_read": "April 5 added continued pressure on ballistic-missile array sites, but repeated Iranian missile-launch activity through the day showed that the surviving capability floor remained meaningful enough to prevent another increase."
+    },
+    {
+      "item": "Drone launches",
+      "threshold": "60-70%",
+      "current_range": "49-63%",
+      "one_day_delta_vs_2026_04_04": "0%",
+      "checked": false,
+      "status_label": "below threshold but elevated",
+      "reason_for_today_read": "The day added continued strikes on UAV production and launching sites, but did not yet establish a drone-specific breakpoint strong enough to move the bucket beyond the April 4 level."
+    },
+    {
+      "item": "Command network",
+      "threshold": "60-70%",
+      "current_range": "55-70%",
+      "one_day_delta_vs_2026_04_04": "0%",
+      "checked": false,
+      "status_label": "below threshold but elevated",
+      "reason_for_today_read": "Pressure on support architecture and IRGC financing was reinforced, but the public picture did not show a new same-day break in core command-and-control continuity strong enough to justify another command increase."
+    },
+    {
+      "item": "Naval disruption",
+      "threshold": "~60%",
+      "current_range": "64-78%",
+      "one_day_delta_vs_2026_04_04": "0%",
+      "checked": true,
+      "status_label": "passed for naval-capability degradation",
+      "reason_for_today_read": "April 5 affected maritime stress and regional risk, but did not provide fresh evidence of a new change in underlying Iranian naval or maritime military capability.",
+      "interpretive_note": "This bucket reflects degradation of Iranian naval and maritime military capability, not day-to-day variation in shipping disruption."
+    },
+    {
+      "item": "Underground sites",
+      "threshold": "40-50%",
+      "current_range": "33-48%",
+      "one_day_delta_vs_2026_04_04": "0%",
+      "checked": false,
+      "status_label": "below threshold but elevated",
+      "reason_for_today_read": "The public evidence did not yet establish a new hardened-regeneration breakpoint in the strike architecture."
+    },
+    {
+      "item": "Phase 2 total",
+      "threshold": "82-88%",
+      "current_range": "86-90%",
+      "one_day_delta_vs_2026_04_04": "0%",
+      "checked": false,
+      "status_label": "inside threshold band / not fully through",
+      "reason_for_today_read": "April 5 added stronger confirmation of continued pressure, but it did not become a new multi-lane gain day, so the synthetic total remains unchanged."
+    }
+  ],
+  "summary_judgment": {
+    "day_type": "hold day",
+    "main_drivers": [
+      "more than 120 missile, UAV, and air-defense targets struck",
+      "repeated Iranian missile-launch alerts through the day",
+      "continued pressure on IRGC support and financing architecture",
+      "no new bucket-specific breakpoint strong enough to change the internal board"
+    ],
+    "bottom_line": "April 5 reinforced pressure across the active strike chain, but the surviving strike-capacity floor remained meaningful enough that the internal Phase 2 board stays unchanged."
+  },
+  "next_phase_trigger_updates": [
+    {
+      "trigger": "The regime shifts from sustained counter-strike toward residual pressure, proxies, and internal control",
+      "status": "Partial",
+      "status_change_today": false,
+      "daily_explainer": "The regime still demonstrated meaningful direct strike capacity, so this trigger did not move beyond Partial."
+    },
+    {
+      "trigger": "Underground launch and command nodes show a declining ability to regenerate attacks",
+      "status": "Partial",
+      "status_change_today": false,
+      "daily_explainer": "April 5 reinforced ongoing pressure on the strike chain and support architecture, but did not yet establish a new public hardened-regeneration breakpoint."
+    },
+    {
+      "trigger": "Drone attacks fall to sporadic harassment rather than coordinated waves",
+      "status": "Not yet",
+      "status_change_today": false,
+      "daily_explainer": "The available public evidence still did not show drone attacks collapsing into only sporadic harassment."
+    },
+    {
+      "trigger": "Maritime coercion loses strategic effect",
+      "status": "Partial",
+      "status_change_today": false,
+      "daily_explainer": "Maritime disruption remained strategically relevant, so this trigger did not advance."
+    },
+    {
+      "trigger": "Multiple consecutive days with no meaningful missile salvos",
+      "status": "Not yet",
+      "status_change_today": false,
+      "daily_explainer": "Repeated Iranian missile-launch activity on April 5 kept this trigger unmet."
+    }
+  ],
+  "source_basis": [
+    {
+      "source_key": "IDF_2026_04_05_LIVE_UPDATES",
+      "public_label": "April 5, 2026 - Iran-Israel War 2026 Live Updates",
+      "publisher": "IDF"
+    }
+  ]
+}
