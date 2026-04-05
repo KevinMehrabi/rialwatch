@@ -187,6 +187,15 @@ BONBAST_USD_SELL_PATTERNS: Tuple[str, ...] = (
 BONBAST_MAX_SPREAD_PCT_DEFAULT = 0.05
 BONBAST_PEER_DEVIATION_PCT_DEFAULT = 0.20
 
+COMMERCIAL_AUX_TIMEOUT_SECONDS_DEFAULT = 20.0
+COMMERCIAL_AUX_RETRY_ATTEMPTS_DEFAULT = 3
+COMMERCIAL_AUX_RETRY_BACKOFF_SECONDS_DEFAULT = 1.0
+COMMERCIAL_AUX_RETRYABLE_HTTP_CODES = frozenset({408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524})
+
+STATUS_HISTORY_LOOKBACK_DAYS_DEFAULT = 7
+STATUS_RECENT_SUCCESS_HOURS_DEFAULT = 24 * 7
+OFFICIAL_FRESHNESS_MAX_AGE_HOURS_DEFAULT = 48
+
 ALANCHAND_STREET_SELL_PATTERNS: Tuple[str, ...] = (
     r"(?is)Sell\s+rate\s+for\s+USD\s+to\s+IRR.*?<span[^>]*fs-5[^>]*>\s*([0-9][0-9,٬،.]*)\s*</span>",
 )
@@ -383,6 +392,31 @@ def env_pct(name: str, default: float) -> float:
     if parsed > 1 and parsed <= 100:
         parsed = parsed / 100.0
     if parsed <= 0 or parsed >= 1:
+        return default
+    return float(parsed)
+
+
+def env_int(name: str, default: int, minimum: int, maximum: int) -> int:
+    raw = os.environ.get(name)
+    if not raw:
+        return default
+    parsed = parse_float(raw)
+    if parsed is None:
+        return default
+    ivalue = int(parsed)
+    if ivalue < minimum or ivalue > maximum:
+        return default
+    return ivalue
+
+
+def env_seconds(name: str, default: float, minimum: float, maximum: float) -> float:
+    raw = os.environ.get(name)
+    if not raw:
+        return default
+    parsed = parse_float(raw)
+    if parsed is None:
+        return default
+    if parsed < minimum or parsed > maximum:
         return default
     return float(parsed)
 
@@ -979,6 +1013,16 @@ def build_request(config: SourceConfig) -> urllib.request.Request:
         url = with_query(url, {"rev": str(time.time_ns())})
 
     return urllib.request.Request(url=url, headers=headers, method="GET")
+
+
+def is_commercial_aux_retryable_error(exc: BaseException) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return int(exc.code) in COMMERCIAL_AUX_RETRYABLE_HTTP_CODES
+    if isinstance(exc, urllib.error.URLError):
+        return True
+    if isinstance(exc, TimeoutError):
+        return True
+    return False
 
 
 def with_query(url: str, extra_params: Dict[str, str]) -> str:
@@ -1669,12 +1713,69 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     }
     source_unit = config.default_unit
     normalized_unit = "rial"
+    is_aux_source = is_commercial_aux_source(config.name)
+    request_timeout_seconds = (
+        env_seconds(
+            "COMMERCIAL_AUX_TIMEOUT_SECONDS",
+            COMMERCIAL_AUX_TIMEOUT_SECONDS_DEFAULT,
+            minimum=5.0,
+            maximum=60.0,
+        )
+        if is_aux_source
+        else 20.0
+    )
+    max_attempts = (
+        env_int(
+            "COMMERCIAL_AUX_RETRY_ATTEMPTS",
+            COMMERCIAL_AUX_RETRY_ATTEMPTS_DEFAULT,
+            minimum=1,
+            maximum=6,
+        )
+        if is_aux_source
+        else 1
+    )
+    retry_backoff_seconds = (
+        env_seconds(
+            "COMMERCIAL_AUX_RETRY_BACKOFF_SECONDS",
+            COMMERCIAL_AUX_RETRY_BACKOFF_SECONDS_DEFAULT,
+            minimum=0.0,
+            maximum=10.0,
+        )
+        if is_aux_source
+        else 0.0
+    )
     try:
-        req = build_request(config)
-        health["request_url"] = redact_url_for_health(req.full_url)
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            body = resp.read().decode("utf-8", errors="replace")
-            final_url = resp.geturl()
+        body = ""
+        final_url = ""
+        request_urls: List[str] = []
+        health["timeout_seconds"] = request_timeout_seconds
+        for attempt_idx in range(max_attempts):
+            req = build_request(config)
+            redacted_url = redact_url_for_health(req.full_url)
+            request_urls.append(redacted_url)
+            if health.get("request_url") is None:
+                health["request_url"] = redacted_url
+            health["request_urls"] = request_urls
+            health["attempt_count"] = attempt_idx + 1
+            health["retry_count"] = attempt_idx
+
+            try:
+                with urllib.request.urlopen(req, timeout=request_timeout_seconds) as resp:
+                    body = resp.read().decode("utf-8", errors="replace")
+                    final_url = resp.geturl()
+                break
+            except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
+                should_retry = (
+                    is_aux_source
+                    and (attempt_idx + 1) < max_attempts
+                    and is_commercial_aux_retryable_error(exc)
+                )
+                if not should_retry:
+                    raise
+                sleep_seconds = min(retry_backoff_seconds * (2**attempt_idx), 8.0)
+                if sleep_seconds > 0:
+                    time.sleep(sleep_seconds)
+
         health["content_length"] = len(body.encode("utf-8"))
         health["final_url"] = final_url
         payload, payload_mode = parse_source_payload(config.name, body)
@@ -2967,6 +3068,70 @@ def publish_status(
             return "Offline"
         return "Unknown"
 
+    def load_recent_fix_source_samples(lookback_days: int) -> Dict[str, List[Dict[str, Any]]]:
+        history: Dict[str, List[Dict[str, Any]]] = {}
+        fix_dir = site_dir / "fix"
+        if not fix_dir.exists():
+            return history
+
+        cutoff_date = (utc_now() - dt.timedelta(days=lookback_days)).date()
+        dated_paths: List[Tuple[dt.date, Path]] = []
+        for path in fix_dir.glob("*.json"):
+            try:
+                stamp = dt.date.fromisoformat(path.stem)
+            except ValueError:
+                continue
+            if stamp < cutoff_date:
+                continue
+            dated_paths.append((stamp, path))
+        dated_paths.sort(key=lambda row: row[0], reverse=True)
+
+        for _stamp, path in dated_paths:
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                continue
+            sources_obj = payload.get("sources")
+            if not isinstance(sources_obj, dict):
+                continue
+            for source_name, source_data in sources_obj.items():
+                source_key = canonical_source_name(str(source_name))
+                if not isinstance(source_data, dict):
+                    continue
+                samples_obj = source_data.get("samples")
+                if not isinstance(samples_obj, list):
+                    continue
+                for sample in samples_obj:
+                    if not isinstance(sample, dict):
+                        continue
+                    history.setdefault(source_key, []).append(sample)
+        return history
+
+    def sample_official_value(sample_obj: Dict[str, Any]) -> Optional[float]:
+        benchmarks_obj = sample_obj.get("benchmarks")
+        if isinstance(benchmarks_obj, dict):
+            parsed = parse_number(benchmarks_obj.get("official"))
+            if parsed is not None:
+                return parsed
+        health_obj = sample_obj.get("health")
+        if isinstance(health_obj, dict):
+            extracted_obj = health_obj.get("extracted_values")
+            if isinstance(extracted_obj, dict):
+                parsed = parse_number(extracted_obj.get("official"))
+                if parsed is not None:
+                    return parsed
+        return None
+
+    def sample_official_quote_time(sample_obj: Dict[str, Any]) -> Optional[dt.datetime]:
+        health_obj = sample_obj.get("health")
+        if isinstance(health_obj, dict):
+            benchmark_quote_times = health_obj.get("benchmark_quote_times")
+            if isinstance(benchmark_quote_times, dict):
+                quote_ts = try_parse_datetime(benchmark_quote_times.get("official"))
+                if quote_ts is not None:
+                    return quote_ts
+        return try_parse_datetime(sample_obj.get("quote_time"))
+
     missing_html = ""
     if missing:
         missing_html = "<ul class=\"mb-0 mt-2\">" + "".join(f"<li><code>{html_lib.escape(m)}</code></li>" for m in missing) + "</ul>"
@@ -3009,6 +3174,14 @@ def publish_status(
             existing["samples"] = existing_samples + incoming_samples
         if not isinstance(existing.get("note"), str) and isinstance(normalized_data.get("note"), str):
             existing["note"] = normalized_data.get("note")
+
+    status_history_lookback_days = env_int(
+        "STATUS_HISTORY_LOOKBACK_DAYS",
+        STATUS_HISTORY_LOOKBACK_DAYS_DEFAULT,
+        minimum=1,
+        maximum=30,
+    )
+    recent_fix_samples = load_recent_fix_source_samples(status_history_lookback_days)
 
     # Status page should show the full configured source universe, even when
     # the latest published day is based on older artifacts with fewer source keys.
@@ -3068,6 +3241,22 @@ def publish_status(
 
     publication_fix = f"{fmt_rate(fix)} IRR" if fix is not None else "Unavailable"
     publication_updated = fmt_status_time(effective_latest.get("as_of") or generated_at)
+    recent_success_window = dt.timedelta(
+        hours=env_int(
+            "STATUS_RECENT_SUCCESS_HOURS",
+            STATUS_RECENT_SUCCESS_HOURS_DEFAULT,
+            minimum=1,
+            maximum=24 * 30,
+        )
+    )
+    official_freshness_max_age = dt.timedelta(
+        hours=env_int(
+            "OFFICIAL_FRESHNESS_MAX_AGE_HOURS",
+            OFFICIAL_FRESHNESS_MAX_AGE_HOURS_DEFAULT,
+            minimum=1,
+            maximum=24 * 90,
+        )
+    )
 
     source_rows: List[Dict[str, str]] = []
     ordered_source_names = sorted(sources.keys(), key=lambda item: str(item).lower())
@@ -3078,14 +3267,19 @@ def publish_status(
         samples = source_data.get("samples", [])
         if not isinstance(samples, list):
             samples = []
+        historical_samples = recent_fix_samples.get(source_name, [])
+        if isinstance(historical_samples, list) and historical_samples:
+            samples = [*samples, *(s for s in historical_samples if isinstance(s, dict))]
 
         latest_sample: Optional[Dict[str, Any]] = None
         latest_sample_ts: Optional[dt.datetime] = None
         last_success_ts: Optional[dt.datetime] = None
+        last_success_sample: Optional[Dict[str, Any]] = None
         any_fetch_success = False
         any_offline_failure = False
         any_degraded_failure = False
         any_parsed_data = False
+        degraded_due_to_recent_success = False
 
         def sample_has_parsed_data(sample_obj: Dict[str, Any]) -> bool:
             if parse_number(sample_obj.get("value")) is not None:
@@ -3126,6 +3320,9 @@ def publish_status(
                 any_fetch_success = True
                 if sample_ts is not None and (last_success_ts is None or sample_ts > last_success_ts):
                     last_success_ts = sample_ts
+                    last_success_sample = sample
+                elif last_success_sample is None:
+                    last_success_sample = sample
                 if has_parsed_data:
                     any_parsed_data = True
                 if validation_failed or (isinstance(failure_reason, str) and failure_reason.strip()):
@@ -3169,6 +3366,15 @@ def publish_status(
         elif any_offline_failure or samples:
             source_status = "Offline"
 
+        status_reference_ts = latest_sample_ts or utc_now()
+        if (
+            source_status == "Offline"
+            and last_success_ts is not None
+            and (status_reference_ts - last_success_ts) <= recent_success_window
+        ):
+            source_status = "Degraded"
+            degraded_due_to_recent_success = True
+
         note = humanize_source_note(source_data.get("note"))
         latest_fallback_active = False
         if latest_sample:
@@ -3184,7 +3390,13 @@ def publish_status(
             if has_failure_text or has_error_text:
                 note = "Source request failed."
         elif source_status == "Degraded" and not latest_fallback_active:
-            note = "Source responded, but returned invalid data."
+            if degraded_due_to_recent_success and last_success_ts is not None:
+                note = (
+                    "Intermittent source availability. "
+                    f"Last successful update {last_success_ts.strftime('%b %d, %Y, %H:%M UTC')}."
+                )
+            else:
+                note = "Source responded, but returned invalid data."
 
         if not note and latest_sample and latest_sample.get("stale") is True:
             note = "Out-of-window observation."
@@ -3192,7 +3404,13 @@ def publish_status(
             failure_reason = latest_sample.get("failure_reason")
             sample_error = latest_sample.get("error")
             if source_status == "Degraded":
-                note = "Source responded, but returned invalid data."
+                if degraded_due_to_recent_success and last_success_ts is not None:
+                    note = (
+                        "Intermittent source availability. "
+                        f"Last successful update {last_success_ts.strftime('%b %d, %Y, %H:%M UTC')}."
+                    )
+                else:
+                    note = "Source responded, but returned invalid data."
             elif source_status == "Offline":
                 if isinstance(failure_reason, str) and failure_reason.strip():
                     note = "Source request failed."
@@ -3202,6 +3420,33 @@ def publish_status(
             note = "No sample in latest published day."
         if not note:
             note = "Collecting normally." if source_status == "Online" else "No additional notes."
+
+        official_quote_stale_note = ""
+        supports_official = bool(CANONICAL_SOURCE_SYMBOLS.get(source_name, {}).get("official"))
+        if supports_official:
+            freshness_sample: Optional[Dict[str, Any]] = None
+            if latest_sample is not None and sample_official_value(latest_sample) is not None:
+                freshness_sample = latest_sample
+            elif last_success_sample is not None and sample_official_value(last_success_sample) is not None:
+                freshness_sample = last_success_sample
+
+            if freshness_sample is not None:
+                official_quote_time = sample_official_quote_time(freshness_sample)
+                freshness_reference = latest_sample_ts or last_success_ts or utc_now()
+                if (
+                    official_quote_time is not None
+                    and (freshness_reference - official_quote_time) > official_freshness_max_age
+                ):
+                    official_quote_stale_note = (
+                        f"Official quote stale since {official_quote_time.strftime('%b %d, %Y, %H:%M UTC')}."
+                    )
+
+        if official_quote_stale_note and source_status != "Offline":
+            if note:
+                separator = " " if note.endswith(".") else ". "
+                note = f"{note}{separator}{official_quote_stale_note}"
+            else:
+                note = official_quote_stale_note
 
         source_rows.append(
             {

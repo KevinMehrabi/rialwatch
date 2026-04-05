@@ -432,8 +432,8 @@
   .primary-metrics-stack {
     display: grid;
     grid-template-columns: 1fr;
-    row-gap: 12px;
-    margin-top: 16px;
+    row-gap: 26px;
+    margin-top: 22px;
     max-width: 280px;
   }
 
@@ -441,20 +441,16 @@
     line-height: 1.25;
   }
 
-  .primary-extra-list {
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid var(--rw-border);
-    display: grid;
-    row-gap: 10px;
-  }
-
   .primary-rate-value {
-    font-size: 3rem;
+    font-size: 2.25rem;
     line-height: 1.02;
     font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--rw-text-strong);
+  }
+
+  .primary-card .card-body {
+    justify-content: space-between;
   }
 
   .dashboard-card .card-body {
@@ -809,8 +805,12 @@
       row-gap: 10px;
     }
 
+    .primary-card .card-body {
+      justify-content: flex-start;
+    }
+
     .primary-rate-value {
-      font-size: 2.4rem;
+      font-size: 1.8rem;
     }
 
     .chart-card #historyChart {
@@ -852,7 +852,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-04-03T22:34:40Z">Last update: 2026-04-03T22:34:40Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-04-05T20:22:09Z">Last update: 2026-04-05T20:22:09Z</div>
         </div>
       </div>
     </div>
@@ -871,17 +871,17 @@
         <div>
           <div class="text-secondary mb-2">PRIMARY BENCHMARK</div>
           <div class="text-secondary mb-2">Open Market / Street Rate</div>
-          <div class="primary-rate-value mb-1">N/A IRR</div>
+          <div class="primary-rate-value mb-1">1,583,750 IRR</div>
           
         </div>
         <div class="primary-metrics-stack">
           <div class="primary-metric-block">
             <div class="text-secondary">Band (P25-P75)</div>
-            <div>N/A - N/A</div>
+            <div>1,580,125 - 1,587,375</div>
           </div>
           <div class="primary-metric-block">
             <div class="text-secondary">Publication</div>
-            <div>Withheld</div>
+            <div>Published</div>
           </div>
           <div class="primary-metric-block">
             <div class="text-secondary">Prior Day</div>
@@ -889,25 +889,7 @@
           </div>
           <div class="primary-metric-block">
             <div class="text-secondary">Observed</div>
-            <div>22:34 UTC</div>
-          </div>
-        </div>
-        <div class="primary-extra-list">
-          <div class="primary-metric-block">
-            <div class="text-secondary">Street Sources</div>
-            <div>0 sources</div>
-          </div>
-          <div class="primary-metric-block">
-            <div class="text-secondary">As Of</div>
-            <div>Apr 03, 2026 22:34 UTC</div>
-          </div>
-          <div class="primary-metric-block">
-            <div class="text-secondary">Selection Basis</div>
-            <div>Observed sample: 22:34 UTC (intraday window)</div>
-          </div>
-          <div class="primary-metric-block">
-            <div class="text-secondary">Selection Note</div>
-            <div>Withheld by methodology checks.</div>
+            <div>14:25 UTC</div>
           </div>
         </div>
       </div>
@@ -931,12 +913,12 @@
           <div class="fw-semibold mb-1">Street-Official Gap</div>
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Official Commercial USD/IRR.</div>
         </div>
-        <div class="indicator-value-main mt-3">Unavailable</div>
+        <div class="indicator-value-main mt-3">+12.9%</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> Unavailable</div>
-          <div><span class="text-secondary">Official:</span> Unavailable</div>
+          <div><span class="text-secondary">Street:</span> 1,583,750 IRR</div>
+          <div><span class="text-secondary">Official:</span> 1,403,083 IRR</div>
         </div>
-        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,5.6 19.5,6.7 35.9,19.7 52.4,14.8 68.8,14.0 85.3,15.1 101.8,41.0 118.2,35.8 134.7,5.9 151.2,6.2 167.6,3.0 184.1,3.6 200.5,4.1 217.0,34.7 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,5.6 19.5,6.7 35.9,19.7 52.4,14.8 68.8,14.0 85.3,15.1 101.8,41.0 118.2,35.8 134.7,5.9 151.2,6.2 167.6,3.0 184.1,3.6 200.5,4.1 217.0,34.7"></polyline></svg></div>
         <div class="indicator-note">Premium to official market</div>
       </div>
     </div>
@@ -947,12 +929,12 @@
           <div class="fw-semibold mb-1">Street-Transfer Gap</div>
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Regional Transfer USD/IRR.</div>
         </div>
-        <div class="indicator-value-main mt-3">Unavailable</div>
+        <div class="indicator-value-main mt-3">-1.4%</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> Unavailable</div>
-          <div><span class="text-secondary">Transfer:</span> Unavailable</div>
+          <div><span class="text-secondary">Street:</span> 1,583,750 IRR</div>
+          <div><span class="text-secondary">Transfer:</span> 1,606,150 IRR</div>
         </div>
-        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,8.7 74.3,10.8 145.7,3.0 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,8.7 74.3,10.8 145.7,3.0 217.0,41.0"></polyline></svg></div>
         <div class="indicator-note">Premium/discount to transfer market</div>
       </div>
     </div>
@@ -963,12 +945,12 @@
           <div class="fw-semibold mb-1">Street-Crypto Gap</div>
           <div class="text-secondary small mb-2">Percent difference between crypto USDT-implied USD/IRR and Street USD/IRR.</div>
         </div>
-        <div class="indicator-value-main mt-3">Unavailable</div>
+        <div class="indicator-value-main mt-3">-0.5%</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> Unavailable</div>
-          <div><span class="text-secondary">Crypto:</span> Unavailable</div>
+          <div><span class="text-secondary">Street:</span> 1,583,750 IRR</div>
+          <div><span class="text-secondary">Crypto:</span> 1,575,500 IRR</div>
         </div>
-        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,3.0 45.8,31.8 88.6,36.1 131.4,33.6 174.2,35.7 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,3.0 45.8,31.8 88.6,36.1 131.4,33.6 174.2,35.7 217.0,41.0"></polyline></svg></div>
         <div class="indicator-note">Premium/discount to crypto market</div>
       </div>
     </div>
@@ -979,12 +961,12 @@
           <div class="fw-semibold mb-1">Gold FX Gap</div>
           <div class="text-secondary small mb-2">Gold-derived FX signal (indicative)</div>
         </div>
-        <div class="indicator-value-main mt-3">Unavailable</div>
+        <div class="indicator-value-main mt-3">-6.3%</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> Unavailable</div>
-          <div><span class="text-secondary">Gold-implied:</span> Unavailable</div>
+          <div><span class="text-secondary">Street:</span> 1,583,750 IRR</div>
+          <div><span class="text-secondary">Gold-implied:</span> 1,483,752 IRR</div>
         </div>
-        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,11.0 24.4,3.0 45.8,38.5 67.2,38.0 88.6,38.1 110.0,38.6 131.4,38.4 152.8,38.4 174.2,38.4 195.6,38.4 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,11.0 24.4,3.0 45.8,38.5 67.2,38.0 88.6,38.1 110.0,38.6 131.4,38.4 152.8,38.4 174.2,38.4 195.6,38.4 217.0,41.0"></polyline></svg></div>
         <div class="indicator-note">Gold-derived FX signal (indicative)</div>
       </div>
     </div>
@@ -995,12 +977,12 @@
           <div class="fw-semibold mb-1">Street-Official Spread</div>
           <div class="text-secondary small mb-2">Absolute IRR difference between Street and Official Commercial rates.</div>
         </div>
-        <div class="indicator-value-main indicator-value-secondary mt-3">Unavailable</div>
+        <div class="indicator-value-main indicator-value-secondary mt-3">+180,667 IRR</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> Unavailable</div>
-          <div><span class="text-secondary">Official:</span> Unavailable</div>
+          <div><span class="text-secondary">Street:</span> 1,583,750 IRR</div>
+          <div><span class="text-secondary">Official:</span> 1,403,083 IRR</div>
         </div>
-        <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
+        <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="spread trend sparkline"><polygon points="3.0,41.0 3.0,5.8 19.5,6.9 35.9,21.0 52.4,15.7 68.8,14.9 85.3,16.1 101.8,41.0 118.2,35.0 134.7,6.2 151.2,6.4 167.6,3.0 184.1,3.6 200.5,4.2 217.0,33.8 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,5.8 19.5,6.9 35.9,21.0 52.4,15.7 68.8,14.9 85.3,16.1 101.8,41.0 118.2,35.0 134.7,6.2 151.2,6.4 167.6,3.0 184.1,3.6 200.5,4.2 217.0,33.8"></polyline></svg></div>
         <div class="indicator-note">Street minus official (absolute spread)</div>
       </div>
     </div>
@@ -1011,10 +993,10 @@
           <div class="fw-semibold mb-1">Street-Transfer Spread</div>
           <div class="text-secondary small mb-2">Absolute IRR difference between Street and Regional Transfer rates.</div>
         </div>
-        <div class="indicator-value-main indicator-value-secondary mt-3">Unavailable</div>
+        <div class="indicator-value-main indicator-value-secondary mt-3">-22,400 IRR</div>
         <div class="indicator-compare small mt-2">
-          <div><span class="text-secondary">Street:</span> Unavailable</div>
-          <div><span class="text-secondary">Transfer:</span> Unavailable</div>
+          <div><span class="text-secondary">Street:</span> 1,583,750 IRR</div>
+          <div><span class="text-secondary">Transfer:</span> 1,606,150 IRR</div>
         </div>
         <div class="indicator-sparkline mt-2"><div class="text-secondary small">History building</div></div>
         <div class="indicator-note">Street minus transfer (absolute spread)</div>
@@ -1034,13 +1016,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">Unavailable</div>
+            <div class="panel-value">1,403,083</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small"></div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="3.0,16.0 157.0,16.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 14:25 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,3.0 28.7,29.0 54.3,29.0 80.0,29.0 105.7,29.0 131.3,29.0 157.0,3.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,3.0 28.7,29.0 54.3,29.0 80.0,29.0 105.7,29.0 131.3,29.0 157.0,3.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1052,13 +1034,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">Unavailable</div>
+            <div class="panel-value">1,606,150</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small"></div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="3.0,16.0 157.0,16.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 14:25 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,14.2 28.7,3.0 54.3,19.9 80.0,19.9 105.7,19.9 131.3,29.0 157.0,3.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,14.2 28.7,3.0 54.3,19.9 80.0,19.9 105.7,19.9 131.3,29.0 157.0,3.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1076,13 +1058,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">Unavailable</div>
+            <div class="panel-value">1,575,500</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small"></div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="3.0,16.0 157.0,16.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 14:25 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,27.9 28.7,27.9 54.3,29.0 80.0,3.0 105.7,12.8 131.3,25.8 157.0,25.8 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,27.9 28.7,27.9 54.3,29.0 80.0,3.0 105.7,12.8 131.3,25.8 157.0,25.8"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1094,13 +1076,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">Unavailable</div>
+            <div class="panel-value">1,046,045,000</div>
             <div class="unit-label">IRR per coin</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small"></div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polyline fill="none" stroke="rgba(148,163,184,0.45)" stroke-width="1.5" points="3.0,16.0 157.0,16.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 14:25 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,3.0 28.7,3.0 54.3,3.0 80.0,3.0 105.7,3.0 131.3,29.0 157.0,3.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,3.0 28.7,3.0 54.3,3.0 80.0,3.0 105.7,3.0 131.3,29.0 157.0,3.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1442,7 +1424,7 @@ loadRegionalMarketCards();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
 
-      <div class="text-secondary site-generated-at">Generated at 2026-04-03T22:34:40Z</div>
+      <div class="text-secondary site-generated-at">Generated at 2026-04-05T20:22:09Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
       <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
