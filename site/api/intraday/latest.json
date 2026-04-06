@@ -1,26 +1,26 @@
 {
   "date": "2026-04-06",
-  "collected_at": "2026-04-06T14:14:15Z",
+  "collected_at": "2026-04-06T14:28:42Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15"
   },
   "normalized_unit": "rial",
   "benchmarks": {
-    "open_market": 1581750.0,
+    "open_market": null,
     "official": 1403083.0,
     "regional_transfer": 1619500.0,
-    "crypto_usdt": 1578000.0,
+    "crypto_usdt": 1572500.0,
     "emami_gold_coin": 1046045000.0
   },
   "computed": {
-    "fix": 1581750.0,
-    "status": "Green",
-    "withheld": false,
+    "fix": null,
+    "status": "WITHHOLD",
+    "withheld": true,
     "band": {
-      "p25": 1579125.0,
-      "p75": 1584375.0
+      "p25": null,
+      "p75": null
     },
-    "dispersion": 0.003319108582266477
+    "dispersion": null
   }
 }
