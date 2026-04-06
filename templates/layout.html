@@ -120,6 +120,13 @@
     flex: 0 0 auto;
   }
 
+  .site-logo-link {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    text-decoration: none;
+  }
+
   .site-title {
     color: var(--rw-text-strong);
     font-family: "Sora", "Segoe UI", sans-serif;
@@ -850,13 +857,15 @@
       <div class="site-header-inner">
         <div class="site-brand">
           <div class="site-brand-row">
-            <img
-              class="site-logo"
-              id="site-logo"
-              src="/assets/rwicon_white.svg"
-              data-logo-dark="/assets/rwicon_white.svg"
-              data-logo-light="/assets/rwicon_black.svg"
-              alt="RialWatch logo">
+            <a class="site-logo-link" href="/" aria-label="RialWatch home">
+              <img
+                class="site-logo"
+                id="site-logo"
+                src="/assets/rwicon_white.svg"
+                data-logo-dark="/assets/rwicon_white.svg"
+                data-logo-light="/assets/rwicon_black.svg"
+                alt="RialWatch logo">
+            </a>
             <a class="site-title" href="/">RialWatch</a>
           </div>
           <div class="site-subtitle">Independent USD/IRR Market Reference</div>
