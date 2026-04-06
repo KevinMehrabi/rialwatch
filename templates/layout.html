@@ -799,10 +799,13 @@
     }
 
     .top-grid,
-    .indicators-grid,
     .readings-grid,
     .signals-grid {
       grid-template-columns: 1fr;
+    }
+
+    .indicators-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .status-overview-grid {
