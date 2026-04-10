@@ -17,10 +17,12 @@ import os
 import re
 import shutil
 import statistics
+import threading
 import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from string import Template
@@ -191,10 +193,17 @@ COMMERCIAL_AUX_TIMEOUT_SECONDS_DEFAULT = 20.0
 COMMERCIAL_AUX_RETRY_ATTEMPTS_DEFAULT = 3
 COMMERCIAL_AUX_RETRY_BACKOFF_SECONDS_DEFAULT = 1.0
 COMMERCIAL_AUX_RETRYABLE_HTTP_CODES = frozenset({408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524})
+COMMERCIAL_AUX_HEDGE_WIDTH_DEFAULT = 2
+COMMERCIAL_AUX_HOST_COOLDOWN_BASE_SECONDS = 60
+COMMERCIAL_AUX_HOST_COOLDOWN_MAX_SECONDS = 600
 
 STATUS_HISTORY_LOOKBACK_DAYS_DEFAULT = 7
 STATUS_RECENT_SUCCESS_HOURS_DEFAULT = 24 * 7
-OFFICIAL_FRESHNESS_MAX_AGE_HOURS_DEFAULT = 48
+OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT = 48
+OFFICIAL_FRESHNESS_MAX_AGE_HOURS_DEFAULT = OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT
+
+COMMERCIAL_AUX_HOST_HEALTH_LOCK = threading.Lock()
+COMMERCIAL_AUX_HOST_HEALTH: Dict[str, Dict[str, Any]] = {}
 
 ALANCHAND_STREET_SELL_PATTERNS: Tuple[str, ...] = (
     r"(?is)Sell\s+rate\s+for\s+USD\s+to\s+IRR.*?<span[^>]*fs-5[^>]*>\s*([0-9][0-9,٬،.]*)\s*</span>",
@@ -1025,6 +1034,101 @@ def is_commercial_aux_retryable_error(exc: BaseException) -> bool:
     return False
 
 
+def canonical_commercial_aux_url(url: str) -> str:
+    parsed = urllib.parse.urlparse(url.strip())
+    path = parsed.path or "/"
+    return urllib.parse.urlunparse((parsed.scheme, parsed.netloc, path, "", "", ""))
+
+
+def commercial_aux_endpoint_pool(preferred_url: str) -> List[str]:
+    candidates = [
+        preferred_url,
+        env_first("COMMERCIAL_AUX_URL", "TGJU_CALL_URL", default="https://call.tgju.org/ajax.json"),
+        env_first("COMMERCIAL_AUX_A_URL", "TGJU_CALL2_URL", default="https://call2.tgju.org/ajax.json"),
+        env_first("COMMERCIAL_AUX_B_URL", "TGJU_CALL3_URL", default="https://call3.tgju.org/ajax.json"),
+        env_first("COMMERCIAL_AUX_C_URL", "TGJU_CALL4_URL", default="https://call4.tgju.org/ajax.json"),
+    ]
+    deduped: List[str] = []
+    seen: set[str] = set()
+    for candidate in candidates:
+        normalized = canonical_commercial_aux_url(candidate)
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        deduped.append(normalized)
+    return deduped
+
+
+def record_commercial_aux_host_result(url: str, success: bool) -> None:
+    key = canonical_commercial_aux_url(url)
+    now_epoch = time.time()
+    with COMMERCIAL_AUX_HOST_HEALTH_LOCK:
+        state = COMMERCIAL_AUX_HOST_HEALTH.setdefault(
+            key,
+            {
+                "successes": 0,
+                "failures": 0,
+                "consecutive_failures": 0,
+                "cooldown_until": 0.0,
+            },
+        )
+        if success:
+            state["successes"] = int(state.get("successes", 0)) + 1
+            state["consecutive_failures"] = 0
+            state["cooldown_until"] = 0.0
+            return
+        consecutive_failures = int(state.get("consecutive_failures", 0)) + 1
+        state["failures"] = int(state.get("failures", 0)) + 1
+        state["consecutive_failures"] = consecutive_failures
+        cooldown_seconds = min(
+            COMMERCIAL_AUX_HOST_COOLDOWN_BASE_SECONDS * consecutive_failures,
+            COMMERCIAL_AUX_HOST_COOLDOWN_MAX_SECONDS,
+        )
+        state["cooldown_until"] = now_epoch + float(cooldown_seconds)
+
+
+def ranked_commercial_aux_endpoints(preferred_url: str) -> List[str]:
+    urls = commercial_aux_endpoint_pool(preferred_url)
+    preferred_key = canonical_commercial_aux_url(preferred_url)
+    now_epoch = time.time()
+    with COMMERCIAL_AUX_HOST_HEALTH_LOCK:
+        state_snapshot = {key: dict(value) for key, value in COMMERCIAL_AUX_HOST_HEALTH.items()}
+
+    def sort_key(url: str) -> Tuple[int, int, int, int]:
+        key = canonical_commercial_aux_url(url)
+        state = state_snapshot.get(key, {})
+        cooldown_until = float(state.get("cooldown_until", 0.0) or 0.0)
+        in_cooldown = now_epoch < cooldown_until
+        preferred_penalty = 0 if key == preferred_key else 1
+        consecutive_failures = int(state.get("consecutive_failures", 0) or 0)
+        successes = int(state.get("successes", 0) or 0)
+        failures = int(state.get("failures", 0) or 0)
+        reliability_penalty = max(0, failures - successes)
+        return (1 if in_cooldown else 0, preferred_penalty, consecutive_failures, reliability_penalty)
+
+    return sorted(urls, key=sort_key)
+
+
+def fetch_request_body(req: urllib.request.Request, timeout_seconds: float) -> Tuple[str, str]:
+    with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
+        body = resp.read().decode("utf-8", errors="replace")
+        final_url = resp.geturl()
+    return body, final_url
+
+
+def official_quote_is_fresh(quote_time: Optional[dt.datetime], sampled_at: dt.datetime) -> bool:
+    if quote_time is None:
+        return False
+    max_age_hours = env_int(
+        "OFFICIAL_MAX_QUOTE_AGE_HOURS",
+        OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT,
+        minimum=1,
+        maximum=24 * 30,
+    )
+    max_age = dt.timedelta(hours=max_age_hours)
+    return (sampled_at - quote_time) <= max_age
+
+
 def with_query(url: str, extra_params: Dict[str, str]) -> str:
     parsed = urllib.parse.urlparse(url)
     existing = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
@@ -1749,32 +1853,110 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         final_url = ""
         request_urls: List[str] = []
         health["timeout_seconds"] = request_timeout_seconds
-        for attempt_idx in range(max_attempts):
-            req = build_request(config)
-            redacted_url = redact_url_for_health(req.full_url)
-            request_urls.append(redacted_url)
-            if health.get("request_url") is None:
-                health["request_url"] = redacted_url
-            health["request_urls"] = request_urls
-            health["attempt_count"] = attempt_idx + 1
-            health["retry_count"] = attempt_idx
+        if is_aux_source:
+            health["fetch_mode"] = "hedged_pool"
+            hedge_width = env_int(
+                "COMMERCIAL_AUX_HEDGE_WIDTH",
+                COMMERCIAL_AUX_HEDGE_WIDTH_DEFAULT,
+                minimum=1,
+                maximum=4,
+            )
+            last_error: Optional[BaseException] = None
+            for attempt_idx in range(max_attempts):
+                ranked_endpoints = ranked_commercial_aux_endpoints(config.url)
+                selected_endpoints = ranked_endpoints[: max(1, min(hedge_width, len(ranked_endpoints)))]
+                health["attempt_count"] = attempt_idx + 1
+                health["retry_count"] = attempt_idx
+                health["hedge_width"] = len(selected_endpoints)
+                health["hedged_endpoints"] = selected_endpoints
+                health["request_urls"] = request_urls
 
-            try:
-                with urllib.request.urlopen(req, timeout=request_timeout_seconds) as resp:
-                    body = resp.read().decode("utf-8", errors="replace")
-                    final_url = resp.geturl()
-                break
-            except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
+                futures: Dict[Any, str] = {}
+                round_success = False
+                executor = ThreadPoolExecutor(max_workers=max(1, len(selected_endpoints)))
+                try:
+                    for endpoint_url in selected_endpoints:
+                        endpoint_cfg = SourceConfig(
+                            name=config.name,
+                            url=endpoint_url,
+                            auth_mode=config.auth_mode,
+                            secret_fields=config.secret_fields,
+                            benchmark_families=config.benchmark_families,
+                            default_unit=config.default_unit,
+                        )
+                        req = build_request(endpoint_cfg)
+                        redacted_url = redact_url_for_health(req.full_url)
+                        request_urls.append(redacted_url)
+                        if health.get("request_url") is None:
+                            health["request_url"] = redacted_url
+                        futures[executor.submit(fetch_request_body, req, request_timeout_seconds)] = endpoint_url
+
+                    for future in as_completed(futures):
+                        endpoint_url = futures[future]
+                        try:
+                            body_candidate, final_url_candidate = future.result()
+                        except Exception as exc:
+                            last_error = exc
+                            record_commercial_aux_host_result(endpoint_url, success=False)
+                            continue
+
+                        body = body_candidate
+                        final_url = final_url_candidate
+                        health["final_endpoint"] = canonical_commercial_aux_url(endpoint_url)
+                        record_commercial_aux_host_result(endpoint_url, success=True)
+                        round_success = True
+                        break
+                finally:
+                    for future in futures:
+                        if not future.done():
+                            future.cancel()
+                    executor.shutdown(wait=False, cancel_futures=True)
+
+                if round_success:
+                    break
+
                 should_retry = (
-                    is_aux_source
-                    and (attempt_idx + 1) < max_attempts
-                    and is_commercial_aux_retryable_error(exc)
+                    (attempt_idx + 1) < max_attempts
+                    and last_error is not None
+                    and is_commercial_aux_retryable_error(last_error)
                 )
                 if not should_retry:
-                    raise
+                    if last_error is not None:
+                        raise last_error
+                    raise urllib.error.URLError("no successful auxiliary endpoint response")
                 sleep_seconds = min(retry_backoff_seconds * (2**attempt_idx), 8.0)
                 if sleep_seconds > 0:
                     time.sleep(sleep_seconds)
+            if not body:
+                if last_error is not None:
+                    raise last_error
+                raise urllib.error.URLError("no successful auxiliary endpoint response")
+        else:
+            for attempt_idx in range(max_attempts):
+                req = build_request(config)
+                redacted_url = redact_url_for_health(req.full_url)
+                request_urls.append(redacted_url)
+                if health.get("request_url") is None:
+                    health["request_url"] = redacted_url
+                health["request_urls"] = request_urls
+                health["attempt_count"] = attempt_idx + 1
+                health["retry_count"] = attempt_idx
+
+                try:
+                    body, final_url = fetch_request_body(req, request_timeout_seconds)
+                    break
+                except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
+                    should_retry = (
+                        is_aux_source
+                        and (attempt_idx + 1) < max_attempts
+                        and is_commercial_aux_retryable_error(exc)
+                    )
+                    if not should_retry:
+                        raise
+                    sleep_seconds = min(retry_backoff_seconds * (2**attempt_idx), 8.0)
+                    if sleep_seconds > 0:
+                        time.sleep(sleep_seconds)
+        health["request_urls"] = request_urls
 
         health["content_length"] = len(body.encode("utf-8"))
         health["final_url"] = final_url
@@ -2122,6 +2304,8 @@ def latest_sample_value_for_benchmark(
             if isinstance(validation, dict) and validation.get("ok") is False:
                 continue
         quote_time = sample_benchmark_quote_time(s, benchmark_key)
+        if benchmark_key == "official" and not official_quote_is_fresh(quote_time, s.sampled_at):
+            continue
         effective_time = quote_time if quote_time is not None else s.sampled_at
         ranked.append((effective_time, s.sampled_at, value, s.source_unit or "unknown"))
     if not ranked:
@@ -2146,8 +2330,10 @@ def benchmark_update_cadence_count(entries: List[Sample], benchmark_key: str) ->
             validation = s.health.get("validation_result")
             if isinstance(validation, dict) and validation.get("ok") is False:
                 continue
-        has_valid_sample = True
         quote_time = sample_benchmark_quote_time(s, benchmark_key)
+        if benchmark_key == "official" and not official_quote_is_fresh(quote_time, s.sampled_at):
+            continue
+        has_valid_sample = True
         if quote_time is not None:
             quote_times.add(iso_ts(quote_time))
     if quote_times:
@@ -2180,7 +2366,25 @@ def compute_benchmark_result(
         if benchmark_key == "official":
             latest = latest_sample_value_for_benchmark(entries, benchmark_key)
             if latest is None:
-                source_notes[source] = "no valid samples"
+                stale_quote_candidates: List[dt.datetime] = []
+                for s in entries:
+                    candidate_value = parse_number(s.benchmark_values.get(benchmark_key))
+                    if candidate_value is None:
+                        continue
+                    if isinstance(s.health, dict):
+                        fetch_success = s.health.get("fetch_success")
+                        if fetch_success is False:
+                            continue
+                        validation = s.health.get("validation_result")
+                        if isinstance(validation, dict) and validation.get("ok") is False:
+                            continue
+                    candidate_quote_time = sample_benchmark_quote_time(s, benchmark_key)
+                    if candidate_quote_time is not None:
+                        stale_quote_candidates.append(candidate_quote_time)
+                if stale_quote_candidates:
+                    source_notes[source] = f"official quote stale since {iso_ts(max(stale_quote_candidates))}"
+                else:
+                    source_notes[source] = "no valid samples"
                 continue
             latest_value, latest_quote_time, latest_sampled_at, latest_source_unit = latest
             source_medians[source] = latest_value
@@ -2347,9 +2551,17 @@ def compute_indicator_results(benchmark_results: Dict[str, Dict[str, Any]]) -> D
     if street.get("withheld") is True:
         street_fix = None
     official_fix = parse_number(official.get("fix"))
+    if official.get("withheld") is True:
+        official_fix = None
     transfer_fix = parse_number(transfer.get("fix"))
+    if transfer.get("withheld") is True:
+        transfer_fix = None
     crypto_fix = parse_number(crypto.get("fix"))
+    if crypto.get("withheld") is True:
+        crypto_fix = None
     emami_fix = parse_number(emami.get("fix"))
+    if emami.get("withheld") is True:
+        emami_fix = None
 
     street_official_gap_pct: Optional[float] = None
     if street_fix is not None and official_fix not in (None, 0):
@@ -2508,6 +2720,8 @@ def extract_daily_gap_value(daily: Dict[str, Any], gap_key: str) -> Optional[flo
         entry = benchmarks.get(key, {})
         if not isinstance(entry, dict):
             return None
+        if entry.get("withheld") is True or entry.get("available") is False:
+            return None
         return parse_number(entry.get("fix"))
 
     official_fix = benchmark_fix_value("official")
@@ -2615,13 +2829,19 @@ def build_normalized_market_snapshot(daily: Dict[str, Any], site_dir: Optional[P
     if not isinstance(indicators, dict):
         indicators = {}
 
-    street = parse_number(benchmarks.get("open_market", {}).get("fix") if isinstance(benchmarks.get("open_market"), dict) else None)
-    official = parse_number(benchmarks.get("official", {}).get("fix") if isinstance(benchmarks.get("official"), dict) else None)
-    transfer = parse_number(
-        benchmarks.get("regional_transfer", {}).get("fix") if isinstance(benchmarks.get("regional_transfer"), dict) else None
-    )
-    crypto = parse_number(benchmarks.get("crypto_usdt", {}).get("fix") if isinstance(benchmarks.get("crypto_usdt"), dict) else None)
-    emami = parse_number(benchmarks.get("emami_gold_coin", {}).get("fix") if isinstance(benchmarks.get("emami_gold_coin"), dict) else None)
+    def benchmark_fix_value(key: str) -> Optional[float]:
+        entry = benchmarks.get(key, {})
+        if not isinstance(entry, dict):
+            return None
+        if entry.get("withheld") is True or entry.get("available") is False:
+            return None
+        return parse_number(entry.get("fix"))
+
+    street = benchmark_fix_value("open_market")
+    official = benchmark_fix_value("official")
+    transfer = benchmark_fix_value("regional_transfer")
+    crypto = benchmark_fix_value("crypto_usdt")
+    emami = benchmark_fix_value("emami_gold_coin")
 
     def indicator_value(key: str) -> Optional[float]:
         entry = indicators.get(key, {})
@@ -3249,14 +3469,6 @@ def publish_status(
             maximum=24 * 30,
         )
     )
-    official_freshness_max_age = dt.timedelta(
-        hours=env_int(
-            "OFFICIAL_FRESHNESS_MAX_AGE_HOURS",
-            OFFICIAL_FRESHNESS_MAX_AGE_HOURS_DEFAULT,
-            minimum=1,
-            maximum=24 * 90,
-        )
-    )
 
     source_rows: List[Dict[str, str]] = []
     ordered_source_names = sorted(sources.keys(), key=lambda item: str(item).lower())
@@ -3280,6 +3492,7 @@ def publish_status(
         any_degraded_failure = False
         any_parsed_data = False
         degraded_due_to_recent_success = False
+        reachability_status = "Unknown"
 
         def sample_has_parsed_data(sample_obj: Dict[str, Any]) -> bool:
             if parse_number(sample_obj.get("value")) is not None:
@@ -3348,13 +3561,16 @@ def publish_status(
             latest_error_text = isinstance(latest_sample_error, str) and latest_sample_error.strip()
 
             if latest_fetch_success is True:
+                reachability_status = "Online"
                 if latest_has_parsed_data and not latest_validation_failed and not latest_failure_text:
                     latest_status = "Online"
                 else:
                     latest_status = "Degraded"
             elif latest_fetch_success is False:
+                reachability_status = "Offline"
                 latest_status = "Offline"
             elif latest_error_text or latest_failure_text:
+                reachability_status = "Offline"
                 latest_status = "Offline"
 
         if latest_status:
@@ -3365,6 +3581,12 @@ def publish_status(
             source_status = "Degraded"
         elif any_offline_failure or samples:
             source_status = "Offline"
+
+        if reachability_status == "Unknown":
+            if any_fetch_success:
+                reachability_status = "Online"
+            elif any_offline_failure or samples:
+                reachability_status = "Offline"
 
         status_reference_ts = latest_sample_ts or utc_now()
         if (
@@ -3422,8 +3644,10 @@ def publish_status(
             note = "Collecting normally." if source_status == "Online" else "No additional notes."
 
         official_quote_stale_note = ""
+        freshness_status = "N/A"
         supports_official = bool(CANONICAL_SOURCE_SYMBOLS.get(source_name, {}).get("official"))
         if supports_official:
+            freshness_status = "Unknown"
             freshness_sample: Optional[Dict[str, Any]] = None
             if latest_sample is not None and sample_official_value(latest_sample) is not None:
                 freshness_sample = latest_sample
@@ -3433,13 +3657,14 @@ def publish_status(
             if freshness_sample is not None:
                 official_quote_time = sample_official_quote_time(freshness_sample)
                 freshness_reference = latest_sample_ts or last_success_ts or utc_now()
-                if (
-                    official_quote_time is not None
-                    and (freshness_reference - official_quote_time) > official_freshness_max_age
-                ):
-                    official_quote_stale_note = (
-                        f"Official quote stale since {official_quote_time.strftime('%b %d, %Y, %H:%M UTC')}."
-                    )
+                if official_quote_time is not None:
+                    if official_quote_is_fresh(official_quote_time, freshness_reference):
+                        freshness_status = "Fresh"
+                    else:
+                        freshness_status = "Stale"
+                        official_quote_stale_note = (
+                            f"Official quote stale since {official_quote_time.strftime('%b %d, %Y, %H:%M UTC')}."
+                        )
 
         if official_quote_stale_note and source_status != "Offline":
             if note:
@@ -3447,6 +3672,15 @@ def publish_status(
                 note = f"{note}{separator}{official_quote_stale_note}"
             else:
                 note = official_quote_stale_note
+
+        status_context_parts = [f"Reachability {reachability_status.lower()}."]
+        if supports_official:
+            status_context_parts.append(f"Official freshness {freshness_status.lower()}.")
+        status_context = " ".join(status_context_parts)
+        if note:
+            note = f"{status_context} {note}"
+        else:
+            note = status_context
 
         source_rows.append(
             {

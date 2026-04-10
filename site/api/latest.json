@@ -1,6 +1,6 @@
 {
   "date": "2026-04-10",
-  "as_of": "2026-04-10T15:24:26Z",
+  "as_of": "2026-04-10T18:43:16Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -684,55 +684,34 @@
     "official": {
       "label": "Official Commercial USD Rate",
       "benchmark": "official",
-      "fix": 1403083.0,
+      "fix": null,
       "band": {
-        "p25": 1403083.0,
-        "p75": 1403083.0
+        "p25": null,
+        "p75": null
       },
-      "dispersion": 0.0,
-      "status": "Green",
-      "withheld": false,
-      "withhold_reasons": [],
-      "source_medians": {
-        "navasan": 1325072.0,
-        "commercial_aux_a": 1403083.0,
-        "commercial_aux_b": 1403083.0,
-        "commercial_aux_c": 1403083.0,
-        "commercial_aux": 1403083.0
-      },
-      "source_units": {
-        "navasan": "mixed",
-        "commercial_aux_a": "rial",
-        "commercial_aux_b": "rial",
-        "commercial_aux_c": "rial",
-        "commercial_aux": "rial"
-      },
-      "source_update_counts": {
-        "navasan": 1,
-        "commercial_aux_a": 1,
-        "commercial_aux_b": 1,
-        "commercial_aux_c": 1,
-        "commercial_aux": 1
-      },
+      "dispersion": null,
+      "status": "WITHHOLD",
+      "withheld": true,
+      "withhold_reasons": [
+        "no valid sources available"
+      ],
+      "source_medians": {},
+      "source_units": {},
+      "source_update_counts": {},
       "source_notes": {
         "bonbast": "no valid samples",
         "alanchand_street": "source family not used for this benchmark",
-        "navasan": "older quote (2026-01-06T01:07:21Z) than freshest source (2026-03-27T00:00:00Z)",
-        "commercial_aux_a": "latest valid quote selected at 2026-03-27T00:00:00Z",
-        "commercial_aux_b": "latest valid quote selected at 2026-03-27T00:00:00Z",
-        "commercial_aux_c": "latest valid quote selected at 2026-03-27T00:00:00Z",
-        "commercial_aux": "latest valid quote selected at 2026-03-27T00:00:00Z",
+        "navasan": "official quote stale since 2026-01-06T01:07:21Z",
+        "commercial_aux_a": "official quote stale since 2026-03-27T00:00:00Z",
+        "commercial_aux_b": "official quote stale since 2026-03-27T00:00:00Z",
+        "commercial_aux_c": "official quote stale since 2026-03-27T00:00:00Z",
+        "commercial_aux": "official quote stale since 2026-03-27T00:00:00Z",
         "alanchand": "source family not used for this benchmark"
       },
-      "selected_sources": [
-        "commercial_aux",
-        "commercial_aux_a",
-        "commercial_aux_b",
-        "commercial_aux_c"
-      ],
-      "selected_quote_time": "2026-03-27T00:00:00Z",
-      "selection_method": "freshest_quote_time",
-      "available": true
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "available": false
     },
     "regional_transfer": {
       "label": "Regional Transfer Rate",
@@ -840,8 +819,8 @@
   "indicators": {
     "street_official_gap_pct": {
       "label": "Street-Official Gap",
-      "value": 11.825173564215374,
-      "available": true,
+      "value": null,
+      "available": false,
       "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
     },
     "street_transfer_gap_pct": {
@@ -858,14 +837,14 @@
     },
     "street_gold_gap_pct": {
       "label": "Gold FX Gap",
-      "value": -14.935202889313784,
-      "available": true,
+      "value": null,
+      "available": false,
       "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
     },
     "official_commercial_trend_7d": {
       "label": "Official 7d Trend",
-      "value": 5.887302727700834,
-      "available": true,
+      "value": null,
+      "available": false,
       "formula": "7-day percent change of official_commercial_usd_irr"
     }
   },
@@ -899,8 +878,8 @@
       },
       "official": {
         "label": "Official Commercial USD Rate",
-        "value": 1403083.0,
-        "available": true,
+        "value": null,
+        "available": false,
         "is_primary": false
       },
       "regional_transfer": {
@@ -925,8 +904,8 @@
     "indicators": {
       "street_official_gap_pct": {
         "label": "Street-Official Gap",
-        "value": 11.825173564215374,
-        "available": true,
+        "value": null,
+        "available": false,
         "formula": "((street_usd_irr - official_commercial_usd_irr) / official_commercial_usd_irr) * 100"
       },
       "street_transfer_gap_pct": {
@@ -943,31 +922,31 @@
       },
       "street_gold_gap_pct": {
         "label": "Gold FX Gap",
-        "value": -14.935202889313784,
-        "available": true,
+        "value": null,
+        "available": false,
         "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
       },
       "official_commercial_trend_7d": {
         "label": "Official 7d Trend",
-        "value": 5.887302727700834,
-        "available": true,
+        "value": null,
+        "available": false,
         "formula": "7-day percent change of official_commercial_usd_irr"
       }
     }
   },
   "normalized_metrics": {
     "street_usd_irr": 1569000.0,
-    "official_commercial_usd_irr": 1403083.0,
+    "official_commercial_usd_irr": null,
     "regional_transfer_usd_irr": 1585750.0,
     "crypto_usdt_irr": 1549500.0,
-    "emami_coin_irr": 940940000.0,
-    "street_official_gap_pct": 11.825173564215374,
+    "emami_coin_irr": null,
+    "street_official_gap_pct": null,
     "street_transfer_gap_pct": -1.056282516159546,
     "street_crypto_gap_pct": -1.24282982791587,
-    "street_gold_gap_pct": -14.935202889313784,
-    "gold_implied_usd_irr": 1334666.6666666667,
+    "street_gold_gap_pct": null,
+    "gold_implied_usd_irr": null,
     "gold_usd_per_oz": 3000.0,
-    "official_commercial_trend_7d": 5.887302727700834,
+    "official_commercial_trend_7d": null,
     "street_confidence_status": "Green",
     "source_unit": "mixed",
     "normalized_unit": "rial"
@@ -994,17 +973,17 @@
           "sekkeh"
         ]
       },
+      "commercial_aux_b": {
+        "official": [
+          "ice_transfer_usd_sell"
+        ]
+      },
       "commercial_aux_c": {
         "official": [
           "ice_transfer_usd_sell"
         ]
       },
       "commercial_aux_a": {
-        "official": [
-          "ice_transfer_usd_sell"
-        ]
-      },
-      "commercial_aux_b": {
         "official": [
           "ice_transfer_usd_sell"
         ]

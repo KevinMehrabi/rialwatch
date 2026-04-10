@@ -120,6 +120,13 @@
     flex: 0 0 auto;
   }
 
+  .site-logo-link {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    text-decoration: none;
+  }
+
   .site-title {
     color: var(--rw-text-strong);
     font-family: "Sora", "Segoe UI", sans-serif;
@@ -442,11 +449,32 @@
   }
 
   .primary-rate-value {
-    font-size: 2.25rem;
+    font-size: clamp(1.55rem, 1.9vw, 2.25rem);
     line-height: 1.02;
     font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--rw-text-strong);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 1280px) {
+    .top-grid {
+      grid-template-columns: 3.8fr 8.2fr;
+    }
+
+    .primary-rate-value {
+      font-size: clamp(1.35rem, 1.25vw + 0.5rem, 2rem);
+    }
+  }
+
+  @media (max-width: 1160px) {
+    .top-grid {
+      grid-template-columns: 4fr 8fr;
+    }
+
+    .primary-rate-value {
+      font-size: clamp(1.18rem, 1.05vw + 0.45rem, 1.7rem);
+    }
   }
 
   .primary-card .card-body {
@@ -778,10 +806,13 @@
     }
 
     .top-grid,
-    .indicators-grid,
     .readings-grid,
     .signals-grid {
       grid-template-columns: 1fr;
+    }
+
+    .indicators-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .status-overview-grid {
@@ -810,7 +841,7 @@
     }
 
     .primary-rate-value {
-      font-size: 1.8rem;
+      font-size: clamp(1.4rem, 6.2vw, 1.8rem);
     }
 
     .chart-card #historyChart {
@@ -826,13 +857,15 @@
       <div class="site-header-inner">
         <div class="site-brand">
           <div class="site-brand-row">
-            <img
-              class="site-logo"
-              id="site-logo"
-              src="/assets/rwicon_white.svg"
-              data-logo-dark="/assets/rwicon_white.svg"
-              data-logo-light="/assets/rwicon_black.svg"
-              alt="RialWatch logo">
+            <a class="site-logo-link" href="/" aria-label="RialWatch home">
+              <img
+                class="site-logo"
+                id="site-logo"
+                src="/assets/rwicon_white.svg"
+                data-logo-dark="/assets/rwicon_white.svg"
+                data-logo-light="/assets/rwicon_black.svg"
+                alt="RialWatch logo">
+            </a>
             <a class="site-title" href="/">RialWatch</a>
           </div>
           <div class="site-subtitle">Independent USD/IRR Market Reference</div>
@@ -852,7 +885,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-04-05T20:22:09Z">Last update: 2026-04-05T20:22:09Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-04-10T18:43:16Z">Last update: 2026-04-10T18:43:16Z</div>
         </div>
       </div>
     </div>
@@ -906,7 +939,7 @@
   </section>
 </div>
 
-      <div class="text-secondary site-generated-at">Generated at 2026-04-05T20:22:09Z</div>
+      <div class="text-secondary site-generated-at">Generated at 2026-04-10T18:43:16Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
       <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
