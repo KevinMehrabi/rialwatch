@@ -54,6 +54,11 @@ jobs:
             python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
           elif [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "0 15 * * *" ]; then
             python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
+          elif [ "${{ github.event_name }}" = "push" ]; then
+            # Push-triggered deploys should refresh from one current intraday attempt first,
+            # so UI/data don't remain stale between scheduled collection windows.
+            python3 scripts/pipeline.py --mode collect-intraday --site-dir site --templates-dir templates --allow-outside-window
+            python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
           else
             python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
           fi
