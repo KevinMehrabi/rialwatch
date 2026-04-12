@@ -40,6 +40,13 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Install Playwright (for push-time intraday refresh)
+        if: github.event_name == 'push'
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install playwright
+          python3 -m playwright install --with-deps chromium
+
       - name: Run pipeline
         env:
           NAVASAN_API_KEY: ${{ secrets.NAVASAN_API_KEY }}
