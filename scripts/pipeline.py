@@ -4203,6 +4203,47 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         benchmark_map = c.get("benchmarks", {})
     benchmark_map = benchmark_map if isinstance(benchmark_map, dict) else {}
 
+    stale_since_pattern = re.compile(r"stale since ([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]+Z)", re.IGNORECASE)
+
+    def benchmark_entry(key: str) -> Dict[str, Any]:
+        entry = benchmark_map.get(key, {})
+        return entry if isinstance(entry, dict) else {}
+
+    def benchmark_unavailable_context(key: str) -> Optional[str]:
+        entry = benchmark_entry(key)
+        if not entry:
+            return None
+        if bool(entry.get("available")):
+            return None
+
+        source_notes = entry.get("source_notes", {})
+        stale_since: Optional[dt.datetime] = None
+        if isinstance(source_notes, dict):
+            for note in source_notes.values():
+                if not isinstance(note, str):
+                    continue
+                match = stale_since_pattern.search(note)
+                if not match:
+                    continue
+                parsed = try_parse_datetime(match.group(1))
+                if parsed is None:
+                    continue
+                if stale_since is None or parsed < stale_since:
+                    stale_since = parsed
+        if stale_since is not None:
+            return f"Awaiting fresh quote (stale since {stale_since.strftime('%b %d, %Y')})"
+
+        reasons = entry.get("withhold_reasons", [])
+        if isinstance(reasons, list):
+            lowered = [str(reason).strip().lower() for reason in reasons if str(reason).strip()]
+            if any("no valid source" in reason for reason in lowered):
+                return "No valid quotes in current publication window"
+            if any("stale" in reason for reason in lowered):
+                return "Awaiting fresh source quotes"
+            if any("config" in reason or "secret" in reason for reason in lowered):
+                return "Source configuration required"
+        return None
+
     def benchmark_value_number(key: str) -> Optional[float]:
         entry = benchmark_map.get(key, {})
         if not isinstance(entry, dict):
@@ -4285,6 +4326,8 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         if value is None:
             if key == "official_commercial_trend_7d":
                 return "History building"
+            if key == "street_official_gap_pct":
+                return "Awaiting official quote"
             return "Unavailable"
         return f"{value:+.1f}%"
 
@@ -4318,6 +4361,15 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         if latest_sample_ts is None:
             return ""
         return f"Updated {latest_sample_ts.strftime('%H:%M UTC')}"
+
+    def benchmark_card_meta_text(key: str) -> str:
+        value = benchmark_value_number(key)
+        if value is not None:
+            return benchmark_as_of_text(key)
+        context = benchmark_unavailable_context(key)
+        if context:
+            return context
+        return "No valid quote in publication window"
 
     def benchmark_sparkline_html(key: str) -> str:
         width = 160.0
@@ -4387,7 +4439,10 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
 
         current = indicator_value_number(key)
         if latest_day is None or current is None:
-            return '<div class="text-secondary small">History building</div>'
+            unavailable_text = "History building"
+            if key == "street_official_gap_pct":
+                unavailable_text = benchmark_unavailable_context("official") or "Awaiting official quote"
+            return f'<div class="text-secondary small">{html_lib.escape(unavailable_text)}</div>'
 
         history = load_indicator_gap_history(site_dir, key)
         by_day: Dict[dt.date, float] = {day: value for day, value in history}
@@ -4420,6 +4475,10 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
 
     def spread_value_or_unavailable(base: Optional[float], peer: Optional[float]) -> str:
         if base is None or peer is None:
+            if peer is None:
+                official_context = benchmark_unavailable_context("official")
+                if official_context:
+                    return "Awaiting official quote"
             return "Unavailable"
         return f"{base - peer:+,.0f} IRR"
 
@@ -4429,6 +4488,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         pad = 3.0
 
         if latest_day is None or current_spread is None:
+            if peer_key == "official":
+                context = benchmark_unavailable_context("official") or "Awaiting official quote"
+                return f'<div class="text-secondary small">{html_lib.escape(context)}</div>'
             return '<div class="text-secondary small">History building</div>'
 
         street_history = load_benchmark_fix_history(site_dir, "open_market")
@@ -4573,6 +4635,19 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         primary_value_html = f'<div class="primary-rate-value mb-1">{fmt_rate(fix)} IRR</div>'
         primary_reason_html = ""
 
+    official_gap_available = indicator_value_number("street_official_gap_pct") is not None
+    official_gap_note = (
+        "Premium to official market"
+        if official_gap_available
+        else (benchmark_unavailable_context("official") or "Gap resumes when a fresh official quote is available")
+    )
+    official_spread_available = street is not None and official is not None
+    official_spread_note = (
+        "Street minus official (absolute spread)"
+        if official_spread_available
+        else (benchmark_unavailable_context("official") or "Spread resumes when a fresh official quote is available")
+    )
+
     html = render_page(
         templates_dir,
         "index.html",
@@ -4601,22 +4676,22 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         reasons=reasons_html,
         official_value=benchmark_value_or_unavailable("official"),
         official_value_main=benchmark_value_main("official"),
-        official_as_of=benchmark_as_of_text("official"),
+        official_as_of=benchmark_card_meta_text("official"),
         official_sparkline=benchmark_sparkline_html("official"),
         regional_transfer_value=benchmark_value_or_unavailable("regional_transfer"),
         regional_transfer_value_main=benchmark_value_main("regional_transfer"),
-        regional_transfer_as_of=benchmark_as_of_text("regional_transfer"),
+        regional_transfer_as_of=benchmark_card_meta_text("regional_transfer"),
         regional_transfer_sparkline=benchmark_sparkline_html("regional_transfer"),
         crypto_usdt_value=benchmark_value_or_unavailable("crypto_usdt"),
         crypto_usdt_value_main=benchmark_value_main("crypto_usdt"),
-        crypto_usdt_as_of=benchmark_as_of_text("crypto_usdt"),
+        crypto_usdt_as_of=benchmark_card_meta_text("crypto_usdt"),
         crypto_usdt_sparkline=benchmark_sparkline_html("crypto_usdt"),
         emami_gold_coin_value=benchmark_value_or_unavailable("emami_gold_coin"),
         emami_gold_coin_value_main=benchmark_value_main("emami_gold_coin"),
-        emami_gold_coin_as_of=benchmark_as_of_text("emami_gold_coin"),
+        emami_gold_coin_as_of=benchmark_card_meta_text("emami_gold_coin"),
         emami_gold_coin_sparkline=benchmark_sparkline_html("emami_gold_coin"),
         street_official_gap_value=indicator_value_or_unavailable("street_official_gap_pct"),
-        street_official_gap_note="Premium to official market",
+        street_official_gap_note=official_gap_note,
         street_official_street_value=comparison_value_text(street),
         street_official_peer_value=comparison_value_text(official),
         street_official_gap_sparkline=indicator_gap_sparkline_html("street_official_gap_pct"),
@@ -4636,7 +4711,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street_gold_peer_value=comparison_value_text(gold_implied_fx),
         street_gold_gap_sparkline=indicator_gap_sparkline_html("street_gold_gap_pct"),
         street_official_spread_value=spread_value_or_unavailable(street, official),
-        street_official_spread_note="Street minus official (absolute spread)",
+        street_official_spread_note=official_spread_note,
         street_official_spread_street_value=comparison_value_text(street),
         street_official_spread_peer_value=comparison_value_text(official),
         street_official_spread_sparkline=derived_spread_sparkline_html("official", parse_number(street - official) if street is not None and official is not None else None),
