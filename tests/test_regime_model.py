@@ -1,5 +1,7 @@
 import datetime as dt
+import urllib.error
 import unittest
+from unittest import mock
 
 from scripts import pipeline
 
@@ -212,6 +214,121 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(result["source_update_counts"]["commercial_aux_c"], 2)
         self.assertEqual(result["source_update_counts"]["navasan"], 1)
         self.assertFalse(result["withheld"])
+
+    def test_alanchand_companion_fallback_preserves_extracted_values(self) -> None:
+        sampled_at = dt.datetime(2026, 4, 11, 14, 5, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 4, 11, 13, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 4, 11, 14, 15, tzinfo=dt.timezone.utc)
+
+        public_regional = {
+            "value": 1_590_900.0,
+            "raw_value": 1_590_900.0,
+            "quote_time": dt.datetime(2026, 4, 11, 14, 3, tzinfo=dt.timezone.utc),
+            "source_unit": "rial",
+            "normalized_unit": "rial",
+            "health": {"fetch_success": True},
+        }
+        public_crypto_missing = {
+            "value": None,
+            "raw_value": None,
+            "quote_time": None,
+            "source_unit": "rial",
+            "normalized_unit": "rial",
+            "health": {"fetch_success": False, "failure_reason": "http 503"},
+        }
+        navasan_sample = pipeline.Sample(
+            source="navasan",
+            sampled_at=sampled_at,
+            value=1_664_000.0,
+            benchmark_values={
+                "open_market": 1_664_000.0,
+                "official": None,
+                "regional_transfer": None,
+                "crypto_usdt": 1_587_500.0,
+                "emami_gold_coin": None,
+            },
+            quote_time=sampled_at,
+            ok=True,
+            stale=False,
+            health={
+                "fetch_success": True,
+                "raw_extracted_values": {"crypto_usdt": 158_750.0},
+                "benchmark_quote_times": {"crypto_usdt": "2026-04-11T14:04:00Z"},
+            },
+            source_unit="mixed",
+            normalized_unit="rial",
+        )
+
+        with mock.patch(
+            "scripts.pipeline.fetch_alanchand_public_single_rate",
+            side_effect=[public_regional, public_crypto_missing],
+        ):
+            with mock.patch("scripts.pipeline.fetch_one", return_value=navasan_sample):
+                sample = pipeline.fetch_alanchand_companion_fallback(
+                    sampled_at=sampled_at,
+                    window_start_dt=window_start,
+                    window_end_dt=window_end,
+                    primary_error="http 401",
+                    primary_error_type="http_error",
+                )
+
+        self.assertIsNotNone(sample)
+        assert sample is not None
+        self.assertEqual(sample.benchmark_values["regional_transfer"], 1_590_900.0)
+        self.assertEqual(sample.benchmark_values["crypto_usdt"], 1_587_500.0)
+        self.assertEqual(sample.source_unit, "rial")
+        self.assertEqual(sample.normalized_unit, "rial")
+        health = sample.health or {}
+        self.assertTrue(health.get("fetch_success"))
+        self.assertIn("alanchand_public_pages", health.get("fallback_sources", []))
+        self.assertIn("navasan", health.get("fallback_sources", []))
+        self.assertEqual(health.get("extracted_values", {}).get("regional_transfer"), 1_590_900.0)
+        self.assertEqual(health.get("extracted_values", {}).get("crypto_usdt"), 1_587_500.0)
+
+    def test_fetch_one_retries_navasan_after_http_429(self) -> None:
+        config = pipeline.SourceConfig(
+            name="navasan",
+            url="https://api.navasan.tech/latest/",
+            auth_mode="query_api_key",
+            secret_fields=("NAVASAN_API_KEY",),
+            benchmark_families=("open_market", "regional_transfer", "crypto_usdt"),
+            default_unit="toman",
+        )
+        sampled_at = dt.datetime(2026, 4, 11, 14, 0, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 4, 11, 13, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 4, 11, 14, 15, tzinfo=dt.timezone.utc)
+        retry_error = urllib.error.HTTPError(
+            url="https://api.navasan.tech/latest/?api_key=***",
+            code=429,
+            msg="Too Many Requests",
+            hdrs=None,
+            fp=None,
+        )
+        good_payload = '{"usd_sell":{"value":166400},"usd_shakhs":{"value":169700},"usdt":{"value":149700}}'
+
+        with mock.patch.dict(
+            "os.environ",
+            {
+                "NAVASAN_API_KEY": "test-token",
+                "API_SOURCE_RETRY_ATTEMPTS": "2",
+                "API_SOURCE_RETRY_BACKOFF_SECONDS": "0",
+            },
+            clear=False,
+        ):
+            with mock.patch(
+                "scripts.pipeline.fetch_request_body",
+                side_effect=[retry_error, (good_payload, "https://api.navasan.tech/latest/")],
+            ):
+                sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
+
+        self.assertTrue(sample.ok)
+        self.assertFalse(sample.stale)
+        self.assertEqual(sample.value, 1_664_000.0)
+        self.assertEqual(sample.benchmark_values["regional_transfer"], 1_697_000.0)
+        self.assertEqual(sample.benchmark_values["crypto_usdt"], 1_497_000.0)
+        self.assertEqual(sample.health.get("attempt_count"), 2)
+        self.assertEqual(sample.health.get("retry_count"), 1)
+        self.assertTrue(sample.health.get("fetch_success"))
 
     def test_build_source_configs_includes_multiple_aux_hosts(self) -> None:
         source_names = {cfg.name for cfg in pipeline.build_source_configs()}

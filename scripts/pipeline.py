@@ -197,6 +197,10 @@ COMMERCIAL_AUX_HEDGE_WIDTH_DEFAULT = 2
 COMMERCIAL_AUX_HOST_COOLDOWN_BASE_SECONDS = 60
 COMMERCIAL_AUX_HOST_COOLDOWN_MAX_SECONDS = 600
 
+API_SOURCE_RETRY_ATTEMPTS_DEFAULT = 3
+API_SOURCE_RETRY_BACKOFF_SECONDS_DEFAULT = 1.0
+API_SOURCE_RETRYABLE_HTTP_CODES = frozenset({408, 425, 429, 500, 502, 503, 504, 520, 521, 522, 523, 524})
+
 STATUS_HISTORY_LOOKBACK_DAYS_DEFAULT = 7
 STATUS_RECENT_SUCCESS_HOURS_DEFAULT = 24 * 7
 OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT = 48
@@ -213,6 +217,12 @@ ALANCHAND_STREET_BUY_PATTERNS: Tuple[str, ...] = (
 )
 ALANCHAND_STREET_LAST_UPDATE_PATTERN = r"(?is)Last\s*update:\s*<span>\s*Time:\s*(\d{1,2}):(\d{2})\s*\(UTC([+-]\d{1,2}:\d{2})\)"
 ALANCHAND_STREET_MAX_SPREAD_PCT_DEFAULT = 0.08
+ALANCHAND_PUBLIC_SINGLE_RATE_PATTERNS: Tuple[str, ...] = (
+    r'(?is)"price"\s*:\s*"([0-9][0-9,٬،.]*)"',
+    r"(?is)<span[^>]*fs-5[^>]*>\s*([0-9][0-9,٬،.]*)\s*</span>",
+)
+ALANCHAND_PUBLIC_REGIONAL_URL_DEFAULT = "https://alanchand.com/en/currencies-price/usd-hav"
+ALANCHAND_PUBLIC_USDT_URL_DEFAULT = "https://alanchand.com/en/crypto-price/usdt"
 
 
 @dataclass
@@ -1034,6 +1044,16 @@ def is_commercial_aux_retryable_error(exc: BaseException) -> bool:
     return False
 
 
+def is_api_source_retryable_error(exc: BaseException) -> bool:
+    if isinstance(exc, urllib.error.HTTPError):
+        return int(exc.code) in API_SOURCE_RETRYABLE_HTTP_CODES
+    if isinstance(exc, urllib.error.URLError):
+        return True
+    if isinstance(exc, TimeoutError):
+        return True
+    return False
+
+
 def canonical_commercial_aux_url(url: str) -> str:
     parsed = urllib.parse.urlparse(url.strip())
     path = parsed.path or "/"
@@ -1706,58 +1726,241 @@ def fetch_alanchand_street_public(
     )
 
 
-def fetch_alanchand_regional_fallback(
+def fetch_alanchand_public_single_rate(
+    page_url: str,
+    sampled_at: dt.datetime,
+    minimum: float,
+    maximum: float,
+) -> Dict[str, Any]:
+    health: Dict[str, Any] = {
+        "collector": "http_html",
+        "fetch_mode": "public_html",
+        "request_url": None,
+        "final_url": None,
+        "content_length": None,
+        "selector_used": None,
+        "fetch_success": False,
+        "failure_reason": None,
+        "error_type": None,
+    }
+    source_unit = "rial"
+    normalized_unit = "rial"
+
+    body = ""
+    try:
+        req = urllib.request.Request(
+            url=page_url,
+            method="GET",
+            headers={
+                "User-Agent": "rialwatch-pipeline/0.2",
+                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            },
+        )
+        health["request_url"] = redact_url_for_health(req.full_url)
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            body = resp.read().decode("utf-8", errors="replace")
+            health["final_url"] = resp.geturl()
+        health["content_length"] = len(body.encode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        health["error_type"] = "http_error"
+        health["failure_reason"] = f"http {exc.code}"
+        return {
+            "value": None,
+            "raw_value": None,
+            "quote_time": None,
+            "source_unit": source_unit,
+            "normalized_unit": normalized_unit,
+            "health": health,
+        }
+    except urllib.error.URLError as exc:
+        health["error_type"] = "network_error"
+        health["failure_reason"] = f"network: {exc.reason}"
+        return {
+            "value": None,
+            "raw_value": None,
+            "quote_time": None,
+            "source_unit": source_unit,
+            "normalized_unit": normalized_unit,
+            "health": health,
+        }
+    except TimeoutError:
+        health["error_type"] = "timeout"
+        health["failure_reason"] = "timeout"
+        return {
+            "value": None,
+            "raw_value": None,
+            "quote_time": None,
+            "source_unit": source_unit,
+            "normalized_unit": normalized_unit,
+            "health": health,
+        }
+
+    raw_value: Optional[float] = None
+    selector_used: Optional[str] = None
+    jsonld_value = bounded_value(extract_alanchand_jsonld_price(body), minimum, maximum)
+    if jsonld_value is not None:
+        raw_value = jsonld_value
+        selector_used = "jsonld_offers_price"
+    if raw_value is None:
+        pattern_value = extract_number_with_patterns(body, ALANCHAND_PUBLIC_SINGLE_RATE_PATTERNS, minimum, maximum)
+        if pattern_value is not None:
+            raw_value = pattern_value
+            selector_used = "single_rate_pattern"
+
+    value = normalize_unit(raw_value, source_unit)
+    quote_time = parse_alanchand_last_update(body, sampled_at)
+
+    health["selector_used"] = selector_used
+    health["source_unit"] = source_unit
+    health["normalized_unit"] = normalized_unit
+    health["raw_extracted_values"] = {"value": raw_value}
+    health["extracted_values"] = {"value": value}
+    health["quote_time"] = iso_ts(quote_time) if quote_time is not None else None
+    if value is None:
+        health["error_type"] = "selector_parse_failed"
+        health["failure_reason"] = "unable to parse public quote"
+    else:
+        health["fetch_success"] = True
+
+    return {
+        "value": value,
+        "raw_value": raw_value,
+        "quote_time": quote_time,
+        "source_unit": source_unit,
+        "normalized_unit": normalized_unit,
+        "health": health,
+    }
+
+
+def fetch_alanchand_companion_fallback(
     sampled_at: dt.datetime,
     window_start_dt: dt.datetime,
     window_end_dt: dt.datetime,
     primary_error: str,
     primary_error_type: str,
 ) -> Optional[Sample]:
-    fallback_config = SourceConfig(
-        name="navasan",
-        url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
-        auth_mode="query_api_key",
-        secret_fields=("NAVASAN_API_KEY",),
-        benchmark_families=("regional_transfer",),
-        default_unit="toman",
+    fallback_values = blank_benchmark_values()
+    quote_times: Dict[str, dt.datetime] = {}
+    raw_extracted_values: Dict[str, Optional[float]] = {}
+    extracted_values: Dict[str, Optional[float]] = {}
+    endpoint_health: Dict[str, Any] = {}
+    fallback_sources: List[str] = []
+
+    public_endpoints: Tuple[Tuple[str, str, float, float], ...] = (
+        (
+            "regional_transfer",
+            env_or_default("ALANCHAND_REGIONAL_PUBLIC_URL", ALANCHAND_PUBLIC_REGIONAL_URL_DEFAULT),
+            100_000,
+            3_000_000,
+        ),
+        (
+            "crypto_usdt",
+            env_or_default("ALANCHAND_USDT_PUBLIC_URL", ALANCHAND_PUBLIC_USDT_URL_DEFAULT),
+            100_000,
+            3_000_000,
+        ),
     )
-    fallback_sample = fetch_one(fallback_config, sampled_at, window_start_dt, window_end_dt)
-    fallback_value = parse_number(fallback_sample.benchmark_values.get("regional_transfer"))
-    if fallback_value is None:
+
+    for benchmark_key, endpoint_url, minimum, maximum in public_endpoints:
+        page_result = fetch_alanchand_public_single_rate(
+            page_url=endpoint_url,
+            sampled_at=sampled_at,
+            minimum=minimum,
+            maximum=maximum,
+        )
+        endpoint_health[benchmark_key] = page_result.get("health", {})
+        value = parse_number(page_result.get("value"))
+        if value is None:
+            continue
+        fallback_values[benchmark_key] = value
+        raw_extracted_values[benchmark_key] = parse_number(page_result.get("raw_value"))
+        extracted_values[benchmark_key] = value
+        quote_time = page_result.get("quote_time")
+        if isinstance(quote_time, dt.datetime):
+            quote_times[benchmark_key] = quote_time
+
+    if any(fallback_values.get(key) is not None for key in ("regional_transfer", "crypto_usdt")):
+        fallback_sources.append("alanchand_public_pages")
+
+    missing_benchmarks = [key for key in ("regional_transfer", "crypto_usdt") if fallback_values.get(key) is None]
+    if missing_benchmarks:
+        navasan_config = SourceConfig(
+            name="navasan",
+            url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
+            auth_mode="query_api_key",
+            secret_fields=("NAVASAN_API_KEY",),
+            benchmark_families=tuple(missing_benchmarks),
+            default_unit="toman",
+        )
+        navasan_sample = fetch_one(navasan_config, sampled_at, window_start_dt, window_end_dt)
+        navasan_health = navasan_sample.health if isinstance(navasan_sample.health, dict) else {}
+        navasan_raw = navasan_health.get("raw_extracted_values") if isinstance(navasan_health, dict) else {}
+        navasan_quote_times = navasan_health.get("benchmark_quote_times") if isinstance(navasan_health, dict) else {}
+
+        for benchmark_key in missing_benchmarks:
+            value = parse_number(navasan_sample.benchmark_values.get(benchmark_key))
+            if value is None:
+                continue
+            fallback_values[benchmark_key] = value
+            extracted_values[benchmark_key] = value
+            if isinstance(navasan_raw, dict):
+                raw_extracted_values[benchmark_key] = parse_number(navasan_raw.get(benchmark_key))
+            if isinstance(navasan_quote_times, dict):
+                qt = try_parse_datetime(navasan_quote_times.get(benchmark_key))
+                if qt is not None:
+                    quote_times[benchmark_key] = qt
+            if benchmark_key not in quote_times:
+                qt = sample_benchmark_quote_time(navasan_sample, benchmark_key)
+                if qt is not None:
+                    quote_times[benchmark_key] = qt
+
+        endpoint_health["navasan"] = {
+            "fetch_success": navasan_health.get("fetch_success"),
+            "failure_reason": navasan_health.get("failure_reason"),
+            "validation_result": navasan_health.get("validation_result"),
+            "request_url": navasan_health.get("request_url"),
+            "final_url": navasan_health.get("final_url"),
+        }
+        if any(fallback_values.get(key) is not None for key in missing_benchmarks):
+            fallback_sources.append("navasan")
+
+    usable_values = {k: v for k, v in fallback_values.items() if parse_number(v) is not None}
+    if not usable_values:
         return None
 
-    fallback_health = fallback_sample.health if isinstance(fallback_sample.health, dict) else {}
+    latest_quote_time = max(quote_times.values()) if quote_times else None
+    stale = not is_within_window_minute(sampled_at, window_start_dt, window_end_dt)
     health: Dict[str, Any] = {
         "collector": "http_json_fallback",
+        "fetch_mode": "companion_fallback",
         "fetch_success": True,
         "failure_reason": None,
         "error_type": None,
         "fallback_used": True,
-        "fallback_source": "navasan",
         "fallback_reason": primary_error,
         "fallback_error_type": primary_error_type,
-        "request_url": fallback_health.get("request_url"),
-        "final_url": fallback_health.get("final_url"),
-        "content_length": fallback_health.get("content_length"),
-        "raw_extracted_values": {
-            "regional_transfer": (fallback_health.get("raw_extracted_values") or {}).get("regional_transfer")
-        },
-        "extracted_values": {"regional_transfer": fallback_value},
-        "source_unit": fallback_sample.source_unit,
-        "normalized_unit": fallback_sample.normalized_unit,
+        "fallback_sources": fallback_sources,
+        "raw_extracted_values": raw_extracted_values,
+        "extracted_values": extracted_values,
+        "benchmark_quote_times": {k: iso_ts(v) for k, v in quote_times.items()},
+        "endpoint_health": endpoint_health,
+        "source_unit": "rial",
+        "normalized_unit": "rial",
+        "validation_result": {"ok": True},
     }
+
     return Sample(
         source="alanchand",
         sampled_at=sampled_at,
         value=None,
-        benchmark_values=blank_benchmark_values(),
-        quote_time=fallback_sample.quote_time,
-        ok=fallback_sample.ok,
-        stale=fallback_sample.stale,
-        error=None,
+        benchmark_values=fallback_values,
+        quote_time=latest_quote_time,
+        ok=not stale,
+        stale=stale,
+        error="sample outside observation window" if stale else None,
         health=health,
-        source_unit=fallback_sample.source_unit,
-        normalized_unit=fallback_sample.normalized_unit,
+        source_unit="rial",
+        normalized_unit="rial",
     )
 
 
@@ -1818,6 +2021,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     source_unit = config.default_unit
     normalized_unit = "rial"
     is_aux_source = is_commercial_aux_source(config.name)
+    is_api_source = config.auth_mode in {"query_api_key", "header_api_key"}
     request_timeout_seconds = (
         env_seconds(
             "COMMERCIAL_AUX_TIMEOUT_SECONDS",
@@ -1826,7 +2030,16 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             maximum=60.0,
         )
         if is_aux_source
-        else 20.0
+        else (
+            env_seconds(
+                "API_SOURCE_TIMEOUT_SECONDS",
+                20.0,
+                minimum=5.0,
+                maximum=60.0,
+            )
+            if is_api_source
+            else 20.0
+        )
     )
     max_attempts = (
         env_int(
@@ -1836,7 +2049,16 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             maximum=6,
         )
         if is_aux_source
-        else 1
+        else (
+            env_int(
+                "API_SOURCE_RETRY_ATTEMPTS",
+                API_SOURCE_RETRY_ATTEMPTS_DEFAULT,
+                minimum=1,
+                maximum=6,
+            )
+            if is_api_source
+            else 1
+        )
     )
     retry_backoff_seconds = (
         env_seconds(
@@ -1846,7 +2068,16 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             maximum=10.0,
         )
         if is_aux_source
-        else 0.0
+        else (
+            env_seconds(
+                "API_SOURCE_RETRY_BACKOFF_SECONDS",
+                API_SOURCE_RETRY_BACKOFF_SECONDS_DEFAULT,
+                minimum=0.0,
+                maximum=10.0,
+            )
+            if is_api_source
+            else 0.0
+        )
     )
     try:
         body = ""
@@ -1947,9 +2178,9 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
                     break
                 except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
                     should_retry = (
-                        is_aux_source
+                        is_api_source
                         and (attempt_idx + 1) < max_attempts
-                        and is_commercial_aux_retryable_error(exc)
+                        and is_api_source_retryable_error(exc)
                     )
                     if not should_retry:
                         raise
@@ -1968,7 +2199,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["fetch_success"] = False
         health["failure_reason"] = f"missing secret: {exc}"
         if config.name == "alanchand":
-            fallback = fetch_alanchand_regional_fallback(
+            fallback = fetch_alanchand_companion_fallback(
                 sampled_at=sampled_at,
                 window_start_dt=window_start_dt,
                 window_end_dt=window_end_dt,
@@ -1995,7 +2226,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["fetch_success"] = False
         health["failure_reason"] = f"http {exc.code}"
         if config.name == "alanchand":
-            fallback = fetch_alanchand_regional_fallback(
+            fallback = fetch_alanchand_companion_fallback(
                 sampled_at=sampled_at,
                 window_start_dt=window_start_dt,
                 window_end_dt=window_end_dt,
@@ -2022,7 +2253,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["fetch_success"] = False
         health["failure_reason"] = f"network: {exc.reason}"
         if config.name == "alanchand":
-            fallback = fetch_alanchand_regional_fallback(
+            fallback = fetch_alanchand_companion_fallback(
                 sampled_at=sampled_at,
                 window_start_dt=window_start_dt,
                 window_end_dt=window_end_dt,
@@ -2049,7 +2280,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["fetch_success"] = False
         health["failure_reason"] = "timeout"
         if config.name == "alanchand":
-            fallback = fetch_alanchand_regional_fallback(
+            fallback = fetch_alanchand_companion_fallback(
                 sampled_at=sampled_at,
                 window_start_dt=window_start_dt,
                 window_end_dt=window_end_dt,
@@ -2076,7 +2307,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["fetch_success"] = False
         health["failure_reason"] = "invalid json"
         if config.name == "alanchand":
-            fallback = fetch_alanchand_regional_fallback(
+            fallback = fetch_alanchand_companion_fallback(
                 sampled_at=sampled_at,
                 window_start_dt=window_start_dt,
                 window_end_dt=window_end_dt,
