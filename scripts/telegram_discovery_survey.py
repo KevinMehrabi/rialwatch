@@ -18,6 +18,7 @@ import html
 import json
 import random
 import re
+import socket
 import time
 import urllib.error
 import urllib.parse
@@ -251,6 +252,8 @@ def fetch_url(url: str, timeout: int) -> Tuple[Optional[str], Optional[int], Opt
     except urllib.error.HTTPError as exc:
         body = exc.read().decode("utf-8", errors="replace")
         return body, int(exc.code), f"http_{exc.code}"
+    except socket.timeout:
+        return None, None, "timeout"
     except urllib.error.URLError as exc:
         return None, None, f"network_error:{exc.reason}"
     except TimeoutError:
