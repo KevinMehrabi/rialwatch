@@ -1,39 +1,32 @@
 rank,handle,title,recommended_priority,priority_score,signal_richness_score,channel_type_guess,likely_individual_shop,extracted_quote_messages,extracted_buy_sell_pairs,city_mentions,notes
-1,sarafijavan,SARAFI JAVAN | صرافی جوان لندن پوند خرید و فروش قیمت پوند نرخ ارز حواله دلار کانادا آمریکا درهم CAD EURO انگلیس یورو,P1,122.00,91,individual_exchange_shop,True,17,17,London,repeated quote messages; buy/sell pairs present; stable post format; likely direct shop
-2,sarrafiatlaslondon,صرافی اطلس| Atlas Exchange,P1,113.00,82,individual_exchange_shop,True,17,17,London|Tehran,repeated quote messages; buy/sell pairs present; stable post format; likely direct shop
-3,navasanchannel,نوسان - اعلان لحظه ای نرخ ارز و سکه,P1,110.00,83,market_price_channel,False,18,12,,repeated quote messages; buy/sell pairs present; stable post format
-4,istanbulim_com,قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول,P1,109.00,86,individual_exchange_shop,True,20,20,Istanbul,repeated quote messages; buy/sell pairs present; likely direct shop
-5,mellalex,🇬🇧 صرافی تهران,P1,109.00,86,individual_exchange_shop,True,20,20,,repeated quote messages; buy/sell pairs present; likely direct shop
-6,exchangeratescountries,نرخ ارز ساعتی £ $ €,P1,98.00,75,individual_exchange_shop,True,16,11,London,repeated quote messages; buy/sell pairs present; likely direct shop
-7,mazanehnet,مظنه ارز در بازار تهران,P2,78.00,60,individual_exchange_shop,True,20,0,,repeated quote messages; likely direct shop
-8,qheimat_dolar_sabze,نرخ دلار و طلا و سکه تهران,P2,75.00,57,individual_exchange_shop,True,20,0,,repeated quote messages; likely direct shop
-9,dollar_tehran3bze,قیمت لحظه‌ای دلار تهران,P2,74.00,56,individual_exchange_shop,True,20,0,Tehran,repeated quote messages; likely direct shop
-10,sabzemaidan,نرخ دلار سبزه تهران,P2,74.00,56,individual_exchange_shop,True,20,0,Tehran,repeated quote messages; likely direct shop
-11,parsiyanexchangturkey,صرافی پارسیان💰💰 استانبول,P2,73.00,50,individual_exchange_shop,True,8,8,,repeated quote messages; buy/sell pairs present; likely direct shop
-12,seanexchangee,صرافی شان استانبول | sean exchange,P2,70.00,52,individual_exchange_shop,True,13,0,Istanbul|Tehran,repeated quote messages; likely direct shop
-13,farsi_change,صرافی فارسی چنج,P3,67.00,56,aggregator,False,20,20,,repeated quote messages; buy/sell pairs present
-14,bonbast_ex,Bonbast.com,P3,66.00,60,aggregator,False,20,0,,repeated quote messages
-15,poshtkhati_dollar,مظنه پشت خطی دلار,P3,64.00,46,individual_exchange_shop,True,15,0,Herat,repeated quote messages; likely direct shop
-16,danielexchange,صرافی دانیال لندن - Sarafi Daniel London,P3,61.00,36,individual_exchange_shop,True,6,6,London,buy/sell pairs present; stable post format; likely direct shop
-17,sarafiayandehaed,خدمات ارزی آینده - دبی,P3,60.00,37,individual_exchange_shop,True,8,7,Dubai,repeated quote messages; buy/sell pairs present; likely direct shop
-18,sarafha_rate,کانال قیمت لحظه ای دلار، یورو، سکه و طلا,P4,52.00,46,aggregator,False,12,0,,repeated quote messages
-19,samaniexchange,صرافی سامانی(مشهد),P4,50.00,30,individual_exchange_shop,True,6,0,Mashhad,stable post format; likely direct shop
-20,afsharsarafi,AfshaRex | صرافی افشار,P4,45.00,32,market_price_channel,False,7,6,,buy/sell pairs present
-21,caspian_ex,صرافی کاسپین📈Caspian Exchange,P4,45.00,31,aggregator,False,14,0,,repeated quote messages; stable post format
-22,zarbanexch,Zarban - زربان: نرخ ارز در تورنتو,P4,44.00,30,dealer_network_channel,False,8,0,,repeated quote messages
-23,royal_rate,نرخ ارز بازار CURRENCY RATE,P4,42.00,24,individual_exchange_shop,True,10,0,Dubai|Rasht,repeated quote messages; likely direct shop
-24,sarafy_hafez,صرافی حافظ کانادا Hafez Exchange,P4,34.00,22,individual_exchange_shop,True,7,0,Tehran,likely direct shop
-25,sh_ex,صرافی سادات حسینی,P4,32.00,20,individual_exchange_shop,True,4,2,,likely direct shop
-26,sarrafionyx,حواله ارز استانبول صرافی (ONYX ),P4,29.00,17,individual_exchange_shop,True,4,0,Tehran,likely direct shop
-27,sekkedollarrate,قیمت لحظه ای دلار سکه,P4,27.00,21,aggregator,False,9,0,,repeated quote messages
-28,barakchian_exchange,صرافی برکچیان «مشهد»,P4,24.00,16,unclear,False,3,0,Mashhad,stable post format
-29,iranmoneyex,Sarafi Iran,P4,23.00,15,dealer_network_channel,False,4,1,,limited structured signals
-30,arz_tala_online,قیمت ارز، طلا و سکه,P4,22.00,14,unclear,False,1,1,,stable post format
-31,ramzinex_com,صرافی ارز دیجیتال رمزینکس,P4,22.00,14,dealer_network_channel,False,4,0,,limited structured signals
-32,sarafi_arzx,SARAFI_ARZX صرافی ارزایکس نرخ لحظه ای دلار. ‌یورو .طلا.ارز دیجیتال. خودرو,P4,22.00,14,unclear,False,1,0,Tehran,stable post format
-33,nobitexmarket,Nobitex | نوبیتکس,P4,21.00,13,unclear,False,1,1,,stable post format
-34,persepolissarafi,صرافی پرسپولیس,P4,20.00,12,unclear,False,1,0,,stable post format
-35,istanbulcaspianexchange,صرافی کاسپین استانبول,P4,16.00,16,unclear,False,3,0,Istanbul,limited structured signals
-36,tabdealplatform,Tabdeal.org | صرافی تبدیل,P4,15.00,15,unclear,False,4,1,,limited structured signals
-37,fanoodiexchange,صرافی فنودی,P4,12.00,0,individual_exchange_shop,True,0,0,,likely direct shop
-38,coinexofficialpersianchannel,CoinEx Official Persian,P4,10.00,10,unclear,False,2,1,,limited structured signals
+1,exchangeratescountries,نرخ ارز ساعتی £ $ €,P1,98.00,75,individual_exchange_shop,True,16,11,London,repeated quote messages; buy/sell pairs present; likely direct shop
+2,navasanchannel,نوسان - اعلان لحظه ای نرخ ارز و سکه,P1,97.00,70,market_price_channel,False,14,10,,repeated quote messages; buy/sell pairs present; stable post format
+3,dolarsaghez,دلار سقز,P1,95.00,72,individual_exchange_shop,True,20,9,Tehran,repeated quote messages; buy/sell pairs present; likely direct shop
+4,arzcafe,قیمت دلار، ارز، سکه، تتر و بیت کوین,P1,92.00,70,market_price_channel,False,20,0,,repeated quote messages; stable post format
+5,groupsarafilondonuk,گروه تجاری مالی لندن London,P1,91.00,68,individual_exchange_shop,True,15,15,London,repeated quote messages; buy/sell pairs present; likely direct shop
+6,gold_mesghal,👎💰 تحلیل تکنیکال آبشده نقدی رسمی و غیررسمی Gold_Mesghal 💰👍,P1,87.00,64,individual_exchange_shop,True,18,7,Tehran,repeated quote messages; buy/sell pairs present; likely direct shop
+7,sarafionline7groupuk,Nerkh Sarafi Online 7 Group Uk,P1,87.00,64,individual_exchange_shop,True,13,6,London|Tehran,repeated quote messages; buy/sell pairs present; likely direct shop
+8,daviditsupportuklondon,DAVID IT SUPPORT UK,P2,80.00,57,individual_exchange_shop,True,14,7,London,repeated quote messages; buy/sell pairs present; likely direct shop
+9,nerkhtetheruk,نرخ ارز دیجیتال تتر لندن,P2,80.00,57,individual_exchange_shop,True,14,7,London,repeated quote messages; buy/sell pairs present; likely direct shop
+10,dolarefeham,🔵 خبر دلار فهام 🔴,P2,79.00,61,individual_exchange_shop,True,20,1,Tehran,repeated quote messages; likely direct shop
+11,arzchande,ارز چنده؟ | Bonbast | بن بست,P2,77.00,63,market_price_channel,False,20,0,,repeated quote messages
+12,avatodaydollar,Avatoday Dollar exchange آواتودی دلار,P2,77.00,59,individual_exchange_shop,True,20,1,Tehran,repeated quote messages; likely direct shop
+13,bonbast_exchange,نرخ دلار، یورو، پوند | بن بست | Bonbast,P2,74.00,60,market_price_channel,False,20,0,,repeated quote messages
+14,tonprice,TON PRICE,P2,74.00,60,market_price_channel,False,20,0,,repeated quote messages
+15,zarscan,زر اسکن | قیمت لحظه ای طلا و دلار,P2,74.00,60,aggregator,False,20,0,,repeated quote messages; stable post format
+16,sarafionlineuk,Sarafi Online 7 Seven Uk,P2,70.00,52,individual_exchange_shop,True,13,4,London,repeated quote messages; buy/sell pairs present; likely direct shop
+17,nerkhedolar1,دلار فردایی تهران,P3,69.00,51,individual_exchange_shop,True,19,0,Tehran,repeated quote messages; likely direct shop
+18,sarafha_com,نرخ لحظه ای ارز و طلا,P3,61.00,55,aggregator,False,16,0,,repeated quote messages
+19,haratdollar,دلار هرات 🅅🄸🄿,P3,60.00,38,market_price_channel,False,17,0,Herat,repeated quote messages; stable post format
+20,kukh_alomlat,شركة القصر للصرافة,P3,60.00,38,market_price_channel,False,16,0,,repeated quote messages; stable post format
+21,dollar_sulaymaniyah,قیمت لحظه ای دلار سلیمانیه,P4,54.00,32,market_price_channel,False,13,0,,repeated quote messages; stable post format
+22,sarafha_rate,کانال قیمت لحظه ای دلار، یورو، سکه و طلا,P4,52.00,46,aggregator,False,12,0,,repeated quote messages
+23,denar_online,ارز ساحلی بوکان,P4,45.00,31,unclear,False,8,0,Herat,repeated quote messages; stable post format
+24,selidol,نرخ دلار سلیمانیه,P4,44.00,30,market_price_channel,False,15,0,,repeated quote messages
+25,dhsusdt,DHs usdt,P4,41.00,28,market_price_channel,False,6,6,,buy/sell pairs present
+26,dolartalaa,💰قیمت لحظه‌ای آبشده💰مع ف 🔔📅 مظنه,P4,34.00,20,dealer_network_channel,False,10,0,,repeated quote messages
+27,arz_tala_online,قیمت ارز، طلا و سکه,P4,22.00,14,unclear,False,1,1,,stable post format
+28,tonblog,TON — BLOG,P4,21.00,13,aggregator,False,1,0,,stable post format
+29,baghdad,BAGHDAD,P4,20.00,12,aggregator,False,1,0,,stable post format
+30,sepehrexchange1,حواله فوری یوآن CNY 🇨🇳 RMB,P4,20.00,12,unclear,False,1,0,,stable post format
+31,cryptobotru,Новости Crypto Bot,P4,12.00,12,aggregator,False,3,0,,limited structured signals
