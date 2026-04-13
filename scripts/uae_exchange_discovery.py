@@ -341,7 +341,10 @@ def normalize_telegram_url(raw: str) -> Optional[str]:
     token = raw.strip().strip("'\"<>()[]{}.,;")
     if token.startswith("t.me/") or token.startswith("telegram.me/"):
         token = "https://" + token
-    parsed = urllib.parse.urlparse(token)
+    try:
+        parsed = urllib.parse.urlparse(token)
+    except ValueError:
+        return None
     if parsed.scheme not in {"http", "https"}:
         return None
     if parsed.netloc.lower() not in {"t.me", "www.t.me", "telegram.me", "www.telegram.me"}:
@@ -360,7 +363,10 @@ def normalize_instagram_url(raw: str) -> Optional[str]:
     token = raw.strip().strip("'\"<>()[]{}.,;")
     if token.startswith("instagram.com/"):
         token = "https://" + token
-    parsed = urllib.parse.urlparse(token)
+    try:
+        parsed = urllib.parse.urlparse(token)
+    except ValueError:
+        return None
     if parsed.scheme not in {"http", "https"}:
         return None
     if parsed.netloc.lower() not in {"instagram.com", "www.instagram.com"}:
@@ -378,7 +384,10 @@ def normalize_whatsapp_url(raw: str) -> Optional[str]:
     token = raw.strip().strip("'\"<>()[]{}.,;")
     if not token:
         return None
-    parsed = urllib.parse.urlparse(token)
+    try:
+        parsed = urllib.parse.urlparse(token)
+    except ValueError:
+        return None
     if parsed.scheme not in {"http", "https"}:
         return None
     domain = parsed.netloc.lower()
@@ -391,7 +400,10 @@ def normalize_website_url(raw: str) -> Optional[str]:
     token = raw.strip().strip("'\"<>()[]{}.,;")
     if not token:
         return None
-    parsed = urllib.parse.urlparse(token)
+    try:
+        parsed = urllib.parse.urlparse(token)
+    except ValueError:
+        return None
     if parsed.scheme not in {"http", "https"}:
         return None
     domain = parsed.netloc.lower()
