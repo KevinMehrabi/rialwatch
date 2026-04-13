@@ -1,60 +1,83 @@
 {
-  "generated_at": "2026-04-13T21:50:19+00:00",
-  "total_channels_discovered": 395,
+  "generated_at": "2026-04-13T22:29:47+00:00",
+  "total_channels_discovered": 724,
   "channels_with_quote_posts": 28,
-  "likely_individual_exchange_shops": 10,
-  "market_channels": 5,
-  "parseable_feeds_above_60_score": 16,
+  "likely_individual_exchange_shops": 9,
+  "market_channels": 4,
+  "parseable_feeds_above_60_score": 15,
   "channel_type_distribution": {
-    "unclear": 215,
-    "aggregator": 28,
-    "individual_exchange_shop": 10,
-    "market_price_channel": 5,
-    "dealer_network_channel": 2
+    "unclear": 343,
+    "aggregator": 63,
+    "individual_exchange_shop": 9,
+    "market_price_channel": 4,
+    "dealer_network_channel": 1
   },
   "city_distribution": {
-    "unknown": 141,
-    "Tehran": 61,
-    "Dubai": 23,
-    "Qom": 11,
-    "Tabriz": 9,
-    "London": 7,
+    "unknown": 281,
+    "Tehran": 71,
+    "Dubai": 25,
+    "Qom": 19,
+    "London": 10,
+    "Tabriz": 7,
     "Isfahan": 4,
     "Rasht": 2,
-    "Karaj": 1,
-    "Kerman": 1
+    "Hamburg": 1
   },
   "search_debug": {
     "query_stats": {
       "site:t.me دلار سلیمانیه": {
-        "candidate_hits": 34
-      },
-      "site:t.me/s دلار سلیمانیه": {
         "candidate_hits": 58
       },
+      "site:t.me/s دلار سلیمانیه": {
+        "candidate_hits": 87
+      },
       "site:t.me نرخ دلار سلیمانیه": {
-        "candidate_hits": 33
+        "candidate_hits": 77
       },
       "site:t.me/s نرخ دلار سلیمانیه": {
-        "candidate_hits": 54
+        "candidate_hits": 41
+      },
+      "site:t.me بازار ارز سلیمانیه": {
+        "candidate_hits": 60
+      },
+      "site:t.me/s بازار ارز سلیمانیه": {
+        "candidate_hits": 87
+      },
+      "site:t.me سليمانية دولار": {
+        "candidate_hits": 27
+      },
+      "site:t.me/s سليمانية دولار": {
+        "candidate_hits": 0
+      },
+      "site:t.me سعر الدولار السليمانية": {
+        "candidate_hits": 0
+      },
+      "site:t.me/s سعر الدولار السليمانية": {
+        "candidate_hits": 0
       },
       "site:t.me دلار اربیل": {
-        "candidate_hits": 48
+        "candidate_hits": 0
       },
       "site:t.me/s دلار اربیل": {
-        "candidate_hits": 52
+        "candidate_hits": 0
       },
       "site:t.me نرخ دلار اربیل": {
-        "candidate_hits": 50
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار اربیل": {
-        "candidate_hits": 47
+        "candidate_hits": 0
       },
       "site:t.me دلار اربيل": {
-        "candidate_hits": 55
+        "candidate_hits": 0
       },
       "site:t.me/s دلار اربيل": {
-        "candidate_hits": 4
+        "candidate_hits": 0
+      },
+      "site:t.me سعر الدولار اربيل": {
+        "candidate_hits": 0
+      },
+      "site:t.me/s سعر الدولار اربيل": {
+        "candidate_hits": 0
       },
       "site:t.me هولیر دلار": {
         "candidate_hits": 0
@@ -68,57 +91,123 @@
       "site:t.me/s هەولێر دلار": {
         "candidate_hits": 0
       },
+      "site:t.me dollar erbil": {
+        "candidate_hits": 0
+      },
+      "site:t.me/s dollar erbil": {
+        "candidate_hits": 0
+      },
+      "site:t.me hewler dollar": {
+        "candidate_hits": 0
+      },
+      "site:t.me/s hewler dollar": {
+        "candidate_hits": 0
+      },
       "site:t.me بغداد دلار": {
-        "candidate_hits": 2
+        "candidate_hits": 0
       },
       "site:t.me/s بغداد دلار": {
-        "candidate_hits": 52
+        "candidate_hits": 0
       },
       "site:t.me عراق دلار": {
-        "candidate_hits": 55
+        "candidate_hits": 0
       },
       "site:t.me/s عراق دلار": {
-        "candidate_hits": 27
+        "candidate_hits": 0
+      },
+      "site:t.me سعر الدولار بغداد": {
+        "candidate_hits": 0
+      },
+      "site:t.me/s سعر الدولار بغداد": {
+        "candidate_hits": 0
+      },
+      "site:t.me سعر الدولار العراق": {
+        "candidate_hits": 0
+      },
+      "site:t.me/s سعر الدولار العراق": {
+        "candidate_hits": 0
+      },
+      "site:t.me iraq dollar": {
+        "candidate_hits": 0
+      },
+      "site:t.me/s iraq dollar": {
+        "candidate_hits": 0
+      },
+      "site:t.me baghdad dollar": {
+        "candidate_hits": 0
+      },
+      "site:t.me/s baghdad dollar": {
+        "candidate_hits": 0
+      },
+      "site:t.me نرخ دلار عراق": {
+        "candidate_hits": 2
+      },
+      "site:t.me/s نرخ دلار عراق": {
+        "candidate_hits": 78
       },
       "نرخ دلار سلیمانیه": {
-        "candidate_hits": 56
+        "candidate_hits": 84
+      },
+      "قیمت دلار سلیمانیه": {
+        "candidate_hits": 93
+      },
+      "بازار ارز سلیمانیه": {
+        "candidate_hits": 27
       },
       "نرخ دلار اربیل": {
-        "candidate_hits": 25
+        "candidate_hits": 0
+      },
+      "قیمت دلار اربیل": {
+        "candidate_hits": 0
       },
       "نرخ دلار هولیر": {
+        "candidate_hits": 0
+      },
+      "قیمت دلار هولیر": {
+        "candidate_hits": 0
+      },
+      "نرخ دلار بغداد": {
+        "candidate_hits": 0
+      },
+      "قیمت دلار بغداد": {
+        "candidate_hits": 0
+      },
+      "نرخ دلار عراق": {
         "candidate_hits": 0
       },
       "قیمت دلار عراق": {
         "candidate_hits": 0
       },
-      "iraq dollar telegram": {
-        "candidate_hits": 63
-      },
-      "sulaymaniyah dollar telegram": {
-        "candidate_hits": 12
-      },
-      "erbil dollar telegram": {
-        "candidate_hits": 27
-      },
-      "hewler dollar telegram": {
-        "candidate_hits": 10
-      },
-      "baghdad dollar telegram": {
+      "telegram sulaymaniyah dollar": {
         "candidate_hits": 0
+      },
+      "telegram erbil dollar": {
+        "candidate_hits": 0
+      },
+      "telegram hewler dollar": {
+        "candidate_hits": 38
+      },
+      "telegram baghdad dollar": {
+        "candidate_hits": 82
+      },
+      "iraq fx board telegram": {
+        "candidate_hits": 68
+      },
+      "iraqi exchange telegram": {
+        "candidate_hits": 98
       }
     },
     "source_stats": {
       "jina_duckduckgo_lite": {
-        "ok_requests": 40,
-        "failed_requests": 32,
-        "candidate_hits": 764
+        "ok_requests": 58,
+        "failed_requests": 164,
+        "candidate_hits": 1007
       }
     },
-    "failed_search_requests": 32,
-    "successful_search_requests": 40
+    "failed_search_requests": 164,
+    "successful_search_requests": 58
   },
-  "channels_crawled": 260,
+  "channels_crawled": 420,
   "crawl_error_count": 0,
   "crawl_errors_by_handle": {}
 }

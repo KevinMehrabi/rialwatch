@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-04-13T21:51:12+00:00",
+  "generated_at": "2026-04-13T22:30:35+00:00",
   "channels_analyzed": 28,
-  "channels_with_multiple_quote_messages": 22,
-  "total_quote_messages_detected": 294,
-  "total_buy_sell_pairs_detected": 84,
-  "likely_high_value_individual_shops": 9,
+  "channels_with_multiple_quote_messages": 17,
+  "total_quote_messages_detected": 259,
+  "total_buy_sell_pairs_detected": 77,
+  "likely_high_value_individual_shops": 8,
   "likely_high_value_network_channels": 1,
   "top_20_priority_candidates": [
     {
@@ -28,17 +28,6 @@
       "extracted_buy_sell_pairs": 10,
       "channel_type_guess": "market_price_channel",
       "likely_individual_shop": false
-    },
-    {
-      "handle": "dolarsaghez",
-      "title": "دلار سقز",
-      "recommended_priority": "P1",
-      "priority_score": 95.0,
-      "signal_richness_score": 72,
-      "extracted_quote_messages": 20,
-      "extracted_buy_sell_pairs": 9,
-      "channel_type_guess": "individual_exchange_shop",
-      "likely_individual_shop": true
     },
     {
       "handle": "groupsarafilondonuk",
@@ -72,6 +61,17 @@
       "extracted_buy_sell_pairs": 6,
       "channel_type_guess": "individual_exchange_shop",
       "likely_individual_shop": true
+    },
+    {
+      "handle": "aghayebazar_official",
+      "title": "آقای بازار، نرخ لحظه ای دلار، یورو، تتر، بیت کوین، ارز، سکه و طلا",
+      "recommended_priority": "P2",
+      "priority_score": 84.0,
+      "signal_richness_score": 70,
+      "extracted_quote_messages": 20,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "aggregator",
+      "likely_individual_shop": false
     },
     {
       "handle": "daviditsupportuklondon",
@@ -140,17 +140,6 @@
       "likely_individual_shop": false
     },
     {
-      "handle": "kukh_alomlat",
-      "title": "شركة القصر للصرافة",
-      "recommended_priority": "P3",
-      "priority_score": 60.0,
-      "signal_richness_score": 38,
-      "extracted_quote_messages": 16,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
-    },
-    {
       "handle": "dollar_sulaymaniyah",
       "title": "قیمت لحظه ای دلار سلیمانیه",
       "recommended_priority": "P4",
@@ -173,17 +162,6 @@
       "likely_individual_shop": false
     },
     {
-      "handle": "denar_online",
-      "title": "ارز ساحلی بوکان",
-      "recommended_priority": "P4",
-      "priority_score": 45.0,
-      "signal_richness_score": 31,
-      "extracted_quote_messages": 8,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "unclear",
-      "likely_individual_shop": false
-    },
-    {
       "handle": "selidol",
       "title": "نرخ دلار سلیمانیه",
       "recommended_priority": "P4",
@@ -192,17 +170,6 @@
       "extracted_quote_messages": 15,
       "extracted_buy_sell_pairs": 0,
       "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "zarbanexch",
-      "title": "Zarban - زربان: نرخ ارز در تورنتو",
-      "recommended_priority": "P4",
-      "priority_score": 44.0,
-      "signal_richness_score": 30,
-      "extracted_quote_messages": 8,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "dealer_network_channel",
       "likely_individual_shop": false
     },
     {
@@ -225,6 +192,39 @@
       "extracted_quote_messages": 10,
       "extracted_buy_sell_pairs": 0,
       "channel_type_guess": "dealer_network_channel",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "lastsecondtours",
+      "title": "Lastsecond.ir | تورهای مسافرتی لست سکند",
+      "recommended_priority": "P4",
+      "priority_score": 23.0,
+      "signal_richness_score": 15,
+      "extracted_quote_messages": 1,
+      "extracted_buy_sell_pairs": 1,
+      "channel_type_guess": "unclear",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "arz_tala_online",
+      "title": "قیمت ارز، طلا و سکه",
+      "recommended_priority": "P4",
+      "priority_score": 22.0,
+      "signal_richness_score": 14,
+      "extracted_quote_messages": 1,
+      "extracted_buy_sell_pairs": 1,
+      "channel_type_guess": "unclear",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "mohammadi_exchange",
+      "title": "Mohammadi_Exchange",
+      "recommended_priority": "P4",
+      "priority_score": 22.0,
+      "signal_richness_score": 14,
+      "extracted_quote_messages": 1,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "unclear",
       "likely_individual_shop": false
     }
   ],
