@@ -285,7 +285,7 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(health.get("extracted_values", {}).get("regional_transfer"), 1_590_900.0)
         self.assertEqual(health.get("extracted_values", {}).get("crypto_usdt"), 1_587_500.0)
 
-    def test_fetch_one_retries_navasan_after_http_429(self) -> None:
+    def test_fetch_one_does_not_retry_navasan_after_http_429(self) -> None:
         config = pipeline.SourceConfig(
             name="navasan",
             url="https://api.navasan.tech/latest/",
@@ -321,14 +321,13 @@ class RegimeModelTests(unittest.TestCase):
             ):
                 sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
 
-        self.assertTrue(sample.ok)
+        self.assertFalse(sample.ok)
         self.assertFalse(sample.stale)
-        self.assertEqual(sample.value, 1_664_000.0)
-        self.assertEqual(sample.benchmark_values["regional_transfer"], 1_697_000.0)
-        self.assertEqual(sample.benchmark_values["crypto_usdt"], 1_497_000.0)
-        self.assertEqual(sample.health.get("attempt_count"), 2)
-        self.assertEqual(sample.health.get("retry_count"), 1)
-        self.assertTrue(sample.health.get("fetch_success"))
+        self.assertIsNone(sample.value)
+        self.assertEqual(sample.health.get("attempt_count"), 1)
+        self.assertEqual(sample.health.get("retry_count"), 0)
+        self.assertFalse(sample.health.get("fetch_success"))
+        self.assertEqual(sample.error, "http 429")
 
     def test_build_source_configs_includes_multiple_aux_hosts(self) -> None:
         source_names = {cfg.name for cfg in pipeline.build_source_configs()}
