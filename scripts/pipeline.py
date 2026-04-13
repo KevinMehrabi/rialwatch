@@ -4681,10 +4681,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             withhold_reason_text = normalized_reason
 
     if status_upper == "WITHHOLD":
-        candidate = f"{fmt_rate(fix)} IRR"
         primary_value_html = (
             '<div class="text-warning fw-bold mb-1">WITHHELD</div>'
-            f'<div class="h5 mb-1">Candidate value: {candidate}</div>'
+            '<div class="h5 mb-1">Candidate value</div>'
+            f'<div class="primary-value-row mb-1"><div class="primary-rate-value primary-rate-value-candidate">{fmt_rate(fix)}</div>'
+            '<div class="primary-rate-unit">IRR per USD</div></div>'
         )
         primary_reason_html = (
             f'<div class="text-warning small mt-1">Reason: {withhold_reason_text}</div>'
@@ -4692,7 +4693,10 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             else ""
         )
     else:
-        primary_value_html = f'<div class="primary-rate-value mb-1">{fmt_rate(fix)} IRR</div>'
+        primary_value_html = (
+            f'<div class="primary-value-row mb-1"><div class="primary-rate-value">{fmt_rate(fix)}</div>'
+            '<div class="primary-rate-unit">IRR per USD</div></div>'
+        )
         primary_reason_html = ""
 
     official_gap_available = indicator_value_number("street_official_gap_pct") is not None
