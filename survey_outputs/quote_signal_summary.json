@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-04-13T21:09:42+00:00",
-  "channels_analyzed": 31,
-  "channels_with_multiple_quote_messages": 27,
-  "total_quote_messages_detected": 416,
-  "total_buy_sell_pairs_detected": 85,
-  "likely_high_value_individual_shops": 10,
-  "likely_high_value_network_channels": 5,
+  "generated_at": "2026-04-13T21:51:12+00:00",
+  "channels_analyzed": 28,
+  "channels_with_multiple_quote_messages": 22,
+  "total_quote_messages_detected": 294,
+  "total_buy_sell_pairs_detected": 84,
+  "likely_high_value_individual_shops": 9,
+  "likely_high_value_network_channels": 1,
   "top_20_priority_candidates": [
     {
       "handle": "exchangeratescountries",
@@ -39,17 +39,6 @@
       "extracted_buy_sell_pairs": 9,
       "channel_type_guess": "individual_exchange_shop",
       "likely_individual_shop": true
-    },
-    {
-      "handle": "arzcafe",
-      "title": "قیمت دلار، ارز، سکه، تتر و بیت کوین",
-      "recommended_priority": "P1",
-      "priority_score": 92.0,
-      "signal_richness_score": 70,
-      "extracted_quote_messages": 20,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
     },
     {
       "handle": "groupsarafilondonuk",
@@ -118,61 +107,6 @@
       "likely_individual_shop": true
     },
     {
-      "handle": "arzchande",
-      "title": "ارز چنده؟ | Bonbast | بن بست",
-      "recommended_priority": "P2",
-      "priority_score": 77.0,
-      "signal_richness_score": 63,
-      "extracted_quote_messages": 20,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "avatodaydollar",
-      "title": "Avatoday Dollar exchange آواتودی دلار",
-      "recommended_priority": "P2",
-      "priority_score": 77.0,
-      "signal_richness_score": 59,
-      "extracted_quote_messages": 20,
-      "extracted_buy_sell_pairs": 1,
-      "channel_type_guess": "individual_exchange_shop",
-      "likely_individual_shop": true
-    },
-    {
-      "handle": "bonbast_exchange",
-      "title": "نرخ دلار، یورو، پوند | بن بست | Bonbast",
-      "recommended_priority": "P2",
-      "priority_score": 74.0,
-      "signal_richness_score": 60,
-      "extracted_quote_messages": 20,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "tonprice",
-      "title": "TON PRICE",
-      "recommended_priority": "P2",
-      "priority_score": 74.0,
-      "signal_richness_score": 60,
-      "extracted_quote_messages": 20,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "zarscan",
-      "title": "زر اسکن | قیمت لحظه ای طلا و دلار",
-      "recommended_priority": "P2",
-      "priority_score": 74.0,
-      "signal_richness_score": 60,
-      "extracted_quote_messages": 20,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "aggregator",
-      "likely_individual_shop": false
-    },
-    {
       "handle": "sarafionlineuk",
       "title": "Sarafi Online 7 Seven Uk",
       "recommended_priority": "P2",
@@ -206,17 +140,6 @@
       "likely_individual_shop": false
     },
     {
-      "handle": "haratdollar",
-      "title": "دلار هرات 🅅🄸🄿",
-      "recommended_priority": "P3",
-      "priority_score": 60.0,
-      "signal_richness_score": 38,
-      "extracted_quote_messages": 17,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
-    },
-    {
       "handle": "kukh_alomlat",
       "title": "شركة القصر للصرافة",
       "recommended_priority": "P3",
@@ -225,6 +148,83 @@
       "extracted_quote_messages": 16,
       "extracted_buy_sell_pairs": 0,
       "channel_type_guess": "market_price_channel",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "dollar_sulaymaniyah",
+      "title": "قیمت لحظه ای دلار سلیمانیه",
+      "recommended_priority": "P4",
+      "priority_score": 54.0,
+      "signal_richness_score": 32,
+      "extracted_quote_messages": 13,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "market_price_channel",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "sarafha_rate",
+      "title": "کانال قیمت لحظه ای دلار، یورو، سکه و طلا",
+      "recommended_priority": "P4",
+      "priority_score": 52.0,
+      "signal_richness_score": 46,
+      "extracted_quote_messages": 12,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "aggregator",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "denar_online",
+      "title": "ارز ساحلی بوکان",
+      "recommended_priority": "P4",
+      "priority_score": 45.0,
+      "signal_richness_score": 31,
+      "extracted_quote_messages": 8,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "unclear",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "selidol",
+      "title": "نرخ دلار سلیمانیه",
+      "recommended_priority": "P4",
+      "priority_score": 44.0,
+      "signal_richness_score": 30,
+      "extracted_quote_messages": 15,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "market_price_channel",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "zarbanexch",
+      "title": "Zarban - زربان: نرخ ارز در تورنتو",
+      "recommended_priority": "P4",
+      "priority_score": 44.0,
+      "signal_richness_score": 30,
+      "extracted_quote_messages": 8,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "dealer_network_channel",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "dhsusdt",
+      "title": "DHs usdt",
+      "recommended_priority": "P4",
+      "priority_score": 41.0,
+      "signal_richness_score": 28,
+      "extracted_quote_messages": 6,
+      "extracted_buy_sell_pairs": 6,
+      "channel_type_guess": "market_price_channel",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "dolartalaa",
+      "title": "💰قیمت لحظه‌ای آبشده💰مع ف 🔔📅 مظنه",
+      "recommended_priority": "P4",
+      "priority_score": 34.0,
+      "signal_richness_score": 20,
+      "extracted_quote_messages": 10,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "dealer_network_channel",
       "likely_individual_shop": false
     }
   ],

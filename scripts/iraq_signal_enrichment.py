@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Enrich Iraq (Sulaymaniyah) locality signals from existing regional FX board channels.
+"""Enrich Iraq regional locality signals from existing regional FX board channels.
 
 Diagnostics-only research utility. This script does not change benchmark methodology.
 """
@@ -37,18 +37,37 @@ PAIR_RE = re.compile(
     re.IGNORECASE,
 )
 
-IRAQ_ALIASES = (
+SULAYMANIYAH_ALIASES = (
     "سلیمانیه",
     "سليمانية",
     "سلیمانیە",
     "sulaimaniya",
     "sulaymaniyah",
     "sulaymaniya",
+)
+ERBIL_ALIASES = (
+    "اربیل",
+    "اربيل",
+    "أربيل",
+    "هولیر",
+    "هولير",
+    "هەولێر",
+    "erbil",
+    "arbil",
+    "hewler",
+    "hawler",
+)
+BAGHDAD_ALIASES = (
+    "بغداد",
+    "baghdad",
+)
+IRAQ_GENERIC_ALIASES = (
     "iraq",
     "عراق",
 )
+IRAQ_ALIASES = SULAYMANIYAH_ALIASES + ERBIL_ALIASES + BAGHDAD_ALIASES + IRAQ_GENERIC_ALIASES
 TEHRAN_ALIASES = ("تهران", "tehran")
-LOCALITY_CANONICAL = "IRAQ_SULAYMANIYAH"
+LOCALITY_CANONICAL = "IRAQ_REGIONAL"
 
 SOURCE_TYPE_MULTIPLIER = {
     "regional_fx_board": 1.0,
@@ -82,6 +101,7 @@ class IraqSignalRecord:
     parseability_score: int
     timestamp_iso: str
     inferred_unit: str
+    sub_locality: str
     tehran_reference: str
     delta_value: str
     quote_density_score: float
@@ -198,8 +218,30 @@ def alias_regex(aliases: Sequence[str]) -> str:
 
 def detect_locality_mentions(text: str) -> int:
     lowered = normalize_text(text).lower()
-    groups = [IRAQ_ALIASES, TEHRAN_ALIASES, ("هرات", "herat"), ("دبی", "dubai"), ("استانبول", "istanbul")]
+    groups = [
+        SULAYMANIYAH_ALIASES,
+        ERBIL_ALIASES,
+        BAGHDAD_ALIASES,
+        IRAQ_GENERIC_ALIASES,
+        TEHRAN_ALIASES,
+        ("هرات", "herat"),
+        ("دبی", "dubai"),
+        ("استانبول", "istanbul"),
+    ]
     return sum(1 for aliases in groups if any(alias.lower() in lowered for alias in aliases))
+
+
+def detect_iraq_sub_locality(text: str) -> str:
+    lowered = normalize_text(text).lower()
+    if any(alias.lower() in lowered for alias in SULAYMANIYAH_ALIASES):
+        return "sulaymaniyah"
+    if any(alias.lower() in lowered for alias in ERBIL_ALIASES):
+        return "erbil"
+    if any(alias.lower() in lowered for alias in BAGHDAD_ALIASES):
+        return "baghdad"
+    if any(alias.lower() in lowered for alias in IRAQ_GENERIC_ALIASES):
+        return "iraq_generic"
+    return "iraq_unknown"
 
 
 def extract_pair_for_alias(text: str, aliases: Sequence[str]) -> Optional[Tuple[float, float, float]]:
@@ -297,17 +339,28 @@ def parse_iraq_signal(
     tehran_reference = ""
     delta_value = ""
 
-    pair = extract_pair_for_alias(lowered, IRAQ_ALIASES)
+    sub_locality = detect_iraq_sub_locality(lowered)
+    active_aliases: Sequence[str]
+    if sub_locality == "sulaymaniyah":
+        active_aliases = SULAYMANIYAH_ALIASES
+    elif sub_locality == "erbil":
+        active_aliases = ERBIL_ALIASES
+    elif sub_locality == "baghdad":
+        active_aliases = BAGHDAD_ALIASES
+    else:
+        active_aliases = IRAQ_ALIASES
+
+    pair = extract_pair_for_alias(lowered, active_aliases)
     if pair is not None:
         raw_value = pair[2]
         extraction_type = "pair"
     else:
-        single = extract_single_for_alias(lowered, IRAQ_ALIASES)
+        single = extract_single_for_alias(lowered, active_aliases)
         if single is not None:
             raw_value = single
             extraction_type = "single"
         else:
-            delta = extract_delta_for_alias(lowered, IRAQ_ALIASES)
+            delta = extract_delta_for_alias(lowered, active_aliases)
             tehran_raw = extract_tehran_reference(lowered)
             if delta is not None and tehran_raw is not None:
                 raw_value = tehran_raw + float(delta)
@@ -336,7 +389,7 @@ def parse_iraq_signal(
     parseability = max(20, min(100, base))
 
     freshness = freshness_from_timestamp(timestamp_iso)
-    return raw_value, normalized_value, extraction_type, freshness, parseability, tehran_reference, delta_value
+    return raw_value, normalized_value, extraction_type, freshness, parseability, sub_locality, tehran_reference, delta_value
 
 
 def source_category(source_type: str) -> str:
@@ -464,7 +517,9 @@ def seed_candidates_from_quote_samples(
                 continue
             text = normalize_text(str(rec.get("message_text_sample", ""))).lower()
             cities = [str(city).strip().lower() for city in (rec.get("city_mentions") or [])]
-            if any(token in text for token in iraq_tokens) or any(city in {"sulaymaniyah", "iraq"} for city in cities):
+            if any(token in text for token in iraq_tokens) or any(
+                city in {"sulaymaniyah", "iraq", "erbil", "baghdad"} for city in cities
+            ):
                 iraq_hint_count += 1
 
         if iraq_hint_count < 2 and handle not in existing:
@@ -558,7 +613,7 @@ def select_candidates(candidate_rows: Sequence[Dict[str, str]], existing_iraq_ha
 def enrich_from_existing_records(existing_rows: Sequence[Dict[str, str]]) -> List[IraqSignalRecord]:
     out: List[IraqSignalRecord] = []
     for row in existing_rows:
-        if str(row.get("locality_name", "")).strip() != "Sulaymaniyah":
+        if str(row.get("locality_name", "")).strip() not in {"Sulaymaniyah", "Iraq", "Erbil", "Baghdad"}:
             continue
         handle = str(row.get("handle", "")).strip()
         if not handle:
@@ -589,6 +644,7 @@ def enrich_from_existing_records(existing_rows: Sequence[Dict[str, str]]) -> Lis
                 parseability_score=parse_int(row.get("parseability_score"), 55),
                 timestamp_iso=str(row.get("timestamp_iso", "")).strip(),
                 inferred_unit=str(row.get("inferred_unit", "")).strip() or "unknown",
+                sub_locality=str(row.get("locality_name", "")).strip().lower() or "iraq_unknown",
                 tehran_reference="",
                 delta_value="",
                 quote_density_score=parse_float(row.get("quote_density_score"), 0.0),
@@ -634,7 +690,7 @@ def fetch_enriched_iraq_records(
             )
             if parsed is None:
                 continue
-            inferred_value, normalized_value, extraction_type, freshness, parseability, tehran_ref, delta_value = parsed
+            inferred_value, normalized_value, extraction_type, freshness, parseability, sub_locality, tehran_ref, delta_value = parsed
             enriched.append(
                 IraqSignalRecord(
                     source=candidate.handle,
@@ -649,6 +705,7 @@ def fetch_enriched_iraq_records(
                     parseability_score=parseability,
                     timestamp_iso=message.timestamp_iso,
                     inferred_unit=detect_unit(message.message_text, [n for n in [parse_number(m.group(0)) for m in NUMBER_RE.finditer(normalize_text(message.message_text))] if n is not None]),
+                    sub_locality=sub_locality,
                     tehran_reference=tehran_ref,
                     delta_value=delta_value,
                     quote_density_score=candidate.quote_density_score,
@@ -775,6 +832,7 @@ def write_records_csv(path: Path, rows: Sequence[IraqSignalRecord]) -> None:
         "parseability_score",
         "timestamp_iso",
         "inferred_unit",
+        "sub_locality",
         "tehran_reference",
         "delta_value",
         "quote_density_score",
@@ -797,6 +855,7 @@ def write_records_csv(path: Path, rows: Sequence[IraqSignalRecord]) -> None:
                     "parseability_score": row.parseability_score,
                     "timestamp_iso": row.timestamp_iso,
                     "inferred_unit": row.inferred_unit,
+                    "sub_locality": row.sub_locality,
                     "tehran_reference": row.tehran_reference,
                     "delta_value": row.delta_value,
                     "quote_density_score": f"{row.quote_density_score:.2f}",
@@ -951,6 +1010,10 @@ def main() -> int:
             "pair": sum(1 for row in merged_records if row.extraction_type == "pair"),
             "single": sum(1 for row in merged_records if row.extraction_type == "single"),
             "relative": sum(1 for row in merged_records if row.extraction_type == "relative"),
+        },
+        "sub_locality_counts": {
+            key: sum(1 for row in merged_records if row.sub_locality == key)
+            for key in ("sulaymaniyah", "erbil", "baghdad", "iraq_generic", "iraq_unknown")
         },
         "candidate_channels_considered": [source.handle for source in candidates],
         "fetch_errors": fetch_errors,

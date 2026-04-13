@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-13T21:10:19Z",
+  "generated_at": "2026-04-13T21:51:35Z",
   "benchmark_weighted_rate": 1449922.07,
   "total_iraq_signals_extracted": 30,
   "sources_contributing": [
@@ -8,16 +8,23 @@
   "number_of_sources_contributing": 1,
   "new_usable_record_count": 30,
   "median_rate": 1546500.0,
-  "weighted_rate": 1544668.87,
+  "weighted_rate": 1544654.23,
   "dispersion_level": "low",
-  "basket_confidence": 78.9,
+  "basket_confidence": 79.8,
   "recommended_display_state": "monitor",
-  "previous_display_state": "publish",
+  "previous_display_state": "monitor",
   "moved_from_monitor_to_publish": false,
   "extraction_type_counts": {
     "pair": 0,
     "single": 30,
     "relative": 0
+  },
+  "sub_locality_counts": {
+    "sulaymaniyah": 30,
+    "erbil": 0,
+    "baghdad": 0,
+    "iraq_generic": 0,
+    "iraq_unknown": 0
   },
   "candidate_channels_considered": [
     "cargoiraniandubai",
@@ -28,10 +35,11 @@
     "dolarsaghez",
     "dollar_sulaymaniyah",
     "dollariraqi",
+    "iranianerbil2",
     "poshtkhati_dollar",
     "selidol",
     "vaniagroup"
   ],
   "fetch_errors": [],
-  "locality_canonical": "IRAQ_SULAYMANIYAH"
+  "locality_canonical": "IRAQ_REGIONAL"
 }

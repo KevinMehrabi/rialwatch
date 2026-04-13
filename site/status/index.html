@@ -448,13 +448,32 @@
     line-height: 1.25;
   }
 
+  .primary-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+
   .primary-rate-value {
-    font-size: clamp(1.55rem, 1.9vw, 2.25rem);
+    font-size: clamp(2rem, 2.6vw, 3rem);
     line-height: 1.02;
     font-weight: 800;
     letter-spacing: -0.02em;
     color: var(--rw-text-strong);
     white-space: nowrap;
+  }
+
+  .primary-rate-unit {
+    font-size: 0.74rem;
+    color: var(--rw-text-muted);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .primary-rate-value-candidate {
+    font-size: clamp(1.4rem, 1.8vw, 2rem);
   }
 
   @media (max-width: 1280px) {
@@ -463,7 +482,7 @@
     }
 
     .primary-rate-value {
-      font-size: clamp(1.35rem, 1.25vw + 0.5rem, 2rem);
+      font-size: clamp(1.8rem, 2.35vw, 2.7rem);
     }
   }
 
@@ -473,7 +492,7 @@
     }
 
     .primary-rate-value {
-      font-size: clamp(1.18rem, 1.05vw + 0.45rem, 1.7rem);
+      font-size: clamp(1.6rem, 2.2vw, 2.35rem);
     }
   }
 
@@ -841,7 +860,11 @@
     }
 
     .primary-rate-value {
-      font-size: clamp(1.4rem, 6.2vw, 1.8rem);
+      font-size: clamp(1.45rem, 5.2vw, 2.05rem);
+    }
+
+    .primary-rate-unit {
+      font-size: 0.68rem;
     }
 
     .chart-card #historyChart {
@@ -885,7 +908,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-04-13T16:41:40Z">Last update: 2026-04-13T16:41:40Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-04-13T21:51:57Z">Last update: 2026-04-13T21:51:57Z</div>
         </div>
       </div>
     </div>
@@ -901,7 +924,7 @@
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h3 class="card-title mb-0">System Overview</h3>
-      <span class="text-secondary small">Status snapshot: Apr 13, 2026 · 16:41 UTC</span>
+      <span class="text-secondary small">Status snapshot: Apr 13, 2026 · 21:51 UTC</span>
     </div>
     <div class="status-overview-grid">
       <div class="status-overview-card"><div class="text-secondary small">Benchmark Pipeline</div><div class="mt-1"><span class="status-label"><span class="status-light status-online"></span>Online</span></div><div class="status-note">Benchmark pipeline is operating normally.</div></div>
@@ -944,7 +967,7 @@
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <h3 class="card-title mb-0">Diagnostics Signal Coverage</h3>
-      <span class="text-secondary small">7/7 locality signals active. 7 publish, 0 monitor.</span>
+      <span class="text-secondary small">7/7 locality signals active. 6 publish, 1 monitor.</span>
     </div>
     <div class="table-responsive">
       <table class="table table-dark table-vcenter source-status-table mb-0">
@@ -963,7 +986,7 @@
 <tr><td>Turkey — Exchange network signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>2</td><td>32</td><td>Diagnostics signal available.</td></tr>
 <tr><td>Afghanistan — Herat market signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>5</td><td>33</td><td>Diagnostics signal available.</td></tr>
 <tr><td>UK — Exchange network signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>3</td><td>18</td><td>Diagnostics signal available.</td></tr>
-<tr><td>Iraq — Sulaymaniyah market signal</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>2</td><td>20</td><td>Diagnostics signal available.</td></tr>
+<tr><td>Iraq — Sulaymaniyah market (monitoring)</td><td><span class="status-label"><span class="status-light status-degraded"></span>Degraded</span></td><td>1</td><td>30</td><td>Monitoring: limited coverage.</td></tr>
 <tr><td>Germany — settlement channel</td><td><span class="status-label"><span class="status-light status-online"></span>Online</span></td><td>5</td><td>44</td><td>Diagnostics signal available.</td></tr>
         </tbody>
       </table>
@@ -985,7 +1008,7 @@
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Last Update</div>
-        <div class="h5 mb-0">Apr 13, 2026 · 16:41 UTC</div>
+        <div class="h5 mb-0">Apr 13, 2026 · 21:51 UTC</div>
       </div>
       <div class="col-md-3">
         <div class="text-secondary small">Withhold Reason</div>
@@ -1004,7 +1027,7 @@
   </div>
 </section>
 
-      <div class="text-secondary site-generated-at">Generated at 2026-04-13T16:41:40Z</div>
+      <div class="text-secondary site-generated-at">Generated at 2026-04-13T21:51:57Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
       <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
