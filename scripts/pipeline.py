@@ -206,7 +206,6 @@ STATUS_HISTORY_LOOKBACK_DAYS_DEFAULT = 7
 STATUS_RECENT_SUCCESS_HOURS_DEFAULT = 24 * 7
 OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT = 48
 OFFICIAL_FRESHNESS_MAX_AGE_HOURS_DEFAULT = OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT
-OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS_DEFAULT = 24 * 90
 
 COMMERCIAL_AUX_HOST_HEALTH_LOCK = threading.Lock()
 COMMERCIAL_AUX_HOST_HEALTH: Dict[str, Dict[str, Any]] = {}
@@ -1146,19 +1145,6 @@ def official_quote_is_fresh(quote_time: Optional[dt.datetime], sampled_at: dt.da
         OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT,
         minimum=1,
         maximum=24 * 30,
-    )
-    max_age = dt.timedelta(hours=max_age_hours)
-    return (sampled_at - quote_time) <= max_age
-
-
-def official_quote_within_stale_fallback_age(quote_time: Optional[dt.datetime], sampled_at: dt.datetime) -> bool:
-    if quote_time is None:
-        return False
-    max_age_hours = env_int(
-        "OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS",
-        OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS_DEFAULT,
-        minimum=24,
-        maximum=24 * 365,
     )
     max_age = dt.timedelta(hours=max_age_hours)
     return (sampled_at - quote_time) <= max_age
@@ -2599,8 +2585,6 @@ def compute_benchmark_result(
     source_latest_quote_times: Dict[str, dt.datetime] = {}
     source_update_counts: Dict[str, int] = {}
     invalid_or_stale = False
-    official_stale_fallback_sources: set[str] = set()
-
     for source, entries in samples.items():
         if benchmark_key == PRIMARY_BENCHMARK and source not in PRIMARY_STREET_SOURCE_UNIVERSE:
             source_notes[source] = "source excluded from street benchmark universe"
@@ -2613,31 +2597,6 @@ def compute_benchmark_result(
         if benchmark_key == "official":
             latest = latest_sample_value_for_benchmark(entries, benchmark_key)
             if latest is None:
-                stale_fallback = latest_sample_value_for_benchmark(
-                    entries,
-                    benchmark_key,
-                    allow_stale_official=True,
-                )
-                if stale_fallback is not None:
-                    fallback_value, fallback_quote_time, fallback_sampled_at, fallback_source_unit = stale_fallback
-                    fallback_effective_time = (
-                        fallback_quote_time if fallback_quote_time is not None else fallback_sampled_at
-                    )
-                    if official_quote_within_stale_fallback_age(fallback_effective_time, fallback_sampled_at):
-                        source_medians[source] = fallback_value
-                        source_units[source] = fallback_source_unit
-                        source_latest_quote_times[source] = fallback_effective_time
-                        cadence_count = benchmark_update_cadence_count(
-                            entries,
-                            benchmark_key,
-                            allow_stale_official=True,
-                        )
-                        source_update_counts[source] = cadence_count
-                        source_notes[source] = (
-                            f"using last known official quote from {iso_ts(fallback_effective_time)}"
-                        )
-                        official_stale_fallback_sources.add(source)
-                        continue
                 stale_quote_candidates: List[dt.datetime] = []
                 for s in entries:
                     candidate_value = parse_number(s.benchmark_values.get(benchmark_key))
@@ -2796,13 +2755,6 @@ def compute_benchmark_result(
         elif dispersion <= 0.05:
             status = "Red"
 
-    selected_source_set = set(selected_sources or [])
-    used_official_stale_fallback = (
-        benchmark_key == "official"
-        and bool(selected_source_set)
-        and any(source in official_stale_fallback_sources for source in selected_source_set)
-    )
-
     return {
         "label": BENCHMARK_LABELS[benchmark_key],
         "benchmark": benchmark_key,
@@ -2819,8 +2771,8 @@ def compute_benchmark_result(
         "selected_sources": selected_sources,
         "selected_quote_time": selected_quote_time,
         "selection_method": selection_method,
-        "using_stale_fallback": used_official_stale_fallback,
-        "stale_fallback_sources": sorted(selected_source_set & official_stale_fallback_sources),
+        "using_stale_fallback": False,
+        "stale_fallback_sources": [],
         "available": (fix_value is not None and not withheld),
     }
 
@@ -4390,12 +4342,6 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         sources_map = {}
 
     def benchmark_as_of_text(key: str) -> str:
-        entry = benchmark_entry(key)
-        if key == "official" and isinstance(entry, dict) and entry.get("using_stale_fallback") is True:
-            selected_quote_time = try_parse_datetime(entry.get("selected_quote_time"))
-            if selected_quote_time is not None:
-                return f"Last known quote {selected_quote_time.strftime('%b %d, %Y')}"
-            return "Last known official quote"
         latest_sample_ts: Optional[dt.datetime] = None
         for source_data in sources_map.values():
             if not isinstance(source_data, dict):

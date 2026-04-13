@@ -215,7 +215,7 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(result["source_update_counts"]["navasan"], 1)
         self.assertFalse(result["withheld"])
 
-    def test_official_benchmark_uses_last_known_stale_fallback(self) -> None:
+    def test_official_benchmark_withholds_when_only_stale_quote_exists(self) -> None:
         stale_quote = pipeline.Sample(
             source="commercial_aux",
             sampled_at=dt.datetime(2026, 4, 13, 14, 43, tzinfo=dt.timezone.utc),
@@ -237,12 +237,12 @@ class RegimeModelTests(unittest.TestCase):
             "commercial_aux": ("official",),
         }
         result = pipeline.compute_benchmark_result(samples, "official", benchmark_sources)
-        self.assertFalse(result["withheld"])
-        self.assertEqual(result["fix"], 1_403_083.0)
-        self.assertTrue(result["available"])
-        self.assertTrue(result["using_stale_fallback"])
-        self.assertEqual(result["selected_sources"], ["commercial_aux"])
-        self.assertIn("using last known official quote", result["source_notes"]["commercial_aux"])
+        self.assertTrue(result["withheld"])
+        self.assertIsNone(result["fix"])
+        self.assertFalse(result["available"])
+        self.assertFalse(result["using_stale_fallback"])
+        self.assertIsNone(result["selected_sources"])
+        self.assertIn("official quote stale since", result["source_notes"]["commercial_aux"])
 
     def test_alanchand_companion_fallback_preserves_extracted_values(self) -> None:
         sampled_at = dt.datetime(2026, 4, 11, 14, 5, tzinfo=dt.timezone.utc)

@@ -22,9 +22,6 @@ NO_INTRADAY_REASONS = {
     "no valid intraday samples in publication window",
 }
 
-OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS_DEFAULT = 24 * 90
-
-
 def parse_number(value: Any) -> Optional[float]:
     if isinstance(value, bool):
         return None
@@ -165,68 +162,6 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
             "any_open_market_candidate": any_open_market_candidate,
         }
     )
-
-    # Official fallback consistency: if there is a usable last-known official quote
-    # in source samples, the published official benchmark should not be unavailable.
-    benchmarks = latest.get("benchmarks", {})
-    if not isinstance(benchmarks, dict):
-        benchmarks = {}
-    official_entry = benchmarks.get("official", {})
-    if not isinstance(official_entry, dict):
-        official_entry = {}
-    official_available = bool(official_entry.get("available"))
-    official_value = parse_number(official_entry.get("value"))
-    if official_value is None:
-        official_value = parse_number(official_entry.get("fix"))
-
-    sources = latest.get("sources", {})
-    if not isinstance(sources, dict):
-        sources = {}
-
-    fallback_age = dt.timedelta(hours=OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS_DEFAULT)
-    latest_as_of = parse_iso_datetime(latest.get("as_of")) or dt.datetime.combine(day, dt.time(23, 59), tzinfo=UTC)
-
-    best_official_sample_time: Optional[dt.datetime] = None
-    best_official_value: Optional[float] = None
-    for source_payload in sources.values():
-        if not isinstance(source_payload, dict):
-            continue
-        samples = source_payload.get("samples", [])
-        if not isinstance(samples, list):
-            continue
-        for sample in samples:
-            if not isinstance(sample, dict):
-                continue
-            if sample.get("fetch_success") is False:
-                continue
-            benchmark_map = sample.get("benchmarks", {})
-            if not isinstance(benchmark_map, dict):
-                continue
-            candidate_value = parse_number(benchmark_map.get("official"))
-            if candidate_value is None:
-                continue
-            candidate_time = parse_iso_datetime(sample.get("quote_time")) or parse_iso_datetime(sample.get("sampled_at"))
-            if candidate_time is None:
-                continue
-            if (latest_as_of - candidate_time) > fallback_age:
-                continue
-            if best_official_sample_time is None or candidate_time > best_official_sample_time:
-                best_official_sample_time = candidate_time
-                best_official_value = candidate_value
-
-    context["official_available"] = official_available
-    context["official_value"] = official_value
-    context["official_fallback_candidate_value"] = best_official_value
-    context["official_fallback_candidate_time"] = (
-        best_official_sample_time.isoformat().replace("+00:00", "Z")
-        if best_official_sample_time is not None
-        else None
-    )
-
-    if best_official_value is not None and (not official_available or official_value is None):
-        failures.append(
-            "Official benchmark is unavailable despite an in-range last-known official quote existing in source samples."
-        )
 
     if intraday_count > 0 and no_intraday_reason:
         failures.append(
