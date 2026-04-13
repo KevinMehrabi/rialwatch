@@ -215,6 +215,35 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(result["source_update_counts"]["navasan"], 1)
         self.assertFalse(result["withheld"])
 
+    def test_official_benchmark_uses_last_known_stale_fallback(self) -> None:
+        stale_quote = pipeline.Sample(
+            source="commercial_aux",
+            sampled_at=dt.datetime(2026, 4, 13, 14, 43, tzinfo=dt.timezone.utc),
+            value=None,
+            benchmark_values={"official": 1_403_083.0},
+            quote_time=None,
+            ok=True,
+            stale=False,
+            health={
+                "fetch_success": True,
+                "benchmark_quote_times": {"official": "2026-03-27T00:00:00Z"},
+            },
+            source_unit="rial",
+        )
+        samples = {
+            "commercial_aux": [stale_quote],
+        }
+        benchmark_sources = {
+            "commercial_aux": ("official",),
+        }
+        result = pipeline.compute_benchmark_result(samples, "official", benchmark_sources)
+        self.assertFalse(result["withheld"])
+        self.assertEqual(result["fix"], 1_403_083.0)
+        self.assertTrue(result["available"])
+        self.assertTrue(result["using_stale_fallback"])
+        self.assertEqual(result["selected_sources"], ["commercial_aux"])
+        self.assertIn("using last known official quote", result["source_notes"]["commercial_aux"])
+
     def test_alanchand_companion_fallback_preserves_extracted_values(self) -> None:
         sampled_at = dt.datetime(2026, 4, 11, 14, 5, tzinfo=dt.timezone.utc)
         window_start = dt.datetime(2026, 4, 11, 13, 45, tzinfo=dt.timezone.utc)
