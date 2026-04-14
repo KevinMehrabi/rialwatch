@@ -50,10 +50,14 @@ USER_AGENT = (
 PRIMARY_LOCALITIES = ("Tehran", "Herat", "Sulaymaniyah", "Dubai")
 SECONDARY_LOCALITIES = ("Istanbul", "London", "Frankfurt")
 ALL_LOCALITIES = PRIMARY_LOCALITIES + SECONDARY_LOCALITIES
+IRAQ_AGG_LOCALITIES = ("Sulaymaniyah", "Erbil", "Baghdad", "Iraq")
 LOCALITY_TO_BASKET = {
     "Tehran": "Iran",
     "Herat": "Afghanistan",
     "Sulaymaniyah": "Iraq",
+    "Erbil": "Iraq",
+    "Baghdad": "Iraq",
+    "Iraq": "Iraq",
     "Dubai": "UAE",
     "Istanbul": "Turkey",
     "London": "UK",
@@ -73,6 +77,18 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s سلیمانیه دلار",
         "site:t.me نرخ دلار سلیمانیه",
         "site:t.me بازار ارز سلیمانیه",
+        "site:t.me دلار اربیل",
+        "site:t.me/s دلار اربیل",
+        "site:t.me نرخ دلار اربیل",
+        "site:t.me بازار ارز اربیل",
+        "site:t.me دلار بغداد",
+        "site:t.me/s دلار بغداد",
+        "site:t.me نرخ دلار بغداد",
+        "site:t.me بازار ارز بغداد",
+        "site:t.me دلار عراق",
+        "site:t.me/s دلار عراق",
+        "site:t.me نرخ دلار عراق",
+        "site:t.me/s نرخ دلار عراق",
         "site:t.me دلار تهران",
         "site:t.me/s دلار تهران",
         "site:t.me نرخ دلار تهران",
@@ -91,6 +107,9 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "dubai dollar telegram iran",
         "herat dollar telegram iran",
         "sulaymaniyah dollar telegram iran",
+        "erbil dollar telegram iran",
+        "baghdad dollar telegram iran",
+        "iraq dollar telegram iran",
         "tehran herat dubai telegram",
         "iran fx board telegram",
     ],
@@ -131,6 +150,9 @@ LOCALITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Tehran": ("tehran", "تهران"),
     "Herat": ("herat", "هرات"),
     "Sulaymaniyah": ("sulaymaniyah", "sulaimaniyah", "سلیمانیه", "سليمانية"),
+    "Erbil": ("erbil", "اربيل", "اربیل", "هولیر", "هەولێر", "hewler", "hawler"),
+    "Baghdad": ("baghdad", "بغداد"),
+    "Iraq": ("iraq", "عراق", "العراق"),
     "Dubai": ("dubai", "دبی", "دوبی"),
     "Istanbul": ("istanbul", "استانبول"),
     "London": ("london", "لندن"),
@@ -182,6 +204,9 @@ class BoardRecord:
     tehran_quote: str
     herat_quote: str
     sulaymaniyah_quote: str
+    erbil_quote: str
+    baghdad_quote: str
+    iraq_quote: str
     dubai_quote: str
     istanbul_quote: str
     london_quote: str
@@ -386,7 +411,7 @@ def infer_quote_currency(text: str, locality: str) -> str:
         return "GBP"
     if "دلار" in lowered or "usd" in lowered:
         return "USD"
-    if locality in {"Tehran", "Herat", "Sulaymaniyah"}:
+    if locality in {"Tehran", "Herat", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq"}:
         return "USD"
     if locality == "Dubai":
         return "AED"
@@ -687,6 +712,9 @@ def process_source(source: DiscoverySource, benchmark_value: float, timeout: int
                     tehran_quote=format_quote(quote_map.get("Tehran")),
                     herat_quote=format_quote(quote_map.get("Herat")),
                     sulaymaniyah_quote=format_quote(quote_map.get("Sulaymaniyah")),
+                    erbil_quote=format_quote(quote_map.get("Erbil")),
+                    baghdad_quote=format_quote(quote_map.get("Baghdad")),
+                    iraq_quote=format_quote(quote_map.get("Iraq")),
                     dubai_quote=format_quote(quote_map.get("Dubai")),
                     istanbul_quote=format_quote(quote_map.get("Istanbul")),
                     london_quote=format_quote(quote_map.get("London")),
@@ -894,6 +922,9 @@ def write_records_csv(path: Path, rows: Sequence[BoardRecord]) -> None:
         "tehran_quote",
         "herat_quote",
         "sulaymaniyah_quote",
+        "erbil_quote",
+        "baghdad_quote",
+        "iraq_quote",
         "dubai_quote",
         "istanbul_quote",
         "london_quote",
@@ -981,7 +1012,10 @@ def main() -> int:
     locality_basket_rows = []
     gained_localities = []
     for locality in PRIMARY_LOCALITIES + SECONDARY_LOCALITIES:
-        locality_records = [record for record in board_records if record.locality_name == locality]
+        if locality == "Sulaymaniyah":
+            locality_records = [record for record in board_records if record.locality_name in IRAQ_AGG_LOCALITIES]
+        else:
+            locality_records = [record for record in board_records if record.locality_name == locality]
         summary_row = summarize_locality(locality, locality_records, benchmark_value=benchmark_value)
         locality_basket_rows.append(summary_row)
         if summary_row["usable_record_count"] > 0:
@@ -995,10 +1029,20 @@ def main() -> int:
     }
     basket_review_json.write_text(json.dumps(basket_payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-    channels_with_quote = {
-        locality: sorted({record.handle for record in board_records if record.locality_name == locality})
-        for locality in PRIMARY_LOCALITIES
-    }
+    channels_with_quote: Dict[str, List[str]] = {}
+    for locality in PRIMARY_LOCALITIES:
+        if locality == "Sulaymaniyah":
+            channels_with_quote[locality] = sorted(
+                {
+                    record.handle
+                    for record in board_records
+                    if record.locality_name in IRAQ_AGG_LOCALITIES
+                }
+            )
+        else:
+            channels_with_quote[locality] = sorted(
+                {record.handle for record in board_records if record.locality_name == locality}
+            )
     locality_support = {row["locality_name"]: row["recommended_display_state"] for row in locality_basket_rows}
 
     summary = {

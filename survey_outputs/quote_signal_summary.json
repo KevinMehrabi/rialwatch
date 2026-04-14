@@ -1,12 +1,23 @@
 {
-  "generated_at": "2026-04-13T22:30:35+00:00",
-  "channels_analyzed": 28,
-  "channels_with_multiple_quote_messages": 17,
-  "total_quote_messages_detected": 259,
-  "total_buy_sell_pairs_detected": 77,
-  "likely_high_value_individual_shops": 8,
-  "likely_high_value_network_channels": 1,
+  "generated_at": "2026-04-14T02:59:05+00:00",
+  "channels_analyzed": 34,
+  "channels_with_multiple_quote_messages": 33,
+  "total_quote_messages_detected": 454,
+  "total_buy_sell_pairs_detected": 107,
+  "likely_high_value_individual_shops": 9,
+  "likely_high_value_network_channels": 4,
   "top_20_priority_candidates": [
+    {
+      "handle": "irancurrency",
+      "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
+      "recommended_priority": "P1",
+      "priority_score": 99.0,
+      "signal_richness_score": 80,
+      "extracted_quote_messages": 20,
+      "extracted_buy_sell_pairs": 20,
+      "channel_type_guess": "market_price_channel",
+      "likely_individual_shop": false
+    },
     {
       "handle": "exchangeratescountries",
       "title": "نرخ ارز ساعتی £ $ €",
@@ -28,6 +39,17 @@
       "extracted_buy_sell_pairs": 10,
       "channel_type_guess": "market_price_channel",
       "likely_individual_shop": false
+    },
+    {
+      "handle": "dolarsaghez",
+      "title": "دلار سقز",
+      "recommended_priority": "P1",
+      "priority_score": 95.0,
+      "signal_richness_score": 72,
+      "extracted_quote_messages": 20,
+      "extracted_buy_sell_pairs": 9,
+      "channel_type_guess": "individual_exchange_shop",
+      "likely_individual_shop": true
     },
     {
       "handle": "groupsarafilondonuk",
@@ -107,6 +129,39 @@
       "likely_individual_shop": true
     },
     {
+      "handle": "arzchande",
+      "title": "ارز چنده؟ | Bonbast | بن بست",
+      "recommended_priority": "P2",
+      "priority_score": 77.0,
+      "signal_richness_score": 63,
+      "extracted_quote_messages": 20,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "market_price_channel",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "bonbast_exchange",
+      "title": "نرخ دلار، یورو، پوند | بن بست | Bonbast",
+      "recommended_priority": "P2",
+      "priority_score": 74.0,
+      "signal_richness_score": 60,
+      "extracted_quote_messages": 20,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "market_price_channel",
+      "likely_individual_shop": false
+    },
+    {
+      "handle": "zarscan",
+      "title": "زر اسکن | قیمت لحظه ای طلا و دلار",
+      "recommended_priority": "P2",
+      "priority_score": 74.0,
+      "signal_richness_score": 60,
+      "extracted_quote_messages": 20,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "aggregator",
+      "likely_individual_shop": false
+    },
+    {
       "handle": "sarafionlineuk",
       "title": "Sarafi Online 7 Seven Uk",
       "recommended_priority": "P2",
@@ -129,6 +184,17 @@
       "likely_individual_shop": true
     },
     {
+      "handle": "poshtkhati_dollar",
+      "title": "مظنه پشت خطی دلار",
+      "recommended_priority": "P3",
+      "priority_score": 64.0,
+      "signal_richness_score": 46,
+      "extracted_quote_messages": 15,
+      "extracted_buy_sell_pairs": 0,
+      "channel_type_guess": "individual_exchange_shop",
+      "likely_individual_shop": true
+    },
+    {
       "handle": "sarafha_com",
       "title": "نرخ لحظه ای ارز و طلا",
       "recommended_priority": "P3",
@@ -140,91 +206,25 @@
       "likely_individual_shop": false
     },
     {
-      "handle": "dollar_sulaymaniyah",
-      "title": "قیمت لحظه ای دلار سلیمانیه",
-      "recommended_priority": "P4",
-      "priority_score": 54.0,
-      "signal_richness_score": 32,
-      "extracted_quote_messages": 13,
+      "handle": "haratdollar",
+      "title": "دلار هرات 🅅🄸🄿",
+      "recommended_priority": "P3",
+      "priority_score": 60.0,
+      "signal_richness_score": 38,
+      "extracted_quote_messages": 17,
       "extracted_buy_sell_pairs": 0,
       "channel_type_guess": "market_price_channel",
       "likely_individual_shop": false
     },
     {
-      "handle": "sarafha_rate",
-      "title": "کانال قیمت لحظه ای دلار، یورو، سکه و طلا",
-      "recommended_priority": "P4",
-      "priority_score": 52.0,
-      "signal_richness_score": 46,
-      "extracted_quote_messages": 12,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "aggregator",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "selidol",
-      "title": "نرخ دلار سلیمانیه",
-      "recommended_priority": "P4",
-      "priority_score": 44.0,
-      "signal_richness_score": 30,
-      "extracted_quote_messages": 15,
+      "handle": "kukh_alomlat",
+      "title": "شركة القصر للصرافة",
+      "recommended_priority": "P3",
+      "priority_score": 60.0,
+      "signal_richness_score": 38,
+      "extracted_quote_messages": 16,
       "extracted_buy_sell_pairs": 0,
       "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "dhsusdt",
-      "title": "DHs usdt",
-      "recommended_priority": "P4",
-      "priority_score": 41.0,
-      "signal_richness_score": 28,
-      "extracted_quote_messages": 6,
-      "extracted_buy_sell_pairs": 6,
-      "channel_type_guess": "market_price_channel",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "dolartalaa",
-      "title": "💰قیمت لحظه‌ای آبشده💰مع ف 🔔📅 مظنه",
-      "recommended_priority": "P4",
-      "priority_score": 34.0,
-      "signal_richness_score": 20,
-      "extracted_quote_messages": 10,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "dealer_network_channel",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "lastsecondtours",
-      "title": "Lastsecond.ir | تورهای مسافرتی لست سکند",
-      "recommended_priority": "P4",
-      "priority_score": 23.0,
-      "signal_richness_score": 15,
-      "extracted_quote_messages": 1,
-      "extracted_buy_sell_pairs": 1,
-      "channel_type_guess": "unclear",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "arz_tala_online",
-      "title": "قیمت ارز، طلا و سکه",
-      "recommended_priority": "P4",
-      "priority_score": 22.0,
-      "signal_richness_score": 14,
-      "extracted_quote_messages": 1,
-      "extracted_buy_sell_pairs": 1,
-      "channel_type_guess": "unclear",
-      "likely_individual_shop": false
-    },
-    {
-      "handle": "mohammadi_exchange",
-      "title": "Mohammadi_Exchange",
-      "recommended_priority": "P4",
-      "priority_score": 22.0,
-      "signal_richness_score": 14,
-      "extracted_quote_messages": 1,
-      "extracted_buy_sell_pairs": 0,
-      "channel_type_guess": "unclear",
       "likely_individual_shop": false
     }
   ],
