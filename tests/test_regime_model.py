@@ -98,6 +98,23 @@ class RegimeModelTests(unittest.TestCase):
         value = pipeline.extract_value_by_symbol_candidates(payload, ("ice_transfer_usd_sell",))
         self.assertEqual(value, 1_403_083.0)
 
+    def test_extract_benchmark_values_prefers_priority_symbol_order(self) -> None:
+        payload = {
+            "current": {
+                "ice_currency_usd_sell": {
+                    "p": "1,644,182",
+                    "ts": "2026-04-13 00:00:00",
+                },
+                "ice_average_usd_sell": {
+                    "p": "1,311,134",
+                    "ts": "2026-04-13 00:00:00",
+                },
+            }
+        }
+        values, selected = pipeline.extract_benchmark_values_with_metadata(payload, "commercial_aux")
+        self.assertEqual(values["official"], 1_644_182.0)
+        self.assertEqual(selected.get("official"), "ice_currency_usd_sell")
+
     def test_extract_symbol_quote_time_supports_nested_symbol_paths(self) -> None:
         payload = {
             "current": {
@@ -111,6 +128,27 @@ class RegimeModelTests(unittest.TestCase):
         self.assertIsNotNone(quote_time)
         assert quote_time is not None
         self.assertEqual(quote_time, dt.datetime(2026, 3, 27, 0, 0, tzinfo=dt.timezone.utc))
+
+    def test_parse_tgju_profile_quote_time_from_jalali_history(self) -> None:
+        body = """
+        <table>
+          <tr><td>1405/01/07</td><td>1,403,083</td></tr>
+          <tr><td>1405/01/06</td><td>1,403,083</td></tr>
+        </table>
+        """
+        parsed = pipeline.parse_tgju_profile_quote_time(body)
+        self.assertIsNotNone(parsed)
+        assert parsed is not None
+        self.assertEqual(parsed, dt.datetime(2026, 3, 27, 8, 30, tzinfo=dt.timezone.utc))
+
+    def test_parse_tgju_profile_current_value_from_table(self) -> None:
+        body = """
+        <table>
+          <tr><td class="text-right">نرخ فعلی</td><td class="text-left">1,306,541</td></tr>
+        </table>
+        """
+        parsed = pipeline.parse_tgju_profile_current_value(body)
+        self.assertEqual(parsed, 1_306_541.0)
 
     def test_official_benchmark_prefers_freshest_source_quote(self) -> None:
         older = pipeline.Sample(

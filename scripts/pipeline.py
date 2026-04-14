@@ -29,6 +29,7 @@ from string import Template
 from typing import Any, Dict, List, Optional, Tuple
 
 UTC = dt.timezone.utc
+IRAN_TZ = dt.timezone(dt.timedelta(hours=3, minutes=30))
 WINDOW_START = dt.time(13, 45)
 WINDOW_END = dt.time(14, 15)
 PUBLISH_AT = dt.time(14, 20)
@@ -84,6 +85,10 @@ COMMERCIAL_AUX_SOURCE_NAMES: Tuple[str, ...] = (
     "commercial_aux_c",
     "commercial_aux",
 )
+COMMERCIAL_PROFILE_SOURCE_NAMES: Tuple[str, ...] = (
+    "commercial_profile_transfer",
+    "commercial_profile_sana",
+)
 LEGACY_SOURCE_ALIASES: Dict[str, str] = {
     "tgju_call2": "commercial_aux_a",
     "tgju_call3": "commercial_aux_b",
@@ -91,9 +96,21 @@ LEGACY_SOURCE_ALIASES: Dict[str, str] = {
     "tgju_call": "commercial_aux",
 }
 COMMERCIAL_AUX_SOURCE_SET = frozenset(COMMERCIAL_AUX_SOURCE_NAMES)
+COMMERCIAL_PROFILE_SOURCE_SET = frozenset(COMMERCIAL_PROFILE_SOURCE_NAMES)
 COMMERCIAL_AUX_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
-    # Iran Exchange Center / remittance sell quote on auxiliary commercial endpoints.
-    "official": ("ice_transfer_usd_sell",),
+    # Priority-ordered official-market channels from auxiliary commercial endpoints.
+    # Keep transfer sell first, then alternate ICE-board USD sell channels.
+    "official": (
+        "ice_transfer_usd_sell",
+        "ice_currency_usd_sell",
+        "ice_average_usd_sell",
+        "ice_commodity_transfer_usd_sell",
+    ),
+}
+COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
+    # Symbol ids tied to profile-page collectors (not JSON endpoint fields).
+    "commercial_profile_transfer": ("ice_transfer_usd_sell",),
+    "commercial_profile_sana": ("sana_sell_usd",),
 }
 
 # Exact source-to-symbol mappings for production-safe parsing.
@@ -108,6 +125,7 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
         "emami_gold_coin": ("sekkeh",),
     },
     **{name: dict(COMMERCIAL_AUX_OFFICIAL_SYMBOLS) for name in COMMERCIAL_AUX_SOURCE_SET},
+    **{name: {"official": COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS.get(name, ())} for name in COMMERCIAL_PROFILE_SOURCE_SET},
     "alanchand": {
         "regional_transfer": ("usd-hav", "usd_hav"),
         "crypto_usdt": ("usdt",),
@@ -515,6 +533,90 @@ def parse_alanchand_last_update(page_html: str, sampled_at: dt.datetime) -> Opti
     return candidate.astimezone(UTC)
 
 
+def normalize_eastern_digits(text: str) -> str:
+    return text.translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
+
+
+def jalali_to_gregorian_date(jy: int, jm: int, jd: int) -> Optional[dt.date]:
+    if jy < 1200 or jy > 1700:
+        return None
+    if jm < 1 or jm > 12:
+        return None
+    if jd < 1 or jd > 31:
+        return None
+
+    jy2 = jy - 979
+    jm2 = jm - 1
+    jd2 = jd - 1
+
+    j_day_no = 365 * jy2 + (jy2 // 33) * 8 + ((jy2 % 33) + 3) // 4
+    jalali_month_days = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
+    if jm2 > 0:
+        j_day_no += sum(jalali_month_days[:jm2])
+    j_day_no += jd2
+
+    g_day_no = j_day_no + 79
+
+    gy = 1600 + 400 * (g_day_no // 146097)
+    g_day_no %= 146097
+
+    leap = True
+    if g_day_no >= 36525:
+        g_day_no -= 1
+        gy += 100 * (g_day_no // 36524)
+        g_day_no %= 36524
+        if g_day_no >= 365:
+            g_day_no += 1
+        else:
+            leap = False
+
+    gy += 4 * (g_day_no // 1461)
+    g_day_no %= 1461
+
+    if g_day_no >= 366:
+        leap = False
+        g_day_no -= 1
+        gy += g_day_no // 365
+        g_day_no %= 365
+
+    gd = g_day_no + 1
+    gregorian_month_days = [0, 31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    gm = 1
+    while gm <= 12 and gd > gregorian_month_days[gm]:
+        gd -= gregorian_month_days[gm]
+        gm += 1
+
+    try:
+        return dt.date(gy, gm, gd)
+    except ValueError:
+        return None
+
+
+def parse_tgju_profile_quote_time(page_html: str) -> Optional[dt.datetime]:
+    normalized = normalize_eastern_digits(page_html)
+    match = re.search(r"(?is)<td>\s*(14\d{2})\s*/\s*(\d{1,2})\s*/\s*(\d{1,2})\s*</td>", normalized)
+    if not match:
+        return None
+    jy = int(match.group(1))
+    jm = int(match.group(2))
+    jd = int(match.group(3))
+    gregorian_date = jalali_to_gregorian_date(jy, jm, jd)
+    if gregorian_date is None:
+        return None
+    # TGJU profile pages publish daily bars; use local noon to avoid edge rollover artifacts.
+    local_noon = dt.datetime.combine(gregorian_date, dt.time(12, 0), tzinfo=IRAN_TZ)
+    return local_noon.astimezone(UTC)
+
+
+def parse_tgju_profile_current_value(page_html: str) -> Optional[float]:
+    normalized = normalize_eastern_digits(page_html)
+    patterns = (
+        r"(?is)<td[^>]*>\s*نرخ فعلی\s*</td>\s*<td[^>]*>\s*([0-9][0-9,٬،.]*)\s*</td>",
+        r'(?is)data-col\s*=\s*"info\.last_trade\.PDrCotVal"\s*>\s*([0-9][0-9,٬،.]*)\s*<',
+    )
+    return extract_number_with_patterns(normalized, patterns, 100_000, 4_000_000)
+
+
 def flatten_json(obj: Any, prefix: str = "") -> List[Tuple[str, Any]]:
     items: List[Tuple[str, Any]] = []
     if isinstance(obj, dict):
@@ -585,6 +687,14 @@ def extract_value_by_symbol_candidates(payload: Any, candidates: Tuple[str, ...]
     if not values:
         return None
     return median(values)
+
+
+def extract_value_by_symbol_priority(payload: Any, candidates: Tuple[str, ...]) -> Tuple[Optional[float], Optional[str]]:
+    for symbol in candidates:
+        parsed = extract_value_by_symbol_candidates(payload, (symbol,))
+        if parsed is not None:
+            return parsed, symbol
+    return None, None
 
 
 def extract_quote_time(payload: Any) -> Optional[dt.datetime]:
@@ -661,6 +771,16 @@ def extract_symbol_quote_time(payload: Any, symbols: Tuple[str, ...]) -> Optiona
     if not found:
         return None
     return max(found)
+
+
+def extract_symbol_quote_time_by_priority(
+    payload: Any, candidates: Tuple[str, ...]
+) -> Tuple[Optional[dt.datetime], Optional[str]]:
+    for symbol in candidates:
+        parsed = extract_symbol_quote_time(payload, (symbol,))
+        if parsed is not None:
+            return parsed, symbol
+    return None, None
 
 
 def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
@@ -754,15 +874,20 @@ def extract_benchmark_value(payload: Any, benchmark: str) -> Optional[float]:
     return ranked[0][1]
 
 
-def extract_benchmark_values(payload: Any, source_name: Optional[str] = None) -> Dict[str, Optional[float]]:
+def extract_benchmark_values_with_metadata(
+    payload: Any, source_name: Optional[str] = None
+) -> Tuple[Dict[str, Optional[float]], Dict[str, str]]:
     source_key = (source_name or "").strip().lower()
+    selected_symbol_by_benchmark: Dict[str, str] = {}
 
     def resolve(benchmark: str) -> Optional[float]:
         canonical_map = CANONICAL_SOURCE_SYMBOLS.get(source_key, {})
         canonical_symbols = canonical_map.get(benchmark)
         if canonical_symbols:
-            by_symbol = extract_value_by_symbol_candidates(payload, canonical_symbols)
+            by_symbol, selected_symbol = extract_value_by_symbol_priority(payload, canonical_symbols)
             if by_symbol is not None:
+                if selected_symbol:
+                    selected_symbol_by_benchmark[benchmark] = selected_symbol
                 return by_symbol
             if benchmark in STRICT_CANONICAL_BENCHMARKS:
                 return None
@@ -777,13 +902,19 @@ def extract_benchmark_values(payload: Any, source_name: Optional[str] = None) ->
                 return by_symbol
         return extract_benchmark_value(payload, benchmark)
 
-    return {
+    values = {
         "open_market": resolve("open_market"),
         "official": resolve("official"),
         "regional_transfer": resolve("regional_transfer"),
         "crypto_usdt": resolve("crypto_usdt"),
         "emami_gold_coin": resolve("emami_gold_coin"),
     }
+    return values, selected_symbol_by_benchmark
+
+
+def extract_benchmark_values(payload: Any, source_name: Optional[str] = None) -> Dict[str, Optional[float]]:
+    values, _selected = extract_benchmark_values_with_metadata(payload, source_name)
+    return values
 
 
 def extract_usd_irr(payload: Any) -> Optional[float]:
@@ -967,6 +1098,28 @@ def build_source_configs() -> List[SourceConfig]:
                 default="https://call.tgju.org/ajax.json",
             ),
             auth_mode="public_json",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        ),
+        SourceConfig(
+            name="commercial_profile_transfer",
+            url=env_first(
+                "COMMERCIAL_PROFILE_TRANSFER_URL",
+                default="https://www.tgju.org/profile/ice_transfer_usd_sell",
+            ),
+            auth_mode="public_html",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        ),
+        SourceConfig(
+            name="commercial_profile_sana",
+            url=env_first(
+                "COMMERCIAL_PROFILE_SANA_URL",
+                default="https://www.tgju.org/profile/sana_sell_usd",
+            ),
+            auth_mode="public_html",
             secret_fields=(),
             benchmark_families=("official",),
             default_unit="rial",
@@ -1567,6 +1720,143 @@ def extract_alanchand_jsonld_price(page_html: str) -> Optional[float]:
     return None
 
 
+def fetch_tgju_profile_official_public(
+    config: SourceConfig,
+    sampled_at: dt.datetime,
+    window_start_dt: dt.datetime,
+    window_end_dt: dt.datetime,
+    profile_symbol: str,
+) -> Sample:
+    health: Dict[str, Any] = {
+        "collector": "http_html",
+        "fetch_mode": "public_html",
+        "scrape_timestamp": iso_ts(sampled_at),
+        "fetch_success": False,
+        "failure_reason": None,
+        "error_type": None,
+        "selector_used": None,
+        "profile_symbol": profile_symbol,
+    }
+    benchmark_values = blank_benchmark_values()
+    normalized_unit = "rial"
+    source_unit = config.default_unit
+
+    body = ""
+    final_url = ""
+    request_urls: List[str] = []
+    user_agents = (
+        "rialwatch-pipeline/0.2",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    )
+    last_error: Optional[str] = None
+
+    for ua in user_agents:
+        try:
+            req = urllib.request.Request(
+                url=config.url,
+                method="GET",
+                headers={
+                    "User-Agent": ua,
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "fa,en-US;q=0.9,en;q=0.8",
+                },
+            )
+            redacted_url = redact_url_for_health(req.full_url)
+            request_urls.append(redacted_url)
+            health["request_url"] = redacted_url
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                body = resp.read().decode("utf-8", errors="replace")
+                final_url = resp.geturl()
+            if body.strip():
+                health["user_agent"] = ua
+                break
+            last_error = "empty response body"
+        except urllib.error.HTTPError as exc:
+            last_error = f"http {exc.code}"
+            health["error_type"] = "http_error"
+            health["failure_reason"] = last_error
+        except urllib.error.URLError as exc:
+            last_error = f"network: {exc.reason}"
+            health["error_type"] = "network_error"
+            health["failure_reason"] = last_error
+        except TimeoutError:
+            last_error = "timeout"
+            health["error_type"] = "timeout"
+            health["failure_reason"] = last_error
+
+    health["request_urls"] = request_urls
+    health["final_url"] = final_url or None
+    health["content_length"] = len(body.encode("utf-8")) if body else 0
+    health["page_load_ok"] = bool(body.strip())
+
+    if not body.strip():
+        reason = last_error or "empty response body"
+        if health.get("error_type") is None:
+            health["error_type"] = "empty_body"
+        health["failure_reason"] = reason
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            None,
+            ok=False,
+            stale=False,
+            error=reason,
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
+
+    quote_time = parse_tgju_profile_quote_time(body)
+    raw_value = parse_tgju_profile_current_value(body)
+    official_value = normalize_unit(raw_value, source_unit)
+    benchmark_values["official"] = official_value
+
+    if quote_time is not None:
+        health["benchmark_quote_times"] = {"official": iso_ts(quote_time)}
+    health["source_unit"] = source_unit
+    health["normalized_unit"] = normalized_unit
+    health["raw_extracted_values"] = {"official": raw_value}
+    health["extracted_values"] = {"official": official_value}
+    health["selector_used"] = "tgju_profile_rate_table_or_price_span"
+
+    stale = bool(quote_time is not None and not is_within_window_minute(quote_time, window_start_dt, window_end_dt))
+    if official_value is None:
+        health["error_type"] = "selector_parse_failed"
+        health["failure_reason"] = "unable to parse official quote from profile page"
+        health["validation_result"] = {"ok": False, "reason": "unable to parse official quote from profile page"}
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=stale,
+            error="unable to parse official quote from profile page",
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
+
+    health["validation_result"] = {"ok": True, "reason": None}
+    health["fetch_success"] = True
+    return Sample(
+        config.name,
+        sampled_at,
+        official_value,
+        benchmark_values,
+        quote_time,
+        ok=True,
+        stale=stale,
+        error="stale quote" if stale else None,
+        health=health,
+        source_unit=source_unit,
+        normalized_unit=normalized_unit,
+    )
+
+
 def fetch_alanchand_street_public(
     config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime
 ) -> Sample:
@@ -1971,6 +2261,15 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     if config.auth_mode == "public_html":
         if config.name == "alanchand_street":
             return fetch_alanchand_street_public(config, sampled_at, window_start_dt, window_end_dt)
+        profile_symbol = COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS.get(config.name, (None,))[0]
+        if profile_symbol:
+            return fetch_tgju_profile_official_public(
+                config,
+                sampled_at,
+                window_start_dt,
+                window_end_dt,
+                profile_symbol=profile_symbol,
+            )
         return Sample(
             config.name,
             sampled_at,
@@ -2331,7 +2630,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             normalized_unit=normalized_unit,
         )
 
-    raw_extracted_values = extract_benchmark_values(payload, config.name)
+    raw_extracted_values, selected_symbols = extract_benchmark_values_with_metadata(payload, config.name)
     benchmark_units: Dict[str, str] = {}
     canonical_map = CANONICAL_SOURCE_SYMBOLS.get(config.name, {})
     health["source_fields"] = {
@@ -2339,11 +2638,19 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         for key in BENCHMARK_LABELS
         if canonical_map.get(key)
     }
+    if selected_symbols:
+        health["selected_symbol_by_benchmark"] = selected_symbols
     benchmark_quote_times: Dict[str, str] = {}
     for benchmark_key, symbols in canonical_map.items():
         if not symbols:
             continue
-        benchmark_quote_time = extract_symbol_quote_time(payload, symbols)
+        preferred_symbol = selected_symbols.get(benchmark_key)
+        if preferred_symbol:
+            benchmark_quote_time = extract_symbol_quote_time(payload, (preferred_symbol,))
+            if benchmark_quote_time is None:
+                benchmark_quote_time, _matched = extract_symbol_quote_time_by_priority(payload, symbols)
+        else:
+            benchmark_quote_time, _matched = extract_symbol_quote_time_by_priority(payload, symbols)
         if benchmark_quote_time is not None:
             benchmark_quote_times[benchmark_key] = iso_ts(benchmark_quote_time)
     if benchmark_quote_times:
@@ -3499,6 +3806,8 @@ def publish_status(
             "commercial_aux_a": "Commercial Market Feed (Auxiliary A)",
             "commercial_aux_b": "Commercial Market Feed (Auxiliary B)",
             "commercial_aux_c": "Commercial Market Feed (Auxiliary C)",
+            "commercial_profile_transfer": "Commercial Market Feed (Profile Transfer)",
+            "commercial_profile_sana": "Commercial Market Feed (Profile SANA)",
             # Backward-compatible display for legacy persisted source names.
             "tgju_call": "Commercial Market Feed (Auxiliary)",
             "tgju_call2": "Commercial Market Feed (Auxiliary A)",
