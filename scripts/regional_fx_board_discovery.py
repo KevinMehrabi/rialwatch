@@ -54,9 +54,25 @@ IRAQ_AGG_LOCALITIES = ("Sulaymaniyah", "Erbil", "Baghdad", "Iraq")
 TURKEY_AGG_LOCALITIES = ("Istanbul", "Ankara", "Izmir", "Turkey")
 GERMANY_AGG_LOCALITIES = ("Frankfurt", "Hamburg", "Berlin", "Germany")
 UK_AGG_LOCALITIES = ("London", "Manchester", "Birmingham", "UK")
+AFGHANISTAN_AGG_LOCALITIES = ("Herat", "Kabul", "Mazar", "Jalalabad", "Afghanistan")
+AFGHANISTAN_SEED_HANDLES = (
+    "haratdollar",
+    "herat_tomen",
+    "poshtkhati_dollar",
+    "toofan_harirod",
+    "turan_ex",
+    "kabul_dollarrate",
+    "herat_channel2024",
+    "boonbas",
+    "lubrinol",
+)
 LOCALITY_TO_BASKET = {
     "Tehran": "Iran",
     "Herat": "Afghanistan",
+    "Kabul": "Afghanistan",
+    "Mazar": "Afghanistan",
+    "Jalalabad": "Afghanistan",
+    "Afghanistan": "Afghanistan",
     "Sulaymaniyah": "Iraq",
     "Erbil": "Iraq",
     "Baghdad": "Iraq",
@@ -85,6 +101,20 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s هرات دلار",
         "site:t.me نرخ دلار هرات",
         "site:t.me بازار ارز هرات",
+        "site:t.me دلار کابل",
+        "site:t.me/s دلار کابل",
+        "site:t.me نرخ دلار کابل",
+        "site:t.me/s نرخ دلار کابل",
+        "site:t.me بازار ارز کابل",
+        "site:t.me/s بازار ارز کابل",
+        "site:t.me دلار افغانستان",
+        "site:t.me/s دلار افغانستان",
+        "site:t.me نرخ دلار افغانستان",
+        "site:t.me/s نرخ دلار افغانستان",
+        "site:t.me دلار مزار",
+        "site:t.me/s دلار مزار",
+        "site:t.me دلار جلال آباد",
+        "site:t.me/s دلار جلال آباد",
         "site:t.me سلیمانیه دلار",
         "site:t.me/s سلیمانیه دلار",
         "site:t.me نرخ دلار سلیمانیه",
@@ -158,6 +188,12 @@ QUERY_GROUPS: Dict[str, List[str]] = {
     "support": [
         "dubai dollar telegram iran",
         "herat dollar telegram iran",
+        "kabul dollar telegram iran",
+        "afghanistan dollar telegram iran",
+        "herat kabul dollar telegram",
+        "mazar dollar telegram",
+        "jalalabad dollar telegram",
+        "afghan exchange telegram iran",
         "sulaymaniyah dollar telegram iran",
         "erbil dollar telegram iran",
         "baghdad dollar telegram iran",
@@ -213,6 +249,16 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me pound london",
         "site:t.me/s pound london",
     ],
+    "afghan": [
+        "site:t.me kabul dollar",
+        "site:t.me/s kabul dollar",
+        "site:t.me afghanistan dollar",
+        "site:t.me/s afghanistan dollar",
+        "site:t.me herat kabul",
+        "site:t.me/s herat kabul",
+        "site:t.me afghan exchange",
+        "site:t.me/s afghan exchange",
+    ],
 }
 
 RAW_TME_RE = re.compile(r"https?://(?:www\.)?(?:t\.me|telegram\.me)/[^\s\"'<>]+", re.IGNORECASE)
@@ -249,6 +295,10 @@ EXCLUDED_DOMAINS = {
 LOCALITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Tehran": ("tehran", "تهران"),
     "Herat": ("herat", "هرات"),
+    "Kabul": ("kabul", "کابل"),
+    "Mazar": ("mazar", "mzar", "مزار"),
+    "Jalalabad": ("jalalabad", "jalal abad", "جلال آباد", "جلال‌آباد"),
+    "Afghanistan": ("afghanistan", "afghan", "افغانستان"),
     "Sulaymaniyah": ("sulaymaniyah", "sulaimaniyah", "سلیمانیه", "سليمانية"),
     "Erbil": ("erbil", "اربيل", "اربیل", "هولیر", "هەولێر", "hewler", "hawler"),
     "Baghdad": ("baghdad", "بغداد"),
@@ -523,7 +573,7 @@ def infer_quote_currency(text: str, locality: str) -> str:
         return "GBP"
     if "دلار" in lowered or "usd" in lowered:
         return "USD"
-    if locality in {"Tehran", "Herat", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq", "Istanbul", "Ankara", "Izmir", "Turkey", "London", "Manchester", "Birmingham", "UK", "Frankfurt", "Hamburg", "Berlin", "Germany"}:
+    if locality in {"Tehran", "Herat", "Kabul", "Mazar", "Jalalabad", "Afghanistan", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq", "Istanbul", "Ankara", "Izmir", "Turkey", "London", "Manchester", "Birmingham", "UK", "Frankfurt", "Hamburg", "Berlin", "Germany"}:
         return "USD"
     if locality == "Dubai":
         return "AED"
@@ -806,6 +856,7 @@ def process_source(source: DiscoverySource, benchmark_value: float, timeout: int
     source_type = classify_source_type(title, messages)
     source_hint_text = " ".join(filter(None, [title, " ".join(sorted(source.query_hits))]))
     source_locality_hints = set(detect_localities(source_hint_text))
+    afghanistan_source_hint = first_present_locality(source_locality_hints, AFGHANISTAN_AGG_LOCALITIES)
     uk_source_hint = first_present_locality(source_locality_hints, UK_AGG_LOCALITIES)
     germany_source_hint = first_present_locality(source_locality_hints, GERMANY_AGG_LOCALITIES)
     min_rate = benchmark_value * 0.45 if benchmark_value > 0 else 500_000.0
@@ -820,7 +871,7 @@ def process_source(source: DiscoverySource, benchmark_value: float, timeout: int
     for msg in msg_rows:
         matching_rec = next((rec for rec in parsed_records if rec.message_index == msg.msg_index and rec.dedup_keep), None)
         per_locality = extract_locality_quotes(msg.message_text, benchmark_value=benchmark_value)
-        fallback_locality = germany_source_hint or uk_source_hint
+        fallback_locality = germany_source_hint or uk_source_hint or afghanistan_source_hint
         if not per_locality and fallback_locality and matching_rec:
             if matching_rec.overall_record_quality_score >= 58:
                 rec_currency = primary_currency_from_record(matching_rec.currency)
@@ -1155,7 +1206,30 @@ def main() -> int:
             discovered[handle].discovery_origins.update(source.discovery_origins)
             discovered[handle].query_hits.update(source.query_hits)
 
-    ordered_sources = sorted(discovered.values(), key=lambda item: item.handle)
+    for handle in AFGHANISTAN_SEED_HANDLES:
+        public_url = f"https://t.me/s/{handle}"
+        source = discovered.get(handle)
+        if source is None:
+            discovered[handle] = DiscoverySource(
+                handle=handle,
+                public_url=public_url,
+                query_hits={"afghanistan_seed"},
+                discovery_origins={"afghanistan_seed"},
+                source_type_hint="regional_market_channel",
+            )
+        else:
+            source.public_url = source.public_url or public_url
+            source.query_hits.add("afghanistan_seed")
+            source.discovery_origins.add("afghanistan_seed")
+
+    afghan_seed_set = set(AFGHANISTAN_SEED_HANDLES)
+    ordered_sources = sorted(
+        discovered.values(),
+        key=lambda item: (
+            0 if item.handle in afghan_seed_set else 1,
+            item.handle,
+        ),
+    )
     if args.max_sources > 0:
         ordered_sources = ordered_sources[: args.max_sources]
 
@@ -1180,7 +1254,9 @@ def main() -> int:
     locality_basket_rows = []
     gained_localities = []
     for locality in PRIMARY_LOCALITIES + SECONDARY_LOCALITIES:
-        if locality == "Sulaymaniyah":
+        if locality == "Herat":
+            locality_records = [record for record in board_records if record.locality_name in AFGHANISTAN_AGG_LOCALITIES]
+        elif locality == "Sulaymaniyah":
             locality_records = [record for record in board_records if record.locality_name in IRAQ_AGG_LOCALITIES]
         elif locality == "Istanbul":
             locality_records = [record for record in board_records if record.locality_name in TURKEY_AGG_LOCALITIES]
@@ -1205,7 +1281,15 @@ def main() -> int:
 
     channels_with_quote: Dict[str, List[str]] = {}
     for locality in PRIMARY_LOCALITIES:
-        if locality == "Sulaymaniyah":
+        if locality == "Herat":
+            channels_with_quote[locality] = sorted(
+                {
+                    record.handle
+                    for record in board_records
+                    if record.locality_name in AFGHANISTAN_AGG_LOCALITIES
+                }
+            )
+        elif locality == "Sulaymaniyah":
             channels_with_quote[locality] = sorted(
                 {
                     record.handle
