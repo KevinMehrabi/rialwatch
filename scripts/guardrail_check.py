@@ -87,6 +87,9 @@ def collect_intraday_attempts(day_dir: Path) -> List[Dict[str, Any]]:
         open_market = computed_benchmarks.get("open_market", {})
         if not isinstance(open_market, dict):
             open_market = {}
+        official = computed_benchmarks.get("official", {})
+        if not isinstance(official, dict):
+            official = {}
         attempts.append(
             {
                 "file": path.name,
@@ -96,6 +99,8 @@ def collect_intraday_attempts(day_dir: Path) -> List[Dict[str, Any]]:
                 "status": str(computed.get("status") or ""),
                 "open_market_available": bool(open_market.get("available")) and parse_number(open_market.get("value")) is not None,
                 "open_market_value": parse_number(open_market.get("value")),
+                "official_available": bool(official.get("available")) and parse_number(official.get("value")) is not None,
+                "official_value": parse_number(official.get("value")),
                 "source_medians_count": len(
                     [
                         key
@@ -144,12 +149,21 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
 
     latest_fix = parse_number(computed.get("fix"))
     latest_withheld = bool(computed.get("withheld", True))
+    benchmarks = latest.get("benchmarks", {})
+    if not isinstance(benchmarks, dict):
+        benchmarks = {}
+    official_latest = benchmarks.get("official", {})
+    if not isinstance(official_latest, dict):
+        official_latest = {}
+    official_latest_fix = parse_number(official_latest.get("fix"))
+    official_latest_available = bool(official_latest.get("available", False)) and official_latest_fix is not None
 
     intraday_dir = site_dir / "intraday" / day_s
     attempts = collect_intraday_attempts(intraday_dir)
     intraday_count = len(attempts)
     any_valid_attempt = any((attempt["fix"] is not None) and (attempt["withheld"] is False) for attempt in attempts)
     any_open_market_candidate = any(bool(attempt["open_market_available"]) for attempt in attempts)
+    any_official_candidate = any(bool(attempt["official_available"]) for attempt in attempts)
 
     context.update(
         {
@@ -160,6 +174,9 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
             "valid_candidate_count": valid_candidate_count,
             "any_valid_attempt": any_valid_attempt,
             "any_open_market_candidate": any_open_market_candidate,
+            "official_latest_available": official_latest_available,
+            "official_latest_fix": official_latest_fix,
+            "any_official_candidate": any_official_candidate,
         }
     )
 
@@ -180,6 +197,11 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
 
     if not latest_withheld and latest_fix is None:
         failures.append("Snapshot is marked published but computed.fix is null.")
+
+    if not official_latest_available and any_official_candidate:
+        failures.append(
+            "Official benchmark is unavailable in latest.json, but intraday attempts contain usable official benchmark values."
+        )
 
     return failures, context
 

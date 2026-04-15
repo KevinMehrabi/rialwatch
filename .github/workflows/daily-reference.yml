@@ -78,7 +78,9 @@ jobs:
           NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
-          echo "Guardrail pre-check failed; running current-day self-heal rebuild from intraday artifacts."
+          echo "Guardrail pre-check failed; collecting a fresh intraday attempt before self-heal rebuild."
+          python3 scripts/pipeline.py --mode collect-intraday --site-dir site --templates-dir templates --allow-outside-window
+          echo "Running current-day self-heal rebuild from refreshed intraday artifacts."
           python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
 
       - name: Guardrail checks (post-heal)
