@@ -94,6 +94,8 @@ LEGACY_SOURCE_ALIASES: Dict[str, str] = {
     "tgju_call3": "commercial_aux_b",
     "tgju_call4": "commercial_aux_c",
     "tgju_call": "commercial_aux",
+    # Legacy persisted name used before auxiliary source split.
+    "commercial": "commercial_aux",
 }
 COMMERCIAL_AUX_SOURCE_SET = frozenset(COMMERCIAL_AUX_SOURCE_NAMES)
 COMMERCIAL_PROFILE_SOURCE_SET = frozenset(COMMERCIAL_PROFILE_SOURCE_NAMES)
@@ -109,8 +111,21 @@ COMMERCIAL_AUX_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
 }
 COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
     # Symbol ids tied to profile-page collectors (not JSON endpoint fields).
-    "commercial_profile_transfer": ("ice_transfer_usd_sell",),
-    "commercial_profile_sana": ("sana_sell_usd",),
+    # Keep legacy profile first, then fresh ICE-board alternatives.
+    "commercial_profile_transfer": (
+        "ice_transfer_usd_sell",
+        "ice_currency_usd_sell",
+        "ice_average_usd_sell",
+        "ice_commodity_transfer_usd_sell",
+        "mex_usd_sell",
+    ),
+    # SANA profile is frequently retired/blocked; prioritize live managed-market symbols.
+    "commercial_profile_sana": (
+        "mex_usd_sell",
+        "sana_sell_usd",
+        "ice_currency_usd_sell",
+        "ice_transfer_usd_sell",
+    ),
 }
 
 # Exact source-to-symbol mappings for production-safe parsing.
@@ -1136,7 +1151,7 @@ def build_source_configs() -> List[SourceConfig]:
             name="commercial_profile_sana",
             url=env_first(
                 "COMMERCIAL_PROFILE_SANA_URL",
-                default="https://www.tgju.org/profile/sana_sell_usd",
+                default="https://www.tgju.org/profile/mex_usd_sell",
             ),
             auth_mode="public_html",
             secret_fields=(),
@@ -1356,6 +1371,17 @@ def redact_url_for_health(url: str) -> str:
             redacted[key] = values
     redacted_query = urllib.parse.urlencode(redacted, doseq=True)
     return urllib.parse.urlunparse(parsed._replace(query=redacted_query))
+
+
+def tgju_profile_url_for_symbol(base_url: str, symbol: str) -> str:
+    parsed = urllib.parse.urlparse(base_url)
+    path = parsed.path or ""
+    if "/profile/" in path:
+        prefix = path.split("/profile/", 1)[0]
+        new_path = f"{prefix}/profile/{symbol}"
+    else:
+        new_path = f"/profile/{symbol}"
+    return urllib.parse.urlunparse(parsed._replace(path=new_path, params="", query="", fragment=""))
 
 
 def extract_bonbast_from_selector_results(selector_results: Dict[str, Any]) -> Dict[str, Optional[float]]:
@@ -1889,6 +1915,185 @@ def fetch_tgju_profile_official_public(
     )
 
 
+def fetch_tgju_profile_official_fallback_aux(
+    config: SourceConfig,
+    sampled_at: dt.datetime,
+    window_start_dt: dt.datetime,
+    window_end_dt: dt.datetime,
+    fallback_reason: str,
+    profile_attempts: List[Dict[str, Any]],
+) -> Optional[Sample]:
+    fallback_url = env_first(
+        "COMMERCIAL_PROFILE_AUX_FALLBACK_URL",
+        "COMMERCIAL_AUX_URL",
+        "TGJU_CALL_URL",
+        default="https://call.tgju.org/ajax.json",
+    )
+    aux_config = SourceConfig(
+        name="commercial_aux",
+        url=fallback_url,
+        auth_mode="public_json",
+        secret_fields=(),
+        benchmark_families=("official",),
+        default_unit="rial",
+    )
+    aux_sample = fetch_one(aux_config, sampled_at, window_start_dt, window_end_dt)
+    official_value = parse_number(aux_sample.benchmark_values.get("official"))
+    if official_value is None:
+        return None
+
+    quote_time = sample_benchmark_quote_time(aux_sample, "official")
+    fallback_health = dict(aux_sample.health or {})
+    fallback_health.update(
+        {
+            "collector": "http_json_fallback",
+            "fetch_mode": "profile_fallback_aux",
+            "fallback_used": True,
+            "fallback_reason": fallback_reason,
+            "profile_attempts": profile_attempts,
+        }
+    )
+
+    benchmark_values = blank_benchmark_values()
+    benchmark_values["official"] = official_value
+    return Sample(
+        source=config.name,
+        sampled_at=sampled_at,
+        value=official_value,
+        benchmark_values=benchmark_values,
+        quote_time=quote_time,
+        ok=aux_sample.ok,
+        stale=aux_sample.stale,
+        error=aux_sample.error,
+        health=fallback_health,
+        source_unit=aux_sample.source_unit,
+        normalized_unit=aux_sample.normalized_unit,
+    )
+
+
+def fetch_tgju_profile_official_with_fallback(
+    config: SourceConfig,
+    sampled_at: dt.datetime,
+    window_start_dt: dt.datetime,
+    window_end_dt: dt.datetime,
+    profile_symbols: Tuple[str, ...],
+) -> Sample:
+    deduped_symbols = tuple(dict.fromkeys(sym for sym in profile_symbols if isinstance(sym, str) and sym.strip()))
+    if not deduped_symbols:
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            blank_benchmark_values(),
+            None,
+            ok=False,
+            stale=False,
+            error="no profile symbol candidates configured",
+            health={
+                "collector": "http_html",
+                "fetch_mode": "public_html",
+                "fetch_success": False,
+                "failure_reason": "no profile symbol candidates configured",
+                "error_type": "config_error",
+            },
+            source_unit=config.default_unit,
+            normalized_unit="rial",
+        )
+
+    attempts: List[Dict[str, Any]] = []
+    stale_candidate: Optional[Sample] = None
+    failure_candidate: Optional[Sample] = None
+
+    for symbol in deduped_symbols:
+        symbol_url = tgju_profile_url_for_symbol(config.url, symbol)
+        symbol_config = SourceConfig(
+            name=config.name,
+            url=symbol_url,
+            auth_mode=config.auth_mode,
+            secret_fields=config.secret_fields,
+            benchmark_families=config.benchmark_families,
+            default_unit=config.default_unit,
+        )
+        sample = fetch_tgju_profile_official_public(
+            symbol_config,
+            sampled_at,
+            window_start_dt,
+            window_end_dt,
+            profile_symbol=symbol,
+        )
+        health = sample.health if isinstance(sample.health, dict) else {}
+        fetch_success = health.get("fetch_success")
+        failure_reason = health.get("failure_reason") or sample.error
+        official_value = parse_number(sample.benchmark_values.get("official"))
+        official_quote_time = sample_benchmark_quote_time(sample, "official")
+        official_fresh = official_quote_is_fresh(official_quote_time, sampled_at)
+        attempts.append(
+            {
+                "symbol": symbol,
+                "url": health.get("request_url") or redact_url_for_health(symbol_url),
+                "fetch_success": fetch_success,
+                "failure_reason": failure_reason,
+                "official_value": official_value,
+                "official_quote_time": iso_ts(official_quote_time) if official_quote_time else None,
+                "official_fresh": official_fresh,
+            }
+        )
+
+        if fetch_success is True and official_value is not None and official_fresh:
+            if isinstance(sample.health, dict):
+                sample.health["profile_attempts"] = attempts
+                sample.health["profile_symbol_selected"] = symbol
+            return sample
+
+        if fetch_success is True and official_value is not None and stale_candidate is None:
+            stale_candidate = sample
+        if failure_candidate is None:
+            failure_candidate = sample
+
+    fallback_reason = "profile quote unavailable"
+    if stale_candidate is not None:
+        fallback_reason = "profile quote stale"
+    fallback_sample = fetch_tgju_profile_official_fallback_aux(
+        config=config,
+        sampled_at=sampled_at,
+        window_start_dt=window_start_dt,
+        window_end_dt=window_end_dt,
+        fallback_reason=fallback_reason,
+        profile_attempts=attempts,
+    )
+    if fallback_sample is not None:
+        return fallback_sample
+
+    if stale_candidate is not None:
+        if isinstance(stale_candidate.health, dict):
+            stale_candidate.health["profile_attempts"] = attempts
+        return stale_candidate
+    if failure_candidate is not None:
+        if isinstance(failure_candidate.health, dict):
+            failure_candidate.health["profile_attempts"] = attempts
+        return failure_candidate
+    return Sample(
+        config.name,
+        sampled_at,
+        None,
+        blank_benchmark_values(),
+        None,
+        ok=False,
+        stale=False,
+        error="profile quote unavailable",
+        health={
+            "collector": "http_html",
+            "fetch_mode": "public_html",
+            "fetch_success": False,
+            "failure_reason": "profile quote unavailable",
+            "error_type": "unavailable",
+            "profile_attempts": attempts,
+        },
+        source_unit=config.default_unit,
+        normalized_unit="rial",
+    )
+
+
 def fetch_alanchand_street_public(
     config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime
 ) -> Sample:
@@ -2287,20 +2492,126 @@ def fetch_alanchand_companion_fallback(
     )
 
 
+def fetch_navasan_companion_fallback(
+    sampled_at: dt.datetime,
+    window_start_dt: dt.datetime,
+    window_end_dt: dt.datetime,
+    primary_error: str,
+    primary_error_type: str,
+) -> Optional[Sample]:
+    fallback_values = blank_benchmark_values()
+    raw_extracted_values = blank_benchmark_values()
+    quote_times: Dict[str, dt.datetime] = {}
+    endpoint_health: Dict[str, Any] = {}
+    fallback_sources: List[str] = []
+
+    # Official benchmark fallback from resilient TGJU auxiliary endpoint pool.
+    aux_config = SourceConfig(
+        name="commercial_aux",
+        url=env_first("COMMERCIAL_AUX_URL", "TGJU_CALL_URL", default="https://call.tgju.org/ajax.json"),
+        auth_mode="public_json",
+        secret_fields=(),
+        benchmark_families=("official",),
+        default_unit="rial",
+    )
+    aux_sample = fetch_one(aux_config, sampled_at, window_start_dt, window_end_dt)
+    aux_health = aux_sample.health if isinstance(aux_sample.health, dict) else {}
+    endpoint_health["commercial_aux"] = {
+        "fetch_success": aux_health.get("fetch_success"),
+        "failure_reason": aux_health.get("failure_reason"),
+        "validation_result": aux_health.get("validation_result"),
+        "request_url": aux_health.get("request_url"),
+        "final_url": aux_health.get("final_url"),
+    }
+    official_value = parse_number(aux_sample.benchmark_values.get("official"))
+    if official_value is not None:
+        fallback_values["official"] = official_value
+        raw_official = None
+        if isinstance(aux_health.get("raw_extracted_values"), dict):
+            raw_official = parse_number(aux_health.get("raw_extracted_values", {}).get("official"))
+        raw_extracted_values["official"] = raw_official
+        qt = sample_benchmark_quote_time(aux_sample, "official")
+        if qt is not None:
+            quote_times["official"] = qt
+        fallback_sources.append("commercial_aux")
+
+    for benchmark_key, page_url in (
+        ("regional_transfer", env_or_default("ALANCHAND_PUBLIC_REGIONAL_URL", ALANCHAND_PUBLIC_REGIONAL_URL_DEFAULT)),
+        ("crypto_usdt", env_or_default("ALANCHAND_PUBLIC_USDT_URL", ALANCHAND_PUBLIC_USDT_URL_DEFAULT)),
+    ):
+        page_result = fetch_alanchand_public_single_rate(
+            url=page_url,
+            sampled_at=sampled_at,
+            window_start_dt=window_start_dt,
+            window_end_dt=window_end_dt,
+            expected_unit="rial",
+        )
+        endpoint_health[benchmark_key] = page_result.get("health", {})
+        value = parse_number(page_result.get("value"))
+        raw_value = parse_number(page_result.get("raw_value"))
+        if value is not None:
+            fallback_values[benchmark_key] = value
+            raw_extracted_values[benchmark_key] = raw_value
+            qt = page_result.get("quote_time")
+            if isinstance(qt, dt.datetime):
+                quote_times[benchmark_key] = qt
+            if "alanchand_public_pages" not in fallback_sources:
+                fallback_sources.append("alanchand_public_pages")
+
+    usable_values = {k: v for k, v in fallback_values.items() if parse_number(v) is not None}
+    if not usable_values:
+        return None
+
+    latest_quote_time = max(quote_times.values()) if quote_times else None
+    stale = not is_within_window_minute(sampled_at, window_start_dt, window_end_dt)
+    health: Dict[str, Any] = {
+        "collector": "http_json_fallback",
+        "fetch_mode": "companion_fallback",
+        "fetch_success": True,
+        "failure_reason": None,
+        "error_type": None,
+        "fallback_used": True,
+        "fallback_reason": primary_error,
+        "fallback_error_type": primary_error_type,
+        "fallback_sources": fallback_sources,
+        "raw_extracted_values": raw_extracted_values,
+        "extracted_values": fallback_values,
+        "benchmark_quote_times": {k: iso_ts(v) for k, v in quote_times.items()},
+        "endpoint_health": endpoint_health,
+        "source_unit": "rial",
+        "normalized_unit": "rial",
+        "validation_result": {"ok": True},
+    }
+
+    return Sample(
+        source="navasan",
+        sampled_at=sampled_at,
+        value=None,
+        benchmark_values=fallback_values,
+        quote_time=latest_quote_time,
+        ok=not stale,
+        stale=stale,
+        error="sample outside observation window" if stale else None,
+        health=health,
+        source_unit="rial",
+        normalized_unit="rial",
+    )
+
+
 def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime) -> Sample:
     if config.auth_mode == "browser_playwright":
         return fetch_bonbast_browser(config, sampled_at, window_start_dt, window_end_dt)
     if config.auth_mode == "public_html":
         if config.name == "alanchand_street":
             return fetch_alanchand_street_public(config, sampled_at, window_start_dt, window_end_dt)
-        profile_symbol = COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS.get(config.name, (None,))[0]
-        if profile_symbol:
-            return fetch_tgju_profile_official_public(
+        profile_symbols = COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS.get(config.name, ())
+        if profile_symbols:
+            return fetch_tgju_profile_official_with_fallback(
                 config,
                 sampled_at,
                 window_start_dt,
                 window_end_dt,
-                profile_symbol=profile_symbol,
+                profile_symbols=profile_symbols,
             )
         return Sample(
             config.name,
@@ -2567,6 +2878,16 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             )
             if fallback is not None:
                 return fallback
+        if config.name == "navasan":
+            fallback = fetch_navasan_companion_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error=f"http {exc.code}",
+                primary_error_type="http_error",
+            )
+            if fallback is not None:
+                return fallback
         return Sample(
             config.name,
             sampled_at,
@@ -2586,6 +2907,16 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["failure_reason"] = f"network: {exc.reason}"
         if config.name == "alanchand":
             fallback = fetch_alanchand_companion_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error=f"network: {exc.reason}",
+                primary_error_type="network_error",
+            )
+            if fallback is not None:
+                return fallback
+        if config.name == "navasan":
+            fallback = fetch_navasan_companion_fallback(
                 sampled_at=sampled_at,
                 window_start_dt=window_start_dt,
                 window_end_dt=window_end_dt,
@@ -2621,6 +2952,16 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             )
             if fallback is not None:
                 return fallback
+        if config.name == "navasan":
+            fallback = fetch_navasan_companion_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error="timeout",
+                primary_error_type="timeout",
+            )
+            if fallback is not None:
+                return fallback
         return Sample(
             config.name,
             sampled_at,
@@ -2640,6 +2981,16 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["failure_reason"] = "invalid json"
         if config.name == "alanchand":
             fallback = fetch_alanchand_companion_fallback(
+                sampled_at=sampled_at,
+                window_start_dt=window_start_dt,
+                window_end_dt=window_end_dt,
+                primary_error="invalid json",
+                primary_error_type="invalid_json",
+            )
+            if fallback is not None:
+                return fallback
+        if config.name == "navasan":
+            fallback = fetch_navasan_companion_fallback(
                 sampled_at=sampled_at,
                 window_start_dt=window_start_dt,
                 window_end_dt=window_end_dt,
@@ -3874,7 +4225,7 @@ def publish_status(
             "commercial_aux_b": "Commercial Market Feed (Auxiliary B)",
             "commercial_aux_c": "Commercial Market Feed (Auxiliary C)",
             "commercial_profile_transfer": "Commercial Market Feed (Profile Transfer)",
-            "commercial_profile_sana": "Commercial Market Feed (Profile SANA)",
+            "commercial_profile_sana": "Commercial Market Feed (Profile Managed)",
             # Backward-compatible display for legacy persisted source names.
             "tgju_call": "Commercial Market Feed (Auxiliary)",
             "tgju_call2": "Commercial Market Feed (Auxiliary A)",

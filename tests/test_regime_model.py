@@ -150,6 +150,159 @@ class RegimeModelTests(unittest.TestCase):
         parsed = pipeline.parse_tgju_profile_current_value(body)
         self.assertEqual(parsed, 1_306_541.0)
 
+    def test_legacy_source_alias_maps_commercial_to_aux(self) -> None:
+        self.assertEqual(pipeline.canonical_source_name("commercial"), "commercial_aux")
+
+    def test_tgju_profile_url_for_symbol_rewrites_profile_path(self) -> None:
+        base = "https://www.tgju.org/profile/sana_sell_usd"
+        rewritten = pipeline.tgju_profile_url_for_symbol(base, "mex_usd_sell")
+        self.assertEqual(rewritten, "https://www.tgju.org/profile/mex_usd_sell")
+
+    def test_profile_source_switches_to_fresher_symbol_candidate(self) -> None:
+        sampled_at = dt.datetime(2026, 4, 15, 14, 10, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 4, 15, 13, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 4, 15, 14, 15, tzinfo=dt.timezone.utc)
+        config = pipeline.SourceConfig(
+            name="commercial_profile_sana",
+            url="https://www.tgju.org/profile/mex_usd_sell",
+            auth_mode="public_html",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        )
+
+        stale_candidate = pipeline.Sample(
+            source="commercial_profile_sana",
+            sampled_at=sampled_at,
+            value=1_401_825.0,
+            benchmark_values={
+                "open_market": None,
+                "official": 1_401_825.0,
+                "regional_transfer": None,
+                "crypto_usdt": None,
+                "emami_gold_coin": None,
+            },
+            quote_time=dt.datetime(2026, 3, 27, 8, 30, tzinfo=dt.timezone.utc),
+            ok=False,
+            stale=True,
+            error="stale quote",
+            health={"fetch_success": True, "request_url": "https://www.tgju.org/profile/sana_sell_usd"},
+            source_unit="rial",
+            normalized_unit="rial",
+        )
+        fresh_candidate = pipeline.Sample(
+            source="commercial_profile_sana",
+            sampled_at=sampled_at,
+            value=1_401_825.0,
+            benchmark_values={
+                "open_market": None,
+                "official": 1_401_825.0,
+                "regional_transfer": None,
+                "crypto_usdt": None,
+                "emami_gold_coin": None,
+            },
+            quote_time=dt.datetime(2026, 4, 15, 11, 30, tzinfo=dt.timezone.utc),
+            ok=False,
+            stale=True,
+            error="sample outside observation window",
+            health={"fetch_success": True, "request_url": "https://www.tgju.org/profile/mex_usd_sell"},
+            source_unit="rial",
+            normalized_unit="rial",
+        )
+
+        with mock.patch(
+            "scripts.pipeline.fetch_tgju_profile_official_public",
+            side_effect=[stale_candidate, fresh_candidate],
+        ) as mocked_profile_fetch:
+            with mock.patch("scripts.pipeline.fetch_one") as mocked_fetch_one:
+                sample = pipeline.fetch_tgju_profile_official_with_fallback(
+                    config=config,
+                    sampled_at=sampled_at,
+                    window_start_dt=window_start,
+                    window_end_dt=window_end,
+                    profile_symbols=("sana_sell_usd", "mex_usd_sell"),
+                )
+        self.assertEqual(mocked_profile_fetch.call_count, 2)
+        mocked_fetch_one.assert_not_called()
+        self.assertEqual(sample.benchmark_values["official"], 1_401_825.0)
+        self.assertEqual(sample.health.get("profile_symbol_selected"), "mex_usd_sell")
+
+    def test_profile_source_uses_aux_fallback_when_profiles_fail(self) -> None:
+        sampled_at = dt.datetime(2026, 4, 15, 14, 10, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 4, 15, 13, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 4, 15, 14, 15, tzinfo=dt.timezone.utc)
+        config = pipeline.SourceConfig(
+            name="commercial_profile_sana",
+            url="https://www.tgju.org/profile/mex_usd_sell",
+            auth_mode="public_html",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        )
+
+        failed_profile = pipeline.Sample(
+            source="commercial_profile_sana",
+            sampled_at=sampled_at,
+            value=None,
+            benchmark_values={
+                "open_market": None,
+                "official": None,
+                "regional_transfer": None,
+                "crypto_usdt": None,
+                "emami_gold_coin": None,
+            },
+            quote_time=None,
+            ok=False,
+            stale=False,
+            error="empty response body",
+            health={"fetch_success": False, "failure_reason": "empty response body"},
+            source_unit="rial",
+            normalized_unit="rial",
+        )
+        aux_fallback = pipeline.Sample(
+            source="commercial_aux",
+            sampled_at=sampled_at,
+            value=273_000.0,
+            benchmark_values={
+                "open_market": 273_000.0,
+                "official": 1_401_825.0,
+                "regional_transfer": None,
+                "crypto_usdt": 273_000.0,
+                "emami_gold_coin": 794_991_830.0,
+            },
+            quote_time=dt.datetime(2026, 4, 15, 11, 30, tzinfo=dt.timezone.utc),
+            ok=False,
+            stale=True,
+            error="sample outside observation window",
+            health={
+                "fetch_success": True,
+                "benchmark_quote_times": {"official": "2026-04-15T11:30:00Z"},
+                "request_url": "https://call.tgju.org/ajax.json",
+            },
+            source_unit="rial",
+            normalized_unit="rial",
+        )
+
+        with mock.patch(
+            "scripts.pipeline.fetch_tgju_profile_official_public",
+            side_effect=[failed_profile, failed_profile],
+        ):
+            with mock.patch("scripts.pipeline.fetch_one", return_value=aux_fallback):
+                sample = pipeline.fetch_tgju_profile_official_with_fallback(
+                    config=config,
+                    sampled_at=sampled_at,
+                    window_start_dt=window_start,
+                    window_end_dt=window_end,
+                    profile_symbols=("sana_sell_usd", "mex_usd_sell"),
+                )
+
+        self.assertEqual(sample.source, "commercial_profile_sana")
+        self.assertEqual(sample.benchmark_values["official"], 1_401_825.0)
+        self.assertTrue(sample.health.get("fallback_used"))
+        self.assertEqual(sample.health.get("fetch_mode"), "profile_fallback_aux")
+        self.assertEqual(sample.health.get("fallback_reason"), "profile quote unavailable")
+        self.assertEqual(len(sample.health.get("profile_attempts", [])), 2)
+
     def test_official_benchmark_prefers_freshest_source_quote(self) -> None:
         older = pipeline.Sample(
             source="navasan",
@@ -253,7 +406,7 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(result["source_update_counts"]["navasan"], 1)
         self.assertFalse(result["withheld"])
 
-    def test_official_benchmark_withholds_when_only_stale_quote_exists(self) -> None:
+    def test_official_benchmark_uses_stale_fallback_when_only_stale_quote_exists(self) -> None:
         stale_quote = pipeline.Sample(
             source="commercial_aux",
             sampled_at=dt.datetime(2026, 4, 13, 14, 43, tzinfo=dt.timezone.utc),
@@ -275,12 +428,12 @@ class RegimeModelTests(unittest.TestCase):
             "commercial_aux": ("official",),
         }
         result = pipeline.compute_benchmark_result(samples, "official", benchmark_sources)
-        self.assertTrue(result["withheld"])
-        self.assertIsNone(result["fix"])
-        self.assertFalse(result["available"])
-        self.assertFalse(result["using_stale_fallback"])
-        self.assertIsNone(result["selected_sources"])
-        self.assertIn("official quote stale since", result["source_notes"]["commercial_aux"])
+        self.assertFalse(result["withheld"])
+        self.assertEqual(result["fix"], 1_403_083.0)
+        self.assertTrue(result["available"])
+        self.assertTrue(result["using_stale_fallback"])
+        self.assertEqual(result["selected_sources"], ["commercial_aux"])
+        self.assertIn("stale fallback quote", result["source_notes"]["commercial_aux"])
 
     def test_alanchand_companion_fallback_preserves_extracted_values(self) -> None:
         sampled_at = dt.datetime(2026, 4, 11, 14, 5, tzinfo=dt.timezone.utc)
@@ -352,7 +505,7 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(health.get("extracted_values", {}).get("regional_transfer"), 1_590_900.0)
         self.assertEqual(health.get("extracted_values", {}).get("crypto_usdt"), 1_587_500.0)
 
-    def test_fetch_one_does_not_retry_navasan_after_http_429(self) -> None:
+    def test_fetch_one_navasan_uses_companion_fallback_after_http_429(self) -> None:
         config = pipeline.SourceConfig(
             name="navasan",
             url="https://api.navasan.tech/latest/",
@@ -371,7 +524,29 @@ class RegimeModelTests(unittest.TestCase):
             hdrs=None,
             fp=None,
         )
-        good_payload = '{"usd_sell":{"value":166400},"usd_shakhs":{"value":169700},"usdt":{"value":149700}}'
+        fallback_sample = pipeline.Sample(
+            source="navasan",
+            sampled_at=sampled_at,
+            value=None,
+            benchmark_values={
+                "open_market": None,
+                "official": 1_401_825.0,
+                "regional_transfer": 1_562_000.0,
+                "crypto_usdt": 1_543_330.0,
+                "emami_gold_coin": None,
+            },
+            quote_time=sampled_at,
+            ok=False,
+            stale=True,
+            error="sample outside observation window",
+            health={
+                "fetch_success": True,
+                "fallback_used": True,
+                "fetch_mode": "companion_fallback",
+            },
+            source_unit="rial",
+            normalized_unit="rial",
+        )
 
         with mock.patch.dict(
             "os.environ",
@@ -384,17 +559,17 @@ class RegimeModelTests(unittest.TestCase):
         ):
             with mock.patch(
                 "scripts.pipeline.fetch_request_body",
-                side_effect=[retry_error, (good_payload, "https://api.navasan.tech/latest/")],
+                side_effect=[retry_error],
             ):
-                sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
+                with mock.patch(
+                    "scripts.pipeline.fetch_navasan_companion_fallback",
+                    return_value=fallback_sample,
+                ) as fallback_mock:
+                    sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
 
-        self.assertFalse(sample.ok)
-        self.assertFalse(sample.stale)
-        self.assertIsNone(sample.value)
-        self.assertEqual(sample.health.get("attempt_count"), 1)
-        self.assertEqual(sample.health.get("retry_count"), 0)
-        self.assertFalse(sample.health.get("fetch_success"))
-        self.assertEqual(sample.error, "http 429")
+        self.assertEqual(sample.benchmark_values["official"], 1_401_825.0)
+        self.assertTrue(sample.health.get("fallback_used"))
+        self.assertEqual(fallback_mock.call_count, 1)
 
     def test_build_source_configs_includes_multiple_aux_hosts(self) -> None:
         source_names = {cfg.name for cfg in pipeline.build_source_configs()}
