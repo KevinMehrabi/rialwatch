@@ -51,6 +51,7 @@ PRIMARY_LOCALITIES = ("Tehran", "Herat", "Sulaymaniyah", "Dubai")
 SECONDARY_LOCALITIES = ("Istanbul", "London", "Frankfurt")
 ALL_LOCALITIES = PRIMARY_LOCALITIES + SECONDARY_LOCALITIES
 IRAQ_AGG_LOCALITIES = ("Sulaymaniyah", "Erbil", "Baghdad", "Iraq")
+TURKEY_AGG_LOCALITIES = ("Istanbul", "Ankara", "Izmir", "Turkey")
 LOCALITY_TO_BASKET = {
     "Tehran": "Iran",
     "Herat": "Afghanistan",
@@ -60,6 +61,9 @@ LOCALITY_TO_BASKET = {
     "Iraq": "Iraq",
     "Dubai": "UAE",
     "Istanbul": "Turkey",
+    "Ankara": "Turkey",
+    "Izmir": "Turkey",
+    "Turkey": "Turkey",
     "London": "UK",
     "Frankfurt": "Germany",
 }
@@ -89,6 +93,18 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s دلار عراق",
         "site:t.me نرخ دلار عراق",
         "site:t.me/s نرخ دلار عراق",
+        "site:t.me دلار استانبول",
+        "site:t.me/s دلار استانبول",
+        "site:t.me نرخ دلار استانبول",
+        "site:t.me بازار ارز استانبول",
+        "site:t.me دلار ترکیه",
+        "site:t.me/s دلار ترکیه",
+        "site:t.me نرخ دلار ترکیه",
+        "site:t.me/s نرخ دلار ترکیه",
+        "site:t.me دلار آنکارا",
+        "site:t.me/s دلار آنکارا",
+        "site:t.me دلار ازمیر",
+        "site:t.me/s دلار ازمیر",
         "site:t.me دلار تهران",
         "site:t.me/s دلار تهران",
         "site:t.me نرخ دلار تهران",
@@ -110,8 +126,22 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "erbil dollar telegram iran",
         "baghdad dollar telegram iran",
         "iraq dollar telegram iran",
+        "istanbul dollar telegram iran",
+        "turkey dollar telegram iran",
+        "ankara dollar telegram iran",
+        "izmir dollar telegram iran",
+        "kapali carsi dollar telegram",
+        "istanbul doviz telegram",
         "tehran herat dubai telegram",
         "iran fx board telegram",
+    ],
+    "turkish": [
+        "site:t.me istanbul döviz",
+        "site:t.me/s istanbul döviz",
+        "site:t.me iran döviz istanbul",
+        "site:t.me/s iran döviz istanbul",
+        "site:t.me kapalı çarşı dolar",
+        "site:t.me/s kapalı çarşı dolar",
     ],
 }
 
@@ -155,6 +185,9 @@ LOCALITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Iraq": ("iraq", "عراق", "العراق"),
     "Dubai": ("dubai", "دبی", "دوبی"),
     "Istanbul": ("istanbul", "استانبول"),
+    "Ankara": ("ankara", "آنکارا"),
+    "Izmir": ("izmir", "ازمیر"),
+    "Turkey": ("turkey", "turkiye", "türkiye", "ترکیه"),
     "London": ("london", "لندن"),
     "Frankfurt": ("frankfurt", "فرانکفورت"),
 }
@@ -411,7 +444,7 @@ def infer_quote_currency(text: str, locality: str) -> str:
         return "GBP"
     if "دلار" in lowered or "usd" in lowered:
         return "USD"
-    if locality in {"Tehran", "Herat", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq"}:
+    if locality in {"Tehran", "Herat", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq", "Istanbul", "Ankara", "Izmir", "Turkey"}:
         return "USD"
     if locality == "Dubai":
         return "AED"
@@ -1014,6 +1047,8 @@ def main() -> int:
     for locality in PRIMARY_LOCALITIES + SECONDARY_LOCALITIES:
         if locality == "Sulaymaniyah":
             locality_records = [record for record in board_records if record.locality_name in IRAQ_AGG_LOCALITIES]
+        elif locality == "Istanbul":
+            locality_records = [record for record in board_records if record.locality_name in TURKEY_AGG_LOCALITIES]
         else:
             locality_records = [record for record in board_records if record.locality_name == locality]
         summary_row = summarize_locality(locality, locality_records, benchmark_value=benchmark_value)
@@ -1043,6 +1078,9 @@ def main() -> int:
             channels_with_quote[locality] = sorted(
                 {record.handle for record in board_records if record.locality_name == locality}
             )
+    channels_with_turkey_quotes = sorted(
+        {record.handle for record in board_records if record.locality_name in TURKEY_AGG_LOCALITIES}
+    )
     locality_support = {row["locality_name"]: row["recommended_display_state"] for row in locality_basket_rows}
 
     summary = {
@@ -1052,6 +1090,7 @@ def main() -> int:
         "channels_with_herat_quotes": channels_with_quote["Herat"],
         "channels_with_sulaymaniyah_quotes": channels_with_quote["Sulaymaniyah"],
         "channels_with_tehran_quotes": channels_with_quote["Tehran"],
+        "channels_with_turkey_quotes": channels_with_turkey_quotes,
         "which_locality_baskets_gained_usable_records": sorted(set(gained_localities)),
         "uae_display_state": locality_support.get("UAE", "hide"),
         "iraq_display_state": locality_support.get("Iraq", "hide"),
