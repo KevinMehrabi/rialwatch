@@ -12,6 +12,7 @@ TARGET_LOCALITIES = ["Iran", "UAE", "Turkey", "Afghanistan", "UK", "Iraq", "Germ
 DEFAULT_HISTORY_DAYS = 365
 STATE_RANK = {"publish": 3, "monitor": 2, "hide": 1}
 SOURCE_RANK = {
+    "merged_diagnostics": 4,
     "regional_fx_board_basket_review": 3,
     "exchange_shop_baskets_enriched": 2,
     "exchange_shop_baskets_card": 1,
@@ -302,10 +303,79 @@ def candidate_sort_key(candidate: Dict[str, Any]) -> tuple:
     return (
         STATE_RANK.get(candidate.get("display_state"), 0),
         has_rate,
-        SOURCE_RANK.get(candidate.get("source_artifact"), 0),
+        to_int(candidate.get("contributing_source_count")),
         to_int(candidate.get("usable_record_count")),
+        SOURCE_RANK.get(candidate.get("source_artifact"), 0),
         to_float(candidate.get("basket_confidence")) or 0.0,
     )
+
+
+def merge_locality_candidates(locality: str, candidates: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+    if locality != "Germany":
+        return None
+    publishable = [
+        row
+        for row in candidates
+        if normalize_state(row.get("display_state")) == "publish" and to_float(row.get("weighted_rate")) is not None
+    ]
+    if len(publishable) < 2:
+        return None
+
+    weights: List[float] = []
+    for row in publishable:
+        usable = to_int(row.get("usable_record_count"))
+        contributors = to_int(row.get("contributing_source_count"))
+        weights.append(float(max(usable, contributors, 1)))
+
+    weight_sum = sum(weights)
+    if weight_sum <= 0:
+        return None
+
+    def weighted(field: str) -> Optional[float]:
+        values = [to_float(row.get(field)) for row in publishable]
+        valid = [(v, w) for v, w in zip(values, weights) if v is not None]
+        if not valid:
+            return None
+        return sum(v * w for v, w in valid) / sum(w for _v, w in valid)
+
+    dispersion_rank = {"unknown": 0, "low": 1, "medium": 2, "high": 3}
+    freshness_rank = {"unknown": 0, "old": 1, "stale": 2, "recent": 3, "fresh": 4}
+    dispersion = max(
+        (str(row.get("dispersion_level") or "unknown").strip().lower() for row in publishable),
+        key=lambda value: dispersion_rank.get(value, 0),
+        default="unknown",
+    )
+    freshness = max(
+        (str(row.get("freshness_status") or "unknown").strip().lower() for row in publishable),
+        key=lambda value: freshness_rank.get(value, 0),
+        default="unknown",
+    )
+
+    signal_types = sorted(
+        {
+            str(row.get("signal_type_used") or "").strip()
+            for row in publishable
+            if str(row.get("signal_type_used") or "").strip()
+        }
+    )
+    signal_type_label = "+".join(signal_types) if signal_types else "mixed_diagnostics"
+
+    merged = build_candidate(
+        source_artifact="merged_diagnostics",
+        locality=locality,
+        signal_type_used=signal_type_label,
+        weighted_rate=weighted("weighted_rate"),
+        median_rate=weighted("median_rate"),
+        spread_vs_benchmark_pct=weighted("spread_vs_benchmark_pct"),
+        usable_record_count=sum(to_int(row.get("usable_record_count")) for row in publishable),
+        contributing_source_count=sum(to_int(row.get("contributing_source_count")) for row in publishable),
+        basket_confidence=weighted("basket_confidence") or 0.0,
+        suppression_reason="",
+        display_state="publish",
+        freshness_status=freshness,
+        dispersion_level=dispersion,
+    )
+    return merged
 
 
 def finalize_card(candidate: Dict[str, Any]) -> Dict[str, Any]:
@@ -360,6 +430,9 @@ def build_regional_market_cards_payload(
     cards: List[Dict[str, Any]] = []
     for locality in ordered_localities:
         candidates = per_locality.get(locality, [])
+        merged_candidate = merge_locality_candidates(locality, candidates)
+        if merged_candidate is not None:
+            candidates = candidates + [merged_candidate]
         if not candidates:
             best = build_candidate(
                 source_artifact="none",
