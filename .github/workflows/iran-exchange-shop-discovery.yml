@@ -1,0 +1,72 @@
+name: Iran Exchange Shop Discovery
+
+on:
+  schedule:
+    # Run 6x daily (UTC) for continuous discovery refresh.
+    # Rough Iran local-time cadence: early morning, morning, noon, afternoon, evening, late night.
+    - cron: "12 0,4,8,12,16,20 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: iran-exchange-shop-discovery
+  cancel-in-progress: false
+
+jobs:
+  discover_iran_exchange_shops:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run Iran exchange-shop discovery expansion
+        run: |
+          python3 scripts/telegram_direct_shop_expansion.py \
+            --survey-dir survey_outputs \
+            --pages-per-query 2 \
+            --max-crawl 320 \
+            --timeout 20 \
+            --sleep 0.55
+
+      - name: Persist discovery outputs
+        run: |
+          targets=(
+            "survey_outputs/direct_shop_expansion_candidates.csv"
+            "survey_outputs/direct_shop_expansion_summary.json"
+          )
+
+          if [ -z "$(git status --porcelain -- "${targets[@]}")" ]; then
+            echo "No Iran discovery output changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "${targets[@]}"
+          git commit -m "discover: refresh Iran exchange-shop sources [skip ci]"
+
+          for attempt in 1 2 3; do
+            if git push origin main; then
+              echo "Push succeeded on attempt ${attempt}."
+              exit 0
+            fi
+
+            echo "Push rejected on attempt ${attempt}; rebasing onto origin/main and retrying..."
+            if ! git pull --rebase --autostash origin main; then
+              echo "::warning::Rebase failed after push rejection. Skipping this cycle to avoid workflow noise."
+              exit 0
+            fi
+          done
+
+          echo "::warning::Failed to push Iran discovery updates after 3 attempts."
+          exit 0
