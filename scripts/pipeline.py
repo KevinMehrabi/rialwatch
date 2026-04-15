@@ -3103,6 +3103,10 @@ def compute_benchmark_result(
                         f"older quote ({iso_ts(ts)}) than freshest source ({iso_ts(freshest_time)})"
                     )
 
+    if benchmark_key == "official":
+        selected_source_set = set(selected_sources or source_medians.keys())
+        using_stale_fallback = bool(selected_source_set.intersection(stale_fallback_sources))
+
     if not withheld:
         fix_value = median(medians)
         p25 = percentile(medians, 0.25)
