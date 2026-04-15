@@ -53,6 +53,7 @@ ALL_LOCALITIES = PRIMARY_LOCALITIES + SECONDARY_LOCALITIES
 IRAQ_AGG_LOCALITIES = ("Sulaymaniyah", "Erbil", "Baghdad", "Iraq")
 TURKEY_AGG_LOCALITIES = ("Istanbul", "Ankara", "Izmir", "Turkey")
 GERMANY_AGG_LOCALITIES = ("Frankfurt", "Hamburg", "Berlin", "Germany")
+UK_AGG_LOCALITIES = ("London", "Manchester", "Birmingham", "UK")
 LOCALITY_TO_BASKET = {
     "Tehran": "Iran",
     "Herat": "Afghanistan",
@@ -66,6 +67,9 @@ LOCALITY_TO_BASKET = {
     "Izmir": "Turkey",
     "Turkey": "Turkey",
     "London": "UK",
+    "Manchester": "UK",
+    "Birmingham": "UK",
+    "UK": "UK",
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
     "Berlin": "Germany",
@@ -125,6 +129,18 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s صرافی فرانکفورت",
         "site:t.me صرافی هامبورگ",
         "site:t.me/s صرافی هامبورگ",
+        "site:t.me دلار لندن",
+        "site:t.me/s دلار لندن",
+        "site:t.me نرخ دلار لندن",
+        "site:t.me/s نرخ دلار لندن",
+        "site:t.me بازار ارز لندن",
+        "site:t.me/s بازار ارز لندن",
+        "site:t.me دلار انگلیس",
+        "site:t.me/s دلار انگلیس",
+        "site:t.me نرخ دلار انگلیس",
+        "site:t.me/s نرخ دلار انگلیس",
+        "site:t.me پوند لندن",
+        "site:t.me/s پوند لندن",
         "site:t.me دلار تهران",
         "site:t.me/s دلار تهران",
         "site:t.me نرخ دلار تهران",
@@ -158,6 +174,12 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "germany iran exchange telegram",
         "iranian exchange frankfurt telegram",
         "iranian exchange hamburg telegram",
+        "london dollar telegram iran",
+        "uk exchange telegram iran",
+        "iranian exchange london telegram",
+        "london pound telegram iran",
+        "manchester exchange telegram iran",
+        "birmingham exchange telegram iran",
         "tehran herat dubai telegram",
         "iran fx board telegram",
     ],
@@ -180,6 +202,16 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s dollar frankfurt",
         "site:t.me dollar hamburg",
         "site:t.me/s dollar hamburg",
+    ],
+    "uk": [
+        "site:t.me london exchange",
+        "site:t.me/s london exchange",
+        "site:t.me uk exchange",
+        "site:t.me/s uk exchange",
+        "site:t.me iranian exchange london",
+        "site:t.me/s iranian exchange london",
+        "site:t.me pound london",
+        "site:t.me/s pound london",
     ],
 }
 
@@ -227,6 +259,9 @@ LOCALITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Izmir": ("izmir", "ازمیر"),
     "Turkey": ("turkey", "turkiye", "türkiye", "ترکیه"),
     "London": ("london", "لندن"),
+    "Manchester": ("manchester", "منچستر"),
+    "Birmingham": ("birmingham", "بیرمنگام"),
+    "UK": ("uk", "united kingdom", "britain", "england", "انگلیس", "بریتانیا"),
     "Frankfurt": ("frankfurt", "فرانکفورت"),
     "Hamburg": ("hamburg", "هامبورگ", "هامبرگ"),
     "Berlin": ("berlin", "برلین"),
@@ -488,7 +523,7 @@ def infer_quote_currency(text: str, locality: str) -> str:
         return "GBP"
     if "دلار" in lowered or "usd" in lowered:
         return "USD"
-    if locality in {"Tehran", "Herat", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq", "Istanbul", "Ankara", "Izmir", "Turkey", "Frankfurt", "Hamburg", "Berlin", "Germany"}:
+    if locality in {"Tehran", "Herat", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq", "Istanbul", "Ankara", "Izmir", "Turkey", "London", "Manchester", "Birmingham", "UK", "Frankfurt", "Hamburg", "Berlin", "Germany"}:
         return "USD"
     if locality == "Dubai":
         return "AED"
@@ -771,6 +806,7 @@ def process_source(source: DiscoverySource, benchmark_value: float, timeout: int
     source_type = classify_source_type(title, messages)
     source_hint_text = " ".join(filter(None, [title, " ".join(sorted(source.query_hits))]))
     source_locality_hints = set(detect_localities(source_hint_text))
+    uk_source_hint = first_present_locality(source_locality_hints, UK_AGG_LOCALITIES)
     germany_source_hint = first_present_locality(source_locality_hints, GERMANY_AGG_LOCALITIES)
     min_rate = benchmark_value * 0.45 if benchmark_value > 0 else 500_000.0
     max_rate = benchmark_value * 1.80 if benchmark_value > 0 else 2_500_000.0
@@ -784,7 +820,8 @@ def process_source(source: DiscoverySource, benchmark_value: float, timeout: int
     for msg in msg_rows:
         matching_rec = next((rec for rec in parsed_records if rec.message_index == msg.msg_index and rec.dedup_keep), None)
         per_locality = extract_locality_quotes(msg.message_text, benchmark_value=benchmark_value)
-        if not per_locality and germany_source_hint and matching_rec:
+        fallback_locality = germany_source_hint or uk_source_hint
+        if not per_locality and fallback_locality and matching_rec:
             if matching_rec.overall_record_quality_score >= 58:
                 rec_currency = primary_currency_from_record(matching_rec.currency)
                 basis = "midpoint" if matching_rec.midpoint_rial else ("sell" if matching_rec.sell_quote_rial else ("buy" if matching_rec.buy_quote_rial else "inferred"))
@@ -798,7 +835,7 @@ def process_source(source: DiscoverySource, benchmark_value: float, timeout: int
                     if normalized is not None and min_rate <= normalized <= max_rate:
                         per_locality = [
                             (
-                                germany_source_hint,
+                                fallback_locality,
                                 matching_rec.buy_quote,
                                 matching_rec.sell_quote,
                                 normalized,
@@ -1147,6 +1184,8 @@ def main() -> int:
             locality_records = [record for record in board_records if record.locality_name in IRAQ_AGG_LOCALITIES]
         elif locality == "Istanbul":
             locality_records = [record for record in board_records if record.locality_name in TURKEY_AGG_LOCALITIES]
+        elif locality == "London":
+            locality_records = [record for record in board_records if record.locality_name in UK_AGG_LOCALITIES]
         elif locality == "Frankfurt":
             locality_records = [record for record in board_records if record.locality_name in GERMANY_AGG_LOCALITIES]
         else:
@@ -1181,6 +1220,9 @@ def main() -> int:
     channels_with_turkey_quotes = sorted(
         {record.handle for record in board_records if record.locality_name in TURKEY_AGG_LOCALITIES}
     )
+    channels_with_uk_quotes = sorted(
+        {record.handle for record in board_records if record.locality_name in UK_AGG_LOCALITIES}
+    )
     channels_with_germany_quotes = sorted(
         {record.handle for record in board_records if record.locality_name in GERMANY_AGG_LOCALITIES}
     )
@@ -1194,6 +1236,7 @@ def main() -> int:
         "channels_with_sulaymaniyah_quotes": channels_with_quote["Sulaymaniyah"],
         "channels_with_tehran_quotes": channels_with_quote["Tehran"],
         "channels_with_turkey_quotes": channels_with_turkey_quotes,
+        "channels_with_uk_quotes": channels_with_uk_quotes,
         "channels_with_germany_quotes": channels_with_germany_quotes,
         "which_locality_baskets_gained_usable_records": sorted(set(gained_localities)),
         "uae_display_state": locality_support.get("UAE", "hide"),
