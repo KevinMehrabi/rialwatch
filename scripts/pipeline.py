@@ -5601,6 +5601,7 @@ def refresh_existing_day_payload(
     generated_at: str,
     day: dt.date,
     source_configs: List[SourceConfig],
+    write_day_artifact: bool = True,
 ) -> Optional[Dict[str, Any]]:
     day_s = iso_date(day)
     day_json = site_dir / "fix" / f"{day_s}.json"
@@ -5640,7 +5641,8 @@ def refresh_existing_day_payload(
     if isinstance(existing.get("publication_selection"), dict):
         refreshed["publication_selection"] = existing.get("publication_selection")
 
-    publish_daily_fix(site_dir, templates_dir, generated_at=generated_at, daily=refreshed)
+    if write_day_artifact:
+        publish_daily_fix(site_dir, templates_dir, generated_at=generated_at, daily=refreshed)
     return refreshed
 
 
@@ -5978,21 +5980,42 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
 
 def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
     day_s = iso_date(day)
+    source_configs = build_source_configs()
     if immutable_day_exists(site_dir, day_s):
+        refreshed = refresh_existing_day_payload(
+            site_dir,
+            templates_dir,
+            generated_at,
+            day,
+            source_configs,
+            write_day_artifact=False,
+        )
+        if refreshed is not None:
+            latest = refreshed
+            status_detail = (
+                f"Reference for {day_s} remains immutable; refreshed latest/status/home views using current logic."
+            )
+        else:
+            latest_path = site_dir / "api" / "latest.json"
+            latest = (
+                json.loads(latest_path.read_text(encoding="utf-8"))
+                if latest_path.exists()
+                else build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "no existing published data")
+            )
+            status_detail = f"Reference for {day_s} already exists and was not modified."
         publish_status(
             site_dir,
             templates_dir,
             generated_at,
             status_title="IMMUTABLE",
-            status_detail=f"Reference for {day_s} already exists and was not modified.",
+            status_detail=status_detail,
             missing=None,
+            latest=latest,
         )
-        latest_path = site_dir / "api" / "latest.json"
-        if latest_path.exists():
-            latest = json.loads(latest_path.read_text(encoding="utf-8"))
-            publish_public_series_artifacts(site_dir)
-            publish_intraday_latest(site_dir, day)
-            publish_home(site_dir, templates_dir, generated_at, latest)
+        publish_latest(site_dir, latest)
+        publish_public_series_artifacts(site_dir)
+        publish_intraday_latest(site_dir, day)
+        publish_home(site_dir, templates_dir, generated_at, latest)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
         publish_mapping_audit(site_dir)
         return 0
@@ -6016,7 +6039,6 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
         publish_mapping_audit(site_dir)
         return 0
 
-    source_configs = build_source_configs()
     daily = select_daily_from_intraday(site_dir, day, source_configs)
     if daily is None:
         placeholder = build_placeholder_payload(
