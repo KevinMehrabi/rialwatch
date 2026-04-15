@@ -224,6 +224,9 @@ STATUS_HISTORY_LOOKBACK_DAYS_DEFAULT = 7
 STATUS_RECENT_SUCCESS_HOURS_DEFAULT = 24 * 7
 OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT = 48
 OFFICIAL_FRESHNESS_MAX_AGE_HOURS_DEFAULT = OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT
+# Keep official companion readings available with explicit stale labeling when
+# upstream official channels stop updating for short periods.
+OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS_DEFAULT = 24 * 45
 
 COMMERCIAL_AUX_HOST_HEALTH_LOCK = threading.Lock()
 COMMERCIAL_AUX_HOST_HEALTH: Dict[str, Dict[str, Any]] = {}
@@ -594,15 +597,21 @@ def jalali_to_gregorian_date(jy: int, jm: int, jd: int) -> Optional[dt.date]:
 
 def parse_tgju_profile_quote_time(page_html: str) -> Optional[dt.datetime]:
     normalized = normalize_eastern_digits(page_html)
-    match = re.search(r"(?is)<td>\s*(14\d{2})\s*/\s*(\d{1,2})\s*/\s*(\d{1,2})\s*</td>", normalized)
-    if not match:
+    matches = re.findall(r"(?is)<td>\s*(14\d{2})\s*/\s*(\d{1,2})\s*/\s*(\d{1,2})\s*</td>", normalized)
+    if not matches:
         return None
-    jy = int(match.group(1))
-    jm = int(match.group(2))
-    jd = int(match.group(3))
-    gregorian_date = jalali_to_gregorian_date(jy, jm, jd)
-    if gregorian_date is None:
+    gregorian_dates: List[dt.date] = []
+    for jy_text, jm_text, jd_text in matches:
+        jy = int(jy_text)
+        jm = int(jm_text)
+        jd = int(jd_text)
+        gregorian_date = jalali_to_gregorian_date(jy, jm, jd)
+        if gregorian_date is not None:
+            gregorian_dates.append(gregorian_date)
+    if not gregorian_dates:
         return None
+    # Profile pages can include multiple historical rows; use the newest date.
+    gregorian_date = max(gregorian_dates)
     # TGJU profile pages publish daily bars; use local noon to avoid edge rollover artifacts.
     local_noon = dt.datetime.combine(gregorian_date, dt.time(12, 0), tzinfo=IRAN_TZ)
     return local_noon.astimezone(UTC)
@@ -690,11 +699,21 @@ def extract_value_by_symbol_candidates(payload: Any, candidates: Tuple[str, ...]
 
 
 def extract_value_by_symbol_priority(payload: Any, candidates: Tuple[str, ...]) -> Tuple[Optional[float], Optional[str]]:
-    for symbol in candidates:
+    ranked: List[Tuple[int, dt.datetime, int, float, str]] = []
+    for index, symbol in enumerate(candidates):
         parsed = extract_value_by_symbol_candidates(payload, (symbol,))
-        if parsed is not None:
-            return parsed, symbol
-    return None, None
+        if parsed is None:
+            continue
+        symbol_quote_time = extract_symbol_quote_time(payload, (symbol,))
+        effective_time = symbol_quote_time if symbol_quote_time is not None else dt.datetime(1970, 1, 1, tzinfo=UTC)
+        has_quote_time = 1 if symbol_quote_time is not None else 0
+        # Prefer freshest symbol-level quote time; fall back to declared priority.
+        ranked.append((has_quote_time, effective_time, -index, parsed, symbol))
+    if not ranked:
+        return None, None
+    ranked.sort(key=lambda row: (row[0], row[1], row[2]), reverse=True)
+    _has_quote_time, _effective_time, _priority, value, selected_symbol = ranked[0]
+    return value, selected_symbol
 
 
 def extract_quote_time(payload: Any) -> Optional[dt.datetime]:
@@ -1298,6 +1317,19 @@ def official_quote_is_fresh(quote_time: Optional[dt.datetime], sampled_at: dt.da
         OFFICIAL_MAX_QUOTE_AGE_HOURS_DEFAULT,
         minimum=1,
         maximum=24 * 30,
+    )
+    max_age = dt.timedelta(hours=max_age_hours)
+    return (sampled_at - quote_time) <= max_age
+
+
+def official_quote_within_stale_fallback(quote_time: Optional[dt.datetime], sampled_at: dt.datetime) -> bool:
+    if quote_time is None:
+        return False
+    max_age_hours = env_int(
+        "OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS",
+        OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS_DEFAULT,
+        minimum=24,
+        maximum=24 * 365,
     )
     max_age = dt.timedelta(hours=max_age_hours)
     return (sampled_at - quote_time) <= max_age
@@ -2892,6 +2924,8 @@ def compute_benchmark_result(
     source_latest_quote_times: Dict[str, dt.datetime] = {}
     source_update_counts: Dict[str, int] = {}
     invalid_or_stale = False
+    using_stale_fallback = False
+    stale_fallback_sources: List[str] = []
     for source, entries in samples.items():
         if benchmark_key == PRIMARY_BENCHMARK and source not in PRIMARY_STREET_SOURCE_UNIVERSE:
             source_notes[source] = "source excluded from street benchmark universe"
@@ -2904,6 +2938,31 @@ def compute_benchmark_result(
         if benchmark_key == "official":
             latest = latest_sample_value_for_benchmark(entries, benchmark_key)
             if latest is None:
+                stale_latest = latest_sample_value_for_benchmark(
+                    entries,
+                    benchmark_key,
+                    allow_stale_official=True,
+                )
+                if stale_latest is not None:
+                    stale_value, stale_quote_time, stale_sampled_at, stale_source_unit = stale_latest
+                    stale_effective_quote_time = stale_quote_time if stale_quote_time is not None else stale_sampled_at
+                    if official_quote_within_stale_fallback(stale_effective_quote_time, stale_sampled_at):
+                        source_medians[source] = stale_value
+                        source_units[source] = stale_source_unit
+                        source_latest_quote_times[source] = stale_effective_quote_time
+                        source_update_counts[source] = benchmark_update_cadence_count(
+                            entries,
+                            benchmark_key,
+                            allow_stale_official=True,
+                        )
+                        source_notes[source] = (
+                            f"stale fallback quote from {iso_ts(stale_effective_quote_time)} "
+                            "(outside freshness window)"
+                        )
+                        using_stale_fallback = True
+                        stale_fallback_sources.append(source)
+                        continue
+
                 stale_quote_candidates: List[dt.datetime] = []
                 for s in entries:
                     candidate_value = parse_number(s.benchmark_values.get(benchmark_key))
@@ -2920,7 +2979,11 @@ def compute_benchmark_result(
                     if candidate_quote_time is not None:
                         stale_quote_candidates.append(candidate_quote_time)
                 if stale_quote_candidates:
-                    source_notes[source] = f"official quote stale since {iso_ts(max(stale_quote_candidates))}"
+                    latest_stale_quote = max(stale_quote_candidates)
+                    source_notes[source] = (
+                        f"official quote stale since {iso_ts(latest_stale_quote)} "
+                        "(outside stale-fallback horizon)"
+                    )
                 else:
                     source_notes[source] = "no valid samples"
                 continue
@@ -3078,8 +3141,8 @@ def compute_benchmark_result(
         "selected_sources": selected_sources,
         "selected_quote_time": selected_quote_time,
         "selection_method": selection_method,
-        "using_stale_fallback": False,
-        "stale_fallback_sources": [],
+        "using_stale_fallback": using_stale_fallback,
+        "stale_fallback_sources": sorted(set(stale_fallback_sources)),
         "available": (fix_value is not None and not withheld),
     }
 
@@ -4678,8 +4741,14 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         return f"Updated {latest_sample_ts.strftime('%H:%M UTC')}"
 
     def benchmark_card_meta_text(key: str) -> str:
+        entry = benchmark_entry(key)
         value = benchmark_value_number(key)
         if value is not None:
+            if key == "official" and bool(entry.get("using_stale_fallback")):
+                selected_quote_time = try_parse_datetime(entry.get("selected_quote_time"))
+                if selected_quote_time is not None:
+                    return f"Last known quote {selected_quote_time.strftime('%b %d, %Y')}"
+                return "Last known quote"
             return benchmark_as_of_text(key)
         context = benchmark_unavailable_context(key)
         if context:
