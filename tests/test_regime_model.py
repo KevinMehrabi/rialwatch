@@ -571,6 +571,61 @@ class RegimeModelTests(unittest.TestCase):
         self.assertTrue(sample.health.get("fallback_used"))
         self.assertEqual(fallback_mock.call_count, 1)
 
+    def test_navasan_companion_fallback_calls_public_single_rate_with_supported_signature(self) -> None:
+        sampled_at = dt.datetime(2026, 4, 16, 14, 5, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 4, 16, 13, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 4, 16, 14, 15, tzinfo=dt.timezone.utc)
+
+        aux_sample = pipeline.Sample(
+            source="commercial_aux",
+            sampled_at=sampled_at,
+            value=273_000.0,
+            benchmark_values={
+                "open_market": 273_000.0,
+                "official": 1_401_825.0,
+                "regional_transfer": None,
+                "crypto_usdt": 273_000.0,
+                "emami_gold_coin": 794_991_830.0,
+            },
+            quote_time=dt.datetime(2026, 4, 16, 11, 30, tzinfo=dt.timezone.utc),
+            ok=True,
+            stale=False,
+            error=None,
+            health={"fetch_success": True, "raw_extracted_values": {"official": 1_401_825.0}},
+            source_unit="rial",
+            normalized_unit="rial",
+        )
+
+        call_args = []
+
+        def strict_single_rate(page_url: str, sampled_at: dt.datetime, minimum: float, maximum: float):
+            call_args.append((page_url, sampled_at, minimum, maximum))
+            return {
+                "value": 1_560_000.0 if "usd-hav" in page_url else 1_540_000.0,
+                "raw_value": 1_560_000.0 if "usd-hav" in page_url else 1_540_000.0,
+                "quote_time": sampled_at,
+                "source_unit": "rial",
+                "normalized_unit": "rial",
+                "health": {"fetch_success": True},
+            }
+
+        with mock.patch("scripts.pipeline.fetch_one", return_value=aux_sample):
+            with mock.patch("scripts.pipeline.fetch_alanchand_public_single_rate", side_effect=strict_single_rate):
+                sample = pipeline.fetch_navasan_companion_fallback(
+                    sampled_at=sampled_at,
+                    window_start_dt=window_start,
+                    window_end_dt=window_end,
+                    primary_error="http 429",
+                    primary_error_type="http_error",
+                )
+
+        self.assertIsNotNone(sample)
+        assert sample is not None
+        self.assertEqual(sample.benchmark_values["official"], 1_401_825.0)
+        self.assertEqual(sample.benchmark_values["regional_transfer"], 1_560_000.0)
+        self.assertEqual(sample.benchmark_values["crypto_usdt"], 1_540_000.0)
+        self.assertEqual(len(call_args), 2)
+
     def test_build_source_configs_includes_multiple_aux_hosts(self) -> None:
         source_names = {cfg.name for cfg in pipeline.build_source_configs()}
         self.assertTrue({"commercial_aux_a", "commercial_aux_b", "commercial_aux_c", "commercial_aux"}.issubset(source_names))

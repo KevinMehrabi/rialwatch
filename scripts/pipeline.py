@@ -2535,16 +2535,25 @@ def fetch_navasan_companion_fallback(
             quote_times["official"] = qt
         fallback_sources.append("commercial_aux")
 
-    for benchmark_key, page_url in (
-        ("regional_transfer", env_or_default("ALANCHAND_PUBLIC_REGIONAL_URL", ALANCHAND_PUBLIC_REGIONAL_URL_DEFAULT)),
-        ("crypto_usdt", env_or_default("ALANCHAND_PUBLIC_USDT_URL", ALANCHAND_PUBLIC_USDT_URL_DEFAULT)),
+    for benchmark_key, page_url, minimum, maximum in (
+        (
+            "regional_transfer",
+            env_or_default("ALANCHAND_REGIONAL_PUBLIC_URL", ALANCHAND_PUBLIC_REGIONAL_URL_DEFAULT),
+            100_000,
+            3_000_000,
+        ),
+        (
+            "crypto_usdt",
+            env_or_default("ALANCHAND_USDT_PUBLIC_URL", ALANCHAND_PUBLIC_USDT_URL_DEFAULT),
+            100_000,
+            3_000_000,
+        ),
     ):
         page_result = fetch_alanchand_public_single_rate(
-            url=page_url,
+            page_url=page_url,
             sampled_at=sampled_at,
-            window_start_dt=window_start_dt,
-            window_end_dt=window_end_dt,
-            expected_unit="rial",
+            minimum=minimum,
+            maximum=maximum,
         )
         endpoint_health[benchmark_key] = page_result.get("health", {})
         value = parse_number(page_result.get("value"))
