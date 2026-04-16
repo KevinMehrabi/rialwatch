@@ -1,6 +1,6 @@
 {
   "date": "2026-04-16",
-  "as_of": "2026-04-16T15:08:46Z",
+  "as_of": "2026-04-16T15:40:23Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -1326,6 +1326,14 @@
           "sekkeh"
         ]
       },
+      "commercial_aux": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
       "commercial_aux_c": {
         "official": [
           "ice_transfer_usd_sell",
@@ -1342,28 +1350,12 @@
           "ice_commodity_transfer_usd_sell"
         ]
       },
-      "commercial_aux": {
-        "official": [
-          "ice_transfer_usd_sell",
-          "ice_currency_usd_sell",
-          "ice_average_usd_sell",
-          "ice_commodity_transfer_usd_sell"
-        ]
-      },
       "commercial_aux_b": {
         "official": [
           "ice_transfer_usd_sell",
           "ice_currency_usd_sell",
           "ice_average_usd_sell",
           "ice_commodity_transfer_usd_sell"
-        ]
-      },
-      "commercial_profile_sana": {
-        "official": [
-          "mex_usd_sell",
-          "sana_sell_usd",
-          "ice_currency_usd_sell",
-          "ice_transfer_usd_sell"
         ]
       },
       "commercial_profile_transfer": {
@@ -1373,6 +1365,14 @@
           "ice_average_usd_sell",
           "ice_commodity_transfer_usd_sell",
           "mex_usd_sell"
+        ]
+      },
+      "commercial_profile_sana": {
+        "official": [
+          "mex_usd_sell",
+          "sana_sell_usd",
+          "ice_currency_usd_sell",
+          "ice_transfer_usd_sell"
         ]
       },
       "alanchand": {
