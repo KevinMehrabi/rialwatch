@@ -1,6 +1,6 @@
 {
   "date": "2026-04-17",
-  "as_of": "2026-04-17T14:49:00Z",
+  "as_of": "2026-04-17T15:29:48Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -1326,7 +1326,7 @@
           "sekkeh"
         ]
       },
-      "commercial_aux_a": {
+      "commercial_aux": {
         "official": [
           "ice_transfer_usd_sell",
           "ice_currency_usd_sell",
@@ -1342,7 +1342,7 @@
           "ice_commodity_transfer_usd_sell"
         ]
       },
-      "commercial_aux": {
+      "commercial_aux_a": {
         "official": [
           "ice_transfer_usd_sell",
           "ice_currency_usd_sell",
@@ -1358,6 +1358,14 @@
           "ice_commodity_transfer_usd_sell"
         ]
       },
+      "commercial_profile_sana": {
+        "official": [
+          "mex_usd_sell",
+          "sana_sell_usd",
+          "ice_currency_usd_sell",
+          "ice_transfer_usd_sell"
+        ]
+      },
       "commercial_profile_transfer": {
         "official": [
           "ice_transfer_usd_sell",
@@ -1365,14 +1373,6 @@
           "ice_average_usd_sell",
           "ice_commodity_transfer_usd_sell",
           "mex_usd_sell"
-        ]
-      },
-      "commercial_profile_sana": {
-        "official": [
-          "mex_usd_sell",
-          "sana_sell_usd",
-          "ice_currency_usd_sell",
-          "ice_transfer_usd_sell"
         ]
       },
       "alanchand": {
