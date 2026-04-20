@@ -55,18 +55,20 @@ jobs:
           git add "${targets[@]}"
           git commit -m "discover: refresh Iran exchange-shop sources [skip ci]"
 
+          data_branch="data/live"
+
           for attempt in 1 2 3; do
-            if git push origin main; then
+            if git push origin HEAD:${data_branch}; then
               echo "Push succeeded on attempt ${attempt}."
               exit 0
             fi
 
-            echo "Push rejected on attempt ${attempt}; rebasing onto origin/main and retrying..."
-            if ! git pull --rebase --autostash origin main; then
+            echo "Push rejected on attempt ${attempt}; rebasing onto origin/${data_branch} and retrying..."
+            if ! git pull --rebase --autostash origin "${data_branch}"; then
               echo "::warning::Rebase failed after push rejection. Skipping this cycle to avoid workflow noise."
               exit 0
             fi
           done
 
-          echo "::warning::Failed to push Iran discovery updates after 3 attempts."
+          echo "::warning::Failed to push Iran discovery updates to ${data_branch} after 3 attempts."
           exit 0

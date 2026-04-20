@@ -88,8 +88,8 @@ jobs:
         run: |
           python3 scripts/guardrail_check.py --site-dir site
 
-      - name: Persist daily snapshots
-        if: github.event_name == 'schedule'
+      - name: Persist daily snapshots (publish window only)
+        if: github.event_name == 'schedule' && github.event.schedule == '20 14 * * *'
         run: |
           targets=()
           for path in site/fix site/api/latest.json site/api/series.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do

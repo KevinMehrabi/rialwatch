@@ -155,7 +155,9 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
 - Scheduled runs generate one daily reference and write immutable snapshots to:
   - `/site/fix/YYYY-MM-DD.json`
   - `/site/fix/YYYY-MM-DD/index.html`
-- Scheduled runs then update `/site/api/series.json` and auto-commit snapshots/history back to `main`.
+- The official publish run (`14:20 UTC`) updates `/site/api/series.json` and auto-commits snapshots/history back to `main`.
+- Self-heal schedules (`14:30 UTC`, `15:00 UTC`) rebuild/deploy without pushing snapshot commits.
+- Iran discovery workflow commits `survey_outputs/direct_shop_expansion_*` to `data/live` instead of `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
 - Every build writes `/site/api/mapping_audit.json` with the current mapping fingerprint and any stale historical day payloads, so mapping changes can be backfilled explicitly instead of silently drifting.
 
