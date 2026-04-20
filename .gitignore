@@ -1,3 +1,13 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# Generated runtime/state artifacts are stored on data/live, not on main.
+site/
+!site/CNAME
+survey_outputs/
+survey_outputs_extra/
+survey_outputs_primary/
+survey_outputs_smoke/
+survey_outputs_tune/
+survey_outputs_seed_merged.json

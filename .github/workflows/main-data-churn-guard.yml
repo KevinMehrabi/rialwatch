@@ -1,0 +1,70 @@
+name: Main Branch Data Churn Guard
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  guard_main_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fail on data-automation commit subjects
+        run: |
+          before="${{ github.event.before }}"
+          after="${{ github.sha }}"
+          zero="0000000000000000000000000000000000000000"
+
+          if [ "$before" = "$zero" ]; then
+            range="$after"
+          else
+            range="$before..$after"
+          fi
+
+          subjects="$(git log --format='%h %an | %s' "$range")"
+          echo "Subjects in range:"
+          echo "$subjects"
+
+          if echo "$subjects" | grep -q '\[allow-main-data-churn\]'; then
+            echo "ALLOW_MAIN_DATA_CHURN=true" >> "$GITHUB_ENV"
+            echo "Override token detected in commit subjects; skipping this guard run."
+            exit 0
+          fi
+
+          blocked_subjects="$(echo "$subjects" | grep -E '(^|[[:space:]])(collect:|publish:|discover:)' || true)"
+          if [ -n "$blocked_subjects" ]; then
+            echo "::error::Blocked automation-style commit subjects detected on main."
+            echo "$blocked_subjects"
+            exit 1
+          fi
+
+      - name: Fail on generated data paths
+        if: env.ALLOW_MAIN_DATA_CHURN != 'true'
+        run: |
+          before="${{ github.event.before }}"
+          after="${{ github.sha }}"
+          zero="0000000000000000000000000000000000000000"
+
+          if [ "$before" = "$zero" ]; then
+            changed_paths="$(git show --pretty='' --name-only "$after")"
+          else
+            changed_paths="$(git diff --name-only "$before" "$after")"
+          fi
+
+          echo "Changed paths in range:"
+          echo "$changed_paths"
+
+          blocked_paths="$(echo "$changed_paths" | grep -E '^(site/|survey_outputs/|survey_outputs_extra/|survey_outputs_primary/|survey_outputs_smoke/|survey_outputs_tune/|survey_outputs_seed_merged\.json$)' | grep -Ev '^site/CNAME$' || true)"
+          if [ -n "$blocked_paths" ]; then
+            echo "::error::Blocked generated-data paths detected on main."
+            echo "$blocked_paths"
+            exit 1
+          fi

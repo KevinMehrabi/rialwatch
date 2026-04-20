@@ -4,7 +4,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 
 ## Architecture
 
-- Static output: `/site`
+- Static output: `/site` (generated at runtime; not tracked on `main`)
 - CI state branch for generated runtime artifacts: `data/live` (checked out under `state/` in workflows)
 - Pipeline: `/scripts/pipeline.py`
 - Templates: `/templates`
@@ -158,6 +158,7 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
   - `/site/fix/YYYY-MM-DD/index.html`
 - Intraday collection (`collect:`), official publish snapshots (`publish:` at `14:20 UTC`), and Iran discovery outputs (`discover:`) commit to `data/live` instead of `main`.
 - Self-heal schedules (`14:30 UTC`, `15:00 UTC`) rebuild/deploy without pushing snapshot commits.
+- `main` intentionally stays code-only; generated `site/*` and `survey_outputs*` artifacts are ignored on `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
 - Every build writes `/site/api/mapping_audit.json` with the current mapping fingerprint and any stale historical day payloads, so mapping changes can be backfilled explicitly instead of silently drifting.
 
