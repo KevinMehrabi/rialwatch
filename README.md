@@ -5,6 +5,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 ## Architecture
 
 - Static output: `/site`
+- CI state branch for generated runtime artifacts: `data/live` (checked out under `state/` in workflows)
 - Pipeline: `/scripts/pipeline.py`
 - Templates: `/templates`
 - Local dashboard shell assets (Tabler-style): `/assets/tabler`
@@ -155,9 +156,8 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
 - Scheduled runs generate one daily reference and write immutable snapshots to:
   - `/site/fix/YYYY-MM-DD.json`
   - `/site/fix/YYYY-MM-DD/index.html`
-- The official publish run (`14:20 UTC`) updates `/site/api/series.json` and auto-commits snapshots/history back to `main`.
+- Intraday collection (`collect:`), official publish snapshots (`publish:` at `14:20 UTC`), and Iran discovery outputs (`discover:`) commit to `data/live` instead of `main`.
 - Self-heal schedules (`14:30 UTC`, `15:00 UTC`) rebuild/deploy without pushing snapshot commits.
-- Iran discovery workflow commits `survey_outputs/direct_shop_expansion_*` to `data/live` instead of `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
 - Every build writes `/site/api/mapping_audit.json` with the current mapping fingerprint and any stale historical day payloads, so mapping changes can be backfilled explicitly instead of silently drifting.
 
@@ -170,6 +170,8 @@ python scripts/backfill_series_from_git.py
 ```
 
 This rebuilds `/site/api/series.json` from historical versions of `/site/api/latest.json` in git.
+
+For current production history, run this on the `data/live` branch.
 
 ## Custom Domain
 

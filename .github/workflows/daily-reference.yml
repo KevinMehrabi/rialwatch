@@ -35,6 +35,22 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Ensure data branch exists
+        run: |
+          if git ls-remote --exit-code --heads origin data/live >/dev/null 2>&1; then
+            echo "data/live already exists."
+          else
+            echo "Bootstrapping data/live from current main."
+            git push origin HEAD:data/live
+          fi
+
+      - name: Checkout data branch
+        uses: actions/checkout@v4
+        with:
+          ref: data/live
+          path: state
+          fetch-depth: 0
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -49,17 +65,17 @@ jobs:
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
           if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "20 14 * * *" ]; then
-            python3 scripts/pipeline.py --mode publish-daily --site-dir site --templates-dir templates
+            python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates
           elif [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "30 14 * * *" ]; then
-            python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
+            python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
           elif [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "0 15 * * *" ]; then
-            python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
+            python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
           elif [ "${{ github.event_name }}" = "push" ]; then
             # Push-triggered deploys should rebuild from existing artifacts only.
             # Intraday collection remains schedule-driven to avoid over-polling upstream APIs.
-            python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
+            python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
           else
-            python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
+            python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
           fi
 
       - name: Guardrail checks (pre-heal)
@@ -67,7 +83,7 @@ jobs:
         id: guardrail_pre
         continue-on-error: true
         run: |
-          python3 scripts/guardrail_check.py --site-dir site
+          python3 scripts/guardrail_check.py --site-dir state/site
 
       - name: Auto-heal if guardrails fail
         if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure'
@@ -79,21 +95,22 @@ jobs:
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
           echo "Guardrail pre-check failed; collecting a fresh intraday attempt before self-heal rebuild."
-          python3 scripts/pipeline.py --mode collect-intraday --site-dir site --templates-dir templates --allow-outside-window
+          python3 scripts/pipeline.py --mode collect-intraday --site-dir state/site --templates-dir templates --allow-outside-window
           echo "Running current-day self-heal rebuild from refreshed intraday artifacts."
-          python3 scripts/pipeline.py --site-dir site --templates-dir templates --no-new-reference
+          python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
 
       - name: Guardrail checks (post-heal)
         if: github.event_name == 'schedule'
         run: |
-          python3 scripts/guardrail_check.py --site-dir site
+          python3 scripts/guardrail_check.py --site-dir state/site
 
       - name: Persist daily snapshots (publish window only)
         if: github.event_name == 'schedule' && github.event.schedule == '20 14 * * *'
         run: |
+          data_branch="data/live"
           targets=()
           for path in site/fix site/api/latest.json site/api/series.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do
-            if [ -e "$path" ]; then
+            if [ -e "state/$path" ]; then
               targets+=("$path")
             fi
           done
@@ -103,26 +120,26 @@ jobs:
             exit 0
           fi
 
-          if [ -z "$(git status --porcelain -- "${targets[@]}")" ]; then
+          if [ -z "$(git -C state status --porcelain -- "${targets[@]}")" ]; then
             echo "No snapshot changes to commit."
             exit 0
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "${targets[@]}"
-          git commit -m "publish: daily USD/IRR reference [skip ci]"
+          git -C state config user.name "github-actions[bot]"
+          git -C state config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C state add "${targets[@]}"
+          git -C state commit -m "publish: daily USD/IRR reference [skip ci]"
 
           for attempt in 1 2 3; do
-            if git push origin main; then
+            if git -C state push origin "${data_branch}"; then
               echo "Push succeeded on attempt ${attempt}."
               exit 0
             fi
-            echo "Push rejected on attempt ${attempt}; rebasing onto origin/main and retrying..."
-            git pull --rebase origin main
+            echo "Push rejected on attempt ${attempt}; rebasing onto origin/${data_branch} and retrying..."
+            git -C state pull --rebase origin "${data_branch}"
           done
 
-          echo "::error::Failed to push daily snapshots after 3 attempts."
+          echo "::error::Failed to push daily snapshots to ${data_branch} after 3 attempts."
           exit 1
 
       - name: Configure Pages
@@ -131,7 +148,7 @@ jobs:
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: state/site
 
       - name: Deploy to GitHub Pages
         id: deployment
