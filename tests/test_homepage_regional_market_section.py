@@ -67,12 +67,28 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
     def test_history_chart_fills_responsive_wrapper(self) -> None:
         self.assertIn(".history-chart-wrap", self.layout)
         self.assertIn("height: clamp(250px, 31cqw, 360px)", self.layout)
-        self.assertIn("width: 100% !important", self.layout)
-        self.assertIn("height: 100% !important", self.layout)
+        self.assertIn("width: 100%", self.layout)
+        self.assertIn("height: 100%", self.layout)
         self.assertIn("maintainAspectRatio: false", self.template)
         self.assertNotIn('height="320"', self.template)
         self.assertNotIn("height: auto !important", self.layout)
+        self.assertNotIn("width: 100% !important", self.layout)
+        self.assertNotIn("height: 100% !important", self.layout)
         self.assertNotIn("aspectRatio: chartAspectRatio", self.template)
+
+    def test_history_chart_refreshes_after_viewport_resizes(self) -> None:
+        self.assertIn("let historyChartResizeFrame = null", self.template)
+        self.assertIn("let historyChartLastViewportMode = null", self.template)
+        self.assertIn("const historyChartCompactQuery = window.matchMedia('(max-width: 700px)')", self.template)
+        self.assertIn("function scheduleHistoryChartLayoutRefresh", self.template)
+        self.assertIn("function resizeHistoryChartToWrapper", self.template)
+        self.assertIn("getBoundingClientRect()", self.template)
+        self.assertIn("historyChart.resize(Math.round(rect.width), Math.round(rect.height))", self.template)
+        self.assertIn("ResizeObserver", self.template)
+        self.assertIn("historyChart.resize()", self.template)
+        self.assertIn("historyChart.update('none')", self.template)
+        self.assertIn("rebuildOnModeChange", self.template)
+        self.assertIn("bindHistoryChartResizeHandling()", self.template)
 
     def test_homepage_grids_use_stable_responsive_tracks(self) -> None:
         self.assertIn(

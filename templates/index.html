@@ -281,6 +281,10 @@
 <script>
 let historyChart = null;
 let cachedValidRows = [];
+let historyChartResizeFrame = null;
+let historyChartLastViewportMode = null;
+let historyChartWrapObserver = null;
+const historyChartCompactQuery = window.matchMedia('(max-width: 700px)');
 const latestPointPulsePlugin = {
   id: 'rwLatestPointPulse',
   afterDraw(chart, _args, pluginOptions) {
@@ -330,6 +334,89 @@ function historyThemeColors() {
   };
 }
 
+function historyChartViewportSettings() {
+  const isCompact = historyChartCompactQuery.matches;
+  return {
+    mode: isCompact ? 'compact' : 'regular',
+    tickLimit: isCompact ? 6 : 10,
+    tickRotation: isCompact ? 35 : 0
+  };
+}
+
+function applyHistoryChartViewportSettings() {
+  if (!historyChart || !historyChart.options || !historyChart.options.scales) return;
+
+  const settings = historyChartViewportSettings();
+  const xTicks = historyChart.options.scales.x && historyChart.options.scales.x.ticks;
+  if (!xTicks) return;
+
+  xTicks.maxTicksLimit = settings.tickLimit;
+  xTicks.minRotation = settings.tickRotation;
+  xTicks.maxRotation = settings.tickRotation;
+  historyChartLastViewportMode = settings.mode;
+}
+
+function resizeHistoryChartToWrapper() {
+  if (!historyChart || !historyChart.canvas || !historyChart.canvas.parentElement) {
+    return;
+  }
+
+  const rect = historyChart.canvas.parentElement.getBoundingClientRect();
+  if (rect.width > 0 && rect.height > 0) {
+    historyChart.resize(Math.round(rect.width), Math.round(rect.height));
+    return;
+  }
+
+  historyChart.resize();
+}
+
+function scheduleHistoryChartLayoutRefresh({ rebuildOnModeChange = false } = {}) {
+  if (historyChartResizeFrame) {
+    window.cancelAnimationFrame(historyChartResizeFrame);
+  }
+
+  historyChartResizeFrame = window.requestAnimationFrame(() => {
+    historyChartResizeFrame = null;
+    if (!historyChart) return;
+
+    const settings = historyChartViewportSettings();
+    if (
+      rebuildOnModeChange &&
+      historyChartLastViewportMode &&
+      settings.mode !== historyChartLastViewportMode
+    ) {
+      renderHistoryChart(cachedValidRows);
+      return;
+    }
+
+    applyHistoryChartViewportSettings();
+    resizeHistoryChartToWrapper();
+    historyChart.update('none');
+  });
+}
+
+function bindHistoryChartResizeHandling() {
+  const wrapper = document.querySelector('.history-chart-wrap');
+  if (wrapper && window.ResizeObserver && !historyChartWrapObserver) {
+    historyChartWrapObserver = new ResizeObserver(() => {
+      scheduleHistoryChartLayoutRefresh();
+    });
+    historyChartWrapObserver.observe(wrapper);
+  }
+
+  window.addEventListener(
+    'resize',
+    () => scheduleHistoryChartLayoutRefresh({ rebuildOnModeChange: true }),
+    { passive: true }
+  );
+
+  if (historyChartCompactQuery.addEventListener) {
+    historyChartCompactQuery.addEventListener('change', () => renderHistoryChart(cachedValidRows));
+  } else if (historyChartCompactQuery.addListener) {
+    historyChartCompactQuery.addListener(() => renderHistoryChart(cachedValidRows));
+  }
+}
+
 function renderHistoryChart(validRows) {
   const canvas = document.getElementById('historyChart');
   if (!canvas) return;
@@ -357,9 +444,7 @@ function renderHistoryChart(validRows) {
   }
 
   const colors = historyThemeColors();
-  const isCompactViewport = window.matchMedia('(max-width: 700px)').matches;
-  const tickLimit = isCompactViewport ? 6 : 10;
-  const tickRotation = isCompactViewport ? 35 : 0;
+  const viewportSettings = historyChartViewportSettings();
   const ctx = canvas.getContext('2d');
   historyChart = new Chart(ctx, {
     type: 'line',
@@ -392,9 +477,9 @@ function renderHistoryChart(validRows) {
           ticks: {
             color: colors.label,
             autoSkip: true,
-            maxTicksLimit: tickLimit,
-            minRotation: tickRotation,
-            maxRotation: tickRotation,
+            maxTicksLimit: viewportSettings.tickLimit,
+            minRotation: viewportSettings.tickRotation,
+            maxRotation: viewportSettings.tickRotation,
             callback(value) {
               const raw = this.getLabelForValue(value);
               if (typeof raw !== 'string') return raw;
@@ -409,6 +494,8 @@ function renderHistoryChart(validRows) {
       }
     }
   });
+  historyChartLastViewportMode = viewportSettings.mode;
+  scheduleHistoryChartLayoutRefresh();
 }
 
 async function loadSeries() {
@@ -557,5 +644,6 @@ async function loadRegionalMarketCards() {
 
 loadSeries();
 loadRegionalMarketCards();
+bindHistoryChartResizeHandling();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
