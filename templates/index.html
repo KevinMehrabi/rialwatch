@@ -38,7 +38,7 @@
       <div class="card-body">
         <div class="text-secondary mb-2">STREET RATE TIMELINE</div>
         <div class="history-chart-wrap">
-          <canvas id="historyChart" height="320"></canvas>
+          <canvas id="historyChart"></canvas>
           <div class="history-point-pulse" id="historyChartPulse" aria-hidden="true">
             <span class="history-point-marker"></span>
           </div>
@@ -360,7 +360,6 @@ function renderHistoryChart(validRows) {
   const isCompactViewport = window.matchMedia('(max-width: 700px)').matches;
   const tickLimit = isCompactViewport ? 6 : 10;
   const tickRotation = isCompactViewport ? 35 : 0;
-  const chartAspectRatio = isCompactViewport ? 1.45 : 2.15;
   const ctx = canvas.getContext('2d');
   historyChart = new Chart(ctx, {
     type: 'line',
@@ -383,8 +382,7 @@ function renderHistoryChart(validRows) {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: true,
-      aspectRatio: chartAspectRatio,
+      maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
         rwLatestPointPulse: { enabled: true }

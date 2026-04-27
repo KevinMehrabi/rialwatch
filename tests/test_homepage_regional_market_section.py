@@ -64,6 +64,45 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertNotIn("3.4vw", self.layout)
         self.assertNotIn("5.2vw", self.layout)
 
+    def test_history_chart_fills_responsive_wrapper(self) -> None:
+        self.assertIn(".history-chart-wrap", self.layout)
+        self.assertIn("height: clamp(250px, 31cqw, 360px)", self.layout)
+        self.assertIn("width: 100% !important", self.layout)
+        self.assertIn("height: 100% !important", self.layout)
+        self.assertIn("maintainAspectRatio: false", self.template)
+        self.assertNotIn('height="320"', self.template)
+        self.assertNotIn("height: auto !important", self.layout)
+        self.assertNotIn("aspectRatio: chartAspectRatio", self.template)
+
+    def test_homepage_grids_use_stable_responsive_tracks(self) -> None:
+        self.assertIn(
+            "grid-template-columns: minmax(280px, 360px) minmax(0, 1fr)",
+            self.layout,
+        )
+        self.assertIn(
+            "grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
+            self.layout,
+        )
+        self.assertIn(
+            "grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr))",
+            self.layout,
+        )
+        self.assertIn("@media (max-width: 900px)", self.layout)
+        self.assertIn(".top-grid .primary-card", self.layout)
+        self.assertIn("order: 1", self.layout)
+        self.assertIn(".top-grid .chart-card", self.layout)
+        self.assertIn("order: 2", self.layout)
+        self.assertNotIn(".indicators-grid {\n      grid-template-columns: repeat(2", self.layout)
+
+        self.assertLess(
+            self.layout.index("justify-content: space-between"),
+            self.layout.index("@media (max-width: 900px)"),
+        )
+        self.assertLess(
+            self.layout.index("@media (max-width: 900px)"),
+            self.layout.index("justify-content: flex-start"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

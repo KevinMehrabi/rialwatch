@@ -405,7 +405,7 @@
   }
 
   .top-grid {
-    grid-template-columns: 3fr 9fr;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
     align-items: stretch;
   }
 
@@ -414,13 +414,13 @@
   }
 
   .indicators-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
     width: 100%;
   }
 
   .readings-grid,
   .signals-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
     width: 100%;
   }
 
@@ -439,6 +439,10 @@
 
   .primary-card {
     align-self: stretch;
+    container-type: inline-size;
+  }
+
+  .chart-card {
     container-type: inline-size;
   }
 
@@ -488,20 +492,35 @@
     font-size: clamp(1.35rem, 7cqw, 2rem);
   }
 
-  @media (max-width: 1280px) {
-    .top-grid {
-      grid-template-columns: 3.8fr 8.2fr;
-    }
-  }
-
-  @media (max-width: 1160px) {
-    .top-grid {
-      grid-template-columns: 4fr 8fr;
-    }
-  }
-
   .primary-card .card-body {
     justify-content: space-between;
+  }
+
+  @media (max-width: 900px) {
+    .top-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .top-grid .primary-card {
+      order: 1;
+      min-height: 0;
+      height: auto;
+    }
+
+    .top-grid .chart-card {
+      order: 2;
+      min-height: 0;
+      height: auto;
+    }
+
+    .primary-metrics-stack {
+      max-width: none;
+      row-gap: 12px;
+    }
+
+    .primary-card .card-body {
+      justify-content: flex-start;
+    }
   }
 
   .dashboard-card .card-body {
@@ -515,6 +534,9 @@
     position: relative;
     overflow: visible;
     width: 100%;
+    min-height: 240px;
+    height: clamp(250px, 31cqw, 360px);
+    flex: 1 1 auto;
   }
 
   .history-point-pulse {
@@ -715,11 +737,12 @@
   }
 
   .chart-card #historyChart {
-    width: 100%;
-    height: auto !important;
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
     min-height: 0;
-    max-height: none;
-    flex: 0 0 auto;
   }
 
   .recent-table-wrap {
@@ -861,10 +884,6 @@
   }
 
   @media (max-width: 1100px) {
-    .indicators-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .status-overview-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -899,14 +918,8 @@
       margin-top: 18px;
     }
 
-    .top-grid,
-    .readings-grid,
-    .signals-grid {
+    .top-grid {
       grid-template-columns: 1fr;
-    }
-
-    .indicators-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .status-overview-grid {
@@ -914,13 +927,13 @@
     }
 
     .top-grid .chart-card {
-      order: 1;
+      order: 2;
       min-height: 270px;
       height: auto;
     }
 
     .top-grid .primary-card {
-      order: 2;
+      order: 1;
       min-height: 0;
       height: auto;
     }
@@ -944,6 +957,11 @@
 
     .chart-card #historyChart {
       min-height: 0;
+    }
+
+    .history-chart-wrap {
+      min-height: 230px;
+      height: clamp(240px, 58cqw, 330px);
     }
   }
 </style>
