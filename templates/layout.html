@@ -507,6 +507,61 @@
     height: 100%;
   }
 
+  .history-chart-wrap {
+    position: relative;
+    overflow: visible;
+    width: 100%;
+  }
+
+  .history-point-pulse {
+    position: absolute;
+    display: none;
+    width: 46px;
+    height: 46px;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .history-point-pulse::before,
+  .history-point-pulse::after {
+    content: "";
+    position: absolute;
+    border-radius: inherit;
+  }
+
+  .history-point-pulse::before {
+    inset: 0;
+    background: rgba(var(--rw-accent-rgb), 0.52);
+    animation: rw-latest-point-pulse 1100ms linear infinite;
+  }
+
+  .history-point-pulse::after {
+    inset: 14.5px;
+    border: 1.9px solid rgba(var(--rw-accent-rgb), 0.48);
+  }
+
+  @keyframes rw-latest-point-pulse {
+    from {
+      opacity: 1;
+      transform: scale(0.39);
+    }
+
+    to {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .history-point-pulse::before {
+      animation: none;
+      opacity: 0.18;
+      transform: scale(0.62);
+    }
+  }
+
   .panel-top .fw-semibold {
     line-height: 1.2;
   }

@@ -7,6 +7,8 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         template_path = Path(__file__).resolve().parents[1] / "templates" / "index.html"
         cls.template = template_path.read_text(encoding="utf-8")
+        layout_path = Path(__file__).resolve().parents[1] / "templates" / "layout.html"
+        cls.layout = layout_path.read_text(encoding="utf-8")
 
     def test_section_title_and_subtitle_are_updated(self) -> None:
         self.assertIn("Regional Market Signals", self.template)
@@ -34,11 +36,16 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertIn("holder.innerHTML = cards.map(card => `", self.template)
         self.assertNotIn("sortedCards", self.template)
 
-    def test_latest_point_pulse_has_canvas_padding(self) -> None:
-        self.assertIn("latestPointPulseMaxRadius", self.template)
-        self.assertIn("latestPointPulseCanvasPadding", self.template)
-        self.assertIn("right: latestPointPulseCanvasPadding", self.template)
-        self.assertIn("clip: { left: 0, top: 0, right: latestPointPulseCanvasPadding, bottom: 0 }", self.template)
+    def test_latest_point_pulse_uses_overlay_not_chart_padding(self) -> None:
+        self.assertIn('class="history-chart-wrap"', self.template)
+        self.assertIn('id="historyChartPulse"', self.template)
+        self.assertIn("afterDraw(chart, _args, pluginOptions)", self.template)
+        self.assertIn("chart.canvas.offsetLeft + coords.x", self.template)
+        self.assertNotIn("latestPointPulseCanvasPadding", self.template)
+        self.assertNotIn("clip: { left: 0, top: 0", self.template)
+        self.assertIn(".history-chart-wrap", self.layout)
+        self.assertIn("overflow: visible", self.layout)
+        self.assertIn(".history-point-pulse", self.layout)
 
 
 if __name__ == "__main__":

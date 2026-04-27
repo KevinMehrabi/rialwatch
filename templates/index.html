@@ -37,7 +37,10 @@
     <div class="card bg-dark text-white dashboard-card chart-card">
       <div class="card-body">
         <div class="text-secondary mb-2">STREET RATE TIMELINE</div>
-        <canvas id="historyChart" height="320"></canvas>
+        <div class="history-chart-wrap">
+          <canvas id="historyChart" height="320"></canvas>
+          <div class="history-point-pulse" id="historyChartPulse" aria-hidden="true"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -276,52 +279,43 @@
 <script>
 let historyChart = null;
 let cachedValidRows = [];
-const latestPointPulseMaxRadius = 23;
-const latestPointPulseCanvasPadding = latestPointPulseMaxRadius + 6;
 const latestPointPulsePlugin = {
   id: 'rwLatestPointPulse',
-  afterDatasetsDraw(chart, _args, pluginOptions) {
-    if (!pluginOptions || pluginOptions.enabled === false) return;
+  afterDraw(chart, _args, pluginOptions) {
+    const pulse = document.getElementById('historyChartPulse');
+    if (!pulse) return;
+    if (!pluginOptions || pluginOptions.enabled === false) {
+      pulse.style.display = 'none';
+      return;
+    }
+
     const dataset = chart.getDatasetMeta(0);
-    if (!dataset || !Array.isArray(dataset.data) || !dataset.data.length) return;
+    if (!dataset || !Array.isArray(dataset.data) || !dataset.data.length) {
+      pulse.style.display = 'none';
+      return;
+    }
 
     const point = dataset.data[dataset.data.length - 1];
-    if (!point) return;
-
-    const colors = historyThemeColors();
-    const now = Date.now();
-    const cycleMs = 1100;
-    const phase = (now % cycleMs) / cycleMs;
-    const radius = 9 + phase * (latestPointPulseMaxRadius - 9);
-    const alpha = 0.52 * (1 - phase);
-    const pulseColor = colors.accentRgb || '59,130,246';
-    const coords = point.getProps(['x', 'y'], true);
-
-    const ctx = chart.ctx;
-    ctx.save();
-    // Expanding halo pulse.
-    ctx.beginPath();
-    ctx.arc(coords.x, coords.y, radius, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(${pulseColor}, ${alpha.toFixed(3)})`;
-    ctx.fill();
-    // Persistent outer ring keeps the latest point obvious between pulses.
-    ctx.beginPath();
-    ctx.arc(coords.x, coords.y, 8.5, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(${pulseColor}, 0.48)`;
-    ctx.lineWidth = 1.9;
-    ctx.stroke();
-    ctx.restore();
-
-    if (document.hidden) return;
-    if (!chart.$rwPulseFrameRequested) {
-      chart.$rwPulseFrameRequested = true;
-      requestAnimationFrame(() => {
-        chart.$rwPulseFrameRequested = false;
-        if (!chart._destroyed) chart.draw();
-      });
+    if (!point) {
+      pulse.style.display = 'none';
+      return;
     }
+
+    const coords = point.getProps(['x', 'y'], true);
+    pulse.style.left = `${chart.canvas.offsetLeft + coords.x}px`;
+    pulse.style.top = `${chart.canvas.offsetTop + coords.y}px`;
+    pulse.style.display = 'block';
+  },
+  afterDestroy() {
+    const pulse = document.getElementById('historyChartPulse');
+    if (pulse) pulse.style.display = 'none';
   }
 };
+
+function hideLatestPointPulse() {
+  const pulse = document.getElementById('historyChartPulse');
+  if (pulse) pulse.style.display = 'none';
+}
 
 function historyThemeColors() {
   const styles = getComputedStyle(document.documentElement);
@@ -342,6 +336,7 @@ function renderHistoryChart(validRows) {
     historyChart.destroy();
     historyChart = null;
   }
+  hideLatestPointPulse();
 
   const existingNote = canvas.parentElement && canvas.parentElement.querySelector('.no-series-note');
   if (existingNote) {
@@ -380,7 +375,6 @@ function renderHistoryChart(validRows) {
         pointBorderWidth: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 1.3 : 0),
         pointRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 5.2 : 0),
         pointHoverRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 6.8 : 0),
-        clip: { left: 0, top: 0, right: latestPointPulseCanvasPadding, bottom: 0 },
         tension: 0.2,
         fill: true
       }]
@@ -389,11 +383,6 @@ function renderHistoryChart(validRows) {
       responsive: true,
       maintainAspectRatio: true,
       aspectRatio: chartAspectRatio,
-      layout: {
-        padding: {
-          right: latestPointPulseCanvasPadding
-        }
-      },
       plugins: {
         legend: { display: false },
         rwLatestPointPulse: { enabled: true }
