@@ -301,7 +301,7 @@ const latestPointPulsePlugin = {
       return;
     }
 
-    const coords = point.getProps(['x', 'y'], true);
+    const coords = point.getProps(['x', 'y'], false);
     pulse.style.left = `${chart.canvas.offsetLeft + coords.x}px`;
     pulse.style.top = `${chart.canvas.offsetTop + coords.y}px`;
     pulse.style.display = 'block';
