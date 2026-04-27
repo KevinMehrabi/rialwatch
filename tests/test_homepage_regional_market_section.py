@@ -34,6 +34,12 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertIn("holder.innerHTML = cards.map(card => `", self.template)
         self.assertNotIn("sortedCards", self.template)
 
+    def test_latest_point_pulse_has_canvas_padding(self) -> None:
+        self.assertIn("latestPointPulseMaxRadius", self.template)
+        self.assertIn("latestPointPulseCanvasPadding", self.template)
+        self.assertIn("right: latestPointPulseCanvasPadding", self.template)
+        self.assertIn("clip: { left: 0, top: 0, right: latestPointPulseCanvasPadding, bottom: 0 }", self.template)
+
 
 if __name__ == "__main__":
     unittest.main()

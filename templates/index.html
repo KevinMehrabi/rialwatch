@@ -276,6 +276,8 @@
 <script>
 let historyChart = null;
 let cachedValidRows = [];
+const latestPointPulseMaxRadius = 23;
+const latestPointPulseCanvasPadding = latestPointPulseMaxRadius + 6;
 const latestPointPulsePlugin = {
   id: 'rwLatestPointPulse',
   afterDatasetsDraw(chart, _args, pluginOptions) {
@@ -290,7 +292,7 @@ const latestPointPulsePlugin = {
     const now = Date.now();
     const cycleMs = 1100;
     const phase = (now % cycleMs) / cycleMs;
-    const radius = 9 + phase * 14;
+    const radius = 9 + phase * (latestPointPulseMaxRadius - 9);
     const alpha = 0.52 * (1 - phase);
     const pulseColor = colors.accentRgb || '59,130,246';
     const coords = point.getProps(['x', 'y'], true);
@@ -378,6 +380,7 @@ function renderHistoryChart(validRows) {
         pointBorderWidth: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 1.3 : 0),
         pointRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 5.2 : 0),
         pointHoverRadius: (ctx) => (ctx.dataIndex === validRows.length - 1 ? 6.8 : 0),
+        clip: { left: 0, top: 0, right: latestPointPulseCanvasPadding, bottom: 0 },
         tension: 0.2,
         fill: true
       }]
@@ -386,6 +389,11 @@ function renderHistoryChart(validRows) {
       responsive: true,
       maintainAspectRatio: true,
       aspectRatio: chartAspectRatio,
+      layout: {
+        padding: {
+          right: latestPointPulseCanvasPadding
+        }
+      },
       plugins: {
         legend: { display: false },
         rwLatestPointPulse: { enabled: true }
