@@ -5230,6 +5230,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             return "Unavailable"
         return f"{base - peer:+,.0f} IRR"
 
+    def spread_value_number(base: Optional[float], peer: Optional[float]) -> Optional[float]:
+        if base is None or peer is None:
+            return None
+        return base - peer
+
     def derived_spread_sparkline_html(peer_key: str, current_spread: Optional[float]) -> str:
         width = 220.0
         height = 44.0
@@ -5466,12 +5471,12 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street_official_spread_note=official_spread_note,
         street_official_spread_street_value=comparison_value_text(street),
         street_official_spread_peer_value=comparison_value_text(official),
-        street_official_spread_sparkline=derived_spread_sparkline_html("official", parse_number(street - official) if street is not None and official is not None else None),
+        street_official_spread_sparkline=derived_spread_sparkline_html("official", spread_value_number(street, official)),
         street_transfer_spread_value=spread_value_or_unavailable(street, transfer),
         street_transfer_spread_note="Street minus transfer (absolute spread)",
         street_transfer_spread_street_value=comparison_value_text(street),
         street_transfer_spread_peer_value=comparison_value_text(transfer),
-        street_transfer_spread_sparkline=derived_spread_sparkline_html("regional_transfer", parse_number(street - transfer) if street is not None and transfer is not None else None),
+        street_transfer_spread_sparkline=derived_spread_sparkline_html("regional_transfer", spread_value_number(street, transfer)),
     )
     write_text(site_dir / "index.html", html)
 
