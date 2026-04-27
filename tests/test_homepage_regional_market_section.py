@@ -39,15 +39,19 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
     def test_latest_point_pulse_uses_overlay_not_chart_padding(self) -> None:
         self.assertIn('class="history-chart-wrap"', self.template)
         self.assertIn('id="historyChartPulse"', self.template)
+        self.assertIn('class="history-point-marker"', self.template)
         self.assertIn("afterDraw(chart, _args, pluginOptions)", self.template)
         self.assertIn("point.getProps(['x', 'y'], false)", self.template)
         self.assertIn("chart.canvas.offsetLeft + coords.x", self.template)
+        self.assertIn("pointRadius: 0", self.template)
+        self.assertIn("pointHoverRadius: 0", self.template)
         self.assertNotIn("point.getProps(['x', 'y'], true)", self.template)
         self.assertNotIn("latestPointPulseCanvasPadding", self.template)
         self.assertNotIn("clip: { left: 0, top: 0", self.template)
         self.assertIn(".history-chart-wrap", self.layout)
         self.assertIn("overflow: visible", self.layout)
         self.assertIn(".history-point-pulse", self.layout)
+        self.assertIn(".history-point-marker", self.layout)
 
 
 if __name__ == "__main__":

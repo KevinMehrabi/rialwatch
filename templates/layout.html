@@ -535,11 +535,27 @@
     inset: 0;
     background: rgba(var(--rw-accent-rgb), 0.52);
     animation: rw-latest-point-pulse 1100ms linear infinite;
+    z-index: 0;
   }
 
   .history-point-pulse::after {
     inset: 14.5px;
     border: 1.9px solid rgba(var(--rw-accent-rgb), 0.48);
+    z-index: 1;
+  }
+
+  .history-point-marker {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10.4px;
+    height: 10.4px;
+    border: 1.3px solid #ffffff;
+    border-radius: 999px;
+    background: var(--rw-accent);
+    box-sizing: border-box;
+    transform: translate(-50%, -50%);
+    z-index: 2;
   }
 
   @keyframes rw-latest-point-pulse {
