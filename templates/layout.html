@@ -409,6 +409,10 @@
     align-items: stretch;
   }
 
+  .top-grid > * {
+    min-width: 0;
+  }
+
   .indicators-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     width: 100%;
@@ -425,6 +429,7 @@
     padding: 18px;
     min-height: 220px;
     height: 100%;
+    min-width: 0;
   }
 
   .top-grid .dashboard-card {
@@ -434,6 +439,7 @@
 
   .primary-card {
     align-self: stretch;
+    container-type: inline-size;
   }
 
   .primary-metrics-stack {
@@ -452,47 +458,45 @@
     display: flex;
     align-items: baseline;
     gap: 8px;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .primary-rate-value {
-    font-size: clamp(2.85rem, 4.5vw, 4.35rem);
+    font-size: 3rem;
+    font-size: clamp(2.15rem, 17cqw, 3.6rem);
     line-height: 1.02;
     font-weight: 800;
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
     color: var(--rw-text-strong);
+    max-width: 100%;
     white-space: nowrap;
   }
 
   .primary-rate-unit {
+    flex: 0 1 auto;
     font-size: 0.74rem;
     color: var(--rw-text-muted);
-    letter-spacing: 0.01em;
+    letter-spacing: 0;
     white-space: nowrap;
     font-weight: 500;
   }
 
   .primary-rate-value-candidate {
-    font-size: clamp(1.4rem, 1.8vw, 2rem);
+    font-size: 1.65rem;
+    font-size: clamp(1.35rem, 7cqw, 2rem);
   }
 
   @media (max-width: 1280px) {
     .top-grid {
       grid-template-columns: 3.8fr 8.2fr;
     }
-
-    .primary-rate-value {
-      font-size: clamp(2.55rem, 4.1vw, 3.65rem);
-    }
   }
 
   @media (max-width: 1160px) {
     .top-grid {
       grid-template-columns: 4fr 8fr;
-    }
-
-    .primary-rate-value {
-      font-size: clamp(2.2rem, 3.4vw, 3.05rem);
     }
   }
 
@@ -931,7 +935,7 @@
     }
 
     .primary-rate-value {
-      font-size: clamp(1.45rem, 5.2vw, 2.05rem);
+      font-size: clamp(1.9rem, 14cqw, 2.65rem);
     }
 
     .primary-rate-unit {

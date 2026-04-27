@@ -53,6 +53,17 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertIn(".history-point-pulse", self.layout)
         self.assertIn(".history-point-marker", self.layout)
 
+    def test_primary_rate_value_uses_card_responsive_sizing(self) -> None:
+        self.assertIn("container-type: inline-size", self.layout)
+        self.assertIn("flex-wrap: wrap", self.layout)
+        self.assertIn("font-size: clamp(2.15rem, 17cqw, 3.6rem)", self.layout)
+        self.assertIn("font-size: clamp(1.9rem, 14cqw, 2.65rem)", self.layout)
+        self.assertIn("font-size: clamp(1.35rem, 7cqw, 2rem)", self.layout)
+        self.assertNotIn("4.5vw", self.layout)
+        self.assertNotIn("4.1vw", self.layout)
+        self.assertNotIn("3.4vw", self.layout)
+        self.assertNotIn("5.2vw", self.layout)
+
 
 if __name__ == "__main__":
     unittest.main()
