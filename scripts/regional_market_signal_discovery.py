@@ -76,6 +76,15 @@ CITY_TO_BASKET = {
     "UK": "UK",
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
+    "Berlin": "Germany",
+    "Munich": "Germany",
+    "Cologne": "Germany",
+    "Dusseldorf": "Germany",
+    "Essen": "Germany",
+    "Hannover": "Germany",
+    "Bremen": "Germany",
+    "Stuttgart": "Germany",
+    "Dortmund": "Germany",
     "Germany": "Germany",
 }
 
@@ -102,6 +111,22 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me هامبورگ یورو",
         "site:t.me آلمان حواله",
         "site:t.me/s آلمان حواله",
+        "site:t.me یورو بازار بانکی",
+        "site:t.me/s یورو بازار بانکی",
+        "site:t.me صرافی آلمان یورو",
+        "site:t.me/s صرافی آلمان یورو",
+        "site:t.me حواله آلمان یورو",
+        "site:t.me/s حواله آلمان یورو",
+        "site:t.me حواله بانکی آلمان",
+        "site:t.me/s حواله بانکی آلمان",
+        "site:t.me مونیخ یورو",
+        "site:t.me/s مونیخ یورو",
+        "site:t.me کلن یورو",
+        "site:t.me/s کلن یورو",
+        "site:t.me برلین یورو",
+        "site:t.me/s برلین یورو",
+        "site:t.me دوسلدورف یورو",
+        "site:t.me/s دوسلدورف یورو",
         "site:t.me پوند لندن",
         "site:t.me/s پوند لندن",
         "site:t.me حواله پوند لندن",
@@ -124,6 +149,14 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "dubai settlement rate iran telegram",
         "herat market dollar iran telegram",
         "sulaymaniyah market dollar iran telegram",
+        "germany euro toman telegram",
+        "germany remittance euro telegram",
+        "iranian germany euro bazaar telegram",
+        "frankfurt euro telegram iranian",
+        "hamburg euro telegram iranian",
+        "munich euro telegram iranian",
+        "koln euro telegram iranian",
+        "alman exchange telegram euro",
         "london pound telegram iran",
         "uk pound toman telegram",
         "iran uk remittance telegram",
@@ -140,6 +173,20 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "iran geldwechsel hamburg telegram",
         "iran geldtransfer deutschland telegram",
         "iran geldwechsel deutschland telegram",
+        "site:t.me eurobazaar",
+        "site:t.me/s eurobazaar",
+        "site:t.me euro_bazaar",
+        "site:t.me/s euro_bazaar",
+        "site:t.me alman_exchange",
+        "site:t.me/s alman_exchange",
+        "site:t.me frankfurt_euro",
+        "site:t.me/s frankfurt_euro",
+        "site:t.me hamburg_euro",
+        "site:t.me/s hamburg_euro",
+        "site:t.me koln_euro",
+        "site:t.me/s koln_euro",
+        "site:t.me munich_euro",
+        "site:t.me/s munich_euro",
     ],
     "uk": [
         "site:t.me london exchange",
@@ -168,6 +215,15 @@ REGION_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Dubai": ("dubai", "دبی", "دوبی"),
     "Frankfurt": ("frankfurt", "فرانکفورت"),
     "Hamburg": ("hamburg", "هامبورگ"),
+    "Berlin": ("berlin", "برلین"),
+    "Munich": ("munich", "muenchen", "munchen", "münchen", "مونیخ"),
+    "Cologne": ("cologne", "koln", "köln", "کلن"),
+    "Dusseldorf": ("dusseldorf", "düsseldorf", "دوسلدورف"),
+    "Essen": ("essen", "اسن"),
+    "Hannover": ("hannover", "hanover", "هانوفر"),
+    "Bremen": ("bremen", "برمن"),
+    "Stuttgart": ("stuttgart", "اشتوتگارت"),
+    "Dortmund": ("dortmund", "دورتموند"),
     "Germany": ("germany", "deutschland", "آلمان"),
     "London": ("london", "لندن"),
     "Manchester": ("manchester", "منچستر"),
@@ -232,8 +288,120 @@ MANUAL_TELEGRAM_SEEDS: Tuple[Dict[str, str], ...] = (
         "handle": "koln_euro",
         "title": "Koln Euro",
         "country_guess": "Germany",
-        "city_guess": "Germany",
+        "city_guess": "Cologne",
         "source_type_guess": "regional_market_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "eurobazaar",
+        "title": "EuroBazaar",
+        "country_guess": "Germany",
+        "city_guess": "Germany",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "euro_bazaar",
+        "title": "Euro Bazaar Cash",
+        "country_guess": "Germany",
+        "city_guess": "Germany",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "alman_exchange",
+        "title": "Alman Exchange",
+        "country_guess": "Germany",
+        "city_guess": "Germany",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "almaexchange",
+        "title": "Alma Exchange",
+        "country_guess": "Germany",
+        "city_guess": "Germany",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "frankfurt_euro",
+        "title": "Frankfurt Euro",
+        "country_guess": "Germany",
+        "city_guess": "Frankfurt",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "munich_euro",
+        "title": "Munich Euro",
+        "country_guess": "Germany",
+        "city_guess": "Munich",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "berlin_online",
+        "title": "Berlin Online",
+        "country_guess": "Germany",
+        "city_guess": "Berlin",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "frankfurt_online",
+        "title": "Frankfurt Online",
+        "country_guess": "Germany",
+        "city_guess": "Frankfurt",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "frankfurt_khane",
+        "title": "Frankfurt Khane",
+        "country_guess": "Germany",
+        "city_guess": "Frankfurt",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "hamburg_online",
+        "title": "Hamburg Online",
+        "country_guess": "Germany",
+        "city_guess": "Hamburg",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "koln_online",
+        "title": "Koln Online",
+        "country_guess": "Germany",
+        "city_guess": "Cologne",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "munich_online",
+        "title": "Munich Online",
+        "country_guess": "Germany",
+        "city_guess": "Munich",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "helfenads",
+        "title": "Hilfen Germany Classifieds",
+        "country_guess": "Germany",
+        "city_guess": "Germany",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "hawaladari",
+        "title": "Hawaladari",
+        "country_guess": "Germany",
+        "city_guess": "Germany",
+        "source_type_guess": "settlement_channel",
         "origin": "manual_germany_seed",
     },
     {
@@ -530,6 +698,15 @@ def has_germany_hint(text: str) -> bool:
         *REGION_ALIASES.get("Germany", ()),
         *REGION_ALIASES.get("Frankfurt", ()),
         *REGION_ALIASES.get("Hamburg", ()),
+        *REGION_ALIASES.get("Berlin", ()),
+        *REGION_ALIASES.get("Munich", ()),
+        *REGION_ALIASES.get("Cologne", ()),
+        *REGION_ALIASES.get("Dusseldorf", ()),
+        *REGION_ALIASES.get("Essen", ()),
+        *REGION_ALIASES.get("Hannover", ()),
+        *REGION_ALIASES.get("Bremen", ()),
+        *REGION_ALIASES.get("Stuttgart", ()),
+        *REGION_ALIASES.get("Dortmund", ()),
     )
     return any(alias.lower() in lowered for alias in germany_aliases)
 
@@ -616,11 +793,20 @@ def seed_from_existing_registry(channel_rows: Sequence[Dict[str, str]]) -> Dict[
         sample = str(row.get("last_seen_text_sample", "")).strip()
         joined = " ".join(filter(None, [title, city_guess, sample]))
         has_target_locality = bool(detect_regions(joined)) or city_guess in {
-            "Dubai",
-            "Frankfurt",
-            "Hamburg",
-            "Germany",
-            "London",
+        "Dubai",
+        "Frankfurt",
+        "Hamburg",
+        "Berlin",
+        "Munich",
+        "Cologne",
+        "Dusseldorf",
+        "Essen",
+        "Hannover",
+        "Bremen",
+        "Stuttgart",
+        "Dortmund",
+        "Germany",
+        "London",
             "Manchester",
             "Birmingham",
             "UK",
@@ -680,43 +866,30 @@ def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySour
             if has_uk_hint(text):
                 uk_hit = True
             regions = detect_regions(text)
-            if "Frankfurt" in regions:
-                germany_hit = True
-                city_guess = "Frankfurt"
-            elif "Hamburg" in regions:
-                germany_hit = True
-                city_guess = "Hamburg"
-            elif "Germany" in regions:
-                germany_hit = True
-            elif "London" in regions:
-                uk_hit = True
-                city_guess = "London"
-            elif "Manchester" in regions:
-                uk_hit = True
-                city_guess = "Manchester"
-            elif "Birmingham" in regions:
-                uk_hit = True
-                city_guess = "Birmingham"
-            elif "UK" in regions:
-                uk_hit = True
+            for region in regions:
+                basket = region_to_basket(region)
+                if basket == "Germany":
+                    germany_hit = True
+                    if region != "Germany":
+                        city_guess = region
+                elif basket == "UK":
+                    uk_hit = True
+                    if region != "UK":
+                        city_guess = region
             city_mentions = rec.get("city_mentions", [])
             if isinstance(city_mentions, list):
                 normalized_mentions = {str(item).strip().lower() for item in city_mentions}
-                if "frankfurt" in normalized_mentions:
-                    germany_hit = True
-                    city_guess = "Frankfurt"
-                elif "hamburg" in normalized_mentions:
-                    germany_hit = True
-                    city_guess = "Hamburg"
-                elif "london" in normalized_mentions:
-                    uk_hit = True
-                    city_guess = "London"
-                elif "manchester" in normalized_mentions:
-                    uk_hit = True
-                    city_guess = "Manchester"
-                elif "birmingham" in normalized_mentions:
-                    uk_hit = True
-                    city_guess = "Birmingham"
+                for region, aliases in REGION_ALIASES.items():
+                    if region == "Germany":
+                        continue
+                    if any(alias.lower() in normalized_mentions for alias in aliases):
+                        basket = region_to_basket(region)
+                        if basket == "Germany":
+                            germany_hit = True
+                            city_guess = region
+                        elif basket == "UK":
+                            uk_hit = True
+                            city_guess = region
         if not germany_hit and not uk_hit:
             continue
 
@@ -832,7 +1005,7 @@ def classify_source_type(source: DiscoverySource, title: str, text: str) -> str:
         return "exchange_shop"
     if source.source_type_guess == "settlement_channel":
         return "settlement_channel"
-    if source.source_type_guess in {"dealer_network_channel", "market_price_channel"}:
+    if source.source_type_guess in {"dealer_network_channel", "market_price_channel", "regional_market_channel"}:
         return "regional_market_channel"
     if source.source_type_guess == "aggregator":
         return "aggregator"
@@ -933,7 +1106,23 @@ def extract_quote_records_for_source(
         country_guess = "Iraq"
     elif "Herat" in locality_hints:
         country_guess = "Afghanistan"
-    elif "Frankfurt" in locality_hints or "Hamburg" in locality_hints or "Germany" in locality_hints:
+    elif any(
+        region in locality_hints
+        for region in (
+            "Frankfurt",
+            "Hamburg",
+            "Berlin",
+            "Munich",
+            "Cologne",
+            "Dusseldorf",
+            "Essen",
+            "Hannover",
+            "Bremen",
+            "Stuttgart",
+            "Dortmund",
+            "Germany",
+        )
+    ):
         country_guess = "Germany"
     elif any(region in locality_hints for region in ("London", "Manchester", "Birmingham", "UK")):
         country_guess = "UK"

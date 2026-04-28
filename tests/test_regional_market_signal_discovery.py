@@ -14,6 +14,10 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         germany_hits = regional.detect_regions("حواله یورو فقط بانک آلمان")
         self.assertIn("Germany", germany_hits)
         self.assertEqual(regional.region_to_basket("Germany"), "Germany")
+        city_hits = regional.detect_regions("مونیخ یورو و کلن یورو برای حواله بانکی")
+        self.assertIn("Munich", city_hits)
+        self.assertIn("Cologne", city_hits)
+        self.assertEqual(regional.region_to_basket("Munich"), "Germany")
         uk_hits = regional.detect_regions("نرخ پوند امروز لندن و حواله انگلستان")
         self.assertIn("London", uk_hits)
         self.assertIn("UK", uk_hits)
@@ -140,6 +144,10 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         hmtransfer = seeded["telegram:hmtransfer"]
         self.assertEqual(hmtransfer.source_type_guess, "settlement_channel")
         self.assertIn("manual_germany_seed", hmtransfer.origins)
+        self.assertIn("telegram:eurobazaar", seeded)
+        self.assertIn("telegram:frankfurt_euro", seeded)
+        self.assertIn("telegram:munich_euro", seeded)
+        self.assertEqual(seeded["telegram:munich_euro"].city_guess, "Munich")
 
     def test_seed_from_manual_handles_includes_uk_sources(self) -> None:
         seeded = regional.seed_from_manual_handles()
@@ -148,6 +156,16 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         self.assertEqual(source.country_guess, "UK")
         self.assertEqual(source.city_guess, "London")
         self.assertIn("manual_uk_seed", source.origins)
+
+    def test_classify_source_type_honors_regional_market_hint(self) -> None:
+        source = regional.DiscoverySource(
+            key="telegram:test",
+            platform="telegram",
+            url="https://t.me/s/test",
+            handle_or_url="test",
+            source_type_guess="regional_market_channel",
+        )
+        self.assertEqual(regional.classify_source_type(source, "Berlin Pay", ""), "regional_market_channel")
 
     def test_summarize_enriched_basket_keeps_min_three_source_coverage(self) -> None:
         records = []

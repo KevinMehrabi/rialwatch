@@ -52,7 +52,20 @@ SECONDARY_LOCALITIES = ("Istanbul", "London", "Frankfurt")
 ALL_LOCALITIES = PRIMARY_LOCALITIES + SECONDARY_LOCALITIES
 IRAQ_AGG_LOCALITIES = ("Sulaymaniyah", "Erbil", "Baghdad", "Iraq")
 TURKEY_AGG_LOCALITIES = ("Istanbul", "Ankara", "Izmir", "Turkey")
-GERMANY_AGG_LOCALITIES = ("Frankfurt", "Hamburg", "Berlin", "Germany")
+GERMANY_AGG_LOCALITIES = (
+    "Frankfurt",
+    "Hamburg",
+    "Berlin",
+    "Munich",
+    "Cologne",
+    "Dusseldorf",
+    "Essen",
+    "Hannover",
+    "Bremen",
+    "Stuttgart",
+    "Dortmund",
+    "Germany",
+)
 UK_AGG_LOCALITIES = ("London", "Manchester", "Birmingham", "UK")
 AFGHANISTAN_AGG_LOCALITIES = ("Herat", "Kabul", "Mazar", "Jalalabad", "Afghanistan")
 IRAN_AGG_LOCALITIES = ("Tehran", "Mashhad", "Isfahan", "Shiraz", "Tabriz", "Karaj", "Qom", "Ahvaz", "Rasht", "Kerman", "Iran")
@@ -96,6 +109,26 @@ UAE_SEED_HANDLES = (
     "hiemarat",
     "sarafijavadix",
     "sarafi_emerald24",
+)
+GERMANY_SEED_HANDLES = (
+    "berlin_pay",
+    "hmtransfer",
+    "eurobazaar",
+    "euro_bazaar",
+    "alman_exchange",
+    "almaexchange",
+    "frankfurt_euro",
+    "hamburg_euro",
+    "koln_euro",
+    "munich_euro",
+    "berlin_online",
+    "frankfurt_online",
+    "frankfurt_khane",
+    "hamburg_online",
+    "koln_online",
+    "munich_online",
+    "helfenads",
+    "hawaladari",
 )
 UK_SEED_HANDLES = (
     "exchangeratescountries",
@@ -145,6 +178,14 @@ LOCALITY_TO_BASKET = {
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
     "Berlin": "Germany",
+    "Munich": "Germany",
+    "Cologne": "Germany",
+    "Dusseldorf": "Germany",
+    "Essen": "Germany",
+    "Hannover": "Germany",
+    "Bremen": "Germany",
+    "Stuttgart": "Germany",
+    "Dortmund": "Germany",
     "Germany": "Germany",
 }
 QUERY_GROUPS: Dict[str, List[str]] = {
@@ -249,6 +290,22 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s صرافی فرانکفورت",
         "site:t.me صرافی هامبورگ",
         "site:t.me/s صرافی هامبورگ",
+        "site:t.me یورو بازار بانکی",
+        "site:t.me/s یورو بازار بانکی",
+        "site:t.me صرافی آلمان یورو",
+        "site:t.me/s صرافی آلمان یورو",
+        "site:t.me حواله آلمان یورو",
+        "site:t.me/s حواله آلمان یورو",
+        "site:t.me حواله بانکی آلمان",
+        "site:t.me/s حواله بانکی آلمان",
+        "site:t.me مونیخ یورو",
+        "site:t.me/s مونیخ یورو",
+        "site:t.me کلن یورو",
+        "site:t.me/s کلن یورو",
+        "site:t.me برلین یورو",
+        "site:t.me/s برلین یورو",
+        "site:t.me دوسلدورف یورو",
+        "site:t.me/s دوسلدورف یورو",
         "site:t.me دلار لندن",
         "site:t.me/s دلار لندن",
         "site:t.me نرخ دلار لندن",
@@ -321,6 +378,14 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "germany iran exchange telegram",
         "iranian exchange frankfurt telegram",
         "iranian exchange hamburg telegram",
+        "germany euro toman telegram",
+        "germany remittance euro telegram",
+        "iranian germany euro bazaar telegram",
+        "frankfurt euro telegram iranian",
+        "hamburg euro telegram iranian",
+        "munich euro telegram iranian",
+        "koln euro telegram iranian",
+        "alman exchange telegram euro",
         "london dollar telegram iran",
         "uk exchange telegram iran",
         "iranian exchange london telegram",
@@ -354,6 +419,20 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s dollar frankfurt",
         "site:t.me dollar hamburg",
         "site:t.me/s dollar hamburg",
+        "site:t.me eurobazaar",
+        "site:t.me/s eurobazaar",
+        "site:t.me euro_bazaar",
+        "site:t.me/s euro_bazaar",
+        "site:t.me alman_exchange",
+        "site:t.me/s alman_exchange",
+        "site:t.me frankfurt_euro",
+        "site:t.me/s frankfurt_euro",
+        "site:t.me hamburg_euro",
+        "site:t.me/s hamburg_euro",
+        "site:t.me koln_euro",
+        "site:t.me/s koln_euro",
+        "site:t.me munich_euro",
+        "site:t.me/s munich_euro",
     ],
     "uk": [
         "site:t.me london exchange",
@@ -449,6 +528,14 @@ LOCALITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Frankfurt": ("frankfurt", "فرانکفورت"),
     "Hamburg": ("hamburg", "هامبورگ", "هامبرگ"),
     "Berlin": ("berlin", "برلین"),
+    "Munich": ("munich", "muenchen", "munchen", "münchen", "مونیخ"),
+    "Cologne": ("cologne", "koln", "köln", "کلن"),
+    "Dusseldorf": ("dusseldorf", "düsseldorf", "دوسلدورف"),
+    "Essen": ("essen", "اسن"),
+    "Hannover": ("hannover", "hanover", "هانوفر"),
+    "Bremen": ("bremen", "برمن"),
+    "Stuttgart": ("stuttgart", "اشتوتگارت"),
+    "Dortmund": ("dortmund", "دورتموند"),
     "Germany": ("germany", "deutschland", "آلمان"),
 }
 
@@ -1402,6 +1489,22 @@ def main() -> int:
             source.query_hits.add("uae_seed")
             source.discovery_origins.add("uae_seed")
 
+    for handle in GERMANY_SEED_HANDLES:
+        public_url = f"https://t.me/s/{handle}"
+        source = discovered.get(handle)
+        if source is None:
+            discovered[handle] = DiscoverySource(
+                handle=handle,
+                public_url=public_url,
+                query_hits={"germany_seed"},
+                discovery_origins={"germany_seed"},
+                source_type_hint="settlement_channel",
+            )
+        else:
+            source.public_url = source.public_url or public_url
+            source.query_hits.add("germany_seed")
+            source.discovery_origins.add("germany_seed")
+
     for handle in UK_SEED_HANDLES:
         public_url = f"https://t.me/s/{handle}"
         source = discovered.get(handle)
@@ -1421,6 +1524,7 @@ def main() -> int:
     afghan_seed_set = set(AFGHANISTAN_SEED_HANDLES)
     iran_seed_set = set(IRAN_SEED_HANDLES)
     uae_seed_set = set(UAE_SEED_HANDLES)
+    germany_seed_set = set(GERMANY_SEED_HANDLES)
     uk_seed_set = set(UK_SEED_HANDLES)
     ordered_sources = sorted(
         discovered.values(),
@@ -1428,6 +1532,7 @@ def main() -> int:
             0 if item.handle in afghan_seed_set else 1,
             0 if item.handle in iran_seed_set else 1,
             0 if item.handle in uae_seed_set else 1,
+            0 if item.handle in germany_seed_set else 1,
             0 if item.handle in uk_seed_set else 1,
             item.handle,
         ),

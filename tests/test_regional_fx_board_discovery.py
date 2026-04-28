@@ -34,6 +34,20 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         self.assertEqual(by_locality["London"][1], "GBP")
         self.assertGreaterEqual(by_locality["London"][0], 1_900_000.0)
 
+    def test_extract_locality_quotes_keeps_germany_euro_signal(self) -> None:
+        text = "حواله بانکی آلمان فروش یورو 185,000 تومان"
+        results = boards.extract_locality_quotes(text, benchmark_value=1_650_000.0)
+        by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
+        self.assertIn("Germany", by_locality)
+        self.assertEqual(by_locality["Germany"][1], "EUR")
+        self.assertEqual(by_locality["Germany"][0], 1_850_000.0)
+
+    def test_detect_localities_maps_german_city_aliases(self) -> None:
+        hits = boards.detect_localities("مونیخ یورو و کلن یورو برای حواله آلمان")
+        self.assertIn("Munich", hits)
+        self.assertIn("Cologne", hits)
+        self.assertIn("Germany", hits)
+
     def test_classify_source_type_prefers_board(self) -> None:
         source_type = boards.classify_source_type(
             "تابلوی نرخ ارز",
