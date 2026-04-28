@@ -18,6 +18,7 @@ SOURCE_RANK = {
     "exchange_shop_baskets_card": 1,
 }
 HIDE_REASONS = {"", "no_usable_records", "stale_signal"}
+MERGE_MAX_RATE_RATIO = 1.25
 
 
 def read_json(path: Path) -> Dict[str, Any]:
@@ -330,9 +331,23 @@ def candidate_sort_key(candidate: Dict[str, Any]) -> tuple:
     )
 
 
+def candidate_merge_weight(candidate: Dict[str, Any]) -> float:
+    usable = min(to_int(candidate.get("usable_record_count")), 250)
+    contributors = to_int(candidate.get("contributing_source_count"))
+    confidence = to_float(candidate.get("basket_confidence"))
+    confidence_multiplier = max(0.35, min(1.0, (confidence or 50.0) / 100.0))
+    return float(max(usable, contributors * 8, 1)) * confidence_multiplier
+
+
+def candidates_are_coherent(candidates: List[Dict[str, Any]]) -> bool:
+    rates = [to_float(row.get("weighted_rate")) for row in candidates]
+    valid_rates = [rate for rate in rates if rate is not None and rate > 0]
+    if len(valid_rates) < 2:
+        return False
+    return max(valid_rates) / min(valid_rates) <= MERGE_MAX_RATE_RATIO
+
+
 def merge_locality_candidates(locality: str, candidates: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-    if locality not in {"Germany", "UK"}:
-        return None
     publishable = [
         row
         for row in candidates
@@ -340,12 +355,10 @@ def merge_locality_candidates(locality: str, candidates: List[Dict[str, Any]]) -
     ]
     if len(publishable) < 2:
         return None
+    if not candidates_are_coherent(publishable):
+        return None
 
-    weights: List[float] = []
-    for row in publishable:
-        usable = to_int(row.get("usable_record_count"))
-        contributors = to_int(row.get("contributing_source_count"))
-        weights.append(float(max(usable, contributors, 1)))
+    weights = [candidate_merge_weight(row) for row in publishable]
 
     weight_sum = sum(weights)
     if weight_sum <= 0:

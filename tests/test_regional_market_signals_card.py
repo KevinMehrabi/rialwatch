@@ -258,6 +258,146 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
             ],
         )
 
+    def test_build_payload_merges_complementary_sources_for_any_locality(self) -> None:
+        regional_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "localities": [
+                {
+                    "locality_name": "UAE",
+                    "signal_type_used": "regional_market_channel",
+                    "usable_record_count": 20,
+                    "contributing_source_count": 3,
+                    "contributing_sources": ["dirhamdubai", "dhsgroupdubai", "iranian_uae"],
+                    "weighted_rate": 1_590_000.0,
+                    "median_rate": 1_592_000.0,
+                    "spread_vs_benchmark_pct": 9.4,
+                    "freshness_status": "fresh",
+                    "dispersion_level": "medium",
+                    "basket_confidence": 80.0,
+                    "recommended_display_state": "publish",
+                    "suppression_reason": "",
+                }
+            ],
+        }
+        enriched_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "baskets": [
+                {
+                    "basket_name": "UAE",
+                    "signal_type_used": "exchange_shop",
+                    "weighted_rate": 1_600_000.0,
+                    "median_rate": 1_598_000.0,
+                    "spread_vs_benchmark_pct": 10.1,
+                    "usable_record_count": 16,
+                    "contributing_source_count": 3,
+                    "contributing_sources": ["emeraldxe.com", "hiemarat.com", "iranian_uae"],
+                    "basket_confidence": 92.0,
+                    "publishable": True,
+                    "suppression_reason": "",
+                    "dispersion_cv": 0.04,
+                }
+            ],
+        }
+        payload = cards.build_regional_market_cards_payload(regional_payload, enriched_payload, {"cards": []})
+        uae = {row["basket_name"]: row for row in payload["cards"]}["UAE"]
+        self.assertEqual(uae["source_artifact"], "merged_diagnostics")
+        self.assertEqual(uae["display_state"], "publish")
+        self.assertEqual(uae["contributing_source_count"], 5)
+        self.assertEqual(
+            uae["contributing_sources"],
+            ["dhsgroupdubai", "dirhamdubai", "emeraldxe.com", "hiemarat.com", "iranian_uae"],
+        )
+
+    def test_build_payload_does_not_merge_suppressed_artifacts(self) -> None:
+        regional_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "localities": [
+                {
+                    "locality_name": "Iran",
+                    "signal_type_used": "regional_market_channel",
+                    "usable_record_count": 100,
+                    "contributing_source_count": 8,
+                    "contributing_sources": ["regional_a", "regional_b"],
+                    "weighted_rate": 1_550_000.0,
+                    "median_rate": 1_548_000.0,
+                    "spread_vs_benchmark_pct": 2.0,
+                    "freshness_status": "fresh",
+                    "dispersion_level": "medium",
+                    "basket_confidence": 85.0,
+                    "recommended_display_state": "publish",
+                    "suppression_reason": "",
+                }
+            ],
+        }
+        enriched_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "baskets": [
+                {
+                    "basket_name": "Iran",
+                    "signal_type_used": "exchange_shop",
+                    "weighted_rate": 900_000.0,
+                    "median_rate": 910_000.0,
+                    "spread_vs_benchmark_pct": -40.0,
+                    "usable_record_count": 20,
+                    "contributing_source_count": 2,
+                    "contributing_sources": ["stale_a", "stale_b"],
+                    "basket_confidence": 60.0,
+                    "publishable": False,
+                    "suppression_reason": "stale_signal",
+                    "dispersion_cv": 0.04,
+                }
+            ],
+        }
+        payload = cards.build_regional_market_cards_payload(regional_payload, enriched_payload, {"cards": []})
+        iran = {row["basket_name"]: row for row in payload["cards"]}["Iran"]
+        self.assertEqual(iran["source_artifact"], "regional_fx_board_basket_review")
+        self.assertEqual(iran["weighted_rate"], 1_550_000.0)
+
+    def test_build_payload_does_not_merge_incoherent_publishable_artifacts(self) -> None:
+        regional_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "localities": [
+                {
+                    "locality_name": "Turkey",
+                    "signal_type_used": "regional_fx_board",
+                    "usable_record_count": 60,
+                    "contributing_source_count": 8,
+                    "contributing_sources": ["regional_a", "regional_b", "regional_c"],
+                    "weighted_rate": 2_160_000.0,
+                    "median_rate": 2_100_000.0,
+                    "spread_vs_benchmark_pct": 49.0,
+                    "freshness_status": "fresh",
+                    "dispersion_level": "high",
+                    "basket_confidence": 76.0,
+                    "recommended_display_state": "publish",
+                    "suppression_reason": "",
+                }
+            ],
+        }
+        enriched_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "baskets": [
+                {
+                    "basket_name": "Turkey",
+                    "signal_type_used": "exchange_shop",
+                    "weighted_rate": 1_460_000.0,
+                    "median_rate": 1_459_000.0,
+                    "spread_vs_benchmark_pct": 0.8,
+                    "usable_record_count": 22,
+                    "contributing_source_count": 2,
+                    "contributing_sources": ["istanbul_a", "istanbul_b"],
+                    "basket_confidence": 89.0,
+                    "publishable": True,
+                    "suppression_reason": "",
+                    "dispersion_cv": 0.01,
+                }
+            ],
+        }
+        payload = cards.build_regional_market_cards_payload(regional_payload, enriched_payload, {"cards": []})
+        turkey = {row["basket_name"]: row for row in payload["cards"]}["Turkey"]
+        self.assertNotEqual(turkey["source_artifact"], "merged_diagnostics")
+        self.assertEqual(turkey["source_artifact"], "regional_fx_board_basket_review")
+
     def test_build_regional_history_payload_upserts_and_prunes(self) -> None:
         cards_payload = {
             "generated_at": "2026-03-31T10:00:00Z",
