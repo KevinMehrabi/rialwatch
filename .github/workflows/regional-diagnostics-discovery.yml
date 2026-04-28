@@ -64,6 +64,10 @@ jobs:
       - name: Refresh UAE and regional diagnostics
         run: |
           if [ "${{ github.event_name }}" = "push" ]; then
+            basket_only_fast_path=false
+            if [ -s state/survey_outputs/uae_basket_candidate_records.csv ] && [ -s state/survey_outputs/uae_basket_review.csv ]; then
+              basket_only_fast_path=true
+            fi
             uae_max_seeds=90
             regional_max_sources=90
             market_max_sources=90
@@ -89,19 +93,23 @@ jobs:
             market_sleep=0.25
           fi
 
-          python3 scripts/uae_exchange_discovery.py \
-            --survey-dir state/survey_outputs \
-            --pages-per-query 1 \
-            --max-seeds "${uae_max_seeds}" \
-            --timeout "${uae_timeout}" \
-            --sleep "${uae_sleep}"
+          if [ "${basket_only_fast_path}" != "true" ]; then
+            python3 scripts/uae_exchange_discovery.py \
+              --survey-dir state/survey_outputs \
+              --pages-per-query 1 \
+              --max-seeds "${uae_max_seeds}" \
+              --timeout "${uae_timeout}" \
+              --sleep "${uae_sleep}"
 
-          python3 scripts/uae_basket_review.py \
-            --candidates-csv state/survey_outputs/uae_exchange_discovery_candidates.csv \
-            --benchmark-json state/site/api/benchmark.json \
-            --survey-dir state/survey_outputs \
-            --timeout "${uae_timeout}" \
-            --sleep "${review_sleep}"
+            python3 scripts/uae_basket_review.py \
+              --candidates-csv state/survey_outputs/uae_exchange_discovery_candidates.csv \
+              --benchmark-json state/site/api/benchmark.json \
+              --survey-dir state/survey_outputs \
+              --timeout "${uae_timeout}" \
+              --sleep "${review_sleep}"
+          else
+            echo "Push fast path: reusing existing UAE review artifacts and rebuilding basket/card outputs."
+          fi
 
           python3 scripts/uae_signal_watchlist.py \
             --survey-dir state/survey_outputs \
