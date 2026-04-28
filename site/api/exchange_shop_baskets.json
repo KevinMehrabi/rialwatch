@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-16T17:30:39Z",
+  "generated_at": "2026-04-28T04:34:06Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
   "baskets": [
@@ -26,21 +26,21 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 1448596.88,
-      "median_rate": 1448200.0,
-      "trimmed_mean_rate": 1449222.22,
-      "spread_vs_benchmark_pct": -0.0914,
-      "usable_record_count": 33,
+      "weighted_rate": 1503191.58,
+      "median_rate": 1471600.0,
+      "trimmed_mean_rate": 1510101.56,
+      "spread_vs_benchmark_pct": 3.674,
+      "usable_record_count": 38,
       "contributing_channel_count": 2,
-      "basket_confidence": 82.87,
+      "basket_confidence": 78.1,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.008399,
-      "top_channel_share": 0.632748,
+      "dispersion_cv": 0.042277,
+      "top_channel_share": 0.571714,
       "outliers_removed": 0,
       "source_category_mix": {
         "direct_shop": 20,
-        "regional_market_channel": 13
+        "regional_market_channel": 18
       },
       "channels": [
         "istanbulexchange_com",
@@ -49,14 +49,27 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": null,
-      "median_rate": null,
-      "spread_vs_benchmark_pct": null,
-      "usable_record_count": 0,
-      "contributing_channel_count": 0,
-      "basket_confidence": 0.0,
-      "publishable": false,
-      "suppression_reason": "no_usable_records"
+      "weighted_rate": 1591780.96,
+      "median_rate": 1590789.28,
+      "trimmed_mean_rate": 1591428.3,
+      "spread_vs_benchmark_pct": 9.7839,
+      "usable_record_count": 12,
+      "contributing_channel_count": 3,
+      "basket_confidence": 89.05,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.000901,
+      "top_channel_share": 0.505543,
+      "outliers_removed": 2,
+      "source_category_mix": {
+        "direct_shop": 5,
+        "settlement_exchange": 7
+      },
+      "channels": [
+        "uae:ezdex.net",
+        "uae:hiemarat.com",
+        "uae:ir-europe.com"
+      ]
     },
     {
       "basket_name": "Iraq",

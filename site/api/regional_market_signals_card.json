@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-15T19:06:29Z",
+  "generated_at": "2026-04-28T04:34:06Z",
   "diagnostics_only": true,
   "cards": [
     {
@@ -26,25 +26,25 @@
     },
     {
       "basket_name": "UAE",
-      "signal_type_used": "aggregator",
-      "weighted_rate": 1532415.07,
-      "median_rate": 1542450.0,
-      "spread_vs_benchmark_pct": 5.6895,
-      "usable_record_count": 3,
-      "contributing_source_count": 2,
-      "basket_confidence": 63.5,
-      "freshness_status": "fresh",
-      "dispersion_level": "low",
-      "display_state": "monitor",
-      "suppression_reason": "limited_coverage",
-      "source_artifact": "regional_fx_board_basket_review",
+      "signal_type_used": "unknown",
+      "weighted_rate": 1591780.96,
+      "median_rate": 1590789.28,
+      "spread_vs_benchmark_pct": 9.7839,
+      "usable_record_count": 12,
+      "contributing_source_count": 3,
+      "basket_confidence": 89.05,
+      "freshness_status": "recent",
+      "dispersion_level": "unknown",
+      "display_state": "publish",
+      "suppression_reason": "",
+      "source_artifact": "exchange_shop_baskets_card",
       "alignment_label": "Mild divergence",
       "signal_label": "Dubai settlement signal",
-      "publishable": false,
+      "publishable": true,
       "render_on_homepage": true,
-      "status_text": "Monitoring (limited coverage)",
-      "rate_text": "1,532,415 IRR",
-      "spread_text": "+5.69%"
+      "status_text": "Diagnostics signal available (unknown)",
+      "rate_text": "1,591,781 IRR",
+      "spread_text": "+9.78%"
     },
     {
       "basket_name": "Turkey",
@@ -158,8 +158,8 @@
     }
   ],
   "summary": {
-    "publish_count": 6,
-    "monitor_count": 1,
+    "publish_count": 7,
+    "monitor_count": 0,
     "hide_count": 0
   },
   "source_artifacts": {

@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-03-16T17:30:39Z",
+  "generated_at": "2026-04-28T04:34:06Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
-  "total_usable_records": 112,
-  "total_contributing_channels": 8,
-  "publishable_basket_count": 1,
+  "total_usable_records": 131,
+  "total_contributing_channels": 12,
+  "publishable_basket_count": 2,
   "added_p1_candidates": [
     {
       "handle": "istanbulexchange_com",
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 16,
-      "usable_records": 13,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,12 +36,13 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 53,
+    "direct_shop": 59,
     "market_channel": 46,
-    "regional_market_channel": 13
+    "regional_market_channel": 18,
+    "settlement_exchange": 8
   },
   "locality_internal_status": {
-    "UAE": "watchlist_only"
+    "UAE": "active"
   },
   "locality_summary": [
     {
@@ -56,20 +57,20 @@
     {
       "basket_name": "Turkey",
       "publishable": true,
-      "usable_record_count": 33,
+      "usable_record_count": 38,
       "contributing_channel_count": 2,
-      "basket_confidence": 82.87,
+      "basket_confidence": 78.1,
       "suppression_reason": "",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
-      "publishable": false,
-      "usable_record_count": 0,
-      "contributing_channel_count": 0,
-      "basket_confidence": 0.0,
-      "suppression_reason": "no_usable_records",
-      "internal_status": "watchlist_only"
+      "publishable": true,
+      "usable_record_count": 12,
+      "contributing_channel_count": 3,
+      "basket_confidence": 89.05,
+      "suppression_reason": "",
+      "internal_status": "active"
     },
     {
       "basket_name": "Iraq",
@@ -152,6 +153,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -161,17 +173,6 @@
       "average_quality": 81.07,
       "average_freshness": 79.47,
       "from_new_p1": false
-    },
-    {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 13,
-      "average_quality": 92.62,
-      "average_freshness": 91.69,
-      "from_new_p1": true
     },
     {
       "handle": "navasanchannel",
@@ -204,6 +205,50 @@
       "usable_record_count": 6,
       "average_quality": 83.0,
       "average_freshness": 62.33,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ezdex.net",
+      "title": "قیمت درهم امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 78.8,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:emeraldxe.com",
+      "title": "تبدیل درهم به تومان لحظه‌ای",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 88.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     }
   ]
