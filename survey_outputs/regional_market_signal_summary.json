@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-03-21T21:47:48Z",
-  "new_regional_signal_sources_discovered": 5,
-  "existing_registry_signal_sources_used": 31,
+  "generated_at": "2026-04-28T16:20:13Z",
+  "new_regional_signal_sources_discovered": 11,
+  "existing_registry_signal_sources_used": 29,
   "which_locality_baskets_gained_usable_data": [
     "Afghanistan",
     "Germany"
@@ -13,167 +13,26 @@
   "can_render_meaningful_cards": {
     "UAE": false,
     "Iraq": false,
-    "Afghanistan": false,
+    "Afghanistan": true,
+    "UK": false,
     "Germany": true
   },
   "top_sources_contributing_to_each_improved_basket": {
     "Afghanistan": [
-      "ldollar",
-      "dolarian",
-      "ppellehh"
+      "haratdollar",
+      "toofan_harirod"
     ],
     "Germany": [
       "hmtransfer",
-      "berlin_pay",
-      "frankfurt_euro"
+      "berlin_pay"
     ]
   },
   "search_debug": {
-    "successful_search_requests": 20,
-    "failed_search_requests": 50,
-    "query_stats": {
-      "site:t.me دلار هرات": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me/s دلار هرات": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me دلار سلیمانیه": {
-        "group": "persian",
-        "candidate_hits": 2
-      },
-      "site:t.me/s دلار سلیمانیه": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me دلار دبی": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me/s دلار دبی": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me نرخ دلار هرات": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me نرخ دلار سلیمانیه": {
-        "group": "persian",
-        "candidate_hits": 2
-      },
-      "site:t.me نرخ دلار دبی": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me بازار ارز هرات": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me بازار ارز سلیمانیه": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me بازار ارز دبی": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me هرات دلار": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me سلیمانیه دلار": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me دبی دلار": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me فرانکفورت صرافی": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me هامبورگ صرافی": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me فرانکفورت یورو": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me هامبورگ یورو": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me آلمان حواله": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "site:t.me/s آلمان حواله": {
-        "group": "persian",
-        "candidate_hits": 0
-      },
-      "herat dollar telegram": {
-        "group": "english",
-        "candidate_hits": 0
-      },
-      "sulaymaniyah dollar telegram": {
-        "group": "english",
-        "candidate_hits": 0
-      },
-      "dubai dollar telegram": {
-        "group": "english",
-        "candidate_hits": 0
-      },
-      "iranian exchange frankfurt telegram": {
-        "group": "english",
-        "candidate_hits": 0
-      },
-      "iranian exchange hamburg telegram": {
-        "group": "english",
-        "candidate_hits": 0
-      },
-      "dubai settlement rate iran telegram": {
-        "group": "english",
-        "candidate_hits": 0
-      },
-      "herat market dollar iran telegram": {
-        "group": "english",
-        "candidate_hits": 0
-      },
-      "sulaymaniyah market dollar iran telegram": {
-        "group": "english",
-        "candidate_hits": 0
-      },
-      "دولار دبي ايران": {
-        "group": "arabic",
-        "candidate_hits": 0
-      },
-      "سوق دبي دولار ايران": {
-        "group": "arabic",
-        "candidate_hits": 0
-      },
-      "iran wechselstube frankfurt telegram": {
-        "group": "german",
-        "candidate_hits": 0
-      },
-      "iran geldwechsel hamburg telegram": {
-        "group": "german",
-        "candidate_hits": 0
-      },
-      "iran geldtransfer deutschland telegram": {
-        "group": "german",
-        "candidate_hits": 0
-      },
-      "iran geldwechsel deutschland telegram": {
-        "group": "german",
-        "candidate_hits": 0
-      }
-    }
+    "successful_search_requests": 0,
+    "failed_search_requests": 0,
+    "query_stats": {},
+    "skipped": true
   },
-  "queries_run": 35,
-  "sources_crawled": 90
+  "queries_run": 65,
+  "sources_crawled": 59
 }
