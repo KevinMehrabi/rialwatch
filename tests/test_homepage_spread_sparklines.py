@@ -59,7 +59,9 @@ class HomepageSpreadSparklineTests(unittest.TestCase):
             end = html.index("Additional Rial Readings", start)
             transfer_spread_card = html[start:end]
 
-            self.assertIn("-20,350 IRR", transfer_spread_card)
+            self.assertIn("-20,350</div>", transfer_spread_card)
+            self.assertIn('<div class="unit-label">IRR per USD</div>', transfer_spread_card)
+            self.assertNotIn("-20,350 IRR", transfer_spread_card)
             self.assertIn('aria-label="spread trend sparkline"', transfer_spread_card)
             self.assertNotIn("History building", transfer_spread_card)
 

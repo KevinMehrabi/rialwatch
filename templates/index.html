@@ -121,7 +121,10 @@
           <div class="fw-semibold mb-1">Street-Official Spread</div>
           <div class="text-secondary small mb-2">Absolute IRR difference between Street and Official Commercial rates.</div>
         </div>
-        <div class="indicator-value-main indicator-value-secondary mt-3">${street_official_spread_value}</div>
+        <div class="value-row indicator-value-row mt-3">
+          <div class="indicator-value-main indicator-value-secondary">${street_official_spread_value}</div>
+          ${street_official_spread_unit_html}
+        </div>
         <div class="indicator-compare small mt-2">
           <div><span class="text-secondary">Street:</span> ${street_official_spread_street_value}</div>
           <div><span class="text-secondary">Official:</span> ${street_official_spread_peer_value}</div>
@@ -137,7 +140,10 @@
           <div class="fw-semibold mb-1">Street-Transfer Spread</div>
           <div class="text-secondary small mb-2">Absolute IRR difference between Street and Regional Transfer rates.</div>
         </div>
-        <div class="indicator-value-main indicator-value-secondary mt-3">${street_transfer_spread_value}</div>
+        <div class="value-row indicator-value-row mt-3">
+          <div class="indicator-value-main indicator-value-secondary">${street_transfer_spread_value}</div>
+          ${street_transfer_spread_unit_html}
+        </div>
         <div class="indicator-compare small mt-2">
           <div><span class="text-secondary">Street:</span> ${street_transfer_spread_street_value}</div>
           <div><span class="text-secondary">Transfer:</span> ${street_transfer_spread_peer_value}</div>
@@ -576,6 +582,15 @@ function alignmentBadgeClass(label) {
   return '';
 }
 
+function formatIrrDisplayValue(value) {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? Math.round(value).toLocaleString() : 'Unavailable';
+  }
+  const text = String(value || '').trim();
+  if (!text) return 'Unavailable';
+  return text.replace(/\s+IRR\b$/i, '');
+}
+
 function renderRegionalMarketCards(payload) {
   const holder = document.getElementById('regional-market-cards');
   if (!holder) return;
@@ -604,13 +619,13 @@ function renderRegionalMarketCards(payload) {
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value ${card.dispersion_level === 'high' ? 'panel-value-soft' : ''}">${card.rate_text || (typeof card.weighted_rate === 'number' ? Math.round(card.weighted_rate).toLocaleString() + ' IRR' : 'Unavailable')}</div>
+            <div class="panel-value ${card.dispersion_level === 'high' ? 'panel-value-soft' : ''}">${formatIrrDisplayValue(card.rate_text || card.weighted_rate)}</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
           <div class="panel-meta-row">
-            <span>Median: ${typeof card.median_rate === 'number' ? Math.round(card.median_rate).toLocaleString() + ' IRR' : 'Unavailable'}</span>
+            <span>Median: ${formatIrrDisplayValue(card.median_rate)} <span class="inline-unit-label">IRR per USD</span></span>
             <span>Spread vs benchmark: ${card.spread_text || 'N/A'}</span>
             <span class="signal-badge ${alignmentBadgeClass(card.alignment_label)}">${card.alignment_label || 'Unknown'}</span>
           </div>

@@ -496,6 +496,22 @@
     justify-content: space-between;
   }
 
+  .metric-value {
+    font-size: 2.4rem;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--rw-text-strong);
+  }
+
+  .metric-sub {
+    color: var(--rw-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .metric-unit {
+    font-weight: 600;
+  }
+
   @media (max-width: 900px) {
     .top-grid {
       grid-template-columns: 1fr;
@@ -630,6 +646,17 @@
     font-size: 0.75rem;
     color: var(--rw-text-muted);
     letter-spacing: 0.01em;
+  }
+
+  .inline-unit-label {
+    color: var(--rw-text-muted);
+    font-size: 0.85em;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .indicator-value-row {
+    align-items: baseline;
   }
 
   .panel-bottom {

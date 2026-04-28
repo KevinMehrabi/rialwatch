@@ -102,6 +102,42 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertNotIn("historical day(s) remain withheld", rendered)
             self.assertNotIn("publication-quality rules", rendered)
 
+    def test_latest_benchmark_value_separates_number_from_unit(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            site_dir = Path(tmp_dir) / "site"
+            api_dir = site_dir / "api"
+            api_dir.mkdir(parents=True, exist_ok=True)
+            (api_dir / "regional_market_signals_card.json").write_text('{"cards": []}', encoding="utf-8")
+
+            pipeline.publish_status(
+                site_dir=site_dir,
+                templates_dir=self.templates_dir,
+                generated_at="2026-04-28T15:12:00Z",
+                status_title="OK",
+                status_detail="Published daily benchmark.",
+                latest={
+                    "as_of": "2026-04-28T15:12:00Z",
+                    "computed": {
+                        "fix": 1_679_500.0,
+                        "withheld": False,
+                        "source_medians": {"street": 1_679_500.0},
+                    },
+                    "sources": {},
+                    "publication_selection": {
+                        "valid_candidate_count": 3,
+                        "street_source_count_used": 2,
+                    },
+                },
+            )
+
+            rendered = (site_dir / "status" / "index.html").read_text(encoding="utf-8")
+            start = rendered.index("Latest Benchmark Value")
+            end = rendered.index("Publication State", start)
+            value_block = rendered[start:end]
+            self.assertIn("<div class=\"h4 mb-0\">1,679,500</div>", value_block)
+            self.assertIn("<div class=\"unit-label\">IRR per USD</div>", value_block)
+            self.assertNotIn("1,679,500 IRR", value_block)
+
 
 if __name__ == "__main__":
     unittest.main()

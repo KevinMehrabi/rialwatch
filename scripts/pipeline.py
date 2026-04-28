@@ -4432,7 +4432,8 @@ def publish_status(
         " · ".join(publication_selection_parts) if publication_selection_parts else "Selection context unavailable."
     )
 
-    publication_fix = f"{fmt_rate(fix)} IRR" if fix is not None else "Unavailable"
+    publication_fix = fmt_rate(fix) if fix is not None else "Unavailable"
+    publication_fix_unit_html = '<div class="unit-label">IRR per USD</div>' if fix is not None else ""
     publication_updated = fmt_status_time(effective_latest.get("as_of") or generated_at)
     recent_success_window = dt.timedelta(
         hours=env_int(
@@ -4872,6 +4873,7 @@ def publish_status(
         diagnostics_source_note=diagnostics_source_note,
         diagnostics_source_rows=diagnostics_source_rows_html,
         publication_fix=publication_fix,
+        publication_fix_unit_html=publication_fix_unit_html,
         publication_state=publication_state,
         publication_updated=publication_updated,
         publication_reason=publication_reason,
@@ -4997,7 +4999,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
 
     def benchmark_value_or_unavailable(key: str) -> str:
         value = benchmark_value_number(key)
-        return f"{fmt_rate(value)} IRR" if value is not None else "Unavailable"
+        return fmt_rate(value) if value is not None else "Unavailable"
 
     def benchmark_value_main(key: str) -> str:
         value = benchmark_value_number(key)
@@ -5228,7 +5230,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
                 if official_context:
                     return "Awaiting official quote"
             return "Unavailable"
-        return f"{base - peer:+,.0f} IRR"
+        return f"{base - peer:+,.0f}"
 
     def spread_value_number(base: Optional[float], peer: Optional[float]) -> Optional[float]:
         if base is None or peer is None:
@@ -5345,7 +5347,10 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         delta_vs_previous_day = parse_number(delta_meta.get("delta_vs_previous_day"))
         delta_pct_vs_previous_day = parse_float(delta_meta.get("delta_pct_vs_previous_day"))
     if delta_vs_previous_day is not None and delta_pct_vs_previous_day is not None:
-        prior_day_change_text = f"{delta_vs_previous_day:+,.0f} IRR ({delta_pct_vs_previous_day:+.1f}%)"
+        prior_day_change_text = (
+            f'{delta_vs_previous_day:+,.0f} <span class="inline-unit-label">IRR per USD</span> '
+            f"({delta_pct_vs_previous_day:+.1f}%)"
+        )
 
     publication_change_meta = ""
     if publication_state == "Published" and same_as_previous_day:
@@ -5357,10 +5362,10 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         "Withheld by methodology checks." if publication_state == "Withheld" else "N/A"
     )
 
-    def comparison_value_text(value: Optional[float], unit_suffix: str = "IRR") -> str:
+    def comparison_value_text(value: Optional[float], unit_label: str = "IRR per USD") -> str:
         if value is None:
             return "Unavailable"
-        return f"{fmt_rate(value)} {unit_suffix}"
+        return f'{fmt_rate(value)} <span class="inline-unit-label">{html_lib.escape(unit_label)}</span>'
 
     withhold_reason_text = ""
     if withheld:
@@ -5468,11 +5473,17 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street_gold_peer_value=comparison_value_text(gold_implied_fx),
         street_gold_gap_sparkline=indicator_gap_sparkline_html("street_gold_gap_pct"),
         street_official_spread_value=spread_value_or_unavailable(street, official),
+        street_official_spread_unit_html=(
+            '<div class="unit-label">IRR per USD</div>' if street is not None and official is not None else ""
+        ),
         street_official_spread_note=official_spread_note,
         street_official_spread_street_value=comparison_value_text(street),
         street_official_spread_peer_value=comparison_value_text(official),
         street_official_spread_sparkline=derived_spread_sparkline_html("official", spread_value_number(street, official)),
         street_transfer_spread_value=spread_value_or_unavailable(street, transfer),
+        street_transfer_spread_unit_html=(
+            '<div class="unit-label">IRR per USD</div>' if street is not None and transfer is not None else ""
+        ),
         street_transfer_spread_note="Street minus transfer (absolute spread)",
         street_transfer_spread_street_value=comparison_value_text(street),
         street_transfer_spread_peer_value=comparison_value_text(transfer),
@@ -5515,6 +5526,9 @@ def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, da
         date=day,
         as_of=daily_out.get("as_of", "N/A"),
         fix=fmt_rate(c.get("fix")),
+        fix_unit_html=(
+            '<div class="unit-label metric-unit">IRR per USD</div>' if parse_number(c.get("fix")) is not None else ""
+        ),
         p25=fmt_rate(c.get("band", {}).get("p25")),
         p75=fmt_rate(c.get("band", {}).get("p75")),
         dispersion=(f"{c.get('dispersion', 0) * 100:.2f}%" if c.get("dispersion") is not None else "N/A"),

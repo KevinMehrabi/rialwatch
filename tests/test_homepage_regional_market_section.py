@@ -29,8 +29,10 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
 
     def test_alignment_and_high_dispersion_presentation(self) -> None:
         self.assertIn("alignmentBadgeClass(card.alignment_label)", self.template)
+        self.assertIn("formatIrrDisplayValue(card.rate_text || card.weighted_rate)", self.template)
         self.assertIn("High dispersion &mdash; indicative signal only", self.template)
         self.assertIn("panel-value-soft", self.template)
+        self.assertNotIn("toLocaleString() + ' IRR'", self.template)
 
     def test_cards_render_in_payload_order(self) -> None:
         self.assertIn("holder.innerHTML = cards.map(card => `", self.template)
