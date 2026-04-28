@@ -14,6 +14,10 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         germany_hits = regional.detect_regions("حواله یورو فقط بانک آلمان")
         self.assertIn("Germany", germany_hits)
         self.assertEqual(regional.region_to_basket("Germany"), "Germany")
+        uk_hits = regional.detect_regions("نرخ پوند امروز لندن و حواله انگلستان")
+        self.assertIn("London", uk_hits)
+        self.assertIn("UK", uk_hits)
+        self.assertEqual(regional.region_to_basket("London"), "UK")
 
     def test_summarize_enriched_basket_allows_single_source_diagnostics_when_rich(self) -> None:
         records = [
@@ -136,6 +140,14 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         hmtransfer = seeded["telegram:hmtransfer"]
         self.assertEqual(hmtransfer.source_type_guess, "settlement_channel")
         self.assertIn("manual_germany_seed", hmtransfer.origins)
+
+    def test_seed_from_manual_handles_includes_uk_sources(self) -> None:
+        seeded = regional.seed_from_manual_handles()
+        self.assertIn("telegram:poundbazar", seeded)
+        source = seeded["telegram:poundbazar"]
+        self.assertEqual(source.country_guess, "UK")
+        self.assertEqual(source.city_guess, "London")
+        self.assertIn("manual_uk_seed", source.origins)
 
     def test_summarize_enriched_basket_keeps_min_three_source_coverage(self) -> None:
         records = []

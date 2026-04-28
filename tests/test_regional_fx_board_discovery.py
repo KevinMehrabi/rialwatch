@@ -26,6 +26,14 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         self.assertIn("Dubai", by_locality)
         self.assertGreater(by_locality["Dubai"], 1_500_000.0)
 
+    def test_extract_locality_quotes_keeps_london_pound_signal(self) -> None:
+        text = "نرخ پوند امروز لندن خرید حساب رسمی: 190,000 فروش حساب رسمی: 215,000 تومان"
+        results = boards.extract_locality_quotes(text, benchmark_value=1_650_000.0)
+        by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
+        self.assertIn("London", by_locality)
+        self.assertEqual(by_locality["London"][1], "GBP")
+        self.assertGreaterEqual(by_locality["London"][0], 1_900_000.0)
+
     def test_classify_source_type_prefers_board(self) -> None:
         source_type = boards.classify_source_type(
             "تابلوی نرخ ارز",

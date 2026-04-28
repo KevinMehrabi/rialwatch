@@ -97,6 +97,21 @@ UAE_SEED_HANDLES = (
     "sarafijavadix",
     "sarafi_emerald24",
 )
+UK_SEED_HANDLES = (
+    "exchangeratescountries",
+    "groupsarafilondonuk",
+    "sarafionline7groupuk",
+    "persianlondonexchange",
+    "poundbazar",
+    "groupmtclondonuk",
+    "sarafimtcgroup",
+    "sarafionlineuk",
+    "moneytransfersarafi",
+    "moneyremittancelondon",
+    "poundlandonline",
+    "nerkh_uk",
+    "nerkhsarafionline",
+)
 LOCALITY_TO_BASKET = {
     "Tehran": "Iran",
     "Mashhad": "Iran",
@@ -246,6 +261,16 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s نرخ دلار انگلیس",
         "site:t.me پوند لندن",
         "site:t.me/s پوند لندن",
+        "site:t.me حواله پوند لندن",
+        "site:t.me/s حواله پوند لندن",
+        "site:t.me نرخ پوند انگلیس",
+        "site:t.me/s نرخ پوند انگلیس",
+        "site:t.me صرافی لندن پوند",
+        "site:t.me/s صرافی لندن پوند",
+        "site:t.me صرافی بریتانیا",
+        "site:t.me/s صرافی بریتانیا",
+        "site:t.me حواله انگلستان",
+        "site:t.me/s حواله انگلستان",
         "site:t.me دلار تهران",
         "site:t.me/s دلار تهران",
         "site:t.me نرخ دلار تهران",
@@ -302,6 +327,11 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "london pound telegram iran",
         "manchester exchange telegram iran",
         "birmingham exchange telegram iran",
+        "uk pound toman telegram",
+        "iran uk remittance telegram",
+        "persian london exchange telegram",
+        "pound bazar telegram iranian uk",
+        "iranian money transfer london telegram",
         "tehran herat dubai telegram",
         "iran fx board telegram",
     ],
@@ -334,6 +364,14 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s iranian exchange london",
         "site:t.me pound london",
         "site:t.me/s pound london",
+        "site:t.me poundbazar",
+        "site:t.me/s poundbazar",
+        "site:t.me sarafionlineuk",
+        "site:t.me/s sarafionlineuk",
+        "site:t.me money transfer sarafi london",
+        "site:t.me/s money transfer sarafi london",
+        "site:t.me mtc london uk sarafi",
+        "site:t.me/s mtc london uk sarafi",
     ],
     "afghan": [
         "site:t.me kabul dollar",
@@ -676,11 +714,15 @@ def infer_quote_currency(text: str, locality: str) -> str:
     return "UNKNOWN"
 
 
-def comparable_usd_irr(value_irr: float, currency: str) -> Optional[float]:
+def comparable_locality_irr(value_irr: float, currency: str, locality: str) -> Optional[float]:
     if currency == "USD":
         return float(value_irr)
     if currency == "AED":
         return float(value_irr) * 3.6725
+    if currency == "GBP" and locality in UK_AGG_LOCALITIES:
+        return float(value_irr)
+    if currency == "EUR" and locality in GERMANY_AGG_LOCALITIES:
+        return float(value_irr)
     return None
 
 
@@ -758,16 +800,12 @@ def extract_locality_quotes(text: str, benchmark_value: float) -> List[Tuple[str
                         basis = "single_value"
             if midpoint is None:
                 continue
-            comparable_value = comparable_usd_irr(midpoint, currency)
+            comparable_value = comparable_locality_irr(midpoint, currency, locality)
             if comparable_value is not None:
                 if not (min_rate <= comparable_value <= max_rate):
                     continue
             else:
-                # Keep raw AED-like values when no comparable conversion exists.
-                if currency == "AED" and 40_000.0 <= midpoint <= 600_000.0:
-                    pass
-                else:
-                    continue
+                continue
             board_density = len(detect_localities(line))
             candidate_tuple = (buy, sell, comparable_value if comparable_value is not None else midpoint, local_unit, basis, currency)
             if best is None or board_density > 1:
@@ -979,7 +1017,7 @@ def process_source(source: DiscoverySource, benchmark_value: float, timeout: int
                     else (matching_rec.sell_quote_rial if matching_rec.sell_quote_rial is not None else matching_rec.buy_quote_rial)
                 )
                 if value_rial is not None:
-                    normalized = comparable_usd_irr(float(value_rial), rec_currency)
+                    normalized = comparable_locality_irr(float(value_rial), rec_currency, fallback_locality)
                     if normalized is not None and min_rate <= normalized <= max_rate:
                         per_locality = [
                             (
@@ -1111,6 +1149,7 @@ def summarize_locality(locality_name: str, records: Sequence[BoardRecord], bench
             "signal_type_used": None,
             "usable_record_count": 0,
             "contributing_source_count": 0,
+            "contributing_sources": [],
             "median_rate": None,
             "weighted_rate": None,
             "spread_vs_benchmark_pct": None,
@@ -1146,7 +1185,8 @@ def summarize_locality(locality_name: str, records: Sequence[BoardRecord], bench
     weighted_rate = weighted_mean(values, weights) or median_rate
     freshness = locality_freshness(records)
     dispersion = dispersion_level(values)
-    contributing_sources = len({r.handle for r in records})
+    contributing_source_ids = sorted({r.handle for r in records})
+    contributing_sources = len(contributing_source_ids)
     avg_parse = statistics.mean(r.parseability_score for r in records)
     confidence = (
         min(28.0, len(records) * 4.0)
@@ -1174,6 +1214,7 @@ def summarize_locality(locality_name: str, records: Sequence[BoardRecord], bench
         "signal_type_used": top_type,
         "usable_record_count": len(records),
         "contributing_source_count": contributing_sources,
+        "contributing_sources": contributing_source_ids,
         "median_rate": round(median_rate, 2),
         "weighted_rate": round(weighted_rate, 2),
         "spread_vs_benchmark_pct": round(spread, 4) if spread is not None else None,
@@ -1275,6 +1316,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout", type=int, default=15)
     parser.add_argument("--sleep-seconds", type=float, default=0.2)
     parser.add_argument("--max-sources", type=int, default=120)
+    parser.add_argument("--skip-search", action="store_true", help="Use registry/manual seeds only; skip search-engine discovery")
     return parser.parse_args()
 
 
@@ -1289,12 +1331,21 @@ def main() -> int:
     channel_rows = load_csv(survey_dir / "channel_survey.csv") if (survey_dir / "channel_survey.csv").exists() else []
 
     query_plan = [(group, query) for group, queries in QUERY_GROUPS.items() for query in queries]
-    discovered, search_debug = search_discovery(
-        query_plan=query_plan,
-        pages_per_query=args.pages_per_query,
-        timeout=args.timeout,
-        sleep_seconds=args.sleep_seconds,
-    )
+    if args.skip_search:
+        discovered = {}
+        search_debug = {
+            "successful_search_requests": 0,
+            "failed_search_requests": 0,
+            "query_stats": {},
+            "skipped": True,
+        }
+    else:
+        discovered, search_debug = search_discovery(
+            query_plan=query_plan,
+            pages_per_query=args.pages_per_query,
+            timeout=args.timeout,
+            sleep_seconds=args.sleep_seconds,
+        )
     seeded = seed_from_channel_survey(channel_rows)
     for handle, source in seeded.items():
         if handle not in discovered:
@@ -1351,15 +1402,33 @@ def main() -> int:
             source.query_hits.add("uae_seed")
             source.discovery_origins.add("uae_seed")
 
+    for handle in UK_SEED_HANDLES:
+        public_url = f"https://t.me/s/{handle}"
+        source = discovered.get(handle)
+        if source is None:
+            discovered[handle] = DiscoverySource(
+                handle=handle,
+                public_url=public_url,
+                query_hits={"uk_seed"},
+                discovery_origins={"uk_seed"},
+                source_type_hint="exchange_shop",
+            )
+        else:
+            source.public_url = source.public_url or public_url
+            source.query_hits.add("uk_seed")
+            source.discovery_origins.add("uk_seed")
+
     afghan_seed_set = set(AFGHANISTAN_SEED_HANDLES)
     iran_seed_set = set(IRAN_SEED_HANDLES)
     uae_seed_set = set(UAE_SEED_HANDLES)
+    uk_seed_set = set(UK_SEED_HANDLES)
     ordered_sources = sorted(
         discovered.values(),
         key=lambda item: (
             0 if item.handle in afghan_seed_set else 1,
             0 if item.handle in iran_seed_set else 1,
             0 if item.handle in uae_seed_set else 1,
+            0 if item.handle in uk_seed_set else 1,
             item.handle,
         ),
     )

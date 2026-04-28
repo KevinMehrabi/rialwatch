@@ -71,6 +71,9 @@ CITY_TO_BASKET = {
     "Sulaymaniyah": "Iraq",
     "Herat": "Afghanistan",
     "London": "UK",
+    "Manchester": "UK",
+    "Birmingham": "UK",
+    "UK": "UK",
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
     "Germany": "Germany",
@@ -99,6 +102,18 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me هامبورگ یورو",
         "site:t.me آلمان حواله",
         "site:t.me/s آلمان حواله",
+        "site:t.me پوند لندن",
+        "site:t.me/s پوند لندن",
+        "site:t.me حواله پوند لندن",
+        "site:t.me/s حواله پوند لندن",
+        "site:t.me نرخ پوند انگلیس",
+        "site:t.me/s نرخ پوند انگلیس",
+        "site:t.me صرافی لندن پوند",
+        "site:t.me/s صرافی لندن پوند",
+        "site:t.me صرافی بریتانیا",
+        "site:t.me/s صرافی بریتانیا",
+        "site:t.me حواله انگلستان",
+        "site:t.me/s حواله انگلستان",
     ],
     "english": [
         "herat dollar telegram",
@@ -109,6 +124,12 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "dubai settlement rate iran telegram",
         "herat market dollar iran telegram",
         "sulaymaniyah market dollar iran telegram",
+        "london pound telegram iran",
+        "uk pound toman telegram",
+        "iran uk remittance telegram",
+        "persian london exchange telegram",
+        "pound bazar telegram iranian uk",
+        "iranian money transfer london telegram",
     ],
     "arabic": [
         "دولار دبي ايران",
@@ -119,6 +140,20 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "iran geldwechsel hamburg telegram",
         "iran geldtransfer deutschland telegram",
         "iran geldwechsel deutschland telegram",
+    ],
+    "uk": [
+        "site:t.me london exchange",
+        "site:t.me/s london exchange",
+        "site:t.me iranian exchange london",
+        "site:t.me/s iranian exchange london",
+        "site:t.me poundbazar",
+        "site:t.me/s poundbazar",
+        "site:t.me sarafionlineuk",
+        "site:t.me/s sarafionlineuk",
+        "site:t.me money transfer sarafi london",
+        "site:t.me/s money transfer sarafi london",
+        "site:t.me mtc london uk sarafi",
+        "site:t.me/s mtc london uk sarafi",
     ],
 }
 
@@ -135,6 +170,9 @@ REGION_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Hamburg": ("hamburg", "هامبورگ"),
     "Germany": ("germany", "deutschland", "آلمان"),
     "London": ("london", "لندن"),
+    "Manchester": ("manchester", "منچستر"),
+    "Birmingham": ("birmingham", "بیرمنگام"),
+    "UK": ("united kingdom", "britain", "england", "انگلستان", "انگلیس", "بریتانیا", "پوند انگلیس", "پوند بریتانیا"),
     "Istanbul": ("istanbul", "استانبول"),
 }
 
@@ -169,6 +207,7 @@ MANUAL_TELEGRAM_SEEDS: Tuple[Dict[str, str], ...] = (
     {
         "handle": "berlin_pay",
         "title": "Berlin Pay",
+        "country_guess": "Germany",
         "city_guess": "Germany",
         "source_type_guess": "regional_market_channel",
         "origin": "manual_germany_seed",
@@ -176,6 +215,7 @@ MANUAL_TELEGRAM_SEEDS: Tuple[Dict[str, str], ...] = (
     {
         "handle": "hmtransfer",
         "title": "HmTransfer",
+        "country_guess": "Germany",
         "city_guess": "Germany",
         "source_type_guess": "settlement_channel",
         "origin": "manual_germany_seed",
@@ -183,6 +223,7 @@ MANUAL_TELEGRAM_SEEDS: Tuple[Dict[str, str], ...] = (
     {
         "handle": "hamburg_euro",
         "title": "Hamburg Euro",
+        "country_guess": "Germany",
         "city_guess": "Hamburg",
         "source_type_guess": "regional_market_channel",
         "origin": "manual_germany_seed",
@@ -190,9 +231,114 @@ MANUAL_TELEGRAM_SEEDS: Tuple[Dict[str, str], ...] = (
     {
         "handle": "koln_euro",
         "title": "Koln Euro",
+        "country_guess": "Germany",
         "city_guess": "Germany",
         "source_type_guess": "regional_market_channel",
         "origin": "manual_germany_seed",
+    },
+    {
+        "handle": "exchangeratescountries",
+        "title": "Exchange Rates Countries",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "exchange_shop",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "groupsarafilondonuk",
+        "title": "Group Sarafi London UK",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "exchange_shop",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "sarafionline7groupuk",
+        "title": "Sarafi Online 7 Group UK",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "exchange_shop",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "persianlondonexchange",
+        "title": "Persian London Exchange",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "exchange_shop",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "poundbazar",
+        "title": "Pound Bazar",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "groupmtclondonuk",
+        "title": "Group MTC London UK",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "sarafimtcgroup",
+        "title": "Sarafi MTC Group London",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "sarafionlineuk",
+        "title": "Sarafi Online UK",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "exchange_shop",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "moneytransfersarafi",
+        "title": "Money Transfer Sarafi",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "moneyremittancelondon",
+        "title": "Money Remittance London",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "poundlandonline",
+        "title": "Pound Land Online",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "settlement_channel",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "nerkh_uk",
+        "title": "Nerkh UK",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "regional_market_channel",
+        "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "nerkhsarafionline",
+        "title": "Nerkh Sarafi Online",
+        "country_guess": "UK",
+        "city_guess": "London",
+        "source_type_guess": "regional_market_channel",
+        "origin": "manual_uk_seed",
     },
 )
 
@@ -388,6 +534,17 @@ def has_germany_hint(text: str) -> bool:
     return any(alias.lower() in lowered for alias in germany_aliases)
 
 
+def has_uk_hint(text: str) -> bool:
+    lowered = translit_digits(text or "").lower()
+    uk_aliases = (
+        *REGION_ALIASES.get("UK", ()),
+        *REGION_ALIASES.get("London", ()),
+        *REGION_ALIASES.get("Manchester", ()),
+        *REGION_ALIASES.get("Birmingham", ()),
+    )
+    return any(alias.lower() in lowered for alias in uk_aliases)
+
+
 def merge_discovery_sources(target: Dict[str, DiscoverySource], incoming: Dict[str, DiscoverySource]) -> None:
     for key, source in incoming.items():
         existing = target.get(key)
@@ -458,7 +615,16 @@ def seed_from_existing_registry(channel_rows: Sequence[Dict[str, str]]) -> Dict[
         channel_type = str(row.get("channel_type_guess", "")).strip()
         sample = str(row.get("last_seen_text_sample", "")).strip()
         joined = " ".join(filter(None, [title, city_guess, sample]))
-        has_target_locality = bool(detect_regions(joined)) or city_guess in {"Dubai", "Frankfurt", "Hamburg", "Germany"}
+        has_target_locality = bool(detect_regions(joined)) or city_guess in {
+            "Dubai",
+            "Frankfurt",
+            "Hamburg",
+            "Germany",
+            "London",
+            "Manchester",
+            "Birmingham",
+            "UK",
+        }
         if not has_target_locality:
             continue
         if not handle or not public_url:
@@ -503,6 +669,7 @@ def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySour
             continue
 
         germany_hit = False
+        uk_hit = False
         city_guess = "unknown"
         for rec in records:
             if not isinstance(rec, dict):
@@ -510,6 +677,8 @@ def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySour
             text = str(rec.get("message_text_sample", ""))
             if has_germany_hint(text):
                 germany_hit = True
+            if has_uk_hint(text):
+                uk_hit = True
             regions = detect_regions(text)
             if "Frankfurt" in regions:
                 germany_hit = True
@@ -519,6 +688,17 @@ def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySour
                 city_guess = "Hamburg"
             elif "Germany" in regions:
                 germany_hit = True
+            elif "London" in regions:
+                uk_hit = True
+                city_guess = "London"
+            elif "Manchester" in regions:
+                uk_hit = True
+                city_guess = "Manchester"
+            elif "Birmingham" in regions:
+                uk_hit = True
+                city_guess = "Birmingham"
+            elif "UK" in regions:
+                uk_hit = True
             city_mentions = rec.get("city_mentions", [])
             if isinstance(city_mentions, list):
                 normalized_mentions = {str(item).strip().lower() for item in city_mentions}
@@ -528,10 +708,22 @@ def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySour
                 elif "hamburg" in normalized_mentions:
                     germany_hit = True
                     city_guess = "Hamburg"
-        if not germany_hit:
+                elif "london" in normalized_mentions:
+                    uk_hit = True
+                    city_guess = "London"
+                elif "manchester" in normalized_mentions:
+                    uk_hit = True
+                    city_guess = "Manchester"
+                elif "birmingham" in normalized_mentions:
+                    uk_hit = True
+                    city_guess = "Birmingham"
+        if not germany_hit and not uk_hit:
             continue
 
         key = f"telegram:{handle}"
+        country_guess = "UK" if uk_hit and not germany_hit else "Germany"
+        if country_guess == "UK" and city_guess == "unknown":
+            city_guess = "London"
         seeded[key] = DiscoverySource(
             key=key,
             platform="telegram",
@@ -539,7 +731,7 @@ def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySour
             handle_or_url=handle,
             origins={"quote_sample_hint"},
             seed_title=str(channel.get("title", "")).strip(),
-            country_guess="Germany",
+            country_guess=country_guess,
             city_guess=city_guess,
             source_type_guess=str(channel.get("channel_type_guess", "")).strip() or "unknown",
         )
@@ -552,6 +744,12 @@ def seed_from_manual_handles() -> Dict[str, DiscoverySource]:
         handle = str(entry.get("handle", "")).strip().lower()
         if not handle:
             continue
+        city_guess = str(entry.get("city_guess", "unknown")).strip() or "unknown"
+        country_guess = str(entry.get("country_guess", "")).strip()
+        if not country_guess:
+            country_guess = region_to_basket(city_guess)
+        if country_guess == "unknown":
+            country_guess = city_guess if city_guess in TARGET_BASKETS else "unknown"
         key = f"telegram:{handle}"
         seeded[key] = DiscoverySource(
             key=key,
@@ -560,8 +758,8 @@ def seed_from_manual_handles() -> Dict[str, DiscoverySource]:
             handle_or_url=handle,
             origins={str(entry.get("origin", "manual_seed"))},
             seed_title=str(entry.get("title", "")).strip(),
-            country_guess="Germany",
-            city_guess=str(entry.get("city_guess", "Germany")).strip() or "Germany",
+            country_guess=country_guess,
+            city_guess=city_guess,
             source_type_guess=str(entry.get("source_type_guess", "unknown")).strip() or "unknown",
         )
     return seeded
@@ -630,13 +828,15 @@ def freshness_label(score: int) -> str:
 
 def classify_source_type(source: DiscoverySource, title: str, text: str) -> str:
     lowered = translit_digits(" ".join(filter(None, [title, text, source.source_type_guess]))).lower()
-    if source.source_type_guess == "individual_exchange_shop":
+    if source.source_type_guess in {"individual_exchange_shop", "exchange_shop"}:
         return "exchange_shop"
+    if source.source_type_guess == "settlement_channel":
+        return "settlement_channel"
     if source.source_type_guess in {"dealer_network_channel", "market_price_channel"}:
         return "regional_market_channel"
     if source.source_type_guess == "aggregator":
         return "aggregator"
-    if any(word in lowered for word in ("صرافی", "sarafi", "exchange", "currency exchange")) and any(word in lowered for word in ("خرید", "فروش", "rate", "قیمت", "نرخ")):
+    if any(word in lowered for word in ("صرافی", "sarafi", "exchange", "currency exchange")) and any(word in lowered for word in ("خرید", "فروش", "rate", "قیمت", "نرخ", "پوند", "gbp")):
         return "exchange_shop"
     if any(word in lowered for word in ("حواله", "remittance", "transfer", "settlement", "پرداخت", "para transfer")):
         return "settlement_channel"
@@ -735,7 +935,7 @@ def extract_quote_records_for_source(
         country_guess = "Afghanistan"
     elif "Frankfurt" in locality_hints or "Hamburg" in locality_hints or "Germany" in locality_hints:
         country_guess = "Germany"
-    elif "London" in locality_hints:
+    elif any(region in locality_hints for region in ("London", "Manchester", "Birmingham", "UK")):
         country_guess = "UK"
     elif "Istanbul" in locality_hints:
         country_guess = "Turkey"
@@ -868,6 +1068,7 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
         "publishable": False,
         "suppression_reason": "no_usable_records",
         "top_sources": [],
+        "contributing_sources": [],
     }
     if not records:
         return base
@@ -989,6 +1190,7 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
         "dispersion_cv": round(dispersion_cv, 6),
         "outliers_removed": outliers_removed,
         "top_sources": [handle for handle, _ in top_sources],
+        "contributing_sources": sorted(source_weights),
     }
 
 
@@ -1070,6 +1272,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timeout", type=int, default=20)
     parser.add_argument("--sleep-seconds", type=float, default=0.35)
     parser.add_argument("--max-discovered-sources", type=int, default=160)
+    parser.add_argument("--skip-search", action="store_true", help="Use registry/manual seeds only; skip search-engine discovery")
     return parser.parse_args()
 
 
@@ -1085,12 +1288,21 @@ def main() -> int:
     previous_usable = {row["basket_name"]: int(row.get("usable_record_count", 0) or 0) for row in base_basket_payload.get("baskets", []) if isinstance(row, dict)}
 
     query_plan = [(group, query) for group, queries in QUERY_GROUPS.items() for query in queries]
-    discovered_sources, search_debug = search_discovery(
-        query_plan=query_plan,
-        pages_per_query=args.pages_per_query,
-        timeout=args.timeout,
-        sleep_seconds=args.sleep_seconds,
-    )
+    if args.skip_search:
+        discovered_sources = {}
+        search_debug = {
+            "successful_search_requests": 0,
+            "failed_search_requests": 0,
+            "query_stats": {},
+            "skipped": True,
+        }
+    else:
+        discovered_sources, search_debug = search_discovery(
+            query_plan=query_plan,
+            pages_per_query=args.pages_per_query,
+            timeout=args.timeout,
+            sleep_seconds=args.sleep_seconds,
+        )
     existing_seeded = seed_from_existing_registry(channel_rows)
     germany_hint_seeded = seed_from_quote_message_samples(survey_dir)
     manual_seeded = seed_from_manual_handles()
@@ -1098,7 +1310,19 @@ def main() -> int:
     merge_discovery_sources(discovered_sources, germany_hint_seeded)
     merge_discovery_sources(discovered_sources, manual_seeded)
 
-    ordered_sources = sorted(discovered_sources.values(), key=lambda item: (item.platform, item.url))
+    def source_sort_key(item: DiscoverySource) -> Tuple[int, str, str]:
+        origins = set(item.origins)
+        if any(origin.startswith("manual_") for origin in origins):
+            priority = 0
+        elif "existing_registry" in origins:
+            priority = 1
+        elif "quote_sample_hint" in origins:
+            priority = 2
+        else:
+            priority = 3
+        return priority, item.platform, item.url
+
+    ordered_sources = sorted(discovered_sources.values(), key=source_sort_key)
     if args.max_discovered_sources > 0:
         ordered_sources = ordered_sources[: args.max_discovered_sources]
 
@@ -1133,7 +1357,7 @@ def main() -> int:
     remaining_empty = [row["basket_name"] for row in enriched_baskets if int(row.get("usable_record_count", 0) or 0) == 0]
     can_render = {
         basket: any(row["basket_name"] == basket and row.get("publishable") for row in enriched_baskets)
-        for basket in ("UAE", "Iraq", "Afghanistan", "Germany")
+        for basket in ("UAE", "Iraq", "Afghanistan", "UK", "Germany")
     }
 
     candidates_csv = survey_dir / "regional_market_signal_candidates.csv"
@@ -1169,6 +1393,7 @@ def main() -> int:
     print(f"uae_can_render={can_render['UAE']}")
     print(f"iraq_can_render={can_render['Iraq']}")
     print(f"afghanistan_can_render={can_render['Afghanistan']}")
+    print(f"uk_can_render={can_render['UK']}")
     print(f"germany_can_render={can_render['Germany']}")
     print(f"regional_market_signal_candidates_csv={candidates_csv}")
     print(f"regional_market_signal_summary_json={summary_json}")

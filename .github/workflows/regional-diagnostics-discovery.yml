@@ -79,6 +79,7 @@ jobs:
             regional_sleep=0.05
             basket_sleep=0.2
             market_sleep=0.05
+            discovery_search_args="--skip-search"
           else
             uae_max_seeds=240
             regional_max_sources=180
@@ -91,6 +92,7 @@ jobs:
             regional_sleep=0.2
             basket_sleep=1.0
             market_sleep=0.25
+            discovery_search_args=""
           fi
 
           if [ "${basket_only_fast_path}" != "true" ]; then
@@ -115,15 +117,14 @@ jobs:
             --survey-dir state/survey_outputs \
             --site-api-dir state/site/api
 
-          if [ "${{ github.event_name }}" != "push" ]; then
-            python3 scripts/regional_fx_board_discovery.py \
-              --survey-dir state/survey_outputs \
-              --site-api-dir state/site/api \
-              --pages-per-query 1 \
-              --max-sources "${regional_max_sources}" \
-              --timeout "${regional_timeout}" \
-              --sleep-seconds "${regional_sleep}"
-          fi
+          python3 scripts/regional_fx_board_discovery.py \
+            --survey-dir state/survey_outputs \
+            --site-api-dir state/site/api \
+            --pages-per-query 1 \
+            --max-sources "${regional_max_sources}" \
+            --timeout "${regional_timeout}" \
+            --sleep-seconds "${regional_sleep}" \
+            ${discovery_search_args}
 
           python3 scripts/exchange_shop_baskets.py \
             --survey-dir state/survey_outputs \
@@ -131,15 +132,14 @@ jobs:
             --timeout "${uae_timeout}" \
             --sleep-seconds "${basket_sleep}"
 
-          if [ "${{ github.event_name }}" != "push" ]; then
-            python3 scripts/regional_market_signal_discovery.py \
-              --survey-dir state/survey_outputs \
-              --site-api-dir state/site/api \
-              --pages-per-query 1 \
-              --max-discovered-sources "${market_max_sources}" \
-              --timeout "${market_timeout}" \
-              --sleep-seconds "${market_sleep}"
-          fi
+          python3 scripts/regional_market_signal_discovery.py \
+            --survey-dir state/survey_outputs \
+            --site-api-dir state/site/api \
+            --pages-per-query 1 \
+            --max-discovered-sources "${market_max_sources}" \
+            --timeout "${market_timeout}" \
+            --sleep-seconds "${market_sleep}" \
+            ${discovery_search_args}
 
           python3 scripts/regional_market_signals_card.py \
             --regional state/site/api/regional_fx_board_basket_review.json \

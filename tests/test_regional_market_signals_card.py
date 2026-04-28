@@ -192,6 +192,72 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
         self.assertEqual(payload["summary"]["monitor_count"], 1)
         self.assertEqual(payload["summary"]["hide_count"], 1)
 
+    def test_build_payload_merges_complementary_uk_sources(self) -> None:
+        regional_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "localities": [
+                {
+                    "locality_name": "UK",
+                    "signal_type_used": "regional_market_channel",
+                    "usable_record_count": 27,
+                    "contributing_source_count": 4,
+                    "contributing_sources": [
+                        "aghayebazar_official",
+                        "exchangeratescountries",
+                        "kabul_dollarrate",
+                        "lubrinol",
+                    ],
+                    "weighted_rate": 2_252_953.27,
+                    "median_rate": 2_397_040.75,
+                    "spread_vs_benchmark_pct": 55.3844,
+                    "freshness_status": "fresh",
+                    "dispersion_level": "high",
+                    "basket_confidence": 76.68,
+                    "recommended_display_state": "publish",
+                    "suppression_reason": "",
+                }
+            ],
+        }
+        enriched_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "baskets": [
+                {
+                    "basket_name": "UK",
+                    "signal_type_used": "exchange_shop",
+                    "weighted_rate": 1_858_635.05,
+                    "median_rate": 1_860_000.0,
+                    "spread_vs_benchmark_pct": 28.1886,
+                    "usable_record_count": 18,
+                    "contributing_source_count": 3,
+                    "contributing_sources": [
+                        "groupsarafilondonuk",
+                        "sarafionline7groupuk",
+                        "exchangeratescountries",
+                    ],
+                    "basket_confidence": 95.13,
+                    "publishable": True,
+                    "suppression_reason": "",
+                    "dispersion_cv": 0.021091,
+                }
+            ],
+        }
+        payload = cards.build_regional_market_cards_payload(regional_payload, enriched_payload, {"cards": []})
+        uk = {row["basket_name"]: row for row in payload["cards"]}["UK"]
+        self.assertEqual(uk["source_artifact"], "merged_diagnostics")
+        self.assertEqual(uk["display_state"], "publish")
+        self.assertEqual(uk["contributing_source_count"], 6)
+        self.assertEqual(
+            uk["contributing_sources"],
+            [
+                "aghayebazar_official",
+                "exchangeratescountries",
+                "groupsarafilondonuk",
+                "kabul_dollarrate",
+                "lubrinol",
+                "sarafionline7groupuk",
+            ],
+        )
+
     def test_build_regional_history_payload_upserts_and_prunes(self) -> None:
         cards_payload = {
             "generated_at": "2026-03-31T10:00:00Z",

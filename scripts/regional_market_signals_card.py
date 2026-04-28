@@ -76,6 +76,20 @@ def to_int(value: Any) -> int:
     return int(round(parsed))
 
 
+def normalize_source_list(value: Any) -> List[str]:
+    if isinstance(value, list):
+        return sorted({str(item).strip() for item in value if str(item or "").strip()})
+    if isinstance(value, str):
+        parts = [
+            part.strip()
+            for token in value.split("|")
+            for part in token.split(",")
+            if part.strip()
+        ]
+        return sorted(set(parts))
+    return []
+
+
 def normalize_state(value: Any) -> str:
     text = str(value or "").strip().lower()
     if text in {"publish", "monitor", "hide"}:
@@ -182,6 +196,7 @@ def build_candidate(
     display_state: Any,
     freshness_status: Any = None,
     dispersion_level: Any = None,
+    contributing_sources: Any = None,
 ) -> Dict[str, Any]:
     usable = to_int(usable_record_count)
     contributing = to_int(contributing_source_count)
@@ -191,6 +206,7 @@ def build_candidate(
     signal_type = str(signal_type_used or "").strip() or "unknown"
     freshness = normalize_freshness(freshness_status, suppression, state)
     dispersion = str(dispersion_level or "").strip() or "unknown"
+    source_ids = normalize_source_list(contributing_sources)
 
     return {
         "basket_name": locality,
@@ -206,6 +222,7 @@ def build_candidate(
         "display_state": state,
         "suppression_reason": suppression,
         "source_artifact": source_artifact,
+        "contributing_sources": source_ids,
     }
 
 
@@ -229,6 +246,7 @@ def build_regional_candidates(payload: Dict[str, Any]) -> Dict[str, List[Dict[st
             display_state=row.get("recommended_display_state"),
             freshness_status=row.get("freshness_status"),
             dispersion_level=row.get("dispersion_level"),
+            contributing_sources=row.get("contributing_sources"),
         )
         result.setdefault(locality, []).append(candidate)
     return result
@@ -261,6 +279,7 @@ def build_enriched_candidates(payload: Dict[str, Any]) -> Dict[str, List[Dict[st
             display_state=display_state,
             freshness_status=row.get("freshness_status"),
             dispersion_level=dispersion_level_from_cv(row.get("dispersion_cv")),
+            contributing_sources=row.get("contributing_sources") or row.get("top_sources"),
         )
         result.setdefault(locality, []).append(candidate)
     return result
@@ -293,6 +312,7 @@ def build_legacy_candidates(payload: Dict[str, Any]) -> Dict[str, List[Dict[str,
             display_state=display_state,
             freshness_status="unknown",
             dispersion_level="unknown",
+            contributing_sources=row.get("channels"),
         )
         result.setdefault(locality, []).append(candidate)
     return result
@@ -311,7 +331,7 @@ def candidate_sort_key(candidate: Dict[str, Any]) -> tuple:
 
 
 def merge_locality_candidates(locality: str, candidates: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-    if locality != "Germany":
+    if locality not in {"Germany", "UK"}:
         return None
     publishable = [
         row
@@ -330,6 +350,15 @@ def merge_locality_candidates(locality: str, candidates: List[Dict[str, Any]]) -
     weight_sum = sum(weights)
     if weight_sum <= 0:
         return None
+
+    source_lists = [normalize_source_list(row.get("contributing_sources")) for row in publishable]
+    has_complete_source_lists = all(source_lists)
+    source_ids = sorted({source_id for sources in source_lists for source_id in sources})
+    contributing_count = (
+        len(source_ids)
+        if has_complete_source_lists
+        else sum(to_int(row.get("contributing_source_count")) for row in publishable)
+    )
 
     def weighted(field: str) -> Optional[float]:
         values = [to_float(row.get(field)) for row in publishable]
@@ -368,12 +397,13 @@ def merge_locality_candidates(locality: str, candidates: List[Dict[str, Any]]) -
         median_rate=weighted("median_rate"),
         spread_vs_benchmark_pct=weighted("spread_vs_benchmark_pct"),
         usable_record_count=sum(to_int(row.get("usable_record_count")) for row in publishable),
-        contributing_source_count=sum(to_int(row.get("contributing_source_count")) for row in publishable),
+        contributing_source_count=contributing_count,
         basket_confidence=weighted("basket_confidence") or 0.0,
         suppression_reason="",
         display_state="publish",
         freshness_status=freshness,
         dispersion_level=dispersion,
+        contributing_sources=source_ids,
     )
     return merged
 
