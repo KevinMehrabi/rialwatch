@@ -1,6 +1,18 @@
 name: Regional Diagnostics Discovery
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/regional-diagnostics-discovery.yml"
+      - "scripts/uae_exchange_discovery.py"
+      - "scripts/uae_basket_review.py"
+      - "scripts/uae_signal_watchlist.py"
+      - "scripts/regional_fx_board_discovery.py"
+      - "scripts/exchange_shop_baskets.py"
+      - "scripts/regional_market_signal_discovery.py"
+      - "scripts/regional_market_signals_card.py"
   schedule:
     # Refresh regional diagnostics twice daily without coupling it to benchmark publication.
     - cron: "42 3,15 * * *"
@@ -8,6 +20,8 @@ on:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
   group: regional-diagnostics-discovery
@@ -16,6 +30,9 @@ concurrency:
 jobs:
   discover_regional_diagnostics:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -94,6 +111,8 @@ jobs:
             --history-out state/site/api/regional_market_signals_history.json \
             --timeseries-out state/site/api/regional_market_signals_timeseries.json
 
+          python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
+
       - name: Persist regional diagnostics outputs
         run: |
           data_branch="data/live"
@@ -117,6 +136,8 @@ jobs:
             "site/api/regional_market_signals_card.json"
             "site/api/regional_market_signals_history.json"
             "site/api/regional_market_signals_timeseries.json"
+            "site/index.html"
+            "site/status/index.html"
           )
           existing_targets=()
           for path in "${targets[@]}"; do
@@ -155,3 +176,15 @@ jobs:
 
           echo "::warning::Failed to push regional diagnostics updates to ${data_branch} after 3 attempts."
           exit 0
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: state/site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

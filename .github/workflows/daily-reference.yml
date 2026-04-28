@@ -85,6 +85,13 @@ jobs:
         run: |
           python3 scripts/guardrail_check.py --site-dir state/site
 
+      - name: Install Playwright for auto-heal collection
+        if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure'
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install playwright
+          python3 -m playwright install --with-deps chromium
+
       - name: Auto-heal if guardrails fail
         if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure'
         env:
