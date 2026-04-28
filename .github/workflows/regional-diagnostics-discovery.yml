@@ -107,13 +107,15 @@ jobs:
             --survey-dir state/survey_outputs \
             --site-api-dir state/site/api
 
-          python3 scripts/regional_fx_board_discovery.py \
-            --survey-dir state/survey_outputs \
-            --site-api-dir state/site/api \
-            --pages-per-query 1 \
-            --max-sources "${regional_max_sources}" \
-            --timeout "${regional_timeout}" \
-            --sleep-seconds "${regional_sleep}"
+          if [ "${{ github.event_name }}" != "push" ]; then
+            python3 scripts/regional_fx_board_discovery.py \
+              --survey-dir state/survey_outputs \
+              --site-api-dir state/site/api \
+              --pages-per-query 1 \
+              --max-sources "${regional_max_sources}" \
+              --timeout "${regional_timeout}" \
+              --sleep-seconds "${regional_sleep}"
+          fi
 
           python3 scripts/exchange_shop_baskets.py \
             --survey-dir state/survey_outputs \
@@ -121,13 +123,15 @@ jobs:
             --timeout "${uae_timeout}" \
             --sleep-seconds "${basket_sleep}"
 
-          python3 scripts/regional_market_signal_discovery.py \
-            --survey-dir state/survey_outputs \
-            --site-api-dir state/site/api \
-            --pages-per-query 1 \
-            --max-discovered-sources "${market_max_sources}" \
-            --timeout "${market_timeout}" \
-            --sleep-seconds "${market_sleep}"
+          if [ "${{ github.event_name }}" != "push" ]; then
+            python3 scripts/regional_market_signal_discovery.py \
+              --survey-dir state/survey_outputs \
+              --site-api-dir state/site/api \
+              --pages-per-query 1 \
+              --max-discovered-sources "${market_max_sources}" \
+              --timeout "${market_timeout}" \
+              --sleep-seconds "${market_sleep}"
+          fi
 
           python3 scripts/regional_market_signals_card.py \
             --regional state/site/api/regional_fx_board_basket_review.json \
