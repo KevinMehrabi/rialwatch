@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-04-28T04:34:06Z",
+  "generated_at": "2026-04-28T15:46:56Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
-  "total_usable_records": 131,
-  "total_contributing_channels": 12,
-  "publishable_basket_count": 2,
+  "total_usable_records": 139,
+  "total_contributing_channels": 13,
+  "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
       "handle": "istanbulexchange_com",
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 59,
+    "direct_shop": 60,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 8
+    "settlement_exchange": 15
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -48,27 +48,27 @@
     {
       "basket_name": "Iran",
       "publishable": false,
-      "usable_record_count": 15,
+      "usable_record_count": 16,
       "contributing_channel_count": 1,
-      "basket_confidence": 76.22,
+      "basket_confidence": 75.92,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "Turkey",
-      "publishable": true,
-      "usable_record_count": 38,
+      "publishable": false,
+      "usable_record_count": 22,
       "contributing_channel_count": 2,
-      "basket_confidence": 78.1,
-      "suppression_reason": "",
+      "basket_confidence": 82.07,
+      "suppression_reason": "concentrated_single_source",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 12,
-      "contributing_channel_count": 3,
-      "basket_confidence": 89.05,
+      "usable_record_count": 16,
+      "contributing_channel_count": 5,
+      "basket_confidence": 92.98,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -111,9 +111,9 @@
     {
       "basket_name": "unknown",
       "publishable": true,
-      "usable_record_count": 32,
+      "usable_record_count": 35,
       "contributing_channel_count": 2,
-      "basket_confidence": 76.65,
+      "basket_confidence": 76.4,
       "suppression_reason": "",
       "internal_status": ""
     }
@@ -159,8 +159,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 95.44,
+      "average_freshness": 98.67,
       "from_new_p1": true
     },
     {
@@ -172,6 +172,17 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 13,
+      "average_quality": 77.92,
+      "average_freshness": 81.85,
       "from_new_p1": false
     },
     {
@@ -208,17 +219,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -248,6 +248,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 88.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranianuae.ae",
+      "title": "Iranianuae",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 82.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
