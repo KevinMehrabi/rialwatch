@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-04-28T16:20:13Z",
-  "new_regional_signal_sources_discovered": 11,
+  "generated_at": "2026-04-28T16:38:18Z",
+  "new_regional_signal_sources_discovered": 19,
   "existing_registry_signal_sources_used": 29,
   "which_locality_baskets_gained_usable_data": [
     "Afghanistan",
@@ -15,14 +15,15 @@
     "Iraq": false,
     "Afghanistan": true,
     "UK": false,
-    "Germany": true
+    "Germany": false
   },
   "top_sources_contributing_to_each_improved_basket": {
     "Afghanistan": [
-      "haratdollar",
-      "toofan_harirod"
+      "toofan_harirod",
+      "haratdollar"
     ],
     "Germany": [
+      "eurobazaar",
       "hmtransfer",
       "berlin_pay"
     ]
@@ -33,6 +34,6 @@
     "query_stats": {},
     "skipped": true
   },
-  "queries_run": 65,
-  "sources_crawled": 59
+  "queries_run": 103,
+  "sources_crawled": 73
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-28T16:19:22Z",
+  "generated_at": "2026-04-28T16:36:56Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
   "localities": [
@@ -7,8 +7,9 @@
       "locality_name": "Iran",
       "signal_type_used": "regional_market_channel",
       "usable_record_count": 175,
-      "contributing_source_count": 15,
+      "contributing_source_count": 16,
       "contributing_sources": [
+        "almaexchange",
         "boonbas",
         "dollar_tehran3bze",
         "dollarlahzei1",
@@ -26,18 +27,18 @@
         "tahran_sabza"
       ],
       "median_rate": 1655000.0,
-      "weighted_rate": 1657388.92,
-      "spread_vs_benchmark_pct": 14.3088,
+      "weighted_rate": 1658315.27,
+      "spread_vs_benchmark_pct": 14.3727,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 78.02,
+      "basket_confidence": 77.97,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Afghanistan",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 36,
+      "usable_record_count": 44,
       "contributing_source_count": 7,
       "contributing_sources": [
         "boonbas",
@@ -48,12 +49,12 @@
         "toofan_harirod",
         "turan_ex"
       ],
-      "median_rate": 1648500.0,
-      "weighted_rate": 1597541.11,
-      "spread_vs_benchmark_pct": 10.1812,
+      "median_rate": 1655000.0,
+      "weighted_rate": 1598719.74,
+      "spread_vs_benchmark_pct": 10.2625,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.12,
+      "basket_confidence": 77.3,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -100,8 +101,8 @@
         "sarafionlineuk"
       ],
       "median_rate": 2042277.25,
-      "weighted_rate": 2067744.29,
-      "spread_vs_benchmark_pct": 42.6107,
+      "weighted_rate": 2065295.17,
+      "spread_vs_benchmark_pct": 42.4418,
       "freshness_status": "fresh",
       "dispersion_level": "high",
       "basket_confidence": 76.35,
@@ -111,10 +112,11 @@
     {
       "locality_name": "Turkey",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 61,
-      "contributing_source_count": 9,
+      "usable_record_count": 62,
+      "contributing_source_count": 10,
       "contributing_sources": [
         "aghayebazar_official",
+        "almaexchange",
         "exchangeratescountries",
         "kabul_dollarrate",
         "lubrinol",
@@ -125,11 +127,11 @@
         "sarafionlineuk"
       ],
       "median_rate": 2097364.75,
-      "weighted_rate": 2164769.48,
-      "spread_vs_benchmark_pct": 49.3025,
+      "weighted_rate": 2162837.81,
+      "spread_vs_benchmark_pct": 49.1692,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 76.81,
+      "basket_confidence": 76.8,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -161,18 +163,27 @@
     },
     {
       "locality_name": "Germany",
-      "signal_type_used": null,
-      "usable_record_count": 0,
-      "contributing_source_count": 0,
-      "contributing_sources": [],
-      "median_rate": null,
-      "weighted_rate": null,
-      "spread_vs_benchmark_pct": null,
-      "freshness_status": "old",
-      "dispersion_level": "unknown",
-      "basket_confidence": 0.0,
-      "recommended_display_state": "hide",
-      "suppression_reason": "no_usable_records"
+      "signal_type_used": "regional_market_channel",
+      "usable_record_count": 172,
+      "contributing_source_count": 8,
+      "contributing_sources": [
+        "berlin_pay",
+        "eurobazaar",
+        "frankfurt_euro",
+        "hamburg_euro",
+        "hmtransfer",
+        "koln_euro",
+        "munich_euro",
+        "munich_online"
+      ],
+      "median_rate": 1650000.0,
+      "weighted_rate": 1267687.63,
+      "spread_vs_benchmark_pct": -12.5686,
+      "freshness_status": "fresh",
+      "dispersion_level": "high",
+      "basket_confidence": 75.66,
+      "recommended_display_state": "publish",
+      "suppression_reason": ""
     }
   ]
 }
