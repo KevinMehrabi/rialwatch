@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import csv
 import datetime as dt
+import io
 import json
 import math
 import re
@@ -52,6 +53,9 @@ SIMPLE_NUMBER_RE = re.compile(r"(?<!\d)(?:\d{2,3}(?:[,٬،]\d{3})+|\d{5,8})(?!\d
 USD_ALIASES = ("دلار آمریکا", "دلار", "USD", "usd")
 AED_USD_PEG = 3.6725
 UAE_REVIEW_USABLE_STATUSES = {"publishable", "monitor_only"}
+UAE_USD_MIN_MULT = 0.78
+UAE_USD_MAX_MULT = 1.35
+UAE_USD_MIN_PARSEABILITY = 70.0
 UAE_REVIEW_EXCLUDED_DOMAINS = {
     "scmp.com",
     "thenationalnews.com",
@@ -114,8 +118,8 @@ def safe_bool(value: Any) -> bool:
 
 
 def load_csv(path: Path) -> List[Dict[str, str]]:
-    with path.open("r", encoding="utf-8", newline="") as fh:
-        return list(csv.DictReader(fh))
+    text = path.read_text(encoding="utf-8", errors="replace").replace("\x00", " ")
+    return list(csv.DictReader(io.StringIO(text)))
 
 
 def write_json(path: Path, payload: Dict[str, Any]) -> None:
@@ -258,11 +262,11 @@ def normalize_uae_review_records(
         review = review_by_name.get(business_name, {})
         if str(review.get("basket_use_status", "")).strip() not in UAE_REVIEW_USABLE_STATUSES:
             continue
-        currency = str(row.get("currency", "")).strip().upper()
-        if currency != "AED":
-            continue
         domain = domain_for(row.get("surface_url", ""))
         if domain in UAE_REVIEW_EXCLUDED_DOMAINS:
+            continue
+        currency = str(row.get("currency", "")).strip().upper()
+        if currency not in {"AED", "USD"}:
             continue
         parseability = safe_float(row.get("parseability_score"))
         if parseability < 50.0:
@@ -270,8 +274,18 @@ def normalize_uae_review_records(
         raw_rate = safe_float(row.get("normalized_irr_value"))
         if raw_rate <= 0:
             continue
-        normalized_rate = raw_rate * AED_USD_PEG
-        if normalized_rate < min_rate or normalized_rate > max_rate:
+        quote_prefix = currency
+        if currency == "AED":
+            normalized_rate = raw_rate * AED_USD_PEG
+            range_min = min_rate
+            range_max = max_rate
+        else:
+            if parseability < UAE_USD_MIN_PARSEABILITY:
+                continue
+            normalized_rate = raw_rate
+            range_min = benchmark_value * UAE_USD_MIN_MULT if benchmark_value > 0 else 1_000_000.0
+            range_max = benchmark_value * UAE_USD_MAX_MULT if benchmark_value > 0 else 2_000_000.0
+        if normalized_rate < range_min or normalized_rate > range_max:
             continue
         freshness_score = freshness_score_from_status(row.get("freshness_status", ""))
         if freshness_score < 45.0:
@@ -288,7 +302,7 @@ def normalize_uae_review_records(
                 likely_individual_shop=True,
                 channel_type_guess=str(row.get("quote_type_guess", "")) or "uae_aed_settlement",
                 normalized_rate_rial=normalized_rate,
-                quote_basis=f"AED_{str(row.get('quote_basis', '') or 'single_value')}",
+                quote_basis=f"{quote_prefix}_{str(row.get('quote_basis', '') or 'single_value')}",
                 overall_quality=parseability,
                 freshness_score=freshness_score,
                 structure_score=parseability,
@@ -391,8 +405,10 @@ def remove_mad_outliers(records: Sequence[BasketRecord]) -> Tuple[List[BasketRec
     cleaned: List[BasketRecord] = []
     removed = 0
     for rec in records:
-        score = abs(rec.normalized_rate_rial - center) / mad
-        if score > 4.0:
+        absolute_deviation = abs(rec.normalized_rate_rial - center)
+        relative_deviation = absolute_deviation / center if center > 0 else 0.0
+        score = absolute_deviation / mad
+        if score > 4.0 and relative_deviation > 0.025:
             removed += 1
             continue
         cleaned.append(rec)

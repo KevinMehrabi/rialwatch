@@ -207,6 +207,8 @@ def safe_float(value: Any, default: float = 0.0) -> float:
 
 def clip_text(text: str, limit: int = 240) -> str:
     text = clean_text(text or "")
+    text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
     return text if len(text) <= limit else text[:limit] + "..."
 
 

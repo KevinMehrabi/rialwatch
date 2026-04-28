@@ -80,6 +80,21 @@ class ExchangeShopBasketTests(unittest.TestCase):
         self.assertGreater(row["basket_confidence"], 55.0)
         self.assertEqual(row["contributing_channel_count"], 2)
 
+    def test_summarize_basket_keeps_tight_cluster_source_with_tiny_mad(self) -> None:
+        records = [
+            self.make_record(handle="uae_a", locality="UAE", rate=1_591_386.06),
+            self.make_record(handle="uae_a", locality="UAE", rate=1_592_983.60),
+            self.make_record(handle="uae_b", locality="UAE", rate=1_593_865.00),
+            self.make_record(handle="uae_c", locality="UAE", rate=1_590_192.50),
+            self.make_record(handle="uae_c", locality="UAE", rate=1_590_192.50),
+            self.make_record(handle="uae_c", locality="UAE", rate=1_590_192.50),
+            self.make_record(handle="uae_d", locality="UAE", rate=1_610_024.00),
+            self.make_record(handle="uae_d", locality="UAE", rate=1_610_024.00),
+        ]
+        row = baskets.summarize_basket("UAE", records, benchmark_value=1_449_922.07)
+        self.assertEqual(row["contributing_channel_count"], 4)
+        self.assertEqual(row["outliers_removed"], 0)
+
     def test_build_card_payload_preserves_required_fields(self) -> None:
         payload = baskets.build_card_payload(
             basket_rows=[
@@ -159,6 +174,49 @@ class ExchangeShopBasketTests(unittest.TestCase):
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0].locality, "UAE")
         self.assertAlmostEqual(rows[0].normalized_rate_rial, 1_555_671.0, places=1)
+
+    def test_normalize_uae_review_records_accepts_high_quality_usd_quote(self) -> None:
+        rows = baskets.normalize_uae_review_records(
+            candidate_rows=[
+                {
+                    "business_name": "Dubai USD Desk",
+                    "surface_url": "https://iranianuae.ae/gold-forex",
+                    "currency": "USD",
+                    "normalized_irr_value": "1606500",
+                    "freshness_status": "fresh",
+                    "parseability_score": "82",
+                    "quote_basis": "single_value",
+                    "timestamp_iso": "2026-04-28T12:00:00Z",
+                    "remittance_quote_detected": "false",
+                },
+                {
+                    "business_name": "Noisy USD Desk",
+                    "surface_url": "https://example.com/rates",
+                    "currency": "USD",
+                    "normalized_irr_value": "2000000",
+                    "freshness_status": "fresh",
+                    "parseability_score": "54",
+                    "quote_basis": "single_value",
+                    "timestamp_iso": "2026-04-28T12:00:00Z",
+                    "remittance_quote_detected": "true",
+                },
+            ],
+            review_rows=[
+                {
+                    "business_name": "Dubai USD Desk",
+                    "basket_use_status": "monitor_only",
+                },
+                {
+                    "business_name": "Noisy USD Desk",
+                    "basket_use_status": "monitor_only",
+                },
+            ],
+            benchmark_value=1_550_000.0,
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0].handle, "uae:iranianuae.ae")
+        self.assertEqual(rows[0].quote_basis, "USD_single_value")
+        self.assertEqual(rows[0].normalized_rate_rial, 1_606_500.0)
 
 
 if __name__ == "__main__":
