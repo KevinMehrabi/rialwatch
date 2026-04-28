@@ -25,7 +25,7 @@ permissions:
 
 concurrency:
   group: regional-diagnostics-discovery
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   discover_regional_diagnostics:
@@ -63,19 +63,45 @@ jobs:
 
       - name: Refresh UAE and regional diagnostics
         run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            uae_max_seeds=90
+            regional_max_sources=90
+            market_max_sources=90
+            uae_timeout=12
+            regional_timeout=10
+            market_timeout=12
+            uae_sleep=0.05
+            review_sleep=0.05
+            regional_sleep=0.05
+            basket_sleep=0.2
+            market_sleep=0.05
+          else
+            uae_max_seeds=240
+            regional_max_sources=180
+            market_max_sources=180
+            uae_timeout=20
+            regional_timeout=15
+            market_timeout=20
+            uae_sleep=0.35
+            review_sleep=0.2
+            regional_sleep=0.2
+            basket_sleep=1.0
+            market_sleep=0.25
+          fi
+
           python3 scripts/uae_exchange_discovery.py \
             --survey-dir state/survey_outputs \
             --pages-per-query 1 \
-            --max-seeds 240 \
-            --timeout 20 \
-            --sleep 0.35
+            --max-seeds "${uae_max_seeds}" \
+            --timeout "${uae_timeout}" \
+            --sleep "${uae_sleep}"
 
           python3 scripts/uae_basket_review.py \
             --candidates-csv state/survey_outputs/uae_exchange_discovery_candidates.csv \
             --benchmark-json state/site/api/benchmark.json \
             --survey-dir state/survey_outputs \
-            --timeout 20 \
-            --sleep 0.2
+            --timeout "${uae_timeout}" \
+            --sleep "${review_sleep}"
 
           python3 scripts/uae_signal_watchlist.py \
             --survey-dir state/survey_outputs \
@@ -85,23 +111,23 @@ jobs:
             --survey-dir state/survey_outputs \
             --site-api-dir state/site/api \
             --pages-per-query 1 \
-            --max-sources 180 \
-            --timeout 15 \
-            --sleep-seconds 0.2
+            --max-sources "${regional_max_sources}" \
+            --timeout "${regional_timeout}" \
+            --sleep-seconds "${regional_sleep}"
 
           python3 scripts/exchange_shop_baskets.py \
             --survey-dir state/survey_outputs \
             --site-api-dir state/site/api \
-            --timeout 20 \
-            --sleep-seconds 1.0
+            --timeout "${uae_timeout}" \
+            --sleep-seconds "${basket_sleep}"
 
           python3 scripts/regional_market_signal_discovery.py \
             --survey-dir state/survey_outputs \
             --site-api-dir state/site/api \
             --pages-per-query 1 \
-            --max-discovered-sources 180 \
-            --timeout 20 \
-            --sleep-seconds 0.25
+            --max-discovered-sources "${market_max_sources}" \
+            --timeout "${market_timeout}" \
+            --sleep-seconds "${market_sleep}"
 
           python3 scripts/regional_market_signals_card.py \
             --regional state/site/api/regional_fx_board_basket_review.json \
