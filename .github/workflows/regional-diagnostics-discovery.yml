@@ -1,0 +1,157 @@
+name: Regional Diagnostics Discovery
+
+on:
+  schedule:
+    # Refresh regional diagnostics twice daily without coupling it to benchmark publication.
+    - cron: "42 3,15 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: regional-diagnostics-discovery
+  cancel-in-progress: false
+
+jobs:
+  discover_regional_diagnostics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Ensure data branch exists
+        run: |
+          if git ls-remote --exit-code --heads origin data/live >/dev/null 2>&1; then
+            echo "data/live already exists."
+          else
+            echo "Bootstrapping data/live from current main."
+            git push origin HEAD:data/live
+          fi
+
+      - name: Checkout data branch
+        uses: actions/checkout@v4
+        with:
+          ref: data/live
+          path: state
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Refresh UAE and regional diagnostics
+        run: |
+          python3 scripts/uae_exchange_discovery.py \
+            --survey-dir state/survey_outputs \
+            --pages-per-query 1 \
+            --max-seeds 240 \
+            --timeout 20 \
+            --sleep 0.35
+
+          python3 scripts/uae_basket_review.py \
+            --candidates-csv state/survey_outputs/uae_exchange_discovery_candidates.csv \
+            --benchmark-json state/site/api/benchmark.json \
+            --survey-dir state/survey_outputs \
+            --timeout 20 \
+            --sleep 0.2
+
+          python3 scripts/uae_signal_watchlist.py \
+            --survey-dir state/survey_outputs \
+            --site-api-dir state/site/api
+
+          python3 scripts/regional_fx_board_discovery.py \
+            --survey-dir state/survey_outputs \
+            --site-api-dir state/site/api \
+            --pages-per-query 1 \
+            --max-sources 180 \
+            --timeout 15 \
+            --sleep-seconds 0.2
+
+          python3 scripts/exchange_shop_baskets.py \
+            --survey-dir state/survey_outputs \
+            --site-api-dir state/site/api \
+            --timeout 20 \
+            --sleep-seconds 1.0
+
+          python3 scripts/regional_market_signal_discovery.py \
+            --survey-dir state/survey_outputs \
+            --site-api-dir state/site/api \
+            --pages-per-query 1 \
+            --max-discovered-sources 180 \
+            --timeout 20 \
+            --sleep-seconds 0.25
+
+          python3 scripts/regional_market_signals_card.py \
+            --regional state/site/api/regional_fx_board_basket_review.json \
+            --enriched state/site/api/exchange_shop_baskets_enriched.json \
+            --legacy state/site/api/exchange_shop_baskets_card.json \
+            --out state/site/api/regional_market_signals_card.json \
+            --history-out state/site/api/regional_market_signals_history.json \
+            --timeseries-out state/site/api/regional_market_signals_timeseries.json
+
+      - name: Persist regional diagnostics outputs
+        run: |
+          data_branch="data/live"
+          targets=(
+            "survey_outputs/uae_exchange_discovery_candidates.csv"
+            "survey_outputs/uae_exchange_discovery_summary.json"
+            "survey_outputs/uae_basket_review.csv"
+            "survey_outputs/uae_basket_review_summary.json"
+            "survey_outputs/uae_basket_candidate_records.csv"
+            "survey_outputs/regional_fx_board_candidates.csv"
+            "survey_outputs/regional_fx_board_records.csv"
+            "survey_outputs/regional_fx_board_summary.json"
+            "survey_outputs/regional_market_signal_candidates.csv"
+            "survey_outputs/regional_market_signal_summary.json"
+            "site/api/uae_signal_watchlist.json"
+            "site/api/regional_fx_board_basket_review.json"
+            "site/api/exchange_shop_baskets.json"
+            "site/api/exchange_shop_baskets_card.json"
+            "site/api/exchange_shop_baskets_enriched.json"
+            "site/api/exchange_shop_network_summary.json"
+            "site/api/regional_market_signals_card.json"
+            "site/api/regional_market_signals_history.json"
+            "site/api/regional_market_signals_timeseries.json"
+          )
+          existing_targets=()
+          for path in "${targets[@]}"; do
+            if [ -e "state/$path" ]; then
+              existing_targets+=("$path")
+            fi
+          done
+
+          if [ "${#existing_targets[@]}" -eq 0 ]; then
+            echo "No regional diagnostics output paths found."
+            exit 0
+          fi
+
+          if [ -z "$(git -C state status --porcelain -- "${existing_targets[@]}")" ]; then
+            echo "No regional diagnostics output changes to commit."
+            exit 0
+          fi
+
+          git -C state config user.name "github-actions[bot]"
+          git -C state config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C state add "${existing_targets[@]}"
+          git -C state commit -m "discover: refresh regional diagnostics [skip ci]"
+
+          for attempt in 1 2 3; do
+            if git -C state push origin "${data_branch}"; then
+              echo "Push succeeded on attempt ${attempt}."
+              exit 0
+            fi
+
+            echo "Push rejected on attempt ${attempt}; rebasing onto origin/${data_branch} and retrying..."
+            if ! git -C state pull --rebase --autostash origin "${data_branch}"; then
+              echo "::warning::Rebase failed after push rejection. Skipping this cycle to avoid workflow noise."
+              exit 0
+            fi
+          done
+
+          echo "::warning::Failed to push regional diagnostics updates to ${data_branch} after 3 attempts."
+          exit 0

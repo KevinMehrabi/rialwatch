@@ -89,6 +89,14 @@ IRAN_SEED_HANDLES = (
     "herat_channel2024",
     "dirhamdubai",
 )
+UAE_SEED_HANDLES = (
+    "dirhamdubai",
+    "dhsgroupdubai",
+    "iranian_uae",
+    "hiemarat",
+    "sarafijavadix",
+    "sarafi_emerald24",
+)
 LOCALITY_TO_BASKET = {
     "Tehran": "Iran",
     "Mashhad": "Iran",
@@ -130,6 +138,16 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s دلار دبی",
         "site:t.me نرخ دلار دبی",
         "site:t.me بازار ارز دبی",
+        "site:t.me حواله درهم",
+        "site:t.me/s حواله درهم",
+        "site:t.me درهم دبی تومان",
+        "site:t.me/s درهم دبی تومان",
+        "site:t.me درهم امارات تومان",
+        "site:t.me/s درهم امارات تومان",
+        "site:t.me نرخ درهم امارات",
+        "site:t.me/s نرخ درهم امارات",
+        "site:t.me نرخ ارز و طلا در امارات",
+        "site:t.me/s نرخ ارز و طلا در امارات",
         "site:t.me هرات دلار",
         "site:t.me/s هرات دلار",
         "site:t.me نرخ دلار هرات",
@@ -244,6 +262,10 @@ QUERY_GROUPS: Dict[str, List[str]] = {
     ],
     "support": [
         "dubai dollar telegram iran",
+        "dubai dirham telegram iran",
+        "uae dirham toman telegram",
+        "aed toman telegram iran",
+        "iranian uae forex telegram",
         "herat dollar telegram iran",
         "tehran dollar telegram iran",
         "mashhad dollar telegram iran",
@@ -377,7 +399,7 @@ LOCALITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Erbil": ("erbil", "اربيل", "اربیل", "هولیر", "هەولێر", "hewler", "hawler"),
     "Baghdad": ("baghdad", "بغداد"),
     "Iraq": ("iraq", "عراق", "العراق"),
-    "Dubai": ("dubai", "دبی", "دوبی"),
+    "Dubai": ("dubai", "uae", "emirates", "دبی", "دوبی", "امارات", "درهم امارات"),
     "Istanbul": ("istanbul", "استانبول"),
     "Ankara": ("ankara", "آنکارا"),
     "Izmir": ("izmir", "ازمیر"),
@@ -1313,13 +1335,31 @@ def main() -> int:
             source.query_hits.add("iran_seed")
             source.discovery_origins.add("iran_seed")
 
+    for handle in UAE_SEED_HANDLES:
+        public_url = f"https://t.me/s/{handle}"
+        source = discovered.get(handle)
+        if source is None:
+            discovered[handle] = DiscoverySource(
+                handle=handle,
+                public_url=public_url,
+                query_hits={"uae_seed"},
+                discovery_origins={"uae_seed"},
+                source_type_hint="regional_market_channel",
+            )
+        else:
+            source.public_url = source.public_url or public_url
+            source.query_hits.add("uae_seed")
+            source.discovery_origins.add("uae_seed")
+
     afghan_seed_set = set(AFGHANISTAN_SEED_HANDLES)
     iran_seed_set = set(IRAN_SEED_HANDLES)
+    uae_seed_set = set(UAE_SEED_HANDLES)
     ordered_sources = sorted(
         discovered.values(),
         key=lambda item: (
             0 if item.handle in afghan_seed_set else 1,
             0 if item.handle in iran_seed_set else 1,
+            0 if item.handle in uae_seed_set else 1,
             item.handle,
         ),
     )

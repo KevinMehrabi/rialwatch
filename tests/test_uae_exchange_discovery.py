@@ -78,6 +78,18 @@ class UAEExchangeDiscoveryTests(unittest.TestCase):
         )
         self.assertFalse(discovery.is_business_like_candidate(record))
 
+    def test_manual_seed_sources_are_included(self) -> None:
+        discovered = {}
+        discovery.add_manual_seeds(discovered)
+        urls = {seed.url for seed in discovered.values()}
+        self.assertIn("https://hiemarat.com/", urls)
+        self.assertIn("https://t.me/s/iranian_uae", urls)
+
+    def test_aed_settlement_queries_are_planned(self) -> None:
+        queries = {query for _group, query in discovery.build_query_plan()}
+        self.assertIn("نرخ حواله درهم امارات دبی تومان", queries)
+        self.assertIn("site:t.me/s درهم دبی تومان", queries)
+
 
 if __name__ == "__main__":
     unittest.main()

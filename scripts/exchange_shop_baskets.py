@@ -17,6 +17,7 @@ import re
 import sys
 import statistics
 import time
+import urllib.parse
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
@@ -49,6 +50,19 @@ VALID_STATUSES = {"ready_for_research_ingestion", "monitor_only"}
 NUMBER_RE = re.compile(r"(?<!\d)(?:\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})(?!\d)")
 SIMPLE_NUMBER_RE = re.compile(r"(?<!\d)(?:\d{2,3}(?:[,٬،]\d{3})+|\d{5,8})(?!\d)")
 USD_ALIASES = ("دلار آمریکا", "دلار", "USD", "usd")
+AED_USD_PEG = 3.6725
+UAE_REVIEW_USABLE_STATUSES = {"publishable", "monitor_only"}
+UAE_REVIEW_EXCLUDED_DOMAINS = {
+    "scmp.com",
+    "thenationalnews.com",
+    "cnbc.com",
+    "khaleejtimes.com",
+    "mofa.gov.ae",
+    "gulfnews.com",
+    "moneyexchangerate.org",
+    "themoneyconverter.com",
+    "exchangerates247.com",
+}
 
 
 @dataclass
@@ -201,6 +215,92 @@ def fallback_usd_rate_from_text(text: str, unit_guess: str, min_rate: float, max
                 if min_rate <= first_rial <= max_rate:
                     return float(first_rial), "inferred"
     return None, "unusable"
+
+
+def domain_for(url: str) -> str:
+    try:
+        parsed = urllib.parse.urlparse(str(url or ""))
+    except ValueError:
+        return ""
+    domain = parsed.netloc.lower()
+    return domain[4:] if domain.startswith("www.") else domain
+
+
+def freshness_score_from_status(status: str) -> float:
+    normalized = str(status or "").strip().lower()
+    if normalized == "fresh":
+        return 92.0
+    if normalized == "recent":
+        return 70.0
+    if normalized == "stale":
+        return 35.0
+    return 25.0
+
+
+def normalize_uae_review_records(
+    candidate_rows: Sequence[Dict[str, str]],
+    review_rows: Sequence[Dict[str, str]],
+    benchmark_value: float,
+) -> List[BasketRecord]:
+    review_by_name = {
+        str(row.get("business_name", "")).strip(): row
+        for row in review_rows
+        if str(row.get("business_name", "")).strip()
+    }
+    min_rate = benchmark_value * 0.55 if benchmark_value > 0 else 500_000.0
+    max_rate = benchmark_value * 1.65 if benchmark_value > 0 else 2_500_000.0
+    records: List[BasketRecord] = []
+
+    for row in candidate_rows:
+        business_name = str(row.get("business_name", "")).strip()
+        if not business_name:
+            continue
+        review = review_by_name.get(business_name, {})
+        if str(review.get("basket_use_status", "")).strip() not in UAE_REVIEW_USABLE_STATUSES:
+            continue
+        currency = str(row.get("currency", "")).strip().upper()
+        if currency != "AED":
+            continue
+        domain = domain_for(row.get("surface_url", ""))
+        if domain in UAE_REVIEW_EXCLUDED_DOMAINS:
+            continue
+        parseability = safe_float(row.get("parseability_score"))
+        if parseability < 50.0:
+            continue
+        raw_rate = safe_float(row.get("normalized_irr_value"))
+        if raw_rate <= 0:
+            continue
+        normalized_rate = raw_rate * AED_USD_PEG
+        if normalized_rate < min_rate or normalized_rate > max_rate:
+            continue
+        freshness_score = freshness_score_from_status(row.get("freshness_status", ""))
+        if freshness_score < 45.0:
+            continue
+        handle = f"uae:{domain or business_name.lower().replace(' ', '_')}"
+        source_category = "settlement_exchange" if safe_bool(row.get("remittance_quote_detected")) else "direct_shop"
+        records.append(
+            BasketRecord(
+                handle=handle,
+                title=business_name,
+                locality="UAE",
+                source_category=source_category,
+                source_priority="uae_review",
+                likely_individual_shop=True,
+                channel_type_guess=str(row.get("quote_type_guess", "")) or "uae_aed_settlement",
+                normalized_rate_rial=normalized_rate,
+                quote_basis=f"AED_{str(row.get('quote_basis', '') or 'single_value')}",
+                overall_quality=parseability,
+                freshness_score=freshness_score,
+                structure_score=parseability,
+                directness_score=78.0 if source_category == "settlement_exchange" else 70.0,
+                timestamp_iso=str(row.get("timestamp_iso", "")),
+                dedup_keep=True,
+                duplication_flag="none",
+                from_new_p1=False,
+                channel_readiness_score=parseability,
+            )
+        )
+    return records
 
 
 def source_category_for_row(
@@ -717,6 +817,10 @@ def build_exchange_shop_baskets(
     channel_rows = load_csv(survey_dir / "channel_survey.csv")
     metric_rows = load_csv(survey_dir / "pilot_channel_metrics.csv")
     quote_rows = load_csv(survey_dir / "pilot_quote_records.csv")
+    uae_candidate_records_path = survey_dir / "uae_basket_candidate_records.csv"
+    uae_review_path = survey_dir / "uae_basket_review.csv"
+    uae_candidate_rows = load_csv(uae_candidate_records_path) if uae_candidate_records_path.exists() else []
+    uae_review_rows = load_csv(uae_review_path) if uae_review_path.exists() else []
 
     metrics_by_handle = build_lookup(metric_rows, "handle")
     survey_by_handle = build_lookup(channel_rows, "handle")
@@ -737,7 +841,12 @@ def build_exchange_shop_baskets(
         sleep_seconds=sleep_seconds,
         benchmark_value=benchmark_value,
     )
-    all_records = existing_records + new_p1_records
+    uae_review_records = normalize_uae_review_records(
+        candidate_rows=uae_candidate_rows,
+        review_rows=uae_review_rows,
+        benchmark_value=benchmark_value,
+    )
+    all_records = existing_records + new_p1_records + uae_review_records
 
     basket_rows = []
     for locality in LOCALITY_ORDER:

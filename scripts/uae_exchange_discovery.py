@@ -82,7 +82,41 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "deira money exchange iran",
         "bur dubai remittance iran",
     ],
+    "aed_settlement": [
+        "قیمت درهم امارات امروز حواله دبی",
+        "نرخ حواله درهم امارات دبی تومان",
+        "تبدیل درهم به تومان دبی صرافی",
+        "درهم به تومان ایرانیان امارات",
+        "AED IRR Dubai Iranian exchange rate",
+        "AED toman Dubai remittance rate",
+        "UAE dirham toman remittance Iran",
+        "Dubai AED IRR settlement rate",
+    ],
+    "community": [
+        "site:iranianuae.ae نرخ ارز درهم تومان",
+        "site:iranianuae.ae حواله درهم امارات",
+        "site:t.me/s حواله درهم امارات",
+        "site:t.me/s درهم دبی تومان",
+        "site:t.me/s نرخ ارز و طلا در امارات",
+        "site:t.me/s AED تومان",
+    ],
 }
+
+MANUAL_UAE_SEEDS: Tuple[Tuple[str, str], ...] = (
+    ("website", "https://hiemarat.com/"),
+    ("website", "https://javadix.com/aed/"),
+    ("website", "https://www.emeraldxe.com/service/%D8%AD%D9%88%D8%A7%D9%84%D9%87-%D8%AF%D8%B1%D9%87%D9%85"),
+    ("website", "https://iranianuae.ae/gold-forex/"),
+    ("website", "https://ir-europe.com/%D8%AF%D8%B1%D9%87%D9%85-%D8%AD%D9%88%D8%A7%D9%84%D9%87-%D8%A8%D9%87-%D8%A7%D9%85%D8%A7%D8%B1%D8%A7%D8%AA/"),
+    ("website", "https://ezdex.net/fiat/price/AED/fa"),
+    ("website", "https://mysaraf.com/uae-dirham-remittance/"),
+    ("website", "https://rialxe.com/money-transfer-to-uae-dubai/"),
+    ("website", "https://tomanxe.com/aed-remittance/"),
+    ("telegram", "https://t.me/s/iranian_uae"),
+    ("telegram", "https://t.me/s/hiemarat"),
+    ("telegram", "https://t.me/s/sarafijavadix"),
+    ("telegram", "https://t.me/s/sarafi_emerald24"),
+)
 
 EXCLUDED_DOMAINS = {
     "r.jina.ai",
@@ -197,6 +231,12 @@ NOISE_DOMAINS = {
     "news24online.com",
     "turkiyetoday.com",
     "2gis.ae",
+    "scmp.com",
+    "thenationalnews.com",
+    "cnbc.com",
+    "khaleejtimes.com",
+    "mofa.gov.ae",
+    "gulfnews.com",
 }
 NOISE_TITLE_HINTS = (
     "best exchange",
@@ -233,16 +273,27 @@ BUSINESS_DOMAIN_HINTS = (
     "dinar",
     "emarat",
     "hafez",
+    "hiemarat",
+    "javadix",
+    "emerald",
+    "iranianuae",
+    "ir-europe",
+    "ezdex",
+    "mysaraf",
+    "rialxe",
+    "tomanxe",
 )
 UAE_LOCALITY_HINTS = (
     "dubai",
     "uae",
+    "emirates",
     "deira",
     "bur dubai",
     "al ras",
     "karama",
     "دبی",
     "امارات",
+    "درهم امارات",
     "درهم",
     "دیره",
 )
@@ -683,6 +734,28 @@ def build_query_plan() -> List[Tuple[str, str]]:
     return out
 
 
+def add_manual_seeds(discovered: Dict[str, DiscoverySeed]) -> None:
+    for kind, raw_url in MANUAL_UAE_SEEDS:
+        normalized = ""
+        if kind == "website":
+            normalized = normalize_website_url(raw_url) or ""
+        elif kind == "telegram":
+            normalized = normalize_telegram_url(raw_url) or ""
+        elif kind == "instagram":
+            normalized = normalize_instagram_url(raw_url) or ""
+        elif kind == "whatsapp":
+            normalized = normalize_whatsapp_url(raw_url) or ""
+        if not normalized:
+            continue
+        key = f"{kind}:{normalized}"
+        seed = discovered.get(key)
+        if seed is None:
+            seed = DiscoverySeed(key=key, kind=kind, url=normalized)
+            discovered[key] = seed
+        seed.query_hits.add("manual_uae_seed")
+        seed.query_groups.add("manual")
+
+
 def run_search_discovery(query_plan: Sequence[Tuple[str, str]], pages_per_query: int, timeout: int, sleep_seconds: float) -> Tuple[Dict[str, DiscoverySeed], Dict[str, Any]]:
     discovered: Dict[str, DiscoverySeed] = {}
     debug: Dict[str, Any] = {
@@ -1097,7 +1170,11 @@ def main() -> int:
         timeout=args.timeout,
         sleep_seconds=args.sleep,
     )
-    ordered_seeds = sorted(discovered.values(), key=lambda item: (item.kind, item.url))
+    add_manual_seeds(discovered)
+    ordered_seeds = sorted(
+        discovered.values(),
+        key=lambda item: (0 if "manual" in item.query_groups else 1, item.kind, item.url),
+    )
     if args.max_seeds > 0:
         ordered_seeds = ordered_seeds[: args.max_seeds]
 

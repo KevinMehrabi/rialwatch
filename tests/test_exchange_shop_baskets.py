@@ -133,6 +133,33 @@ class ExchangeShopBasketTests(unittest.TestCase):
         )
         self.assertEqual([card["basket_name"] for card in payload["cards"]], ["Turkey"])
 
+    def test_normalize_uae_review_records_converts_aed_to_usd_irr(self) -> None:
+        rows = baskets.normalize_uae_review_records(
+            candidate_rows=[
+                {
+                    "business_name": "Dubai AED Desk",
+                    "surface_url": "https://hiemarat.com/",
+                    "currency": "AED",
+                    "normalized_irr_value": "423600",
+                    "freshness_status": "fresh",
+                    "parseability_score": "74",
+                    "quote_basis": "single_value",
+                    "timestamp_iso": "2026-04-28T12:00:00Z",
+                    "remittance_quote_detected": "true",
+                }
+            ],
+            review_rows=[
+                {
+                    "business_name": "Dubai AED Desk",
+                    "basket_use_status": "monitor_only",
+                }
+            ],
+            benchmark_value=1_550_000.0,
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0].locality, "UAE")
+        self.assertAlmostEqual(rows[0].normalized_rate_rial, 1_555_671.0, places=1)
+
 
 if __name__ == "__main__":
     unittest.main()

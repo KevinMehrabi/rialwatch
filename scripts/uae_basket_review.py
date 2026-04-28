@@ -53,6 +53,7 @@ from scripts.uae_exchange_discovery import (
     normalize_instagram_url,
     normalize_telegram_url,
     normalize_website_url,
+    parse_number_token,
     translit_digits,
 )
 
@@ -63,6 +64,51 @@ USD_RATE_MIN_MULT = 0.45
 USD_RATE_MAX_MULT = 1.80
 AED_RATE_MIN = 40_000.0
 AED_RATE_MAX = 600_000.0
+AED_USD_PEG = 3.6725
+DIRECT_RATE_CONTEXT_LINES = 5
+DIRECT_RATE_MAX_RECORDS_PER_SURFACE = 8
+DIRECT_RATE_EXCLUDED_DOMAINS = {
+    "scmp.com",
+    "thenationalnews.com",
+    "cnbc.com",
+    "khaleejtimes.com",
+    "mofa.gov.ae",
+    "gulfnews.com",
+    "moneyexchangerate.org",
+    "themoneyconverter.com",
+    "exchangerates247.com",
+}
+PERSIAN_MONTHS_JALALI = {
+    "فروردین": 1,
+    "اردیبهشت": 2,
+    "اردیبهشت‌": 2,
+    "خرداد": 3,
+    "تیر": 4,
+    "مرداد": 5,
+    "شهریور": 6,
+    "مهر": 7,
+    "آبان": 8,
+    "آذر": 9,
+    "دی": 10,
+    "بهمن": 11,
+    "اسفند": 12,
+}
+PERSIAN_GREGORIAN_MONTHS = {
+    "ژانویه": 1,
+    "فوریه": 2,
+    "مارس": 3,
+    "آوریل": 4,
+    "اپریل": 4,
+    "مه": 5,
+    "ژوئن": 6,
+    "جولای": 7,
+    "اوت": 8,
+    "آگوست": 8,
+    "سپتامبر": 9,
+    "اکتبر": 10,
+    "نوامبر": 11,
+    "دسامبر": 12,
+}
 
 
 @dataclass
@@ -260,6 +306,270 @@ def normalize_handle_from_name(name: str) -> str:
     return lowered[:40] or "uae_candidate"
 
 
+def jalali_to_gregorian(year: int, month: int, day: int) -> dt.date:
+    jy = year - 979
+    jm = month - 1
+    jd = day - 1
+    j_day_no = 365 * jy + (jy // 33) * 8 + ((jy % 33) + 3) // 4
+    for idx in range(jm):
+        j_day_no += 31 if idx < 6 else 30
+    j_day_no += jd
+
+    g_day_no = j_day_no + 79
+    gy = 1600 + 400 * (g_day_no // 146097)
+    g_day_no %= 146097
+
+    leap = True
+    if g_day_no >= 36525:
+        g_day_no -= 1
+        gy += 100 * (g_day_no // 36524)
+        g_day_no %= 36524
+        if g_day_no >= 365:
+            g_day_no += 1
+        else:
+            leap = False
+
+    gy += 4 * (g_day_no // 1461)
+    g_day_no %= 1461
+    if g_day_no >= 366:
+        leap = False
+        g_day_no -= 1
+        gy += g_day_no // 365
+        g_day_no %= 365
+
+    month_days = [31, 29 if leap else 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    gm = 1
+    for days in month_days:
+        if g_day_no < days:
+            break
+        g_day_no -= days
+        gm += 1
+    return dt.date(gy, gm, int(g_day_no) + 1)
+
+
+def parse_time_parts(text: str) -> Tuple[int, int]:
+    cleaned = translit_digits(text or "")
+    match = re.search(r"(\d{1,2})[:：](\d{2})", cleaned)
+    if not match:
+        return 12, 0
+    hour = int(match.group(1))
+    minute = int(match.group(2))
+    lowered = cleaned.lower()
+    if ("ب.ظ" in cleaned or "بعدازظهر" in cleaned or "pm" in lowered) and hour < 12:
+        hour += 12
+    if ("ق.ظ" in cleaned or "قبل‌ازظهر" in cleaned or "am" in lowered) and hour == 12:
+        hour = 0
+    return max(0, min(hour, 23)), max(0, min(minute, 59))
+
+
+def parse_visible_update_timestamp(text: str) -> Optional[str]:
+    cleaned = translit_digits(clean_text(text or ""))
+    if not cleaned:
+        return None
+
+    month_names = "|".join(re.escape(name) for name in PERSIAN_MONTHS_JALALI)
+    jalali_patterns = (
+        rf"(\d{{1,2}})\s+({month_names})\s+(\d{{4}})(?:[^0-9]{{0,40}}(?:ساعت|time|updated|بروزرسانی|به روز رسانی)[^0-9]{{0,10}}(\d{{1,2}}[:：]\d{{2}}(?:\s*(?:ق\.ظ|ب\.ظ|am|pm))?))?",
+        rf"({month_names})\s+(\d{{1,2}})\s*,?\s*(\d{{4}})(?:[^0-9]{{0,40}}(\d{{1,2}}[:：]\d{{2}}(?:\s*(?:ق\.ظ|ب\.ظ|am|pm))?))?",
+    )
+    for pattern in jalali_patterns:
+        match = re.search(pattern, cleaned, flags=re.IGNORECASE)
+        if not match:
+            continue
+        groups = match.groups()
+        if groups[0] in PERSIAN_MONTHS_JALALI:
+            month = PERSIAN_MONTHS_JALALI[groups[0]]
+            day = int(groups[1])
+            year = int(groups[2])
+            time_text = groups[3] or ""
+        else:
+            day = int(groups[0])
+            month = PERSIAN_MONTHS_JALALI[groups[1]]
+            year = int(groups[2])
+            time_text = groups[3] or ""
+        try:
+            date_value = jalali_to_gregorian(year, month, day)
+        except ValueError:
+            continue
+        hour, minute = parse_time_parts(time_text)
+        return dt.datetime(date_value.year, date_value.month, date_value.day, hour, minute, tzinfo=dt.timezone.utc).isoformat().replace("+00:00", "Z")
+
+    greg_month_names = "|".join(re.escape(name) for name in PERSIAN_GREGORIAN_MONTHS)
+    greg_patterns = (
+        rf"({greg_month_names})\s+(\d{{1,2}}),?\s+(\d{{4}})(?:[^0-9]{{0,40}}(\d{{1,2}}[:：]\d{{2}}(?:\s*(?:ق\.ظ|ب\.ظ|am|pm))?))?",
+        rf"(\d{{1,2}})\s+({greg_month_names})\s+(\d{{4}})(?:[^0-9]{{0,40}}(\d{{1,2}}[:：]\d{{2}}(?:\s*(?:ق\.ظ|ب\.ظ|am|pm))?))?",
+    )
+    for pattern in greg_patterns:
+        match = re.search(pattern, cleaned, flags=re.IGNORECASE)
+        if not match:
+            continue
+        groups = match.groups()
+        if groups[0] in PERSIAN_GREGORIAN_MONTHS:
+            month = PERSIAN_GREGORIAN_MONTHS[groups[0]]
+            day = int(groups[1])
+            year = int(groups[2])
+            time_text = groups[3] or ""
+        else:
+            day = int(groups[0])
+            month = PERSIAN_GREGORIAN_MONTHS[groups[1]]
+            year = int(groups[2])
+            time_text = groups[3] or ""
+        hour, minute = parse_time_parts(time_text)
+        try:
+            return dt.datetime(year, month, day, hour, minute, tzinfo=dt.timezone.utc).isoformat().replace("+00:00", "Z")
+        except ValueError:
+            continue
+    return None
+
+
+def choose_page_timestamp(page: str, fallback: str) -> str:
+    visible = parse_visible_update_timestamp(page)
+    if not visible:
+        return fallback
+    fallback_dt = parse_timestamp(fallback)
+    visible_dt = parse_timestamp(visible)
+    if fallback_dt is None or (visible_dt is not None and visible_dt > fallback_dt):
+        return visible
+    return fallback
+
+
+def extract_visible_text_lines(page: str) -> List[str]:
+    cleaned = re.sub(r"(?is)<script[^>]*>.*?</script>", " ", page or "")
+    cleaned = re.sub(r"(?is)<style[^>]*>.*?</style>", " ", cleaned)
+    cleaned = re.sub(r"(?is)<svg[^>]*>.*?</svg>", " ", cleaned)
+    cleaned = re.sub(r"(?i)<br\s*/?>", "\n", cleaned)
+    cleaned = re.sub(r"(?i)</(?:p|li|div|section|article|tr|td|th|h[1-6]|span)>", "\n", cleaned)
+    cleaned = re.sub(r"<[^>]+>", " ", cleaned)
+    cleaned = html.unescape(cleaned)
+    lines: List[str] = []
+    seen: set[str] = set()
+    for line in cleaned.splitlines():
+        text = re.sub(r"\s+", " ", translit_digits(line)).strip()
+        if len(text) < 3 or text in seen:
+            continue
+        lowered = text.lower()
+        if any(token in lowered for token in ("{", "}", "display:", "function(", "font-family", "wp-", "elementor-")):
+            continue
+        seen.add(text)
+        lines.append(text)
+    return lines
+
+
+def extract_rate_context_blocks(page: str) -> List[str]:
+    lines = extract_visible_text_lines(page)
+    blocks: List[str] = []
+    seen: set[str] = set()
+    for idx, line in enumerate(lines):
+        lowered = line.lower()
+        has_rate_hint = any(hint in lowered for hint in ROOT_RATE_HINTS + REMITTANCE_HINTS)
+        has_currency = any(token in lowered for token in ("درهم", "aed", "دلار", "usd", "تومان", "irr"))
+        has_number = bool(re.search(r"\d", line))
+        if not ((has_rate_hint or has_currency) and has_number):
+            continue
+        start = max(0, idx - 2)
+        end = min(len(lines), idx + DIRECT_RATE_CONTEXT_LINES)
+        block = " ".join(lines[start:end])
+        if block and block not in seen:
+            seen.add(block)
+            blocks.append(block)
+    return blocks[:24]
+
+
+def direct_rate_unit_to_rial(value: int, text: str, currency: str) -> Tuple[Optional[float], str]:
+    lowered = translit_digits(text or "").lower()
+    if "ریال" in lowered or "rial" in lowered or "irr" in lowered:
+        return float(value), "rial"
+    if "تومان" in lowered or "toman" in lowered or "tmn" in lowered:
+        return float(value * 10), "toman"
+    if currency == "AED":
+        if 15_000 <= value <= 90_000:
+            return float(value * 10), "toman"
+        if 150_000 <= value <= 900_000:
+            return float(value), "rial"
+    if currency == "USD":
+        if 50_000 <= value <= 350_000:
+            return float(value * 10), "toman"
+        if 500_000 <= value <= 3_500_000:
+            return float(value), "rial"
+    return None, "unknown"
+
+
+def direct_rate_patterns(currency: str) -> Tuple[re.Pattern[str], ...]:
+    num = r"(\d{2,3}(?:[\s,٬،]\d{3})+|\d{4,8})"
+    if currency == "AED":
+        return (
+            re.compile(rf"(?:نرخ|قیمت|حواله|تبدیل|امروز)[^.!?\n]{{0,80}}(?:درهم|aed)[^0-9]{{0,50}}{num}", re.IGNORECASE),
+            re.compile(rf"(?:درهم|aed)[^.!?\n]{{0,90}}{num}(?:\s*(?:تومان|ریال|irr|rial))?", re.IGNORECASE),
+            re.compile(rf"{num}\s*(?:تومان|ریال|irr|rial)[^.!?\n]{{0,50}}(?:درهم|aed)", re.IGNORECASE),
+        )
+    return (
+        re.compile(rf"(?:نرخ|قیمت|حواله|تبدیل|امروز)[^.!?\n]{{0,80}}(?:دلار|usd)[^0-9]{{0,50}}{num}", re.IGNORECASE),
+        re.compile(rf"(?:دلار|usd)[^.!?\n]{{0,90}}{num}(?:\s*(?:تومان|ریال|irr|rial))?", re.IGNORECASE),
+        re.compile(rf"{num}\s*(?:تومان|ریال|irr|rial)[^.!?\n]{{0,50}}(?:دلار|usd)", re.IGNORECASE),
+    )
+
+
+def extract_direct_rate_records(
+    candidate: UAECandidate,
+    surface: Surface,
+    blocks: Sequence[str],
+    timestamp_iso: str,
+    now_dt: dt.datetime,
+    benchmark_value: float,
+) -> List[BasketCandidateRecord]:
+    domain = domain_for(surface.url)
+    if domain in DIRECT_RATE_EXCLUDED_DOMAINS:
+        return []
+    min_usd_rate = benchmark_value * USD_RATE_MIN_MULT if benchmark_value > 0 else 500_000.0
+    max_usd_rate = benchmark_value * USD_RATE_MAX_MULT if benchmark_value > 0 else 2_500_000.0
+    out: List[BasketCandidateRecord] = []
+    seen: set[Tuple[str, int, str]] = set()
+    for block in blocks:
+        text = translit_digits(clean_text(block))
+        lowered = text.lower()
+        if not text or not any(token in lowered for token in ("درهم", "aed", "دلار", "usd")):
+            continue
+        for currency in ("AED", "USD"):
+            for pattern in direct_rate_patterns(currency):
+                for match in pattern.finditer(text):
+                    value = parse_number_token(match.group(1))
+                    if value is None:
+                        continue
+                    normalized, unit = direct_rate_unit_to_rial(value, text, currency)
+                    if normalized is None:
+                        continue
+                    comparable = normalized * AED_USD_PEG if currency == "AED" else normalized
+                    if not (min_usd_rate <= comparable <= max_usd_rate):
+                        continue
+                    key = (currency, int(round(normalized)), clip_text(text, 120))
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    out.append(
+                        BasketCandidateRecord(
+                            business_name=candidate.business_name,
+                            surface_type=surface.surface_type,
+                            surface_url=surface.url,
+                            currency=currency,
+                            quote_basis="single_value",
+                            buy_quote="",
+                            sell_quote="",
+                            midpoint=f"{float(value):.2f}",
+                            normalized_irr_value=f"{normalized:.2f}",
+                            inferred_unit=unit,
+                            timestamp_iso=timestamp_iso or now_iso(),
+                            freshness_status=freshness_status(timestamp_iso or now_iso(), now_dt),
+                            parseability_score=74 if currency == "AED" else 68,
+                            quote_type_guess="direct",
+                            remittance_quote_detected=record_has_remittance_hint(text),
+                            message_text_sample=clip_text(text),
+                        )
+                    )
+                    if len(out) >= DIRECT_RATE_MAX_RECORDS_PER_SURFACE:
+                        return out
+    return out
+
+
 def review_surface_records(
     candidate: UAECandidate,
     surface: Surface,
@@ -280,7 +590,7 @@ def review_surface_records(
         }
 
     extracted: List[BasketCandidateRecord] = []
-    latest_timestamp = detect_last_seen(page)
+    latest_timestamp = choose_page_timestamp(page, detect_last_seen(page))
     image_hint = image_rate_board_hint(page)
 
     if surface.surface_type == "telegram":
@@ -332,7 +642,8 @@ def review_surface_records(
     title = extract_meta_content(page, "og:title") or extract_page_title(page)
     meta_desc = extract_meta_content(page, "description") or extract_meta_content(page, "og:description")
     blocks = extract_blocks(page)
-    text_blocks = [title, meta_desc] + blocks[:30]
+    context_blocks = extract_rate_context_blocks(page)
+    text_blocks = [title, meta_desc] + blocks[:30] + context_blocks
     pseudo_records = []
     for idx, block in enumerate(text_blocks):
         block = clean_text(block)
@@ -350,6 +661,16 @@ def review_surface_records(
             message_text=block,
         )
         pseudo_records.extend(parse_quote_records_from_message(msg, now_dt=now_dt))
+    extracted.extend(
+        extract_direct_rate_records(
+            candidate=candidate,
+            surface=surface,
+            blocks=text_blocks,
+            timestamp_iso=latest_timestamp or now_iso(),
+            now_dt=now_dt,
+            benchmark_value=benchmark_value,
+        )
+    )
     if pseudo_records:
         apply_in_channel_dedup(pseudo_records)
     min_rate = benchmark_value * USD_RATE_MIN_MULT if benchmark_value > 0 else 500_000.0
@@ -384,6 +705,20 @@ def review_surface_records(
                 message_text_sample=clip_text(rec.message_text_sample),
             )
         )
+    deduped: List[BasketCandidateRecord] = []
+    seen_record_keys: set[Tuple[str, str, str, str]] = set()
+    for record in extracted:
+        key = (
+            record.currency,
+            record.normalized_irr_value,
+            record.surface_url,
+            record.message_text_sample[:140],
+        )
+        if key in seen_record_keys:
+            continue
+        seen_record_keys.add(key)
+        deduped.append(record)
+    extracted = deduped
     if image_hint and not extracted:
         alt_blocks = extract_image_alt_blocks(page)
         for idx, block in enumerate(alt_blocks):

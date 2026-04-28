@@ -19,6 +19,13 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         self.assertIn("Dubai", by_locality)
         self.assertGreater(by_locality["Dubai"], 1_400_000.0)
 
+    def test_extract_locality_quotes_treats_emirates_dirham_as_dubai(self) -> None:
+        text = "حواله درهم امارات 42,360 تومان"
+        results = boards.extract_locality_quotes(text, benchmark_value=1_550_000.0)
+        by_locality = {loc: midpoint for loc, _buy, _sell, midpoint, _unit, _basis, _currency in results}
+        self.assertIn("Dubai", by_locality)
+        self.assertGreater(by_locality["Dubai"], 1_500_000.0)
+
     def test_classify_source_type_prefers_board(self) -> None:
         source_type = boards.classify_source_type(
             "تابلوی نرخ ارز",

@@ -69,6 +69,45 @@ class UAEBasketReviewTests(unittest.TestCase):
         now_dt = dt.datetime(2026, 3, 16, tzinfo=dt.timezone.utc)
         self.assertEqual(review.freshness_status("2026-02-20T00:00:00+00:00", now_dt), "recent")
 
+    def test_visible_jalali_update_timestamp_is_parsed(self) -> None:
+        text = "به روز رسانی: سه شنبه 08 اردیبهشت 1405 ساعت 15:04"
+        self.assertEqual(review.parse_visible_update_timestamp(text), "2026-04-28T15:04:00Z")
+
+    def test_direct_aed_rate_records_extract_single_value_pages(self) -> None:
+        candidate = review.UAECandidate(
+            business_name="Dubai AED Desk",
+            website="https://rates.example/aed",
+            instagram="",
+            telegram="",
+            whatsapp_link="",
+            city_or_district="Dubai",
+            country="UAE",
+            source_type_guess="settlement_exchange",
+            rate_page_detected=True,
+            rate_post_detected=True,
+            iran_transfer_hint=True,
+            usd_irr_quote_detected=False,
+            aed_irr_quote_detected=True,
+            quote_post_count=1,
+            parseability_score=70,
+            last_seen="",
+            candidate_score=80,
+            discovery_origins="manual",
+            status_guess="ok",
+        )
+        surface = review.Surface("Dubai AED Desk", "website", "https://rates.example/aed", "website")
+        rows = review.extract_direct_rate_records(
+            candidate=candidate,
+            surface=surface,
+            blocks=["نرخ تبدیل درهم به تومان در حال حاضر 42,360 تومان است"],
+            timestamp_iso="2026-04-28T12:00:00Z",
+            now_dt=dt.datetime(2026, 4, 28, 12, 10, tzinfo=dt.timezone.utc),
+            benchmark_value=1_550_000.0,
+        )
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0].currency, "AED")
+        self.assertEqual(rows[0].normalized_irr_value, "423600.00")
+
 
 if __name__ == "__main__":
     unittest.main()
