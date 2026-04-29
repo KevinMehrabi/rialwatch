@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-28T16:44:23Z",
+  "generated_at": "2026-04-29T05:05:45Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
-  "total_usable_records": 139,
-  "total_contributing_channels": 13,
+  "total_usable_records": 160,
+  "total_contributing_channels": 14,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 60,
+    "direct_shop": 80,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 15
+    "settlement_exchange": 16
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 16,
-      "contributing_channel_count": 5,
-      "basket_confidence": 92.98,
+      "usable_record_count": 43,
+      "contributing_channel_count": 6,
+      "basket_confidence": 84.19,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -153,14 +153,25 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:t.me",
+      "title": "حواله درهم امارات ؛ روش‌های انتقال پول بین ایران و دبی با صرافی حامی پرداخت",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 19,
+      "average_quality": 77.95,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "istanbulexchange_com",
       "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 94.61,
-      "average_freshness": 96.67,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -230,6 +241,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranianuae.ae",
+      "title": "Iranianuae",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 76.67,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:emeraldxe.com",
       "title": "تبدیل درهم به تومان لحظه‌ای",
       "locality": "UAE",
@@ -247,18 +269,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 88.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranianuae.ae",
-      "title": "Iranianuae",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 82.0,
+      "average_quality": 84.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
