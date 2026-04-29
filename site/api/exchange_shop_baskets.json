@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-29T05:05:45Z",
+  "generated_at": "2026-04-29T16:38:57Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
   "baskets": [
@@ -26,52 +26,50 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 1462618.62,
-      "median_rate": 1459075.0,
-      "trimmed_mean_rate": 1452413.89,
-      "spread_vs_benchmark_pct": 0.8757,
-      "usable_record_count": 22,
-      "contributing_channel_count": 2,
-      "basket_confidence": 82.07,
+      "weighted_rate": 1448844.6,
+      "median_rate": 1457050.0,
+      "trimmed_mean_rate": 1450015.62,
+      "spread_vs_benchmark_pct": -0.0743,
+      "usable_record_count": 20,
+      "contributing_channel_count": 1,
+      "basket_confidence": 78.85,
       "publishable": false,
-      "suppression_reason": "concentrated_single_source",
-      "dispersion_cv": 0.036312,
-      "top_channel_share": 0.92316,
-      "outliers_removed": 16,
+      "suppression_reason": "single_channel_concentration",
+      "dispersion_cv": 0.010739,
+      "top_channel_share": 1.0,
+      "outliers_removed": 18,
       "source_category_mix": {
-        "direct_shop": 20,
-        "regional_market_channel": 2
+        "direct_shop": 20
       },
       "channels": [
-        "istanbulexchange_com",
         "istanbulim_com"
       ]
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1585140.14,
-      "median_rate": 1576700.0,
-      "trimmed_mean_rate": 1607598.43,
-      "spread_vs_benchmark_pct": 9.3259,
-      "usable_record_count": 43,
+      "weighted_rate": 1771507.27,
+      "median_rate": 1767000.0,
+      "trimmed_mean_rate": 1771459.05,
+      "spread_vs_benchmark_pct": 22.1795,
+      "usable_record_count": 27,
       "contributing_channel_count": 6,
-      "basket_confidence": 84.19,
+      "basket_confidence": 92.68,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.094844,
-      "top_channel_share": 0.469427,
-      "outliers_removed": 0,
+      "dispersion_cv": 0.025655,
+      "top_channel_share": 0.394561,
+      "outliers_removed": 9,
       "source_category_mix": {
-        "direct_shop": 27,
-        "settlement_exchange": 16
+        "direct_shop": 17,
+        "settlement_exchange": 10
       },
       "channels": [
+        "uae:arzdigital.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
-        "uae:iranianuae.ae",
-        "uae:t.me"
+        "uae:iranianuae.ae"
       ]
     },
     {

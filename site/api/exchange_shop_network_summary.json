@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-04-29T05:05:45Z",
+  "generated_at": "2026-04-29T16:38:57Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
-  "total_usable_records": 160,
+  "total_usable_records": 153,
   "total_contributing_channels": 14,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 80,
+    "direct_shop": 70,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 16
+    "settlement_exchange": 19
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 22,
-      "contributing_channel_count": 2,
-      "basket_confidence": 82.07,
-      "suppression_reason": "concentrated_single_source",
+      "usable_record_count": 20,
+      "contributing_channel_count": 1,
+      "basket_confidence": 78.85,
+      "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 43,
+      "usable_record_count": 27,
       "contributing_channel_count": 6,
-      "basket_confidence": 84.19,
+      "basket_confidence": 92.68,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -153,25 +153,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:t.me",
-      "title": "حواله درهم امارات ؛ روش‌های انتقال پول بین ایران و دبی با صرافی حامی پرداخت",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 19,
-      "average_quality": 77.95,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "istanbulexchange_com",
       "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 94.61,
+      "average_freshness": 96.67,
       "from_new_p1": true
     },
     {
@@ -192,7 +181,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 13,
-      "average_quality": 77.92,
+      "average_quality": 75.23,
       "average_freshness": 81.85,
       "from_new_p1": false
     },
@@ -205,6 +194,17 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 85.33,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -230,6 +230,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranianuae.ae",
+      "title": "Iranianuae",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 91.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -237,17 +248,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 5,
       "average_quality": 78.8,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranianuae.ae",
-      "title": "Iranianuae",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 76.67,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -269,7 +269,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 84.0,
+      "average_quality": 93.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
