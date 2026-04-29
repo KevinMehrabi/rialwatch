@@ -997,7 +997,8 @@ def write_text(path: Path, content: str) -> None:
 
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
+    safe_payload = sanitize_public_json_payload(payload)
+    path.write_text(json.dumps(safe_payload, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
 
 
 def iso_date(d: dt.date) -> str:
@@ -1321,7 +1322,7 @@ def fetch_request_body(req: urllib.request.Request, timeout_seconds: float) -> T
     with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
         body = resp.read().decode("utf-8", errors="replace")
         final_url = resp.geturl()
-    return body, final_url
+    return body, redact_url_for_health(final_url)
 
 
 def official_quote_is_fresh(quote_time: Optional[dt.datetime], sampled_at: dt.datetime) -> bool:
@@ -1371,6 +1372,18 @@ def redact_url_for_health(url: str) -> str:
             redacted[key] = values
     redacted_query = urllib.parse.urlencode(redacted, doseq=True)
     return urllib.parse.urlunparse(parsed._replace(query=redacted_query))
+
+
+def sanitize_public_json_payload(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: sanitize_public_json_payload(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [sanitize_public_json_payload(item) for item in value]
+    if isinstance(value, str):
+        parsed = urllib.parse.urlparse(value)
+        if parsed.scheme in {"http", "https"} and parsed.netloc and parsed.query:
+            return redact_url_for_health(value)
+    return value
 
 
 def tgju_profile_url_for_symbol(base_url: str, symbol: str) -> str:
@@ -1578,7 +1591,7 @@ def fetch_bonbast_browser(
             final_url = page.url
             browser.close()
             health["http_status"] = response.status if response is not None else None
-            health["final_url"] = final_url
+            health["final_url"] = redact_url_for_health(final_url)
             health["content_length"] = len(rendered_html.encode("utf-8"))
     except PlaywrightTimeoutError as exc:
         health["error_type"] = "page_timeout"
@@ -1843,7 +1856,7 @@ def fetch_tgju_profile_official_public(
             health["failure_reason"] = last_error
 
     health["request_urls"] = request_urls
-    health["final_url"] = final_url or None
+    health["final_url"] = redact_url_for_health(final_url) if final_url else None
     health["content_length"] = len(body.encode("utf-8")) if body else 0
     health["page_load_ok"] = bool(body.strip())
 
@@ -2117,7 +2130,7 @@ def fetch_alanchand_street_public(
             body = resp.read().decode("utf-8", errors="replace")
             final_url = resp.geturl()
         health["content_length"] = len(body.encode("utf-8"))
-        health["final_url"] = final_url
+        health["final_url"] = redact_url_for_health(final_url) if final_url else None
         health["page_load_ok"] = True
     except urllib.error.HTTPError as exc:
         health["error_type"] = "http_error"
@@ -2287,7 +2300,7 @@ def fetch_alanchand_public_single_rate(
         health["request_url"] = redact_url_for_health(req.full_url)
         with urllib.request.urlopen(req, timeout=20) as resp:
             body = resp.read().decode("utf-8", errors="replace")
-            health["final_url"] = resp.geturl()
+            health["final_url"] = redact_url_for_health(resp.geturl())
         health["content_length"] = len(body.encode("utf-8"))
     except urllib.error.HTTPError as exc:
         health["error_type"] = "http_error"
@@ -2842,7 +2855,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         health["request_urls"] = request_urls
 
         health["content_length"] = len(body.encode("utf-8"))
-        health["final_url"] = final_url
+        health["final_url"] = redact_url_for_health(final_url) if final_url else None
         payload, payload_mode = parse_source_payload(config.name, body)
         health["payload_mode"] = payload_mode
         health["page_load_ok"] = True

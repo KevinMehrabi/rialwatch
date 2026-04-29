@@ -571,6 +571,53 @@ class RegimeModelTests(unittest.TestCase):
         self.assertTrue(sample.health.get("fallback_used"))
         self.assertEqual(fallback_mock.call_count, 1)
 
+    def test_fetch_one_redacts_query_secret_from_final_url(self) -> None:
+        config = pipeline.SourceConfig(
+            name="navasan",
+            url="https://api.navasan.tech/latest/",
+            auth_mode="query_api_key",
+            secret_fields=("NAVASAN_API_KEY",),
+            benchmark_families=("official",),
+            default_unit="toman",
+        )
+        sampled_at = dt.datetime(2026, 4, 28, 14, 0, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 4, 28, 13, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 4, 28, 14, 15, tzinfo=dt.timezone.utc)
+        body = '{"mex_usd_sell":{"value":1325072}}'
+        final_url = "https://api.navasan.tech/latest/?api_key=super-secret-token"
+
+        with mock.patch.dict("os.environ", {"NAVASAN_API_KEY": "super-secret-token"}, clear=False):
+            with mock.patch("scripts.pipeline.fetch_request_body", return_value=(body, final_url)):
+                sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
+
+        health = sample.health or {}
+        self.assertNotIn("super-secret-token", health.get("request_url") or "")
+        self.assertNotIn("super-secret-token", health.get("final_url") or "")
+        self.assertIn("api_key=%2A%2A%2A", health.get("final_url") or "")
+
+    def test_public_json_sanitizer_redacts_nested_secret_urls(self) -> None:
+        payload = {
+            "sources": {
+                "navasan": {
+                    "samples": [
+                        {
+                            "health": {
+                                "final_url": "https://api.navasan.tech/latest/?api_key=super-secret-token",
+                                "request_urls": [
+                                    "https://api.navasan.tech/latest/?api_key=super-secret-token&symbol=usd"
+                                ],
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+
+        sanitized = pipeline.sanitize_public_json_payload(payload)
+        rendered = str(sanitized)
+        self.assertNotIn("super-secret-token", rendered)
+        self.assertIn("api_key=%2A%2A%2A", rendered)
+
     def test_navasan_companion_fallback_calls_public_single_rate_with_supported_signature(self) -> None:
         sampled_at = dt.datetime(2026, 4, 16, 14, 5, tzinfo=dt.timezone.utc)
         window_start = dt.datetime(2026, 4, 16, 13, 45, tzinfo=dt.timezone.utc)
