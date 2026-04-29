@@ -571,6 +571,53 @@ class RegimeModelTests(unittest.TestCase):
         self.assertTrue(sample.health.get("fallback_used"))
         self.assertEqual(fallback_mock.call_count, 1)
 
+    def test_build_source_configs_uses_public_navasan_site(self) -> None:
+        with mock.patch.dict("os.environ", {"NAVASAN_PUBLIC_URL": "", "NAVASAN_SITE_URL": ""}, clear=False):
+            configs = {cfg.name: cfg for cfg in pipeline.build_source_configs()}
+        navasan = configs["navasan"]
+        self.assertEqual(navasan.auth_mode, "public_html")
+        self.assertEqual(navasan.secret_fields, ())
+        self.assertEqual(navasan.url, pipeline.NAVASAN_PUBLIC_URL_DEFAULT)
+
+    def test_fetch_one_navasan_public_website_combines_endpoint_payloads(self) -> None:
+        config = pipeline.SourceConfig(
+            name="navasan",
+            url="https://www.navasan.net/",
+            auth_mode="public_html",
+            secret_fields=(),
+            benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            default_unit="toman",
+        )
+        sampled_at = dt.datetime(2026, 4, 29, 14, 0, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 4, 29, 13, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 4, 29, 14, 15, tzinfo=dt.timezone.utc)
+        quote_ts = int(sampled_at.timestamp())
+        endpoint_payloads = {
+            "last_currencies": {"usd": {"value": 175_500, "date": quote_ts}},
+            "aed_based_rates": {
+                "usd_shakhs": {"value": 179_820, "date": quote_ts},
+                "usd_usdt": {"value": 174_700, "date": quote_ts},
+            },
+            "mex_rates": {"mex_usd_sell": {"value": 1_325_072, "date": 1_767_661_641}},
+            "gold_rates": {"sekkeh": {"value": 202_000_000, "date": quote_ts}},
+        }
+
+        def fake_endpoint(_base_url: str, endpoint_key: str, _endpoint_path: str):
+            return endpoint_payloads[endpoint_key], {"fetch_success": True, "endpoint": endpoint_key}
+
+        with mock.patch("scripts.pipeline.fetch_navasan_public_json_endpoint", side_effect=fake_endpoint):
+            sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
+
+        self.assertTrue(sample.health.get("fetch_success"))
+        self.assertEqual(sample.value, 1_755_000.0)
+        self.assertEqual(sample.benchmark_values["regional_transfer"], 1_798_200.0)
+        self.assertEqual(sample.benchmark_values["crypto_usdt"], 1_747_000.0)
+        self.assertEqual(sample.benchmark_values["official"], 1_325_072.0)
+        self.assertEqual(sample.benchmark_values["emami_gold_coin"], 2_020_000_000.0)
+        selected = sample.health.get("selected_symbol_by_benchmark")
+        self.assertEqual(selected.get("open_market"), "usd")
+        self.assertEqual(selected.get("crypto_usdt"), "usd_usdt")
+
     def test_fetch_one_redacts_query_secret_from_final_url(self) -> None:
         config = pipeline.SourceConfig(
             name="navasan",

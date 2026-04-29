@@ -8,6 +8,7 @@ computes the daily reference, and renders a static site under /site.
 from __future__ import annotations
 
 import argparse
+import base64
 import datetime as dt
 import html as html_lib
 import hashlib
@@ -35,9 +36,7 @@ WINDOW_END = dt.time(14, 15)
 PUBLISH_AT = dt.time(14, 20)
 DEFAULT_INTRADAY_SAMPLE_TIMES = ("13:45", "14:00", "14:15")
 
-REQUIRED_SECRETS = (
-    "NAVASAN_API_KEY",
-)
+REQUIRED_SECRETS: Tuple[str, ...] = ()
 
 BENCHMARK_LABELS: Dict[str, str] = {
     "open_market": "Open Market / Street Rate",
@@ -136,7 +135,7 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
         # Commercial managed-market sell quote.
         "official": ("mex_usd_sell",),
         "regional_transfer": ("usd_shakhs", "usd_sherkat"),
-        "crypto_usdt": ("usdt",),
+        "crypto_usdt": ("usdt", "usd_usdt"),
         "emami_gold_coin": ("sekkeh",),
     },
     **{name: dict(COMMERCIAL_AUX_OFFICIAL_SYMBOLS) for name in COMMERCIAL_AUX_SOURCE_SET},
@@ -260,6 +259,14 @@ ALANCHAND_PUBLIC_SINGLE_RATE_PATTERNS: Tuple[str, ...] = (
 )
 ALANCHAND_PUBLIC_REGIONAL_URL_DEFAULT = "https://alanchand.com/en/currencies-price/usd-hav"
 ALANCHAND_PUBLIC_USDT_URL_DEFAULT = "https://alanchand.com/en/crypto-price/usdt"
+NAVASAN_PUBLIC_URL_DEFAULT = "https://www.navasan.net/"
+NAVASAN_PUBLIC_CSRF_SALT = "c4e5f0f492059a67696e67a7bf745c6a0ee40056"
+NAVASAN_PUBLIC_ENDPOINTS: Dict[str, str] = {
+    "last_currencies": "/last_currencies.php",
+    "aed_based_rates": "/aed_based_rates.php",
+    "mex_rates": "/mex_rates.php",
+    "gold_rates": "/gold_rates.php",
+}
 
 
 @dataclass
@@ -1083,9 +1090,9 @@ def build_source_configs() -> List[SourceConfig]:
         ),
         SourceConfig(
             name="navasan",
-            url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
-            auth_mode="query_api_key",
-            secret_fields=("NAVASAN_API_KEY",),
+            url=env_first("NAVASAN_PUBLIC_URL", "NAVASAN_SITE_URL", default=NAVASAN_PUBLIC_URL_DEFAULT),
+            auth_mode="public_html",
+            secret_fields=(),
             benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
             default_unit="toman",
         ),
@@ -2267,6 +2274,178 @@ def fetch_alanchand_street_public(
     )
 
 
+def navasan_public_origin(url: str) -> str:
+    parsed = urllib.parse.urlparse(url)
+    scheme = parsed.scheme or "https"
+    netloc = parsed.netloc or "www.navasan.net"
+    return urllib.parse.urlunparse((scheme, netloc, "", "", "", ""))
+
+
+def navasan_public_csrf(url: str, session_id: str = "") -> str:
+    parsed = urllib.parse.urlparse(url)
+    host = parsed.hostname or parsed.netloc or "www.navasan.net"
+    material = f"{session_id}{NAVASAN_PUBLIC_CSRF_SALT}http://{host}/hashr"
+    return base64.b64encode(material.encode("utf-8")).decode("ascii")
+
+
+def navasan_public_endpoint_url(base_url: str, endpoint_path: str) -> str:
+    parsed = urllib.parse.urlparse(base_url)
+    scheme = parsed.scheme or "https"
+    netloc = parsed.netloc or "www.navasan.net"
+    path = endpoint_path if endpoint_path.startswith("/") else f"/{endpoint_path}"
+    raw_url = urllib.parse.urlunparse((scheme, netloc, path, "", "", ""))
+    return with_query(raw_url, {"_": str(int(time.time() / 10)), "csrf": navasan_public_csrf(base_url)})
+
+
+def fetch_navasan_public_json_endpoint(base_url: str, endpoint_key: str, endpoint_path: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    health: Dict[str, Any] = {
+        "collector": "http_json",
+        "fetch_mode": "navasan_public_website",
+        "endpoint": endpoint_key,
+        "request_url": None,
+        "final_url": None,
+        "content_length": None,
+        "fetch_success": False,
+        "failure_reason": None,
+        "error_type": None,
+    }
+    origin = navasan_public_origin(base_url)
+    endpoint_url = navasan_public_endpoint_url(base_url, endpoint_path)
+    req = urllib.request.Request(
+        url=endpoint_url,
+        method="GET",
+        headers={
+            "User-Agent": "rialwatch-pipeline/0.2",
+            "Accept": "application/json,text/javascript,*/*;q=0.8",
+            "Referer": f"{origin}/",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+    )
+    health["request_url"] = redact_url_for_health(req.full_url)
+    try:
+        body, final_url = fetch_request_body(req, 20.0)
+        body_text = body.strip()
+        health["final_url"] = final_url
+        health["content_length"] = len(body.encode("utf-8"))
+        if body_text.lower().startswith("error"):
+            health["failure_reason"] = body_text[:80]
+            health["error_type"] = "upstream_error"
+            return {}, health
+        parsed = json.loads(body_text)
+        if not isinstance(parsed, dict):
+            health["failure_reason"] = "unexpected public endpoint payload"
+            health["error_type"] = "invalid_payload"
+            return {}, health
+        health["fetch_success"] = True
+        return parsed, health
+    except urllib.error.HTTPError as exc:
+        health["failure_reason"] = f"http {exc.code}"
+        health["error_type"] = "http_error"
+    except urllib.error.URLError as exc:
+        health["failure_reason"] = f"network: {exc.reason}"
+        health["error_type"] = "network_error"
+    except TimeoutError:
+        health["failure_reason"] = "timeout"
+        health["error_type"] = "timeout"
+    except json.JSONDecodeError:
+        health["failure_reason"] = "invalid json"
+        health["error_type"] = "invalid_json"
+    return {}, health
+
+
+def fetch_navasan_public_website(
+    config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt.datetime, window_end_dt: dt.datetime
+) -> Sample:
+    payload: Dict[str, Any] = {}
+    endpoint_health: Dict[str, Any] = {}
+    for endpoint_key, endpoint_path in NAVASAN_PUBLIC_ENDPOINTS.items():
+        endpoint_payload, health = fetch_navasan_public_json_endpoint(config.url, endpoint_key, endpoint_path)
+        endpoint_health[endpoint_key] = health
+        payload.update(endpoint_payload)
+
+    raw_extracted_values, selected_symbols = extract_benchmark_values_with_metadata(payload, config.name)
+    benchmark_units = {key: NAVASAN_BENCHMARK_UNITS.get(key, config.default_unit) for key in BENCHMARK_LABELS}
+    benchmark_values = normalize_benchmark_values_with_units(
+        raw_extracted_values, benchmark_units=benchmark_units, default_unit=config.default_unit
+    )
+    benchmark_quote_times: Dict[str, str] = {}
+    canonical_map = CANONICAL_SOURCE_SYMBOLS.get(config.name, {})
+    for benchmark_key, symbols in canonical_map.items():
+        if not symbols:
+            continue
+        preferred_symbol = selected_symbols.get(benchmark_key)
+        if preferred_symbol:
+            quote_time = extract_symbol_quote_time(payload, (preferred_symbol,))
+            if quote_time is None:
+                quote_time, _matched = extract_symbol_quote_time_by_priority(payload, symbols)
+        else:
+            quote_time, _matched = extract_symbol_quote_time_by_priority(payload, symbols)
+        if quote_time is not None:
+            benchmark_quote_times[benchmark_key] = iso_ts(quote_time)
+
+    quote_time_values = [try_parse_datetime(value) for value in benchmark_quote_times.values()]
+    quote_times = [value for value in quote_time_values if value is not None]
+    quote_time = max(quote_times) if quote_times else None
+    value = benchmark_values.get(PRIMARY_BENCHMARK)
+    endpoint_successes = [bool(health.get("fetch_success")) for health in endpoint_health.values() if isinstance(health, dict)]
+    fetch_success = any(endpoint_successes)
+    validation: Dict[str, Any] = {"ok": True, "reason": None}
+    if value is None:
+        validation = {"ok": False, "reason": "unable to parse Navasan public USD quote"}
+
+    health = {
+        "collector": "http_json",
+        "fetch_mode": "navasan_public_website",
+        "scrape_timestamp": iso_ts(sampled_at),
+        "page_load_ok": fetch_success,
+        "selector_success": value is not None,
+        "fetch_success": fetch_success,
+        "failure_reason": None if fetch_success and validation.get("ok") else validation.get("reason") or "public endpoints unavailable",
+        "error_type": None if fetch_success and validation.get("ok") else "selector_parse_failed",
+        "request_url": navasan_public_origin(config.url) + "/",
+        "endpoint_health": endpoint_health,
+        "source_fields": {key: list(canonical_map.get(key, ())) for key in BENCHMARK_LABELS if canonical_map.get(key)},
+        "selected_symbol_by_benchmark": selected_symbols,
+        "benchmark_quote_times": benchmark_quote_times,
+        "extracted_values": {key: benchmark_values.get(key) for key in benchmark_values},
+        "raw_extracted_values": {key: raw_extracted_values.get(key) for key in raw_extracted_values},
+        "benchmark_units": benchmark_units,
+        "source_unit": "mixed",
+        "normalized_unit": "rial",
+        "validation_result": validation,
+    }
+
+    stale = bool(quote_time is not None and not is_within_window_minute(quote_time, window_start_dt, window_end_dt))
+    if value is None or not validation.get("ok"):
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            quote_time,
+            ok=False,
+            stale=stale,
+            error=str(validation.get("reason") or "unable to parse Navasan public quote"),
+            health=health,
+            source_unit="mixed",
+            normalized_unit="rial",
+        )
+
+    return Sample(
+        config.name,
+        sampled_at,
+        value,
+        benchmark_values,
+        quote_time,
+        ok=not stale,
+        stale=stale,
+        error="stale quote" if stale else None,
+        health=health,
+        source_unit="mixed",
+        normalized_unit="rial",
+    )
+
+
 def fetch_alanchand_public_single_rate(
     page_url: str,
     sampled_at: dt.datetime,
@@ -2427,9 +2606,9 @@ def fetch_alanchand_companion_fallback(
     if missing_benchmarks:
         navasan_config = SourceConfig(
             name="navasan",
-            url=env_or_default("NAVASAN_API_URL", "https://api.navasan.tech/latest/"),
-            auth_mode="query_api_key",
-            secret_fields=("NAVASAN_API_KEY",),
+            url=env_first("NAVASAN_PUBLIC_URL", "NAVASAN_SITE_URL", default=NAVASAN_PUBLIC_URL_DEFAULT),
+            auth_mode="public_html",
+            secret_fields=(),
             benchmark_families=tuple(missing_benchmarks),
             default_unit="toman",
         )
@@ -2626,6 +2805,8 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
     if config.auth_mode == "public_html":
         if config.name == "alanchand_street":
             return fetch_alanchand_street_public(config, sampled_at, window_start_dt, window_end_dt)
+        if config.name == "navasan":
+            return fetch_navasan_public_website(config, sampled_at, window_start_dt, window_end_dt)
         profile_symbols = COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS.get(config.name, ())
         if profile_symbols:
             return fetch_tgju_profile_official_with_fallback(

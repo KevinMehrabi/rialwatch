@@ -66,18 +66,18 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
 ### Supplementary Source Wiring
 
 - `official`:
-  - canonical mapping: `navasan -> mex_usd_sell`; `commercial_aux|commercial_aux_a|commercial_aux_b|commercial_aux_c -> ice_transfer_usd_sell`
+  - canonical mapping: `navasan public site -> mex_usd_sell`; `commercial_aux|commercial_aux_a|commercial_aux_b|commercial_aux_c -> ice_transfer_usd_sell`
   - selection rule: freshest quote timestamp across official-source families; if multiple sources are equally fresh, pick the source(s) with highest in-window update cadence and median only those ties
   - methodology note: this is the live successor managed-market benchmark (`Official Commercial USD Rate`) from `2025-01-20` onward and is treated as a proxy for the managed commercial FX market that replaced NIMA
   - transition note: after the early-January-2026 hall merger, this track is treated as the unified commercial/remittance successor series when source structure reflects the merge
   - fallback status: heuristic fallback disabled
 - `regional_transfer`:
-  - canonical mapping: `navasan -> usd_shakhs`, `usd_sherkat`; `alanchand -> usd-hav`
+  - canonical mapping: `navasan public site -> usd_shakhs`, `usd_sherkat`; `alanchand -> usd-hav`
   - methodology note: production-approved under strict canonical mapping
   - fallback status: heuristic fallback disabled
 - `crypto_usdt`:
   - source families: `navasan`, `alanchand`, `bonbast (Playwright browser collector)`
-  - preferred symbols: `usdt`
+  - preferred symbols: `usdt`, `usd_usdt`
   - fallback status: enabled (`tether` aliases retained)
 - `emami_gold_coin`:
   - source families: `navasan`, `alanchand`, `bonbast (Playwright browser collector)`
@@ -91,20 +91,19 @@ Implementation references:
 - Validation and withheld rules: `/Users/kevinmehrabi/Projects/rialwatch/scripts/pipeline.py` (`compute_benchmark_result`)
 - Fallback behavior: card shows `Unavailable` if no valid benchmark value (`publish_home`).
 
-## Required GitHub Secrets
+## Optional GitHub Secrets
 
-Add these in **Settings -> Secrets and variables -> Actions -> Secrets**:
+Optional API secrets can be added in **Settings -> Secrets and variables -> Actions -> Secrets**:
 
-- `NAVASAN_API_KEY`
 - `ALANCHAND_API_KEY`
 
-Optional endpoint overrides (**Secrets**) and Bonbast site override (**Variables**):
+Optional endpoint overrides and site overrides:
 
 - `BONBAST_SITE_URL` (repository variable, defaults to `https://bonbast.com`)
-- `NAVASAN_API_URL`
+- `NAVASAN_PUBLIC_URL` (repository variable, defaults to `https://www.navasan.net/`)
 - `ALANCHAND_API_URL`
 
-If required secrets are missing, `/status/` is published as `CONFIG NEEDED` and no fake rate is emitted.
+No Navasan API secret is required; RialWatch collects Navasan readings from the public website endpoints used by the web UI.
 
 ## Local Run
 

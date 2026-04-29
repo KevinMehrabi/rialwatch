@@ -58,10 +58,9 @@ jobs:
 
       - name: Run pipeline
         env:
-          NAVASAN_API_KEY: ${{ secrets.NAVASAN_API_KEY }}
           ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
           BONBAST_SITE_URL: ${{ vars.BONBAST_SITE_URL }}
-          NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
+          NAVASAN_PUBLIC_URL: ${{ vars.NAVASAN_PUBLIC_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
           if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "20 14 * * *" ]; then
@@ -95,10 +94,9 @@ jobs:
       - name: Auto-heal if guardrails fail
         if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure'
         env:
-          NAVASAN_API_KEY: ${{ secrets.NAVASAN_API_KEY }}
           ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
           BONBAST_SITE_URL: ${{ vars.BONBAST_SITE_URL }}
-          NAVASAN_API_URL: ${{ secrets.NAVASAN_API_URL }}
+          NAVASAN_PUBLIC_URL: ${{ vars.NAVASAN_PUBLIC_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
           echo "Guardrail pre-check failed; collecting a fresh intraday attempt before self-heal rebuild."
