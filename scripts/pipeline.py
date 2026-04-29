@@ -4422,7 +4422,7 @@ def publish_status(
         mapping = {
             "alanchand_street": "Street Market Feed",
             "bonbast": "Street Market Feed (Secondary)",
-            "navasan": "Commercial Market Feed",
+            "navasan": "Navasan Public Market Feed",
             "commercial_aux": "Commercial Market Feed (Auxiliary)",
             "commercial_aux_a": "Commercial Market Feed (Auxiliary A)",
             "commercial_aux_b": "Commercial Market Feed (Auxiliary B)",
@@ -4814,6 +4814,7 @@ def publish_status(
         official_quote_stale_note = ""
         freshness_status = "N/A"
         supports_official = bool(CANONICAL_SOURCE_SYMBOLS.get(source_name, {}).get("official"))
+        official_context_label = "Navasan official field" if source_name == "navasan" else "Official freshness"
         if supports_official:
             freshness_status = "Unknown"
             freshness_sample: Optional[Dict[str, Any]] = None
@@ -4830,8 +4831,11 @@ def publish_status(
                         freshness_status = "Fresh"
                     else:
                         freshness_status = "Stale"
+                        stale_label = (
+                            "Navasan official field" if source_name == "navasan" else "Official quote"
+                        )
                         official_quote_stale_note = (
-                            f"Official quote stale since {official_quote_time.strftime('%b %d, %Y, %H:%M UTC')}."
+                            f"{stale_label} stale since {official_quote_time.strftime('%b %d, %Y, %H:%M UTC')}."
                         )
 
         if official_quote_stale_note and source_status != "Offline":
@@ -4843,7 +4847,7 @@ def publish_status(
 
         status_context_parts = [f"Reachability {reachability_status.lower()}."]
         if supports_official:
-            status_context_parts.append(f"Official freshness {freshness_status.lower()}.")
+            status_context_parts.append(f"{official_context_label} {freshness_status.lower()}.")
         status_context = " ".join(status_context_parts)
         if note:
             note = f"{status_context} {note}"

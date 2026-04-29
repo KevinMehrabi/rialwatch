@@ -138,6 +138,61 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertIn("<div class=\"unit-label\">IRR per USD</div>", value_block)
             self.assertNotIn("1,679,500 IRR", value_block)
 
+    def test_navasan_status_row_names_public_site_and_official_field_staleness(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            site_dir = Path(tmp_dir) / "site"
+            api_dir = site_dir / "api"
+            api_dir.mkdir(parents=True, exist_ok=True)
+            (api_dir / "regional_market_signals_card.json").write_text('{"cards": []}', encoding="utf-8")
+
+            pipeline.publish_status(
+                site_dir=site_dir,
+                templates_dir=self.templates_dir,
+                generated_at="2026-04-29T19:58:10Z",
+                status_title="OK",
+                status_detail="Published daily benchmark.",
+                latest={
+                    "as_of": "2026-04-29T19:58:10Z",
+                    "computed": {
+                        "fix": 1_786_000.0,
+                        "withheld": False,
+                    },
+                    "sources": {
+                        "navasan": {
+                            "samples": [
+                                {
+                                    "sampled_at": "2026-04-29T19:31:47Z",
+                                    "fetch_success": True,
+                                    "benchmarks": {
+                                        "open_market": 1_770_000.0,
+                                        "official": 1_325_072.0,
+                                        "regional_transfer": 1_813_500.0,
+                                    },
+                                    "health": {
+                                        "fetch_mode": "navasan_public_website",
+                                        "request_url": "https://www.navasan.net/",
+                                        "benchmark_quote_times": {
+                                            "official": "2026-01-06T01:07:21Z",
+                                        },
+                                        "extracted_values": {
+                                            "official": 1_325_072.0,
+                                        },
+                                        "validation_result": {"ok": True},
+                                    },
+                                }
+                            ],
+                            "note": "source excluded from street benchmark universe",
+                        },
+                    },
+                },
+            )
+
+            rendered = (site_dir / "status" / "index.html").read_text(encoding="utf-8")
+            self.assertIn("Navasan Public Market Feed", rendered)
+            self.assertIn("Navasan official field stale.", rendered)
+            self.assertIn("Navasan official field stale since Jan 06, 2026, 01:07 UTC.", rendered)
+            self.assertNotIn("<td>Commercial Market Feed</td>", rendered)
+
 
 if __name__ == "__main__":
     unittest.main()
