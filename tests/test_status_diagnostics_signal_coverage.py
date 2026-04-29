@@ -138,7 +138,7 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertIn("<div class=\"unit-label\">IRR per USD</div>", value_block)
             self.assertNotIn("1,679,500 IRR", value_block)
 
-    def test_navasan_status_row_names_public_site_and_official_field_staleness(self) -> None:
+    def test_public_commercial_status_row_hides_unselected_official_staleness(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             site_dir = Path(tmp_dir) / "site"
             api_dir = site_dir / "api"
@@ -156,6 +156,11 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
                     "computed": {
                         "fix": 1_786_000.0,
                         "withheld": False,
+                    },
+                    "benchmarks": {
+                        "official": {
+                            "selected_sources": ["commercial_aux"],
+                        },
                     },
                     "sources": {
                         "navasan": {
@@ -188,10 +193,11 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             )
 
             rendered = (site_dir / "status" / "index.html").read_text(encoding="utf-8")
-            self.assertIn("Navasan Public Market Feed", rendered)
-            self.assertIn("Navasan official field stale.", rendered)
-            self.assertIn("Navasan official field stale since Jan 06, 2026, 01:07 UTC.", rendered)
-            self.assertNotIn("<td>Commercial Market Feed</td>", rendered)
+            self.assertIn("Commercial Market Feed (Public)", rendered)
+            self.assertNotIn("Navasan", rendered)
+            self.assertNotIn("official field", rendered)
+            self.assertNotIn("Official freshness stale", rendered)
+            self.assertNotIn("Official quote stale", rendered)
 
 
 if __name__ == "__main__":

@@ -27,7 +27,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
 from string import Template
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 UTC = dt.timezone.utc
 IRAN_TZ = dt.timezone(dt.timedelta(hours=3, minutes=30))
@@ -4422,7 +4422,7 @@ def publish_status(
         mapping = {
             "alanchand_street": "Street Market Feed",
             "bonbast": "Street Market Feed (Secondary)",
-            "navasan": "Navasan Public Market Feed",
+            "navasan": "Commercial Market Feed (Public)",
             "commercial_aux": "Commercial Market Feed (Auxiliary)",
             "commercial_aux_a": "Commercial Market Feed (Auxiliary A)",
             "commercial_aux_b": "Commercial Market Feed (Auxiliary B)",
@@ -4542,6 +4542,14 @@ def publish_status(
     benchmarks = effective_latest.get("benchmarks", {})
     if not isinstance(benchmarks, dict):
         benchmarks = {}
+    selected_official_sources: Set[str] = set()
+    official_benchmark = benchmarks.get("official")
+    if isinstance(official_benchmark, dict):
+        selected_sources = official_benchmark.get("selected_sources")
+        if isinstance(selected_sources, list):
+            selected_official_sources = {
+                canonical_source_name(str(item)) for item in selected_sources if str(item).strip()
+            }
     raw_sources = effective_latest.get("sources", {})
     if not isinstance(raw_sources, dict):
         raw_sources = {}
@@ -4814,8 +4822,10 @@ def publish_status(
         official_quote_stale_note = ""
         freshness_status = "N/A"
         supports_official = bool(CANONICAL_SOURCE_SYMBOLS.get(source_name, {}).get("official"))
-        official_context_label = "Navasan official field" if source_name == "navasan" else "Official freshness"
-        if supports_official:
+        show_official_freshness = supports_official and (
+            not selected_official_sources or source_name in selected_official_sources
+        )
+        if show_official_freshness:
             freshness_status = "Unknown"
             freshness_sample: Optional[Dict[str, Any]] = None
             if latest_sample is not None and sample_official_value(latest_sample) is not None:
@@ -4831,11 +4841,8 @@ def publish_status(
                         freshness_status = "Fresh"
                     else:
                         freshness_status = "Stale"
-                        stale_label = (
-                            "Navasan official field" if source_name == "navasan" else "Official quote"
-                        )
                         official_quote_stale_note = (
-                            f"{stale_label} stale since {official_quote_time.strftime('%b %d, %Y, %H:%M UTC')}."
+                            f"Official quote stale since {official_quote_time.strftime('%b %d, %Y, %H:%M UTC')}."
                         )
 
         if official_quote_stale_note and source_status != "Offline":
@@ -4846,8 +4853,8 @@ def publish_status(
                 note = official_quote_stale_note
 
         status_context_parts = [f"Reachability {reachability_status.lower()}."]
-        if supports_official:
-            status_context_parts.append(f"{official_context_label} {freshness_status.lower()}.")
+        if show_official_freshness:
+            status_context_parts.append(f"Official freshness {freshness_status.lower()}.")
         status_context = " ".join(status_context_parts)
         if note:
             note = f"{status_context} {note}"
