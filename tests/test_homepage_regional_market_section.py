@@ -139,6 +139,12 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertIn("${street_gold_gap_note}", self.template)
         self.assertNotIn("Gold FX Gap", self.template)
 
+    def test_header_subtitle_size_stays_stable_when_compact(self) -> None:
+        self.assertEqual(self.layout.count(".site-subtitle {"), 1)
+        self.assertIn("font-size: 1.1rem", self.layout)
+        self.assertNotIn("font-size: 1.05rem", self.layout)
+        self.assertNotIn("font-size: 0.84rem", self.layout)
+
 
 if __name__ == "__main__":
     unittest.main()
