@@ -98,6 +98,9 @@ LEGACY_SOURCE_ALIASES: Dict[str, str] = {
 }
 COMMERCIAL_AUX_SOURCE_SET = frozenset(COMMERCIAL_AUX_SOURCE_NAMES)
 COMMERCIAL_PROFILE_SOURCE_SET = frozenset(COMMERCIAL_PROFILE_SOURCE_NAMES)
+COMMERCIAL_OFFICIAL_STATUS_SOURCE_SET = frozenset(
+    (*COMMERCIAL_AUX_SOURCE_NAMES, *COMMERCIAL_PROFILE_SOURCE_NAMES)
+)
 COMMERCIAL_AUX_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
     # Priority-ordered official-market channels from auxiliary commercial endpoints.
     # Keep transfer sell first, then alternate ICE-board USD sell channels.
@@ -132,8 +135,6 @@ COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS: Dict[str, Tuple[str, ...]] = {
 CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
     "navasan": {
         "open_market": ("usd_sell", "usd"),
-        # Commercial managed-market sell quote.
-        "official": ("mex_usd_sell",),
         "regional_transfer": ("usd_shakhs", "usd_sherkat"),
         "crypto_usdt": ("usdt", "usd_usdt"),
         "emami_gold_coin": ("sekkeh",),
@@ -153,11 +154,9 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
 
 # Navasan exposes mixed-unit channels in a single payload:
 # - street/transfer/crypto rates in toman
-# - exchange-center commercial sell quote (mex_usd_sell) in rial
 # - coin prices are published in toman in some payloads and rial in others; keep conservative toman default.
 NAVASAN_BENCHMARK_UNITS: Dict[str, str] = {
     "open_market": "toman",
-    "official": "rial",
     "regional_transfer": "toman",
     "crypto_usdt": "toman",
     "emami_gold_coin": "toman",
@@ -264,7 +263,6 @@ NAVASAN_PUBLIC_CSRF_SALT = "c4e5f0f492059a67696e67a7bf745c6a0ee40056"
 NAVASAN_PUBLIC_ENDPOINTS: Dict[str, str] = {
     "last_currencies": "/last_currencies.php",
     "aed_based_rates": "/aed_based_rates.php",
-    "mex_rates": "/mex_rates.php",
     "gold_rates": "/gold_rates.php",
 }
 
@@ -1093,7 +1091,7 @@ def build_source_configs() -> List[SourceConfig]:
             url=env_first("NAVASAN_PUBLIC_URL", "NAVASAN_SITE_URL", default=NAVASAN_PUBLIC_URL_DEFAULT),
             auth_mode="public_html",
             secret_fields=(),
-            benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
             default_unit="toman",
         ),
         SourceConfig(
@@ -1175,6 +1173,55 @@ def build_source_configs() -> List[SourceConfig]:
             default_unit="toman",
         ),
     ]
+
+
+def prune_unsupported_source_benchmarks(payload: Dict[str, Any]) -> None:
+    source_families = {cfg.name: set(cfg.benchmark_families) for cfg in build_source_configs()}
+    sources = payload.get("sources")
+    if not isinstance(sources, dict):
+        return
+
+    for source_name, source_data in sources.items():
+        source_key = canonical_source_name(str(source_name))
+        supported = source_families.get(source_key)
+        if not supported:
+            continue
+        unsupported = set(BENCHMARK_LABELS) - supported
+        if not unsupported or not isinstance(source_data, dict):
+            continue
+
+        benchmark_medians = source_data.get("benchmark_medians")
+        if isinstance(benchmark_medians, dict):
+            for benchmark_key in unsupported:
+                benchmark_medians.pop(benchmark_key, None)
+
+        samples = source_data.get("samples")
+        if not isinstance(samples, list):
+            continue
+        for sample in samples:
+            if not isinstance(sample, dict):
+                continue
+            sample_benchmarks = sample.get("benchmarks")
+            if isinstance(sample_benchmarks, dict):
+                for benchmark_key in unsupported:
+                    if benchmark_key in sample_benchmarks:
+                        sample_benchmarks[benchmark_key] = None
+
+            health = sample.get("health")
+            if not isinstance(health, dict):
+                continue
+            for field in (
+                "source_fields",
+                "selected_symbol_by_benchmark",
+                "benchmark_quote_times",
+                "extracted_values",
+                "raw_extracted_values",
+                "benchmark_units",
+            ):
+                health_field = health.get(field)
+                if isinstance(health_field, dict):
+                    for benchmark_key in unsupported:
+                        health_field.pop(benchmark_key, None)
 
 
 def missing_secrets() -> List[str]:
@@ -4191,6 +4238,7 @@ def summarize_day(
         },
         "navasan_benchmark_units": dict(NAVASAN_BENCHMARK_UNITS),
     }
+    prune_unsupported_source_benchmarks(daily_payload)
     return daily_payload
 
 
@@ -4438,6 +4486,58 @@ def publish_status(
         }
         key = source_name.strip().lower()
         return mapping.get(key, f"Market Feed {index}")
+
+    def aggregate_commercial_official_status_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
+        official_rows = [
+            row for row in rows if row.get("source", "").strip().lower() in COMMERCIAL_OFFICIAL_STATUS_SOURCE_SET
+        ]
+        if not official_rows:
+            return rows
+
+        row_statuses = {row.get("status", "Unknown") for row in official_rows}
+        if "Online" in row_statuses:
+            aggregate_status = "Online"
+            aggregate_note = "Reachability online. Official commercial feed available."
+        elif "Degraded" in row_statuses:
+            aggregate_status = "Degraded"
+            aggregate_note = (
+                "Reachability degraded. Live official commercial feed unavailable; "
+                "benchmark is using the latest published official quote."
+            )
+        elif "Offline" in row_statuses:
+            aggregate_status = "Offline"
+            aggregate_note = "Reachability offline. Live official commercial feed unavailable."
+        else:
+            aggregate_status = "Unknown"
+            aggregate_note = "Reachability unknown. Official commercial feed status is unavailable."
+
+        last_success_ts: Optional[dt.datetime] = None
+        for row in official_rows:
+            parsed = try_parse_datetime(row.get("last_success_ts") or row.get("last_success"))
+            if parsed is not None and (last_success_ts is None or parsed > last_success_ts):
+                last_success_ts = parsed
+
+        aggregate_row = {
+            "source": "commercial_official",
+            "name": "Commercial Market Feed (Official)",
+            "status": aggregate_status,
+            "last_success": (
+                last_success_ts.strftime("%b %d, %Y, %H:%M UTC") if last_success_ts is not None else "N/A"
+            ),
+            "last_success_ts": iso_ts(last_success_ts) if last_success_ts is not None else "",
+            "note": aggregate_note,
+        }
+
+        output: List[Dict[str, str]] = []
+        inserted = False
+        for row in rows:
+            if row.get("source", "").strip().lower() in COMMERCIAL_OFFICIAL_STATUS_SOURCE_SET:
+                if not inserted:
+                    output.append(aggregate_row)
+                    inserted = True
+                continue
+            output.append(row)
+        return output
 
     def parse_nonnegative_count(value: Any) -> int:
         parsed = parse_number(value)
@@ -4861,14 +4961,18 @@ def publish_status(
 
         source_rows.append(
             {
+                "source": str(source_name),
                 "name": source_public_label(str(source_name), idx),
                 "status": source_status,
                 "last_success": (
                     last_success_ts.strftime("%b %d, %Y, %H:%M UTC") if last_success_ts is not None else "N/A"
                 ),
+                "last_success_ts": iso_ts(last_success_ts) if last_success_ts is not None else "",
                 "note": note,
             }
         )
+
+    source_rows = aggregate_commercial_official_status_rows(source_rows)
 
     if not source_rows:
         source_rows_html = (
@@ -5767,6 +5871,7 @@ def render_source_table(daily: Dict[str, Any]) -> str:
 
 def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
     payload = json.loads(json.dumps(daily))
+    prune_unsupported_source_benchmarks(payload)
     enrich_publication_selection_metadata(site_dir, payload)
     benchmark_results = payload.get("benchmarks", {})
     if isinstance(benchmark_results, dict):

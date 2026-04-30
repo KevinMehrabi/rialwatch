@@ -200,6 +200,104 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertNotIn("Official freshness stale", rendered)
             self.assertNotIn("Official quote stale", rendered)
 
+    def test_official_commercial_mirrors_are_counted_as_one_status_feed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            site_dir = Path(tmp_dir) / "site"
+            api_dir = site_dir / "api"
+            api_dir.mkdir(parents=True, exist_ok=True)
+            (api_dir / "regional_market_signals_card.json").write_text('{"cards": []}', encoding="utf-8")
+
+            latest_sources = {
+                "alanchand": {
+                    "samples": [
+                        {
+                            "sampled_at": "2026-04-30T21:19:00Z",
+                            "fetch_success": True,
+                            "benchmarks": {"regional_transfer": 1_785_000.0},
+                        }
+                    ]
+                },
+                "alanchand_street": {
+                    "samples": [
+                        {
+                            "sampled_at": "2026-04-30T21:19:00Z",
+                            "fetch_success": True,
+                            "value": 1_783_500.0,
+                            "benchmarks": {"open_market": 1_783_500.0},
+                        }
+                    ]
+                },
+                "bonbast": {
+                    "samples": [
+                        {
+                            "sampled_at": "2026-04-30T21:19:00Z",
+                            "fetch_success": True,
+                            "value": 1_775_500.0,
+                            "benchmarks": {"open_market": 1_775_500.0},
+                        }
+                    ]
+                },
+                "navasan": {
+                    "samples": [
+                        {
+                            "sampled_at": "2026-04-30T21:19:00Z",
+                            "fetch_success": True,
+                            "benchmarks": {"open_market": 1_779_500.0, "regional_transfer": 1_790_000.0},
+                        }
+                    ]
+                },
+            }
+            for source_name in (
+                "commercial_aux",
+                "commercial_aux_a",
+                "commercial_aux_b",
+                "commercial_aux_c",
+                "commercial_profile_transfer",
+                "commercial_profile_sana",
+            ):
+                latest_sources[source_name] = {
+                    "samples": [
+                        {
+                            "sampled_at": "2026-04-29T15:05:00Z",
+                            "fetch_success": True,
+                            "benchmarks": {"official": 1_411_295.0},
+                            "health": {"benchmark_quote_times": {"official": "2026-04-29T09:55:01Z"}},
+                        },
+                        {
+                            "sampled_at": "2026-04-30T21:19:00Z",
+                            "fetch_success": False,
+                            "failure_reason": "http 503",
+                        },
+                    ]
+                }
+
+            pipeline.publish_status(
+                site_dir=site_dir,
+                templates_dir=self.templates_dir,
+                generated_at="2026-04-30T21:19:56Z",
+                status_title="OK",
+                status_detail="Published daily benchmark.",
+                latest={
+                    "as_of": "2026-04-30T21:19:56Z",
+                    "computed": {"fix": 1_779_500.0, "withheld": False},
+                    "benchmarks": {
+                        "official": {
+                            "selected_sources": [],
+                            "selection_method": "historical_official_fallback",
+                        }
+                    },
+                    "sources": latest_sources,
+                },
+            )
+
+            rendered = (site_dir / "status" / "index.html").read_text(encoding="utf-8")
+            self.assertIn("Commercial Market Feed (Official)", rendered)
+            self.assertNotIn("Commercial Market Feed (Auxiliary A)", rendered)
+            self.assertNotIn("Commercial Market Feed (Profile Transfer)", rendered)
+            self.assertIn("4/5 sources online.", rendered)
+            self.assertIn("1 market feed is currently degraded.", rendered)
+            self.assertNotIn("6 market feeds are currently degraded.", rendered)
+
     def test_recent_official_history_fallback_restores_short_outage_quote(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             site_dir = Path(tmp_dir) / "site"

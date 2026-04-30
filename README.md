@@ -66,7 +66,7 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
 ### Supplementary Source Wiring
 
 - `official`:
-  - canonical mapping: `navasan public site -> mex_usd_sell`; `commercial_aux|commercial_aux_a|commercial_aux_b|commercial_aux_c -> ice_transfer_usd_sell`
+  - canonical mapping: `commercial_aux|commercial_aux_a|commercial_aux_b|commercial_aux_c -> ice_transfer_usd_sell`
   - selection rule: freshest quote timestamp across official-source families; if multiple sources are equally fresh, pick the source(s) with highest in-window update cadence and median only those ties
   - methodology note: this is the live successor managed-market benchmark (`Official Commercial USD Rate`) from `2025-01-20` onward and is treated as a proxy for the managed commercial FX market that replaced NIMA
   - transition note: after the early-January-2026 hall merger, this track is treated as the unified commercial/remittance successor series when source structure reflects the merge

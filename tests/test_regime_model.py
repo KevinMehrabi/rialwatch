@@ -1,6 +1,9 @@
 import datetime as dt
+import json
+import tempfile
 import urllib.error
 import unittest
+from pathlib import Path
 from unittest import mock
 
 from scripts import pipeline
@@ -578,6 +581,7 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(navasan.auth_mode, "public_html")
         self.assertEqual(navasan.secret_fields, ())
         self.assertEqual(navasan.url, pipeline.NAVASAN_PUBLIC_URL_DEFAULT)
+        self.assertNotIn("official", navasan.benchmark_families)
 
     def test_fetch_one_navasan_public_website_combines_endpoint_payloads(self) -> None:
         config = pipeline.SourceConfig(
@@ -585,7 +589,7 @@ class RegimeModelTests(unittest.TestCase):
             url="https://www.navasan.net/",
             auth_mode="public_html",
             secret_fields=(),
-            benchmark_families=("open_market", "official", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
+            benchmark_families=("open_market", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
             default_unit="toman",
         )
         sampled_at = dt.datetime(2026, 4, 29, 14, 0, tzinfo=dt.timezone.utc)
@@ -598,7 +602,6 @@ class RegimeModelTests(unittest.TestCase):
                 "usd_shakhs": {"value": 179_820, "date": quote_ts},
                 "usd_usdt": {"value": 174_700, "date": quote_ts},
             },
-            "mex_rates": {"mex_usd_sell": {"value": 1_325_072, "date": 1_767_661_641}},
             "gold_rates": {"sekkeh": {"value": 202_000_000, "date": quote_ts}},
         }
 
@@ -612,7 +615,7 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(sample.value, 1_755_000.0)
         self.assertEqual(sample.benchmark_values["regional_transfer"], 1_798_200.0)
         self.assertEqual(sample.benchmark_values["crypto_usdt"], 1_747_000.0)
-        self.assertEqual(sample.benchmark_values["official"], 1_325_072.0)
+        self.assertIsNone(sample.benchmark_values["official"])
         self.assertEqual(sample.benchmark_values["emami_gold_coin"], 2_020_000_000.0)
         selected = sample.health.get("selected_symbol_by_benchmark")
         self.assertEqual(selected.get("open_market"), "usd")
@@ -664,6 +667,91 @@ class RegimeModelTests(unittest.TestCase):
         rendered = str(sanitized)
         self.assertNotIn("super-secret-token", rendered)
         self.assertIn("api_key=%2A%2A%2A", rendered)
+
+    def test_publish_latest_strips_public_commercial_unsupported_official_fields(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            site_dir = Path(tmp_dir)
+            daily = {
+                "date": "2026-04-30",
+                "as_of": "2026-04-30T21:30:55Z",
+                "computed": {
+                    "fix": 1_779_500.0,
+                    "status": "Green",
+                    "withheld": False,
+                    "benchmarks": {
+                        "open_market": {"value": 1_779_500.0, "available": True},
+                        "official": {"value": 1_411_295.0, "available": True},
+                    },
+                },
+                "benchmarks": {
+                    "open_market": {
+                        "fix": 1_779_500.0,
+                        "withheld": False,
+                        "available": True,
+                        "source_units": {"bonbast": "rial"},
+                    },
+                    "official": {
+                        "fix": 1_411_295.0,
+                        "withheld": False,
+                        "available": True,
+                    },
+                    "regional_transfer": {"fix": None, "withheld": True, "available": False},
+                    "crypto_usdt": {"fix": None, "withheld": True, "available": False},
+                    "emami_gold_coin": {"fix": None, "withheld": True, "available": False},
+                },
+                "indicators": {},
+                "sources": {
+                    "navasan": {
+                        "samples": [
+                            {
+                                "sampled_at": "2026-04-30T14:51:18Z",
+                                "fetch_success": True,
+                                "benchmarks": {
+                                    "open_market": 1_760_000.0,
+                                    "official": 1_325_072.0,
+                                    "regional_transfer": 1_803_400.0,
+                                },
+                                "health": {
+                                    "source_fields": {"official": ["mex_usd_sell"], "open_market": ["usd"]},
+                                    "selected_symbol_by_benchmark": {
+                                        "official": "mex_usd_sell",
+                                        "open_market": "usd",
+                                    },
+                                    "benchmark_quote_times": {
+                                        "official": "2026-01-06T01:07:21Z",
+                                        "open_market": "2026-04-30T14:35:51Z",
+                                    },
+                                    "extracted_values": {
+                                        "official": 1_325_072.0,
+                                        "open_market": 1_760_000.0,
+                                    },
+                                    "raw_extracted_values": {
+                                        "official": 1_325_072.0,
+                                        "open_market": 176_000.0,
+                                    },
+                                    "benchmark_units": {"official": "rial", "open_market": "toman"},
+                                },
+                            }
+                        ],
+                        "benchmark_medians": {"official": 1_325_072.0, "open_market": 1_760_000.0},
+                    }
+                },
+            }
+
+            pipeline.publish_latest(site_dir, daily)
+
+            published = json.loads((site_dir / "api" / "latest.json").read_text(encoding="utf-8"))
+            sample = published["sources"]["navasan"]["samples"][0]
+            health = sample["health"]
+            self.assertIsNone(sample["benchmarks"]["official"])
+            self.assertNotIn("official", published["sources"]["navasan"]["benchmark_medians"])
+            self.assertNotIn("official", health["source_fields"])
+            self.assertNotIn("official", health["selected_symbol_by_benchmark"])
+            self.assertNotIn("official", health["benchmark_quote_times"])
+            self.assertNotIn("official", health["extracted_values"])
+            self.assertNotIn("official", health["raw_extracted_values"])
+            self.assertNotIn("official", health["benchmark_units"])
+            self.assertEqual(published["benchmarks"]["official"]["fix"], 1_411_295.0)
 
     def test_navasan_companion_fallback_calls_public_single_rate_with_supported_signature(self) -> None:
         sampled_at = dt.datetime(2026, 4, 16, 14, 5, tzinfo=dt.timezone.utc)
