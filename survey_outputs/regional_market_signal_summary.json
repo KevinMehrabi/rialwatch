@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-29T16:45:18Z",
+  "generated_at": "2026-04-30T05:15:58Z",
   "new_regional_signal_sources_discovered": 19,
   "existing_registry_signal_sources_used": 29,
   "which_locality_baskets_gained_usable_data": [
@@ -19,19 +19,19 @@
   },
   "top_sources_contributing_to_each_improved_basket": {
     "Afghanistan": [
-      "toofan_harirod",
+      "poshtkhati_dollar",
       "haratdollar",
-      "poshtkhati_dollar"
+      "toofan_harirod"
     ],
     "Germany": [
       "eurobazaar",
-      "frankfurt_euro",
+      "hmtransfer",
       "berlin_pay"
     ]
   },
   "search_debug": {
-    "successful_search_requests": 83,
-    "failed_search_requests": 123,
+    "successful_search_requests": 55,
+    "failed_search_requests": 151,
     "query_stats": {
       "site:t.me دلار هرات": {
         "group": "persian",
@@ -351,7 +351,7 @@
       },
       "site:t.me euro_bazaar": {
         "group": "german",
-        "candidate_hits": 2
+        "candidate_hits": 0
       },
       "site:t.me/s euro_bazaar": {
         "group": "german",
@@ -375,7 +375,7 @@
       },
       "site:t.me hamburg_euro": {
         "group": "german",
-        "candidate_hits": 0
+        "candidate_hits": 1
       },
       "site:t.me/s hamburg_euro": {
         "group": "german",
