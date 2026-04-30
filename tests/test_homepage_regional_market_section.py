@@ -122,6 +122,14 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
             self.layout.index("justify-content: flex-start"),
         )
 
+    def test_indicator_metric_content_is_bottom_anchored(self) -> None:
+        self.assertEqual(self.template.count('class="anchored-card-bottom"'), 6)
+        self.assertIn(".anchored-card-bottom", self.layout)
+        self.assertIn("margin-top: auto", self.layout)
+        self.assertIn("padding-top: 18px", self.layout)
+        self.assertNotIn("indicator-value-main mt-3", self.template)
+        self.assertNotIn("indicator-value-row mt-3", self.template)
+
 
 if __name__ == "__main__":
     unittest.main()
