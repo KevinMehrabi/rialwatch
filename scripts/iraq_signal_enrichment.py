@@ -324,7 +324,7 @@ def parse_iraq_signal(
     source_type: str,
     benchmark_value: float,
     quote_density_score: float,
-) -> Optional[Tuple[float, float, str, str, int, str, str]]:
+) -> Optional[Tuple[float, float, str, str, int, str, str, str]]:
     normalized = normalize_text(text)
     lowered = normalized.lower()
     if not any(alias.lower() in lowered for alias in IRAQ_ALIASES):

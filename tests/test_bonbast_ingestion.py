@@ -56,7 +56,7 @@ class BonbastIngestionTests(unittest.TestCase):
             stale=False,
         )
         alanchand_sample = pipeline.Sample(
-            source="alanchand",
+            source="alanchand_street",
             sampled_at=now,
             value=1_520_000.0,
             benchmark_values={"open_market": 1_520_000.0},
@@ -68,7 +68,7 @@ class BonbastIngestionTests(unittest.TestCase):
         samples = {
             "bonbast": [bonbast_sample],
             "navasan": [navasan_sample],
-            "alanchand": [alanchand_sample],
+            "alanchand_street": [alanchand_sample],
         }
         pipeline.apply_bonbast_peer_validation(samples, max_deviation_pct=0.10)
 

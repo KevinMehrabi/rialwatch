@@ -4822,9 +4822,7 @@ def publish_status(
         official_quote_stale_note = ""
         freshness_status = "N/A"
         supports_official = bool(CANONICAL_SOURCE_SYMBOLS.get(source_name, {}).get("official"))
-        show_official_freshness = supports_official and (
-            not selected_official_sources or source_name in selected_official_sources
-        )
+        show_official_freshness = supports_official and source_name in selected_official_sources
         if show_official_freshness:
             freshness_status = "Unknown"
             freshness_sample: Optional[Dict[str, Any]] = None
@@ -6280,6 +6278,125 @@ def is_daily_valid(daily: Dict[str, Any]) -> bool:
     )
 
 
+def official_benchmark_available(entry: Any) -> bool:
+    if not isinstance(entry, dict):
+        return False
+    fix = parse_number(entry.get("fix"))
+    return fix is not None and entry.get("withheld") is not True and entry.get("available") is not False
+
+
+def recent_official_history_fallback(
+    site_dir: Path, day: dt.date, reference_time: dt.datetime
+) -> Optional[Tuple[dt.date, Dict[str, Any]]]:
+    fix_dir = site_dir / "fix"
+    if not fix_dir.exists():
+        return None
+
+    candidates: List[Tuple[dt.date, Path]] = []
+    for path in fix_dir.glob("*.json"):
+        try:
+            stamp = dt.date.fromisoformat(path.stem)
+        except ValueError:
+            continue
+        if stamp >= day:
+            continue
+        candidates.append((stamp, path))
+    candidates.sort(key=lambda row: row[0], reverse=True)
+
+    for stamp, path in candidates:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        benchmarks = payload.get("benchmarks")
+        if not isinstance(benchmarks, dict):
+            continue
+        official = benchmarks.get("official")
+        if not official_benchmark_available(official):
+            continue
+        candidate = json.loads(json.dumps(official))
+        selected_quote_time = try_parse_datetime(candidate.get("selected_quote_time"))
+        if selected_quote_time is None:
+            selected_quote_time = try_parse_datetime(payload.get("as_of"))
+        if selected_quote_time is None:
+            continue
+        if not official_quote_within_stale_fallback(selected_quote_time, reference_time):
+            continue
+        candidate["historical_fallback_date"] = iso_date(stamp)
+        candidate["historical_fallback_as_of"] = payload.get("as_of")
+        candidate["historical_fallback_quote_time"] = iso_ts(selected_quote_time)
+        return stamp, candidate
+    return None
+
+
+def apply_recent_official_history_fallback(site_dir: Path, daily: Dict[str, Any], day: dt.date) -> bool:
+    benchmarks = daily.get("benchmarks")
+    if not isinstance(benchmarks, dict):
+        return False
+
+    current_official = benchmarks.get("official")
+    if official_benchmark_available(current_official):
+        return False
+
+    reference_time = try_parse_datetime(daily.get("as_of")) or utc_now()
+    fallback = recent_official_history_fallback(site_dir, day, reference_time)
+    if fallback is None:
+        return False
+
+    fallback_day, fallback_official = fallback
+    fallback_fix = parse_number(fallback_official.get("fix"))
+    if fallback_fix is None:
+        return False
+
+    selected_sources_raw = fallback_official.get("selected_sources")
+    selected_sources = [
+        canonical_source_name(str(source))
+        for source in selected_sources_raw
+        if str(source).strip()
+    ] if isinstance(selected_sources_raw, list) else []
+    selected_quote_time = try_parse_datetime(fallback_official.get("selected_quote_time"))
+    selected_quote_time_text = iso_ts(selected_quote_time) if selected_quote_time is not None else "previous publication"
+
+    current_notes: Dict[str, Any] = {}
+    if isinstance(current_official, dict) and isinstance(current_official.get("source_notes"), dict):
+        current_notes = dict(current_official.get("source_notes", {}))
+    fallback_notes = fallback_official.get("source_notes")
+    if isinstance(fallback_notes, dict):
+        current_notes.update(fallback_notes)
+    for source in selected_sources:
+        current_notes[source] = (
+            f"historical fallback quote from {selected_quote_time_text} "
+            f"({iso_date(fallback_day)} publication)"
+        )
+
+    fallback_official["available"] = True
+    fallback_official["withheld"] = False
+    fallback_official["withhold_reasons"] = []
+    fallback_official["using_stale_fallback"] = True
+    fallback_official["stale_fallback_sources"] = selected_sources
+    fallback_official["selection_method"] = "historical_official_fallback"
+    fallback_official["source_notes"] = current_notes
+    benchmarks["official"] = fallback_official
+
+    computed = daily.get("computed")
+    if isinstance(computed, dict):
+        computed_benchmarks = computed.get("benchmarks")
+        if isinstance(computed_benchmarks, dict):
+            computed_benchmarks["official"] = {
+                "label": BENCHMARK_LABELS["official"],
+                "value": fallback_fix,
+                "available": True,
+                "is_primary": False,
+            }
+
+    indicator_results = compute_indicator_results(benchmarks)
+    daily["indicators"] = indicator_results
+    if isinstance(computed, dict):
+        computed["indicators"] = json.loads(json.dumps(indicator_results))
+
+    return True
+
+
 def immutable_day_exists(site_dir: Path, day: str) -> bool:
     return (site_dir / "fix" / f"{day}.json").exists() or (site_dir / "fix" / day / "index.html").exists()
 
@@ -6458,6 +6575,7 @@ def select_daily_from_intraday(
         "delta_vs_previous_day": delta_meta.get("delta_vs_previous_day"),
         "delta_pct_vs_previous_day": delta_meta.get("delta_pct_vs_previous_day"),
     }
+    apply_recent_official_history_fallback(site_dir, daily, day)
     return daily
 
 

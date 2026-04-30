@@ -45,8 +45,8 @@ class IraqSignalEnrichmentTests(unittest.TestCase):
         assert parsed is not None
         self.assertEqual(parsed[2], "relative")
         self.assertAlmostEqual(parsed[1], 1_493_000.0)
-        self.assertEqual(parsed[5], "147300.00")
-        self.assertEqual(parsed[6], "2000")
+        self.assertEqual(parsed[6], "147300.00")
+        self.assertEqual(parsed[7], "2000")
 
     def test_next_line_value(self) -> None:
         parsed = enrichment.parse_iraq_signal(
@@ -76,6 +76,7 @@ class IraqSignalEnrichmentTests(unittest.TestCase):
                 parseability_score=76,
                 timestamp_iso="2026-03-16T09:00:00+00:00",
                 inferred_unit="toman",
+                sub_locality="sulaymaniyah",
                 tehran_reference="",
                 delta_value="",
                 quote_density_score=85.0,
@@ -93,6 +94,7 @@ class IraqSignalEnrichmentTests(unittest.TestCase):
                 parseability_score=76,
                 timestamp_iso="2026-03-16T10:00:00+00:00",
                 inferred_unit="toman",
+                sub_locality="sulaymaniyah",
                 tehran_reference="",
                 delta_value="",
                 quote_density_score=85.0,
@@ -110,6 +112,7 @@ class IraqSignalEnrichmentTests(unittest.TestCase):
                 parseability_score=82,
                 timestamp_iso="2026-03-16T11:00:00+00:00",
                 inferred_unit="toman",
+                sub_locality="sulaymaniyah",
                 tehran_reference="",
                 delta_value="",
                 quote_density_score=90.0,
@@ -127,6 +130,7 @@ class IraqSignalEnrichmentTests(unittest.TestCase):
                 parseability_score=82,
                 timestamp_iso="2026-03-16T12:00:00+00:00",
                 inferred_unit="toman",
+                sub_locality="sulaymaniyah",
                 tehran_reference="",
                 delta_value="",
                 quote_density_score=90.0,

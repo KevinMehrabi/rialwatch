@@ -1,3 +1,4 @@
+import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -198,6 +199,115 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertNotIn("official field", rendered)
             self.assertNotIn("Official freshness stale", rendered)
             self.assertNotIn("Official quote stale", rendered)
+
+    def test_recent_official_history_fallback_restores_short_outage_quote(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            site_dir = Path(tmp_dir) / "site"
+            fix_dir = site_dir / "fix"
+            fix_dir.mkdir(parents=True, exist_ok=True)
+
+            previous_official = {
+                "label": "Official Commercial USD Rate",
+                "benchmark": "official",
+                "fix": 1_411_295.0,
+                "band": {"p25": 1_411_295.0, "p75": 1_411_295.0},
+                "dispersion": 0.0,
+                "status": "Green",
+                "withheld": False,
+                "withhold_reasons": [],
+                "source_medians": {
+                    "commercial_aux": 1_411_295.0,
+                    "commercial_aux_a": 1_411_295.0,
+                },
+                "source_units": {
+                    "commercial_aux": "rial",
+                    "commercial_aux_a": "rial",
+                },
+                "source_update_counts": {
+                    "commercial_aux": 1,
+                    "commercial_aux_a": 1,
+                },
+                "source_notes": {
+                    "commercial_aux": "latest valid quote selected at 2026-04-29T09:55:01Z",
+                    "commercial_aux_a": "latest valid quote selected at 2026-04-29T09:55:01Z",
+                },
+                "selected_sources": ["commercial_aux", "commercial_aux_a"],
+                "selected_quote_time": "2026-04-29T09:55:01Z",
+                "selection_method": "freshest_quote_time",
+                "using_stale_fallback": False,
+                "stale_fallback_sources": [],
+                "available": True,
+            }
+            (fix_dir / "2026-04-29.json").write_text(
+                json.dumps(
+                    {
+                        "date": "2026-04-29",
+                        "as_of": "2026-04-29T15:06:43Z",
+                        "benchmarks": {"official": previous_official},
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            current = {
+                "date": "2026-04-30",
+                "as_of": "2026-04-30T15:41:12Z",
+                "computed": {
+                    "fix": 1_779_500.0,
+                    "withheld": False,
+                    "benchmarks": {
+                        "open_market": {
+                            "label": "Open Market / Street Rate",
+                            "value": 1_779_500.0,
+                            "available": True,
+                            "is_primary": True,
+                        },
+                        "official": {
+                            "label": "Official Commercial USD Rate",
+                            "value": None,
+                            "available": False,
+                            "is_primary": False,
+                        },
+                    },
+                },
+                "benchmarks": {
+                    "open_market": {
+                        "label": "Open Market / Street Rate",
+                        "benchmark": "open_market",
+                        "fix": 1_779_500.0,
+                        "withheld": False,
+                        "available": True,
+                    },
+                    "official": {
+                        "label": "Official Commercial USD Rate",
+                        "benchmark": "official",
+                        "fix": None,
+                        "withheld": True,
+                        "withhold_reasons": ["no valid sources available"],
+                        "source_notes": {
+                            "commercial_aux": "no valid samples",
+                            "commercial_aux_a": "no valid samples",
+                        },
+                        "selected_sources": None,
+                        "available": False,
+                    },
+                },
+            }
+
+            fallback_day = pipeline.parse_iso_date_text("2026-04-30")
+            self.assertIsNotNone(fallback_day)
+            assert fallback_day is not None
+            applied = pipeline.apply_recent_official_history_fallback(site_dir, current, fallback_day)
+
+            official = current["benchmarks"]["official"]
+            self.assertTrue(applied)
+            self.assertEqual(official["fix"], 1_411_295.0)
+            self.assertTrue(official["available"])
+            self.assertFalse(official["withheld"])
+            self.assertTrue(official["using_stale_fallback"])
+            self.assertEqual(official["selection_method"], "historical_official_fallback")
+            self.assertEqual(current["computed"]["benchmarks"]["official"]["value"], 1_411_295.0)
+            self.assertTrue(current["indicators"]["street_official_gap_pct"]["available"])
 
 
 if __name__ == "__main__":
