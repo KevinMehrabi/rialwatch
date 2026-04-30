@@ -155,6 +155,10 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertNotIn("font-size: 1.05rem", self.layout)
         self.assertNotIn("font-size: 0.84rem", self.layout)
 
+    def test_footer_update_label_matches_header_language(self) -> None:
+        self.assertIn("Updated: ${generated_at}", self.layout)
+        self.assertNotIn("Generated at ${generated_at}", self.layout)
+
 
 if __name__ == "__main__":
     unittest.main()
