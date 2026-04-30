@@ -1,6 +1,6 @@
 {
   "date": "2026-04-24",
-  "as_of": "2026-04-24T14:50:44Z",
+  "as_of": "2026-04-30T23:40:15Z",
   "window_utc": {
     "start": "13:45",
     "end": "14:15",
@@ -183,15 +183,12 @@
             "attempt_count": 1,
             "retry_count": 0,
             "content_length": 42315,
-            "final_url": "https://api.navasan.tech/latest/?api_key=freeUDvWfa3EhMWQl58qCeQPfT4a8471",
+            "final_url": "https://api.navasan.tech/latest/?api_key=%2A%2A%2A",
             "payload_mode": "json",
             "source_fields": {
               "open_market": [
                 "usd_sell",
                 "usd"
-              ],
-              "official": [
-                "mex_usd_sell"
               ],
               "regional_transfer": [
                 "usd_shakhs",
@@ -206,14 +203,12 @@
             },
             "selected_symbol_by_benchmark": {
               "open_market": "usd_sell",
-              "official": "mex_usd_sell",
               "regional_transfer": "usd_shakhs",
               "crypto_usdt": "usdt",
               "emami_gold_coin": "sekkeh"
             },
             "benchmark_quote_times": {
               "open_market": "2026-04-23T17:27:54Z",
-              "official": "2026-01-06T01:07:21Z",
               "regional_transfer": "2026-04-24T14:07:42Z",
               "crypto_usdt": "2026-04-24T14:08:01Z",
               "emami_gold_coin": "2026-04-24T14:07:48Z"
@@ -223,21 +218,18 @@
             "open_market_exclusion_reason": "stale open_market quote timestamp",
             "extracted_values": {
               "open_market": null,
-              "official": 1325072.0,
               "regional_transfer": 1588300.0,
               "crypto_usdt": 1532500.0,
               "emami_gold_coin": 1760000.0
             },
             "raw_extracted_values": {
               "open_market": 155000.0,
-              "official": 1325072.0,
               "regional_transfer": 158830.0,
               "crypto_usdt": 153250.0,
               "emami_gold_coin": 176000.0
             },
             "benchmark_units": {
               "open_market": "toman",
-              "official": "rial",
               "regional_transfer": "toman",
               "crypto_usdt": "toman",
               "emami_gold_coin": "toman"
@@ -252,7 +244,7 @@
           "value": null,
           "benchmarks": {
             "open_market": null,
-            "official": 1325072.0,
+            "official": null,
             "regional_transfer": 1588300.0,
             "crypto_usdt": 1532500.0,
             "emami_gold_coin": 1760000.0
@@ -270,7 +262,6 @@
       ],
       "median": null,
       "benchmark_medians": {
-        "official": 1325072.0,
         "regional_transfer": 1588300.0,
         "crypto_usdt": 1532500.0,
         "emami_gold_coin": 1760000.0
@@ -319,25 +310,13 @@
               "official": "2026-04-24T00:07:21Z"
             },
             "extracted_values": {
-              "open_market": 273000.0,
-              "official": 1403083.0,
-              "regional_transfer": null,
-              "crypto_usdt": 273000.0,
-              "emami_gold_coin": 775096060.0
+              "official": 1403083.0
             },
             "raw_extracted_values": {
-              "open_market": 273000.0,
-              "official": 1403083.0,
-              "regional_transfer": null,
-              "crypto_usdt": 273000.0,
-              "emami_gold_coin": 775096060.0
+              "official": 1403083.0
             },
             "benchmark_units": {
-              "open_market": "rial",
-              "official": "rial",
-              "regional_transfer": "rial",
-              "crypto_usdt": "rial",
-              "emami_gold_coin": "rial"
+              "official": "rial"
             },
             "source_unit": "rial",
             "normalized_unit": "rial",
@@ -348,11 +327,11 @@
           "sampled_at": "2026-04-24T14:12:02Z",
           "value": 273000.0,
           "benchmarks": {
-            "open_market": 273000.0,
+            "open_market": null,
             "official": 1403083.0,
             "regional_transfer": null,
-            "crypto_usdt": 273000.0,
-            "emami_gold_coin": 775096060.0
+            "crypto_usdt": null,
+            "emami_gold_coin": null
           },
           "quote_time": "2026-04-23T00:00:00Z",
           "ok": false,
@@ -367,10 +346,7 @@
       ],
       "median": 273000.0,
       "benchmark_medians": {
-        "open_market": 273000.0,
-        "official": 1403083.0,
-        "crypto_usdt": 273000.0,
-        "emami_gold_coin": 775096060.0
+        "official": 1403083.0
       },
       "note": "source excluded from street benchmark universe"
     },
@@ -416,25 +392,13 @@
               "official": "2026-04-24T00:07:21Z"
             },
             "extracted_values": {
-              "open_market": 273000.0,
-              "official": 1403083.0,
-              "regional_transfer": null,
-              "crypto_usdt": 273000.0,
-              "emami_gold_coin": 775096060.0
+              "official": 1403083.0
             },
             "raw_extracted_values": {
-              "open_market": 273000.0,
-              "official": 1403083.0,
-              "regional_transfer": null,
-              "crypto_usdt": 273000.0,
-              "emami_gold_coin": 775096060.0
+              "official": 1403083.0
             },
             "benchmark_units": {
-              "open_market": "rial",
-              "official": "rial",
-              "regional_transfer": "rial",
-              "crypto_usdt": "rial",
-              "emami_gold_coin": "rial"
+              "official": "rial"
             },
             "source_unit": "rial",
             "normalized_unit": "rial",
@@ -445,11 +409,11 @@
           "sampled_at": "2026-04-24T14:12:02Z",
           "value": 273000.0,
           "benchmarks": {
-            "open_market": 273000.0,
+            "open_market": null,
             "official": 1403083.0,
             "regional_transfer": null,
-            "crypto_usdt": 273000.0,
-            "emami_gold_coin": 775096060.0
+            "crypto_usdt": null,
+            "emami_gold_coin": null
           },
           "quote_time": "2026-04-23T00:00:00Z",
           "ok": false,
@@ -464,10 +428,7 @@
       ],
       "median": 273000.0,
       "benchmark_medians": {
-        "open_market": 273000.0,
-        "official": 1403083.0,
-        "crypto_usdt": 273000.0,
-        "emami_gold_coin": 775096060.0
+        "official": 1403083.0
       },
       "note": "source excluded from street benchmark universe"
     },
@@ -513,25 +474,13 @@
               "official": "2026-04-24T00:07:21Z"
             },
             "extracted_values": {
-              "open_market": 273000.0,
-              "official": 1403083.0,
-              "regional_transfer": null,
-              "crypto_usdt": 273000.0,
-              "emami_gold_coin": 775096060.0
+              "official": 1403083.0
             },
             "raw_extracted_values": {
-              "open_market": 273000.0,
-              "official": 1403083.0,
-              "regional_transfer": null,
-              "crypto_usdt": 273000.0,
-              "emami_gold_coin": 775096060.0
+              "official": 1403083.0
             },
             "benchmark_units": {
-              "open_market": "rial",
-              "official": "rial",
-              "regional_transfer": "rial",
-              "crypto_usdt": "rial",
-              "emami_gold_coin": "rial"
+              "official": "rial"
             },
             "source_unit": "rial",
             "normalized_unit": "rial",
@@ -542,11 +491,11 @@
           "sampled_at": "2026-04-24T14:12:02Z",
           "value": 273000.0,
           "benchmarks": {
-            "open_market": 273000.0,
+            "open_market": null,
             "official": 1403083.0,
             "regional_transfer": null,
-            "crypto_usdt": 273000.0,
-            "emami_gold_coin": 775096060.0
+            "crypto_usdt": null,
+            "emami_gold_coin": null
           },
           "quote_time": "2026-04-23T00:00:00Z",
           "ok": false,
@@ -561,10 +510,7 @@
       ],
       "median": 273000.0,
       "benchmark_medians": {
-        "open_market": 273000.0,
-        "official": 1403083.0,
-        "crypto_usdt": 273000.0,
-        "emami_gold_coin": 775096060.0
+        "official": 1403083.0
       },
       "note": "source excluded from street benchmark universe"
     },
@@ -610,25 +556,13 @@
               "official": "2026-04-24T00:07:21Z"
             },
             "extracted_values": {
-              "open_market": 273000.0,
-              "official": 1403083.0,
-              "regional_transfer": null,
-              "crypto_usdt": 273000.0,
-              "emami_gold_coin": 775096060.0
+              "official": 1403083.0
             },
             "raw_extracted_values": {
-              "open_market": 273000.0,
-              "official": 1403083.0,
-              "regional_transfer": null,
-              "crypto_usdt": 273000.0,
-              "emami_gold_coin": 775096060.0
+              "official": 1403083.0
             },
             "benchmark_units": {
-              "open_market": "rial",
-              "official": "rial",
-              "regional_transfer": "rial",
-              "crypto_usdt": "rial",
-              "emami_gold_coin": "rial"
+              "official": "rial"
             },
             "source_unit": "rial",
             "normalized_unit": "rial",
@@ -639,11 +573,11 @@
           "sampled_at": "2026-04-24T14:12:02Z",
           "value": 273000.0,
           "benchmarks": {
-            "open_market": 273000.0,
+            "open_market": null,
             "official": 1403083.0,
             "regional_transfer": null,
-            "crypto_usdt": 273000.0,
-            "emami_gold_coin": 775096060.0
+            "crypto_usdt": null,
+            "emami_gold_coin": null
           },
           "quote_time": "2026-04-23T00:00:00Z",
           "ok": false,
@@ -658,10 +592,7 @@
       ],
       "median": 273000.0,
       "benchmark_medians": {
-        "open_market": 273000.0,
-        "official": 1403083.0,
-        "crypto_usdt": 273000.0,
-        "emami_gold_coin": 775096060.0
+        "official": 1403083.0
       },
       "note": "source excluded from street benchmark universe"
     },
@@ -1028,7 +959,7 @@
       "source_notes": {
         "bonbast": "no valid samples",
         "alanchand_street": "source family not used for this benchmark",
-        "navasan": "official quote stale since 2026-01-06T01:07:21Z (outside stale-fallback horizon)",
+        "navasan": "source family not used for this benchmark",
         "commercial_aux_a": "latest valid quote selected at 2026-04-24T00:07:21Z",
         "commercial_aux_b": "latest valid quote selected at 2026-04-24T00:07:21Z",
         "commercial_aux_c": "latest valid quote selected at 2026-04-24T00:07:21Z",
@@ -1186,7 +1117,7 @@
       "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
     },
     "street_gold_gap_pct": {
-      "label": "Gold FX Gap",
+      "label": "Street-Gold Gap",
       "value": null,
       "available": false,
       "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
@@ -1271,7 +1202,7 @@
         "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
       },
       "street_gold_gap_pct": {
-        "label": "Gold FX Gap",
+        "label": "Street-Gold Gap",
         "value": null,
         "available": false,
         "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
@@ -1302,22 +1233,20 @@
     "normalized_unit": "rial"
   },
   "methodology": {
-    "mapping_fingerprint": "0501055e1573",
+    "mapping_fingerprint": "08822274e092",
     "canonical_source_symbols": {
       "navasan": {
         "open_market": [
           "usd_sell",
           "usd"
         ],
-        "official": [
-          "mex_usd_sell"
-        ],
         "regional_transfer": [
           "usd_shakhs",
           "usd_sherkat"
         ],
         "crypto_usdt": [
-          "usdt"
+          "usdt",
+          "usd_usdt"
         ],
         "emami_gold_coin": [
           "sekkeh"
@@ -1339,7 +1268,7 @@
           "ice_commodity_transfer_usd_sell"
         ]
       },
-      "commercial_aux_c": {
+      "commercial_aux_b": {
         "official": [
           "ice_transfer_usd_sell",
           "ice_currency_usd_sell",
@@ -1347,7 +1276,7 @@
           "ice_commodity_transfer_usd_sell"
         ]
       },
-      "commercial_aux_b": {
+      "commercial_aux_c": {
         "official": [
           "ice_transfer_usd_sell",
           "ice_currency_usd_sell",
@@ -1396,7 +1325,6 @@
     },
     "navasan_benchmark_units": {
       "open_market": "toman",
-      "official": "rial",
       "regional_transfer": "toman",
       "crypto_usdt": "toman",
       "emami_gold_coin": "toman"

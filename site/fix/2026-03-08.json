@@ -71,6 +71,12 @@
       "benchmark_medians": {},
       "note": "no valid in-window samples"
     },
+    "alanchand_street": {
+      "samples": [],
+      "median": null,
+      "benchmark_medians": {},
+      "note": "no valid in-window samples"
+    },
     "navasan": {
       "samples": [
         {
@@ -136,7 +142,43 @@
       ],
       "median": null,
       "benchmark_medians": {},
-      "note": "no valid in-window samples"
+      "note": "source excluded from street benchmark universe"
+    },
+    "commercial_aux_a": {
+      "samples": [],
+      "median": null,
+      "benchmark_medians": {},
+      "note": "source excluded from street benchmark universe"
+    },
+    "commercial_aux_b": {
+      "samples": [],
+      "median": null,
+      "benchmark_medians": {},
+      "note": "source excluded from street benchmark universe"
+    },
+    "commercial_aux_c": {
+      "samples": [],
+      "median": null,
+      "benchmark_medians": {},
+      "note": "source excluded from street benchmark universe"
+    },
+    "commercial_aux": {
+      "samples": [],
+      "median": null,
+      "benchmark_medians": {},
+      "note": "source excluded from street benchmark universe"
+    },
+    "commercial_profile_transfer": {
+      "samples": [],
+      "median": null,
+      "benchmark_medians": {},
+      "note": "source excluded from street benchmark universe"
+    },
+    "commercial_profile_sana": {
+      "samples": [],
+      "median": null,
+      "benchmark_medians": {},
+      "note": "source excluded from street benchmark universe"
     },
     "alanchand": {
       "samples": [
@@ -200,7 +242,7 @@
       ],
       "median": null,
       "benchmark_medians": {},
-      "note": "no valid in-window samples"
+      "note": "source excluded from street benchmark universe"
     }
   },
   "benchmarks": {
@@ -220,11 +262,24 @@
       ],
       "source_medians": {},
       "source_units": {},
+      "source_update_counts": {},
       "source_notes": {
         "bonbast": "no valid in-window samples",
-        "navasan": "no valid in-window samples",
-        "alanchand": "no valid in-window samples"
+        "alanchand_street": "no valid in-window samples",
+        "navasan": "source excluded from street benchmark universe",
+        "commercial_aux_a": "source excluded from street benchmark universe",
+        "commercial_aux_b": "source excluded from street benchmark universe",
+        "commercial_aux_c": "source excluded from street benchmark universe",
+        "commercial_aux": "source excluded from street benchmark universe",
+        "commercial_profile_transfer": "source excluded from street benchmark universe",
+        "commercial_profile_sana": "source excluded from street benchmark universe",
+        "alanchand": "source excluded from street benchmark universe"
       },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     },
     "official": {
@@ -243,11 +298,24 @@
       ],
       "source_medians": {},
       "source_units": {},
+      "source_update_counts": {},
       "source_notes": {
         "bonbast": "no valid samples",
-        "navasan": "no valid samples",
-        "alanchand": "no valid samples"
+        "alanchand_street": "source family not used for this benchmark",
+        "navasan": "source family not used for this benchmark",
+        "commercial_aux_a": "no valid samples",
+        "commercial_aux_b": "no valid samples",
+        "commercial_aux_c": "no valid samples",
+        "commercial_aux": "no valid samples",
+        "commercial_profile_transfer": "no valid samples",
+        "commercial_profile_sana": "no valid samples",
+        "alanchand": "source family not used for this benchmark"
       },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     },
     "regional_transfer": {
@@ -266,11 +334,24 @@
       ],
       "source_medians": {},
       "source_units": {},
+      "source_update_counts": {},
       "source_notes": {
         "bonbast": "no valid samples",
+        "alanchand_street": "source family not used for this benchmark",
         "navasan": "no valid samples",
+        "commercial_aux_a": "source family not used for this benchmark",
+        "commercial_aux_b": "source family not used for this benchmark",
+        "commercial_aux_c": "source family not used for this benchmark",
+        "commercial_aux": "source family not used for this benchmark",
+        "commercial_profile_transfer": "source family not used for this benchmark",
+        "commercial_profile_sana": "source family not used for this benchmark",
         "alanchand": "no valid samples"
       },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     },
     "crypto_usdt": {
@@ -289,11 +370,24 @@
       ],
       "source_medians": {},
       "source_units": {},
+      "source_update_counts": {},
       "source_notes": {
         "bonbast": "no valid samples",
+        "alanchand_street": "source family not used for this benchmark",
         "navasan": "no valid samples",
+        "commercial_aux_a": "source family not used for this benchmark",
+        "commercial_aux_b": "source family not used for this benchmark",
+        "commercial_aux_c": "source family not used for this benchmark",
+        "commercial_aux": "source family not used for this benchmark",
+        "commercial_profile_transfer": "source family not used for this benchmark",
+        "commercial_profile_sana": "source family not used for this benchmark",
         "alanchand": "no valid samples"
       },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     },
     "emami_gold_coin": {
@@ -312,11 +406,24 @@
       ],
       "source_medians": {},
       "source_units": {},
+      "source_update_counts": {},
       "source_notes": {
         "bonbast": "no valid samples",
+        "alanchand_street": "source family not used for this benchmark",
         "navasan": "no valid samples",
+        "commercial_aux_a": "source family not used for this benchmark",
+        "commercial_aux_b": "source family not used for this benchmark",
+        "commercial_aux_c": "source family not used for this benchmark",
+        "commercial_aux": "source family not used for this benchmark",
+        "commercial_profile_transfer": "source family not used for this benchmark",
+        "commercial_profile_sana": "source family not used for this benchmark",
         "alanchand": "no valid samples"
       },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     }
   },
@@ -338,6 +445,12 @@
       "value": null,
       "available": false,
       "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
+    },
+    "street_gold_gap_pct": {
+      "label": "Street-Gold Gap",
+      "value": null,
+      "available": false,
+      "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
     },
     "official_commercial_trend_7d": {
       "label": "Official 7d Trend",
@@ -414,6 +527,12 @@
         "available": false,
         "formula": "((crypto_usdt_irr - street_usd_irr) / street_usd_irr) * 100"
       },
+      "street_gold_gap_pct": {
+        "label": "Street-Gold Gap",
+        "value": null,
+        "available": false,
+        "formula": "((gold_implied_usd_irr - street_usd_irr) / street_usd_irr) * 100"
+      },
       "official_commercial_trend_7d": {
         "label": "Official 7d Trend",
         "value": null,
@@ -431,31 +550,81 @@
     "street_official_gap_pct": null,
     "street_transfer_gap_pct": null,
     "street_crypto_gap_pct": null,
+    "street_gold_gap_pct": null,
+    "gold_implied_usd_irr": null,
+    "gold_usd_per_oz": 3000.0,
     "official_commercial_trend_7d": null,
     "street_confidence_status": "WITHHOLD",
     "source_unit": "unknown",
     "normalized_unit": "rial"
   },
   "methodology": {
-    "mapping_fingerprint": "b7d66ace91d5",
+    "mapping_fingerprint": "08822274e092",
     "canonical_source_symbols": {
       "navasan": {
         "open_market": [
           "usd_sell",
           "usd"
         ],
-        "official": [
-          "mex_usd_sell"
-        ],
         "regional_transfer": [
           "usd_shakhs",
           "usd_sherkat"
         ],
         "crypto_usdt": [
-          "usdt"
+          "usdt",
+          "usd_usdt"
         ],
         "emami_gold_coin": [
           "sekkeh"
+        ]
+      },
+      "commercial_aux_a": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
+      "commercial_aux_c": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
+      "commercial_aux": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
+      "commercial_aux_b": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
+      "commercial_profile_transfer": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell",
+          "mex_usd_sell"
+        ]
+      },
+      "commercial_profile_sana": {
+        "official": [
+          "mex_usd_sell",
+          "sana_sell_usd",
+          "ice_currency_usd_sell",
+          "ice_transfer_usd_sell"
         ]
       },
       "alanchand": {
@@ -482,7 +651,6 @@
     },
     "navasan_benchmark_units": {
       "open_market": "toman",
-      "official": "rial",
       "regional_transfer": "toman",
       "crypto_usdt": "toman",
       "emami_gold_coin": "toman"

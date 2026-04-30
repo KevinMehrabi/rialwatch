@@ -95,22 +95,27 @@
   .site-header-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 16px;
-    align-items: center;
+    grid-template-areas:
+      "brand meta"
+      "subtitle subtitle";
+    column-gap: 16px;
+    row-gap: 3px;
+    align-items: start;
     padding-top: 10px;
     padding-bottom: 10px;
   }
 
   .site-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    display: contents;
+    min-width: 0;
   }
 
   .site-brand-row {
+    grid-area: brand;
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
   }
 
   .site-logo {
@@ -120,16 +125,24 @@
     flex: 0 0 auto;
   }
 
+  .site-logo-link {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    text-decoration: none;
+  }
+
   .site-title {
     color: var(--rw-text-strong);
     font-family: "Sora", "Segoe UI", sans-serif;
     font-size: 2rem;
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
     line-height: 1.2;
     text-decoration: none;
     margin-bottom: 0;
     display: block;
+    white-space: nowrap;
     transition: color 120ms ease;
   }
 
@@ -140,16 +153,19 @@
   }
 
   .site-subtitle {
+    grid-area: subtitle;
     color: var(--rw-text-muted);
     font-size: 1.1rem;
     font-weight: 600;
     line-height: 1.2;
+    white-space: nowrap;
+    min-width: 0;
   }
 
   .site-nav {
     display: flex;
     gap: 14px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
   }
 
@@ -292,6 +308,25 @@
     text-align: center;
   }
 
+  .site-footer-contact {
+    margin-top: 6px;
+    color: var(--rw-text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+  }
+
+  .site-footer-contact a {
+    color: var(--rw-link);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .site-footer-contact a:hover,
+  .site-footer-contact a:focus {
+    color: var(--rw-link-hover);
+    text-decoration: underline;
+  }
+
   .page-wrapper {
     background: var(--rw-bg) !important;
     min-height: 100vh;
@@ -336,10 +371,13 @@
   }
 
   .site-meta {
+    grid-area: meta;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4px;
+    align-self: start;
+    gap: 3px;
+    min-width: max-content;
   }
 
   .page-main-title {
@@ -379,18 +417,22 @@
   }
 
   .top-grid {
-    grid-template-columns: 4fr 8fr;
-    align-items: start;
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .top-grid > * {
+    min-width: 0;
   }
 
   .indicators-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
     width: 100%;
   }
 
   .readings-grid,
   .signals-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
     width: 100%;
   }
 
@@ -399,10 +441,158 @@
     padding: 18px;
     min-height: 220px;
     height: 100%;
+    min-width: 0;
   }
 
   .top-grid .dashboard-card {
     min-height: 0;
+    height: 100%;
+  }
+
+  .primary-card {
+    align-self: stretch;
+    container-type: inline-size;
+  }
+
+  .chart-card {
+    container-type: inline-size;
+  }
+
+  .primary-metrics-stack {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 26px;
+    margin-top: 22px;
+    max-width: 280px;
+  }
+
+  .primary-card-heading {
+    display: grid;
+    gap: 8px;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .primary-card-heading-separator {
+    display: none;
+  }
+
+  .primary-metric-block {
+    line-height: 1.25;
+  }
+
+  .primary-value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex-wrap: wrap;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .primary-rate-value {
+    font-size: 3rem;
+    font-size: clamp(2.15rem, 17cqw, 3.6rem);
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: 0;
+    color: var(--rw-text-strong);
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .primary-rate-unit {
+    flex: 0 1 auto;
+    font-size: 0.74rem;
+    color: var(--rw-text-muted);
+    letter-spacing: 0;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .primary-rate-value-candidate {
+    font-size: 1.65rem;
+    font-size: clamp(1.35rem, 7cqw, 2rem);
+  }
+
+  .primary-card .card-body {
+    justify-content: space-between;
+  }
+
+  .metric-value {
+    font-size: 2.4rem;
+    line-height: 1;
+    font-weight: 700;
+    color: var(--rw-text-strong);
+  }
+
+  .metric-sub {
+    color: var(--rw-text-muted);
+    font-size: 0.9rem;
+  }
+
+  .metric-unit {
+    font-weight: 600;
+  }
+
+  @media (max-width: 900px) {
+    .top-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .top-grid .primary-card {
+      order: 1;
+      min-height: 0;
+      height: auto;
+    }
+
+    .top-grid .chart-card {
+      order: 2;
+      min-height: 0;
+      height: auto;
+    }
+
+    .primary-metrics-stack {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 18px;
+      max-width: none;
+      row-gap: 14px;
+    }
+
+    .primary-card-heading {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .primary-card-heading-separator {
+      display: inline;
+    }
+
+    .primary-metric-band {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .primary-metric-prior-day {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .primary-metric-publication {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .primary-metric-observed {
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .primary-card .card-body {
+      justify-content: flex-start;
+    }
   }
 
   .dashboard-card .card-body {
@@ -412,12 +602,91 @@
     height: 100%;
   }
 
+  .history-chart-wrap {
+    position: relative;
+    overflow: visible;
+    width: 100%;
+    min-height: 240px;
+    height: clamp(250px, 31cqw, 360px);
+    flex: 1 1 auto;
+  }
+
+  .history-point-pulse {
+    position: absolute;
+    display: none;
+    width: 46px;
+    height: 46px;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .history-point-pulse::before,
+  .history-point-pulse::after {
+    content: "";
+    position: absolute;
+    border-radius: inherit;
+  }
+
+  .history-point-pulse::before {
+    inset: 0;
+    background: rgba(var(--rw-accent-rgb), 0.52);
+    animation: rw-latest-point-pulse 1100ms linear infinite;
+    z-index: 0;
+  }
+
+  .history-point-pulse::after {
+    inset: 14.5px;
+    border: 1.9px solid rgba(var(--rw-accent-rgb), 0.48);
+    z-index: 1;
+  }
+
+  .history-point-marker {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10.4px;
+    height: 10.4px;
+    border: 1.3px solid #ffffff;
+    border-radius: 999px;
+    background: var(--rw-accent);
+    box-sizing: border-box;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+
+  @keyframes rw-latest-point-pulse {
+    from {
+      opacity: 1;
+      transform: scale(0.39);
+    }
+
+    to {
+      opacity: 0;
+      transform: scale(1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .history-point-pulse::before {
+      animation: none;
+      opacity: 0.18;
+      transform: scale(0.62);
+    }
+  }
+
   .panel-top .fw-semibold {
     line-height: 1.2;
   }
 
   .panel-middle {
     margin-top: 14px;
+  }
+
+  .anchored-card-bottom {
+    margin-top: auto;
+    padding-top: 18px;
   }
 
   .value-row {
@@ -438,6 +707,17 @@
     font-size: 0.75rem;
     color: var(--rw-text-muted);
     letter-spacing: 0.01em;
+  }
+
+  .inline-unit-label {
+    color: var(--rw-text-muted);
+    font-size: 0.85em;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .indicator-value-row {
+    align-items: baseline;
   }
 
   .panel-bottom {
@@ -489,11 +769,6 @@
     background: rgba(239, 68, 68, 0.12);
   }
 
-  .panel-value-soft {
-    opacity: 0.72;
-    font-weight: 500;
-  }
-
   .panel-sparkline {
     min-height: 34px;
   }
@@ -515,6 +790,10 @@
     line-height: 1.05;
     font-weight: 700;
     color: var(--rw-text-strong);
+  }
+
+  .indicator-value-secondary {
+    font-size: 1.9rem;
   }
 
   .indicator-compare {
@@ -541,7 +820,10 @@
   }
 
   .chart-card #historyChart {
-    max-height: 320px;
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
   }
 
   .recent-table-wrap {
@@ -683,10 +965,6 @@
   }
 
   @media (max-width: 1100px) {
-    .indicators-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .status-overview-grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -694,37 +972,44 @@
 
   @media (max-width: 700px) {
     .site-header-inner {
-      grid-template-columns: 1fr;
-      gap: 8px;
-      align-items: start;
+      column-gap: 12px;
+      row-gap: 2px;
+    }
+
+    .site-brand-row {
+      gap: 10px;
     }
 
     .site-meta {
-      align-items: flex-start;
-      gap: 6px;
+      align-items: flex-end;
+      align-self: start;
+      gap: 2px;
     }
 
     .site-nav {
       gap: 12px;
     }
 
+    .site-nav a {
+      font-size: 14px;
+    }
+
     .site-nav-row {
-      justify-content: flex-start;
+      justify-content: flex-end;
+      gap: 10px;
     }
 
     .site-updated {
-      text-align: left;
-      white-space: normal;
+      font-size: 0.7rem;
+      text-align: right;
+      white-space: nowrap;
     }
 
     .site-generated-at {
       margin-top: 18px;
     }
 
-    .top-grid,
-    .indicators-grid,
-    .readings-grid,
-    .signals-grid {
+    .top-grid {
       grid-template-columns: 1fr;
     }
 
@@ -732,8 +1017,126 @@
       grid-template-columns: 1fr;
     }
 
-    .top-grid .dashboard-card {
-      min-height: 320px;
+    .top-grid .chart-card {
+      order: 2;
+      min-height: 270px;
+      height: auto;
+    }
+
+    .top-grid .primary-card {
+      order: 1;
+      min-height: 0;
+      height: auto;
+    }
+
+    .primary-card .card-body {
+      justify-content: flex-start;
+    }
+
+    .primary-rate-value {
+      font-size: clamp(1.9rem, 14cqw, 2.65rem);
+    }
+
+    .primary-rate-unit {
+      font-size: 0.68rem;
+    }
+
+    .chart-card #historyChart {
+      min-height: 0;
+    }
+
+    .history-chart-wrap {
+      min-height: 230px;
+      height: clamp(240px, 58cqw, 330px);
+    }
+  }
+
+  @media (max-width: 430px) {
+    .site-header-inner {
+      column-gap: 8px;
+      row-gap: 2px;
+    }
+
+    .site-brand-row {
+      gap: 8px;
+    }
+
+    .site-logo {
+      height: 40px;
+    }
+
+    .site-title {
+      font-size: 1.6rem;
+    }
+
+    .site-nav {
+      gap: 7px;
+    }
+
+    .site-nav a {
+      font-size: 12.5px;
+    }
+
+    .site-nav-row {
+      gap: 7px;
+    }
+
+    .theme-toggle {
+      width: 34px;
+      height: 18px;
+    }
+
+    .theme-toggle-thumb {
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+    }
+
+    html[data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(16px);
+    }
+
+    .site-updated {
+      font-size: 0.64rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .site-title {
+      font-size: 1.35rem;
+    }
+
+    .site-logo {
+      height: 34px;
+    }
+
+    .site-nav {
+      gap: 4px;
+    }
+
+    .site-nav a {
+      font-size: 10.5px;
+    }
+
+    .site-nav-row {
+      gap: 4px;
+    }
+
+    .theme-toggle {
+      width: 26px;
+      height: 14px;
+    }
+
+    .theme-toggle-thumb {
+      top: 2px;
+      left: 2px;
+      width: 10px;
+      height: 10px;
+    }
+
+    html[data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(12px);
     }
   }
 </style>
@@ -745,21 +1148,22 @@
       <div class="site-header-inner">
         <div class="site-brand">
           <div class="site-brand-row">
-            <img
-              class="site-logo"
-              id="site-logo"
-              src="/assets/rwicon_white.svg"
-              data-logo-dark="/assets/rwicon_white.svg"
-              data-logo-light="/assets/rwicon_black.svg"
-              alt="RialWatch logo">
+            <a class="site-logo-link" href="/" aria-label="RialWatch home">
+              <img
+                class="site-logo"
+                id="site-logo"
+                src="/assets/rwicon_white.svg"
+                data-logo-dark="/assets/rwicon_white.svg"
+                data-logo-light="/assets/rwicon_black.svg"
+                alt="RialWatch logo">
+            </a>
             <a class="site-title" href="/">RialWatch</a>
           </div>
-          <div class="site-subtitle">Independent USD/IRR Market Reference</div>
+          <div class="site-subtitle">Independent Iranian Rial (IRR) Benchmark</div>
         </div>
         <div class="site-meta">
           <div class="site-nav-row">
             <div class="site-nav">
-              <a href="/">Home</a>
               <a href="/methodology/">Methodology</a>
               <a href="/status/">Status</a>
             </div>
@@ -771,7 +1175,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-03-30T15:36:03Z">Last update: 2026-03-30T15:36:03Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-04-30T23:39:26Z">Updated: 2026-04-30T23:39:26Z</div>
         </div>
       </div>
     </div>
@@ -789,8 +1193,11 @@
       <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
           <div class="text-secondary text-uppercase small">Daily Fix</div>
-          <div class="metric-value">1,580,250 <span class="fs-5">IRR</span></div>
-          <div class="metric-sub">As of 2026-03-30T15:36:03Z</div>
+          <div class="value-row">
+            <div class="metric-value">1,579,250</div>
+            <div class="unit-label metric-unit">IRR per USD</div>
+          </div>
+          <div class="metric-sub">As of 2026-04-30T23:39:26Z</div>
         </div>
         <span class="status-pill status-Green">Green</span>
       </div>
@@ -798,11 +1205,11 @@
       <div class="row g-3">
         <div class="col-md-4">
           <div class="text-secondary text-uppercase small">Band</div>
-          <div class="fw-semibold">1,576,875 - 1,583,625</div>
+          <div class="fw-semibold">1,576,375 - 1,582,125</div>
         </div>
         <div class="col-md-4">
           <div class="text-secondary text-uppercase small">Dispersion</div>
-          <div class="fw-semibold">0.43%</div>
+          <div class="fw-semibold">0.36%</div>
         </div>
         <div class="col-md-4">
           <div class="text-secondary text-uppercase small">Withheld</div>
@@ -835,8 +1242,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr><td>bonbast</td><td>1,573,500</td><td>0/1</td><td></td></tr>
-<tr><td>alanchand_street</td><td>1,587,000</td><td>0/1</td><td></td></tr>
+            <tr><td>bonbast</td><td>1,573,500</td><td>1/1</td><td></td></tr>
+<tr><td>alanchand_street</td><td>1,585,000</td><td>1/1</td><td></td></tr>
 <tr><td>navasan</td><td>N/A</td><td>0/1</td><td>source excluded from street benchmark universe</td></tr>
 <tr><td>commercial_aux_a</td><td>273,000</td><td>0/1</td><td>source excluded from street benchmark universe</td></tr>
 <tr><td>commercial_aux_b</td><td>273,000</td><td>0/1</td><td>source excluded from street benchmark universe</td></tr>
@@ -850,8 +1257,9 @@
   </section>
 </div>
 
-      <div class="text-secondary site-generated-at">Generated at 2026-03-30T15:36:03Z</div>
+      <div class="text-secondary site-generated-at">Updated: 2026-04-30T23:39:26Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
+      <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
   </div>
 </div>
@@ -903,7 +1311,7 @@
         hour12: false,
         timeZone: 'UTC'
       });
-      el.textContent = `Last update: ${fmt.format(d)} UTC`;
+      el.textContent = `Updated: ${fmt.format(d)} UTC`;
     }
   }
 

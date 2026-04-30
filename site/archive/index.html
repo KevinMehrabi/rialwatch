@@ -95,22 +95,27 @@
   .site-header-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 16px;
-    align-items: center;
+    grid-template-areas:
+      "brand meta"
+      "subtitle subtitle";
+    column-gap: 16px;
+    row-gap: 3px;
+    align-items: start;
     padding-top: 10px;
     padding-bottom: 10px;
   }
 
   .site-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    display: contents;
+    min-width: 0;
   }
 
   .site-brand-row {
+    grid-area: brand;
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
   }
 
   .site-logo {
@@ -132,11 +137,12 @@
     font-family: "Sora", "Segoe UI", sans-serif;
     font-size: 2rem;
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
     line-height: 1.2;
     text-decoration: none;
     margin-bottom: 0;
     display: block;
+    white-space: nowrap;
     transition: color 120ms ease;
   }
 
@@ -147,16 +153,19 @@
   }
 
   .site-subtitle {
+    grid-area: subtitle;
     color: var(--rw-text-muted);
     font-size: 1.1rem;
     font-weight: 600;
     line-height: 1.2;
+    white-space: nowrap;
+    min-width: 0;
   }
 
   .site-nav {
     display: flex;
     gap: 14px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
   }
 
@@ -362,10 +371,13 @@
   }
 
   .site-meta {
+    grid-area: meta;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4px;
+    align-self: start;
+    gap: 3px;
+    min-width: max-content;
   }
 
   .page-main-title {
@@ -454,6 +466,17 @@
     max-width: 280px;
   }
 
+  .primary-card-heading {
+    display: grid;
+    gap: 8px;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .primary-card-heading-separator {
+    display: none;
+  }
+
   .primary-metric-block {
     line-height: 1.25;
   }
@@ -530,8 +553,41 @@
     }
 
     .primary-metrics-stack {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 18px;
       max-width: none;
-      row-gap: 12px;
+      row-gap: 14px;
+    }
+
+    .primary-card-heading {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 10px;
+    }
+
+    .primary-card-heading-separator {
+      display: inline;
+    }
+
+    .primary-metric-band {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .primary-metric-prior-day {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .primary-metric-publication {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .primary-metric-observed {
+      grid-column: 2;
+      grid-row: 2;
     }
 
     .primary-card .card-body {
@@ -626,6 +682,11 @@
 
   .panel-middle {
     margin-top: 14px;
+  }
+
+  .anchored-card-bottom {
+    margin-top: auto;
+    padding-top: 18px;
   }
 
   .value-row {
@@ -911,27 +972,37 @@
 
   @media (max-width: 700px) {
     .site-header-inner {
-      grid-template-columns: 1fr;
-      gap: 8px;
-      align-items: start;
+      column-gap: 12px;
+      row-gap: 2px;
+    }
+
+    .site-brand-row {
+      gap: 10px;
     }
 
     .site-meta {
-      align-items: flex-start;
-      gap: 6px;
+      align-items: flex-end;
+      align-self: start;
+      gap: 2px;
     }
 
     .site-nav {
       gap: 12px;
     }
 
+    .site-nav a {
+      font-size: 14px;
+    }
+
     .site-nav-row {
-      justify-content: flex-start;
+      justify-content: flex-end;
+      gap: 10px;
     }
 
     .site-updated {
-      text-align: left;
-      white-space: normal;
+      font-size: 0.7rem;
+      text-align: right;
+      white-space: nowrap;
     }
 
     .site-generated-at {
@@ -958,11 +1029,6 @@
       height: auto;
     }
 
-    .primary-metrics-stack {
-      max-width: none;
-      row-gap: 10px;
-    }
-
     .primary-card .card-body {
       justify-content: flex-start;
     }
@@ -982,6 +1048,95 @@
     .history-chart-wrap {
       min-height: 230px;
       height: clamp(240px, 58cqw, 330px);
+    }
+  }
+
+  @media (max-width: 430px) {
+    .site-header-inner {
+      column-gap: 8px;
+      row-gap: 2px;
+    }
+
+    .site-brand-row {
+      gap: 8px;
+    }
+
+    .site-logo {
+      height: 40px;
+    }
+
+    .site-title {
+      font-size: 1.6rem;
+    }
+
+    .site-nav {
+      gap: 7px;
+    }
+
+    .site-nav a {
+      font-size: 12.5px;
+    }
+
+    .site-nav-row {
+      gap: 7px;
+    }
+
+    .theme-toggle {
+      width: 34px;
+      height: 18px;
+    }
+
+    .theme-toggle-thumb {
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+    }
+
+    html[data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(16px);
+    }
+
+    .site-updated {
+      font-size: 0.64rem;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .site-title {
+      font-size: 1.35rem;
+    }
+
+    .site-logo {
+      height: 34px;
+    }
+
+    .site-nav {
+      gap: 4px;
+    }
+
+    .site-nav a {
+      font-size: 10.5px;
+    }
+
+    .site-nav-row {
+      gap: 4px;
+    }
+
+    .theme-toggle {
+      width: 26px;
+      height: 14px;
+    }
+
+    .theme-toggle-thumb {
+      top: 2px;
+      left: 2px;
+      width: 10px;
+      height: 10px;
+    }
+
+    html[data-theme="dark"] .theme-toggle-thumb {
+      transform: translateX(12px);
     }
   }
 </style>
@@ -1004,12 +1159,11 @@
             </a>
             <a class="site-title" href="/">RialWatch</a>
           </div>
-          <div class="site-subtitle">Independent USD/IRR Market Reference</div>
+          <div class="site-subtitle">Independent Iranian Rial (IRR) Benchmark</div>
         </div>
         <div class="site-meta">
           <div class="site-nav-row">
             <div class="site-nav">
-              <a href="/">Home</a>
               <a href="/methodology/">Methodology</a>
               <a href="/status/">Status</a>
             </div>
@@ -1021,7 +1175,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-04-30T15:05:11Z">Last update: 2026-04-30T15:05:11Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-04-30T23:40:16Z">Updated: 2026-04-30T23:40:16Z</div>
         </div>
       </div>
     </div>
@@ -1104,7 +1258,7 @@
   </div>
 </section>
 
-      <div class="text-secondary site-generated-at">Generated at 2026-04-30T15:05:11Z</div>
+      <div class="text-secondary site-generated-at">Updated: 2026-04-30T23:40:16Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
       <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
@@ -1158,7 +1312,7 @@
         hour12: false,
         timeZone: 'UTC'
       });
-      el.textContent = `Last update: ${fmt.format(d)} UTC`;
+      el.textContent = `Updated: ${fmt.format(d)} UTC`;
     }
   }
 
