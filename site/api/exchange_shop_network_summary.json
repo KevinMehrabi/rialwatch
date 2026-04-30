@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-04-30T05:11:30Z",
+  "generated_at": "2026-04-30T16:32:54Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1449922.07,
-  "total_usable_records": 144,
-  "total_contributing_channels": 13,
+  "total_usable_records": 140,
+  "total_contributing_channels": 14,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -14,7 +14,7 @@
       "error": null,
       "messages_seen": 20,
       "records_extracted": 19,
-      "usable_records": 18,
+      "usable_records": 17,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -38,8 +38,8 @@
   "source_category_mix": {
     "direct_shop": 61,
     "market_channel": 46,
-    "regional_market_channel": 18,
-    "settlement_exchange": 19
+    "regional_market_channel": 17,
+    "settlement_exchange": 16
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 16,
       "contributing_channel_count": 5,
-      "basket_confidence": 92.57,
+      "basket_confidence": 92.28,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -158,9 +158,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "usable_record_count": 17,
+      "average_quality": 94.82,
+      "average_freshness": 97.18,
       "from_new_p1": true
     },
     {
@@ -181,7 +181,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 13,
-      "average_quality": 77.92,
+      "average_quality": 75.23,
       "average_freshness": 81.85,
       "from_new_p1": false
     },
@@ -219,17 +219,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:iranianuae.ae",
-      "title": "Iranianuae",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 91.5,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -252,13 +241,35 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranianuae.ae",
+      "title": "Iranianuae",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 89.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:hiemarat.com",
       "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 88.0,
+      "average_quality": 93.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranintl.com",
+      "title": "Rapid deterioration of Iran-UAE ties threatens a critical trade lifeline",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 76.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }

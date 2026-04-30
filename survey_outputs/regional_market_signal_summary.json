@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-04-30T05:15:58Z",
-  "new_regional_signal_sources_discovered": 19,
-  "existing_registry_signal_sources_used": 29,
+  "generated_at": "2026-04-30T16:37:20Z",
+  "new_regional_signal_sources_discovered": 24,
+  "existing_registry_signal_sources_used": 30,
   "which_locality_baskets_gained_usable_data": [
     "Afghanistan",
     "Germany"
@@ -14,7 +14,7 @@
     "UAE": false,
     "Iraq": false,
     "Afghanistan": true,
-    "UK": true,
+    "UK": false,
     "Germany": false
   },
   "top_sources_contributing_to_each_improved_basket": {
@@ -30,8 +30,8 @@
     ]
   },
   "search_debug": {
-    "successful_search_requests": 55,
-    "failed_search_requests": 151,
+    "successful_search_requests": 54,
+    "failed_search_requests": 152,
     "query_stats": {
       "site:t.me دلار هرات": {
         "group": "persian",
@@ -351,7 +351,7 @@
       },
       "site:t.me euro_bazaar": {
         "group": "german",
-        "candidate_hits": 0
+        "candidate_hits": 2
       },
       "site:t.me/s euro_bazaar": {
         "group": "german",
@@ -407,7 +407,7 @@
       },
       "site:t.me iranian exchange london": {
         "group": "uk",
-        "candidate_hits": 0
+        "candidate_hits": 7
       },
       "site:t.me/s iranian exchange london": {
         "group": "uk",
@@ -419,7 +419,7 @@
       },
       "site:t.me/s poundbazar": {
         "group": "uk",
-        "candidate_hits": 0
+        "candidate_hits": 2
       },
       "site:t.me sarafionlineuk": {
         "group": "uk",
@@ -443,10 +443,10 @@
       },
       "site:t.me/s mtc london uk sarafi": {
         "group": "uk",
-        "candidate_hits": 0
+        "candidate_hits": 10
       }
     }
   },
   "queries_run": 103,
-  "sources_crawled": 74
+  "sources_crawled": 83
 }

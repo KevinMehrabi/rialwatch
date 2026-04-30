@@ -1,14 +1,17 @@
 {
-  "generated_at": "2026-04-30T05:11:27Z",
-  "new_board_channels_discovered": 66,
+  "generated_at": "2026-04-30T16:32:51Z",
+  "new_board_channels_discovered": 65,
   "channels_with_dubai_quotes": [
     "dirhamdubai",
     "exchangeratescountries",
+    "havalarezaei",
+    "hiemarat",
     "kabul_dollarrate",
     "lubrinol",
     "moneytransfersarafi",
     "nerkh_uk",
     "nerkhsarafionline",
+    "royal_rate",
     "sarafionline7groupuk",
     "sarafionlineuk"
   ],
@@ -47,9 +50,10 @@
     "irancurrency",
     "iranianerbil2",
     "lubrinol",
+    "mellalex",
     "navasanchannel",
-    "pargarexchangegroup",
-    "roya_mah_e_sefid",
+    "nrxidolar",
+    "poshtkhati_dollar",
     "sabzemaidan",
     "sepehrexchange1",
     "tahran_sabza"
@@ -57,20 +61,18 @@
   "channels_with_turkey_quotes": [
     "aghayebazar_official",
     "almaexchange",
+    "doviz_izmir",
     "exchangeratescountries",
-    "istanbulexchange_com",
     "kabul_dollarrate",
     "lubrinol",
     "moneytransfersarafi",
     "nerkh_uk",
     "nerkhsarafionline",
-    "pargarexchangegroup",
     "sarafionline7groupuk",
     "sarafionlineuk"
   ],
   "channels_with_uk_quotes": [
     "aghayebazar_official",
-    "danielexchange",
     "exchangeratescountries",
     "groupsarafilondonuk",
     "kabul_dollarrate",
@@ -78,11 +80,8 @@
     "moneytransfersarafi",
     "nerkh_uk",
     "nerkhsarafionline",
-    "sarafibartarlondon",
-    "sarafijavan",
     "sarafionline7groupuk",
-    "sarafionlineuk",
-    "shirazexchangelondon"
+    "sarafionlineuk"
   ],
   "channels_with_germany_quotes": [
     "berlin_pay",
@@ -107,12 +106,12 @@
   "iraq_display_state": "publish",
   "afghanistan_display_state": "publish",
   "search_debug": {
-    "successful_search_requests": 128,
-    "failed_search_requests": 394,
+    "successful_search_requests": 146,
+    "failed_search_requests": 376,
     "query_stats": {
       "site:t.me دلار دبی": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s دلار دبی": {
         "group": "persian",
@@ -120,7 +119,7 @@
       },
       "site:t.me نرخ دلار دبی": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me بازار ارز دبی": {
         "group": "persian",
@@ -380,7 +379,7 @@
       },
       "site:t.me بازار ارز بغداد": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me دلار عراق": {
         "group": "persian",
@@ -416,7 +415,7 @@
       },
       "site:t.me دلار ترکیه": {
         "group": "persian",
-        "candidate_hits": 8
+        "candidate_hits": 0
       },
       "site:t.me/s دلار ترکیه": {
         "group": "persian",
@@ -436,7 +435,7 @@
       },
       "site:t.me/s دلار آنکارا": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me دلار ازمیر": {
         "group": "persian",
@@ -540,7 +539,7 @@
       },
       "site:t.me/s حواله بانکی آلمان": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me مونیخ یورو": {
         "group": "persian",
@@ -552,7 +551,7 @@
       },
       "site:t.me کلن یورو": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s کلن یورو": {
         "group": "persian",
@@ -592,7 +591,7 @@
       },
       "site:t.me بازار ارز لندن": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me/s بازار ارز لندن": {
         "group": "persian",
@@ -768,7 +767,7 @@
       },
       "kabul dollar telegram iran": {
         "group": "support",
-        "candidate_hits": 1
+        "candidate_hits": 0
       },
       "afghanistan dollar telegram iran": {
         "group": "support",
@@ -780,7 +779,7 @@
       },
       "mazar dollar telegram": {
         "group": "support",
-        "candidate_hits": 3
+        "candidate_hits": 0
       },
       "jalalabad dollar telegram": {
         "group": "support",
@@ -820,7 +819,7 @@
       },
       "izmir dollar telegram iran": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 3
       },
       "kapali carsi dollar telegram": {
         "group": "support",
@@ -920,11 +919,11 @@
       },
       "persian london exchange telegram": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 1
       },
       "pound bazar telegram iranian uk": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 8
       },
       "iranian money transfer london telegram": {
         "group": "support",
@@ -1012,7 +1011,7 @@
       },
       "site:t.me euro_bazaar": {
         "group": "german",
-        "candidate_hits": 0
+        "candidate_hits": 12
       },
       "site:t.me/s euro_bazaar": {
         "group": "german",
@@ -1024,7 +1023,7 @@
       },
       "site:t.me/s alman_exchange": {
         "group": "german",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me frankfurt_euro": {
         "group": "german",
@@ -1044,7 +1043,7 @@
       },
       "site:t.me koln_euro": {
         "group": "german",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s koln_euro": {
         "group": "german",
@@ -1076,7 +1075,7 @@
       },
       "site:t.me iranian exchange london": {
         "group": "uk",
-        "candidate_hits": 16
+        "candidate_hits": 0
       },
       "site:t.me/s iranian exchange london": {
         "group": "uk",
@@ -1096,7 +1095,7 @@
       },
       "site:t.me/s poundbazar": {
         "group": "uk",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me sarafionlineuk": {
         "group": "uk",
@@ -1157,5 +1156,5 @@
     }
   },
   "queries_run": 261,
-  "sources_crawled": 131
+  "sources_crawled": 116
 }
