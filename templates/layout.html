@@ -1145,7 +1145,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="${generated_at}">Last update: ${generated_at}</div>
+          <div class="site-updated" id="site-last-update" data-ts="${generated_at}">Updated: ${generated_at}</div>
         </div>
       </div>
     </div>
@@ -1207,7 +1207,7 @@
         hour12: false,
         timeZone: 'UTC'
       });
-      el.textContent = `Last update: ${fmt.format(d)} UTC`;
+      el.textContent = `Updated: ${fmt.format(d)} UTC`;
     }
   }
 
