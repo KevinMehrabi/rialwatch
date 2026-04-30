@@ -542,8 +542,30 @@
     }
 
     .primary-metrics-stack {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      column-gap: 18px;
       max-width: none;
-      row-gap: 12px;
+      row-gap: 14px;
+    }
+
+    .primary-metric-band {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .primary-metric-prior-day {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .primary-metric-publication {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .primary-metric-observed {
+      grid-column: 2;
+      grid-row: 2;
     }
 
     .primary-card .card-body {
@@ -983,33 +1005,6 @@
       order: 1;
       min-height: 0;
       height: auto;
-    }
-
-    .primary-metrics-stack {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      column-gap: 18px;
-      max-width: none;
-      row-gap: 14px;
-    }
-
-    .primary-metric-band {
-      grid-column: 1;
-      grid-row: 1;
-    }
-
-    .primary-metric-prior-day {
-      grid-column: 2;
-      grid-row: 1;
-    }
-
-    .primary-metric-publication {
-      grid-column: 1;
-      grid-row: 2;
-    }
-
-    .primary-metric-observed {
-      grid-column: 2;
-      grid-row: 2;
     }
 
     .primary-card .card-body {

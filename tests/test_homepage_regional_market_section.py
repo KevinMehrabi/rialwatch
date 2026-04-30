@@ -122,6 +122,16 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
             self.layout.index("justify-content: flex-start"),
         )
 
+    def test_primary_metrics_switch_to_two_columns_when_top_grid_stacks(self) -> None:
+        compact_section_start = self.layout.index("@media (max-width: 900px)")
+        compact_section_end = self.layout.index(".dashboard-card .card-body", compact_section_start)
+        compact_section = self.layout[compact_section_start:compact_section_end]
+
+        self.assertIn("grid-template-columns: minmax(0, 1fr) minmax(0, 1fr)", compact_section)
+        self.assertIn(".primary-metric-prior-day", compact_section)
+        self.assertIn("grid-column: 2", compact_section)
+        self.assertIn(".primary-metric-observed", compact_section)
+
     def test_indicator_metric_content_is_bottom_anchored(self) -> None:
         self.assertEqual(self.template.count('class="anchored-card-bottom"'), 6)
         self.assertIn(".anchored-card-bottom", self.layout)
