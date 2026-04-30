@@ -1,5 +1,6 @@
 import datetime as dt
 import json
+import socket
 import tempfile
 import urllib.error
 import unittest
@@ -812,6 +813,129 @@ class RegimeModelTests(unittest.TestCase):
     def test_build_source_configs_includes_multiple_aux_hosts(self) -> None:
         source_names = {cfg.name for cfg in pipeline.build_source_configs()}
         self.assertTrue({"commercial_aux_a", "commercial_aux_b", "commercial_aux_c", "commercial_aux"}.issubset(source_names))
+
+    def test_commercial_aux_default_avoids_deprecated_call_host(self) -> None:
+        with mock.patch.dict(
+            "os.environ",
+            {
+                "COMMERCIAL_AUX_URL": "",
+                "TGJU_CALL_URL": "",
+                "COMMERCIAL_AUX_A_URL": "",
+                "COMMERCIAL_AUX_B_URL": "",
+                "COMMERCIAL_AUX_C_URL": "",
+            },
+            clear=False,
+        ):
+            configs = {cfg.name: cfg for cfg in pipeline.build_source_configs()}
+            endpoints = pipeline.commercial_aux_endpoint_pool("https://call.tgju.org/ajax.json")
+            ranked = pipeline.ranked_commercial_aux_endpoints("https://call.tgju.org/ajax.json")
+
+        self.assertEqual(configs["commercial_aux"].url, "https://call2.tgju.org/ajax.json")
+        self.assertEqual(endpoints[:3], [
+            "https://call2.tgju.org/ajax.json",
+            "https://call3.tgju.org/ajax.json",
+            "https://call4.tgju.org/ajax.json",
+        ])
+        self.assertEqual(endpoints[-1], "https://call.tgju.org/ajax.json")
+        self.assertEqual(ranked[:3], [
+            "https://call2.tgju.org/ajax.json",
+            "https://call3.tgju.org/ajax.json",
+            "https://call4.tgju.org/ajax.json",
+        ])
+
+    def test_commercial_aux_request_does_not_cache_bust_by_default(self) -> None:
+        config = pipeline.SourceConfig(
+            name="commercial_aux_a",
+            url="https://call2.tgju.org/ajax.json",
+            auth_mode="public_json",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        )
+
+        with mock.patch.dict("os.environ", {"COMMERCIAL_AUX_CACHE_BUSTER": ""}, clear=False):
+            req = pipeline.build_request(config)
+
+        self.assertEqual(req.full_url, "https://call2.tgju.org/ajax.json")
+
+    def test_commercial_aux_request_can_cache_bust_when_enabled(self) -> None:
+        config = pipeline.SourceConfig(
+            name="commercial_aux_a",
+            url="https://call2.tgju.org/ajax.json",
+            auth_mode="public_json",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        )
+
+        with mock.patch.dict("os.environ", {"COMMERCIAL_AUX_CACHE_BUSTER": "1"}, clear=False):
+            req = pipeline.build_request(config)
+
+        self.assertIn("rev=", req.full_url)
+
+    def test_commercial_aux_sample_uses_official_field_timestamp(self) -> None:
+        config = pipeline.SourceConfig(
+            name="commercial_aux_a",
+            url="https://call2.tgju.org/ajax.json",
+            auth_mode="public_json",
+            secret_fields=(),
+            benchmark_families=("official",),
+            default_unit="rial",
+        )
+        sampled_at = dt.datetime(2026, 4, 30, 1, 0, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 4, 30, 0, 0, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 4, 30, 2, 0, tzinfo=dt.timezone.utc)
+        body = json.dumps(
+            {
+                "current": {
+                    "usd_sell": {"p": "1,779,500", "ts": "2026-04-30 01:00:00"},
+                    "ice_transfer_usd_sell": {"p": "1,362,635", "ts": "2026-04-30 00:15:26"},
+                    "legacy_timestamp": {"ts": "2026-04-28 00:00:00"},
+                }
+            }
+        )
+
+        with mock.patch("scripts.pipeline.fetch_request_body", return_value=(body, config.url)):
+            sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
+
+        self.assertTrue(sample.ok)
+        self.assertEqual(sample.value, 1_362_635.0)
+        self.assertEqual(sample.benchmark_values["official"], 1_362_635.0)
+        self.assertIsNone(sample.benchmark_values["open_market"])
+        self.assertEqual(sample.quote_time, dt.datetime(2026, 4, 30, 0, 15, 26, tzinfo=dt.timezone.utc))
+        self.assertEqual(
+            sample.health.get("benchmark_quote_times", {}).get("official"),
+            "2026-04-30T00:15:26Z",
+        )
+
+    def test_tgju_dns_fallback_returns_bootstrap_addresses(self) -> None:
+        with mock.patch("scripts.pipeline.resolve_tgju_ipv4_addresses", return_value=["203.0.113.10"]):
+            rows = pipeline.tgju_dns_fallback_getaddrinfo(
+                "call2.tgju.org",
+                443,
+                socket.AF_UNSPEC,
+                socket.SOCK_STREAM,
+                0,
+                0,
+            )
+
+        self.assertEqual(rows, [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("203.0.113.10", 443))])
+
+    def test_tgju_dns_fallback_leaves_other_hosts_to_system_dns(self) -> None:
+        sentinel = [(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", ("127.0.0.1", 443))]
+
+        with mock.patch("scripts.pipeline.ORIGINAL_SOCKET_GETADDRINFO", return_value=sentinel) as original:
+            rows = pipeline.tgju_dns_fallback_getaddrinfo(
+                "example.com",
+                443,
+                socket.AF_UNSPEC,
+                socket.SOCK_STREAM,
+                0,
+                0,
+            )
+
+        self.assertEqual(rows, sentinel)
+        original.assert_called_once()
 
 
 if __name__ == "__main__":

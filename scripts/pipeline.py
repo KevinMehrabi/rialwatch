@@ -17,6 +17,7 @@ import math
 import os
 import re
 import shutil
+import socket
 import statistics
 import threading
 import time
@@ -227,6 +228,19 @@ COMMERCIAL_AUX_RETRYABLE_HTTP_CODES = frozenset({408, 425, 429, 500, 502, 503, 5
 COMMERCIAL_AUX_HEDGE_WIDTH_DEFAULT = 2
 COMMERCIAL_AUX_HOST_COOLDOWN_BASE_SECONDS = 60
 COMMERCIAL_AUX_HOST_COOLDOWN_MAX_SECONDS = 600
+TGJU_DNS_FALLBACK_CACHE_SECONDS = 300
+TGJU_DOH_TIMEOUT_SECONDS = 5.0
+TGJU_DOH_RESOLVERS: Tuple[str, ...] = (
+    "https://dns.google/resolve",
+    "https://cloudflare-dns.com/dns-query",
+)
+TGJU_BOOTSTRAP_IPV4: Dict[str, Tuple[str, ...]] = {
+    "call2.tgju.org": ("185.166.104.7", "185.166.104.6"),
+    "call3.tgju.org": ("185.166.104.7", "185.166.104.6"),
+    "call4.tgju.org": ("185.166.104.6", "185.166.104.7"),
+    "www.tgju.org": ("185.166.104.7", "185.166.104.6"),
+}
+DEPRECATED_TGJU_AUX_HOSTS = frozenset({"call.tgju.org"})
 
 API_SOURCE_RETRY_ATTEMPTS_DEFAULT = 3
 API_SOURCE_RETRY_BACKOFF_SECONDS_DEFAULT = 1.0
@@ -243,6 +257,11 @@ OFFICIAL_STALE_FALLBACK_MAX_AGE_HOURS_DEFAULT = 24 * 45
 
 COMMERCIAL_AUX_HOST_HEALTH_LOCK = threading.Lock()
 COMMERCIAL_AUX_HOST_HEALTH: Dict[str, Dict[str, Any]] = {}
+TGJU_DNS_CACHE_LOCK = threading.Lock()
+TGJU_DNS_CACHE: Dict[str, Tuple[float, List[str]]] = {}
+ORIGINAL_SOCKET_GETADDRINFO = socket.getaddrinfo
+TGJU_DNS_FALLBACK_INSTALL_LOCK = threading.Lock()
+TGJU_DNS_FALLBACK_INSTALLED = False
 
 ALANCHAND_STREET_SELL_PATTERNS: Tuple[str, ...] = (
     r"(?is)Sell\s+rate\s+for\s+USD\s+to\s+IRR.*?<span[^>]*fs-5[^>]*>\s*([0-9][0-9,٬،.]*)\s*</span>",
@@ -480,6 +499,13 @@ def env_seconds(name: str, default: float, minimum: float, maximum: float) -> fl
     if parsed < minimum or parsed > maximum:
         return default
     return float(parsed)
+
+
+def env_bool(name: str, default: bool = False) -> bool:
+    raw = os.environ.get(name)
+    if raw is None or not raw.strip():
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 def bounded_value(value: Optional[float], minimum: float, maximum: float) -> Optional[float]:
@@ -956,6 +982,33 @@ def extract_benchmark_values(payload: Any, source_name: Optional[str] = None) ->
     return values
 
 
+def restrict_benchmark_values_to_source(
+    values: Dict[str, Optional[float]],
+    selected_symbols: Dict[str, str],
+    config: SourceConfig,
+) -> Tuple[Dict[str, Optional[float]], Dict[str, str]]:
+    allowed = set(config.benchmark_families)
+    restricted_values = {
+        key: (values.get(key) if key in allowed else None)
+        for key in BENCHMARK_LABELS
+    }
+    restricted_symbols = {
+        key: value
+        for key, value in selected_symbols.items()
+        if key in allowed
+    }
+    return restricted_values, restricted_symbols
+
+
+def representative_benchmark_key(config: SourceConfig, values: Dict[str, Optional[float]]) -> Optional[str]:
+    if PRIMARY_BENCHMARK in config.benchmark_families and parse_number(values.get(PRIMARY_BENCHMARK)) is not None:
+        return PRIMARY_BENCHMARK
+    for benchmark_key in config.benchmark_families:
+        if parse_number(values.get(benchmark_key)) is not None:
+            return benchmark_key
+    return None
+
+
 def extract_usd_irr(payload: Any) -> Optional[float]:
     return extract_benchmark_values(payload).get(PRIMARY_BENCHMARK)
 
@@ -1135,7 +1188,7 @@ def build_source_configs() -> List[SourceConfig]:
             url=env_first(
                 "COMMERCIAL_AUX_URL",
                 "TGJU_CALL_URL",
-                default="https://call.tgju.org/ajax.json",
+                default="https://call2.tgju.org/ajax.json",
             ),
             auth_mode="public_json",
             secret_fields=(),
@@ -1270,8 +1323,7 @@ def build_request(config: SourceConfig) -> urllib.request.Request:
         else:
             headers["X-API-Key"] = key
             url = with_query(url, {"api_key": key})
-    elif is_commercial_aux_source(config.name):
-        # Auxiliary commercial endpoints are aggressively cached at edge on some hosts; force a fresh variant key.
+    elif is_commercial_aux_source(config.name) and env_bool("COMMERCIAL_AUX_CACHE_BUSTER", default=False):
         url = with_query(url, {"rev": str(time.time_ns())})
 
     return urllib.request.Request(url=url, headers=headers, method="GET")
@@ -1303,17 +1355,26 @@ def canonical_commercial_aux_url(url: str) -> str:
     return urllib.parse.urlunparse((parsed.scheme, parsed.netloc, path, "", "", ""))
 
 
+def is_deprecated_tgju_aux_url(url: str) -> bool:
+    parsed = urllib.parse.urlparse(canonical_commercial_aux_url(url))
+    return (parsed.hostname or "").lower() in DEPRECATED_TGJU_AUX_HOSTS
+
+
 def commercial_aux_endpoint_pool(preferred_url: str) -> List[str]:
+    preferred = canonical_commercial_aux_url(preferred_url)
     candidates = [
-        preferred_url,
-        env_first("COMMERCIAL_AUX_URL", "TGJU_CALL_URL", default="https://call.tgju.org/ajax.json"),
+        preferred if preferred and not is_deprecated_tgju_aux_url(preferred) else "",
         env_first("COMMERCIAL_AUX_A_URL", "TGJU_CALL2_URL", default="https://call2.tgju.org/ajax.json"),
         env_first("COMMERCIAL_AUX_B_URL", "TGJU_CALL3_URL", default="https://call3.tgju.org/ajax.json"),
         env_first("COMMERCIAL_AUX_C_URL", "TGJU_CALL4_URL", default="https://call4.tgju.org/ajax.json"),
+        preferred if preferred and is_deprecated_tgju_aux_url(preferred) else "",
+        env_first("COMMERCIAL_AUX_URL", "TGJU_CALL_URL", default="https://call.tgju.org/ajax.json"),
     ]
     deduped: List[str] = []
     seen: set[str] = set()
     for candidate in candidates:
+        if not candidate:
+            continue
         normalized = canonical_commercial_aux_url(candidate)
         if not normalized or normalized in seen:
             continue
@@ -1357,22 +1418,114 @@ def ranked_commercial_aux_endpoints(preferred_url: str) -> List[str]:
     with COMMERCIAL_AUX_HOST_HEALTH_LOCK:
         state_snapshot = {key: dict(value) for key, value in COMMERCIAL_AUX_HOST_HEALTH.items()}
 
-    def sort_key(url: str) -> Tuple[int, int, int, int]:
+    def sort_key(url: str) -> Tuple[int, int, int, int, int]:
         key = canonical_commercial_aux_url(url)
         state = state_snapshot.get(key, {})
         cooldown_until = float(state.get("cooldown_until", 0.0) or 0.0)
         in_cooldown = now_epoch < cooldown_until
+        deprecated_penalty = 1 if is_deprecated_tgju_aux_url(key) else 0
         preferred_penalty = 0 if key == preferred_key else 1
         consecutive_failures = int(state.get("consecutive_failures", 0) or 0)
         successes = int(state.get("successes", 0) or 0)
         failures = int(state.get("failures", 0) or 0)
         reliability_penalty = max(0, failures - successes)
-        return (1 if in_cooldown else 0, preferred_penalty, consecutive_failures, reliability_penalty)
+        return (1 if in_cooldown else 0, deprecated_penalty, preferred_penalty, consecutive_failures, reliability_penalty)
 
     return sorted(urls, key=sort_key)
 
 
+def is_tgju_hostname(hostname: Optional[str]) -> bool:
+    if hostname is None:
+        return False
+    normalized = hostname.strip().lower().rstrip(".")
+    return normalized == "tgju.org" or normalized.endswith(".tgju.org")
+
+
+def is_tgju_url(url: str) -> bool:
+    return is_tgju_hostname(urllib.parse.urlparse(url).hostname)
+
+
+def resolve_tgju_ipv4_addresses(hostname: str) -> List[str]:
+    normalized = hostname.strip().lower().rstrip(".")
+    now_epoch = time.time()
+    with TGJU_DNS_CACHE_LOCK:
+        cached = TGJU_DNS_CACHE.get(normalized)
+        if cached is not None and cached[0] > now_epoch:
+            return list(cached[1])
+
+    resolved: List[str] = []
+    query = urllib.parse.urlencode({"name": normalized, "type": "A", "cd": "1"})
+    for resolver in TGJU_DOH_RESOLVERS:
+        try:
+            req = urllib.request.Request(
+                url=f"{resolver}?{query}",
+                method="GET",
+                headers={
+                    "Accept": "application/dns-json",
+                    "User-Agent": "rialwatch-pipeline/0.2",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=TGJU_DOH_TIMEOUT_SECONDS) as resp:
+                payload = json.loads(resp.read().decode("utf-8", errors="replace"))
+        except Exception:
+            continue
+        if int(payload.get("Status", -1)) != 0:
+            continue
+        answers = payload.get("Answer")
+        if not isinstance(answers, list):
+            continue
+        for answer in answers:
+            if not isinstance(answer, dict) or int(answer.get("type", 0) or 0) != 1:
+                continue
+            ip = str(answer.get("data") or "").strip()
+            if re.fullmatch(r"\d{1,3}(?:\.\d{1,3}){3}", ip) and ip not in resolved:
+                resolved.append(ip)
+        if resolved:
+            break
+
+    if not resolved:
+        resolved.extend(TGJU_BOOTSTRAP_IPV4.get(normalized, ()))
+
+    with TGJU_DNS_CACHE_LOCK:
+        TGJU_DNS_CACHE[normalized] = (now_epoch + TGJU_DNS_FALLBACK_CACHE_SECONDS, list(resolved))
+    return resolved
+
+
+def tgju_dns_fallback_getaddrinfo(
+    host: Any,
+    port: Any,
+    family: int = 0,
+    type: int = 0,
+    proto: int = 0,
+    flags: int = 0,
+) -> List[Any]:
+    hostname = host.decode("ascii", errors="ignore") if isinstance(host, bytes) else str(host)
+    if not is_tgju_hostname(hostname) or family == socket.AF_INET6:
+        return ORIGINAL_SOCKET_GETADDRINFO(host, port, family, type, proto, flags)
+
+    addresses = resolve_tgju_ipv4_addresses(hostname)
+    if not addresses:
+        return ORIGINAL_SOCKET_GETADDRINFO(host, port, family, type, proto, flags)
+
+    socktype = type or socket.SOCK_STREAM
+    protocol = proto or socket.IPPROTO_TCP
+    return [(socket.AF_INET, socktype, protocol, "", (ip, port)) for ip in addresses]
+
+
+def ensure_tgju_dns_fallback_installed() -> None:
+    global TGJU_DNS_FALLBACK_INSTALLED
+    if TGJU_DNS_FALLBACK_INSTALLED:
+        return
+    with TGJU_DNS_FALLBACK_INSTALL_LOCK:
+        if TGJU_DNS_FALLBACK_INSTALLED:
+            return
+        socket.getaddrinfo = tgju_dns_fallback_getaddrinfo
+        TGJU_DNS_FALLBACK_INSTALLED = True
+
+
 def fetch_request_body(req: urllib.request.Request, timeout_seconds: float) -> Tuple[str, str]:
+    if is_tgju_url(req.full_url):
+        ensure_tgju_dns_fallback_installed()
     with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
         body = resp.read().decode("utf-8", errors="replace")
         final_url = resp.geturl()
@@ -1889,9 +2042,7 @@ def fetch_tgju_profile_official_public(
             redacted_url = redact_url_for_health(req.full_url)
             request_urls.append(redacted_url)
             health["request_url"] = redacted_url
-            with urllib.request.urlopen(req, timeout=20) as resp:
-                body = resp.read().decode("utf-8", errors="replace")
-                final_url = resp.geturl()
+            body, final_url = fetch_request_body(req, 20)
             if body.strip():
                 health["user_agent"] = ua
                 break
@@ -1994,7 +2145,7 @@ def fetch_tgju_profile_official_fallback_aux(
         "COMMERCIAL_PROFILE_AUX_FALLBACK_URL",
         "COMMERCIAL_AUX_URL",
         "TGJU_CALL_URL",
-        default="https://call.tgju.org/ajax.json",
+        default="https://call2.tgju.org/ajax.json",
     )
     aux_config = SourceConfig(
         name="commercial_aux",
@@ -2747,7 +2898,7 @@ def fetch_navasan_companion_fallback(
     # Official benchmark fallback from resilient TGJU auxiliary endpoint pool.
     aux_config = SourceConfig(
         name="commercial_aux",
-        url=env_first("COMMERCIAL_AUX_URL", "TGJU_CALL_URL", default="https://call.tgju.org/ajax.json"),
+        url=env_first("COMMERCIAL_AUX_URL", "TGJU_CALL_URL", default="https://call2.tgju.org/ajax.json"),
         auth_mode="public_json",
         secret_fields=(),
         benchmark_families=("official",),
@@ -3264,17 +3415,24 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         )
 
     raw_extracted_values, selected_symbols = extract_benchmark_values_with_metadata(payload, config.name)
+    raw_extracted_values, selected_symbols = restrict_benchmark_values_to_source(
+        raw_extracted_values,
+        selected_symbols,
+        config,
+    )
     benchmark_units: Dict[str, str] = {}
     canonical_map = CANONICAL_SOURCE_SYMBOLS.get(config.name, {})
     health["source_fields"] = {
         key: list(canonical_map.get(key, ()))
         for key in BENCHMARK_LABELS
-        if canonical_map.get(key)
+        if key in config.benchmark_families and canonical_map.get(key)
     }
     if selected_symbols:
         health["selected_symbol_by_benchmark"] = selected_symbols
     benchmark_quote_times: Dict[str, str] = {}
     for benchmark_key, symbols in canonical_map.items():
+        if benchmark_key not in config.benchmark_families:
+            continue
         if not symbols:
             continue
         preferred_symbol = selected_symbols.get(benchmark_key)
@@ -3299,8 +3457,18 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
         benchmark_values = normalize_benchmark_values(raw_extracted_values, source_unit)
         benchmark_units = {key: source_unit for key in BENCHMARK_LABELS}
 
-    value = benchmark_values.get(PRIMARY_BENCHMARK)
-    quote_time = extract_quote_time(payload)
+    value_key = representative_benchmark_key(config, benchmark_values)
+    value = benchmark_values.get(value_key) if value_key else None
+    quote_time = try_parse_datetime(benchmark_quote_times.get(value_key)) if value_key else None
+    if quote_time is None:
+        relevant_quote_times = [
+            parsed
+            for key, raw_quote_time in benchmark_quote_times.items()
+            if key in config.benchmark_families
+            for parsed in [try_parse_datetime(raw_quote_time)]
+            if parsed is not None
+        ]
+        quote_time = max(relevant_quote_times) if relevant_quote_times else extract_quote_time(payload)
     if config.name == "navasan":
         open_market_symbols = CANONICAL_SOURCE_SYMBOLS.get("navasan", {}).get("open_market", ())
         open_market_quote_time = extract_symbol_quote_time(payload, open_market_symbols)
@@ -3335,7 +3503,7 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             quote_time,
             ok=False,
             stale=stale,
-            error="unable to parse USD/IRR",
+            error="unable to parse configured benchmark",
             health=health,
             source_unit=source_unit,
             normalized_unit=normalized_unit,
