@@ -132,6 +132,20 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertIn("grid-column: 2", compact_section)
         self.assertIn(".primary-metric-observed", compact_section)
 
+    def test_primary_heading_compacts_to_one_line_when_top_grid_stacks(self) -> None:
+        self.assertIn('class="text-secondary primary-card-heading"', self.template)
+        self.assertIn('class="primary-card-heading-separator"', self.template)
+
+        compact_section_start = self.layout.index("@media (max-width: 900px)")
+        compact_section_end = self.layout.index(".dashboard-card .card-body", compact_section_start)
+        compact_section = self.layout[compact_section_start:compact_section_end]
+
+        self.assertIn(".primary-card-heading", compact_section)
+        self.assertIn("display: flex", compact_section)
+        self.assertIn("flex-wrap: wrap", compact_section)
+        self.assertIn(".primary-card-heading-separator", compact_section)
+        self.assertIn("display: inline", compact_section)
+
     def test_indicator_metric_content_is_bottom_anchored(self) -> None:
         self.assertEqual(self.template.count('class="anchored-card-bottom"'), 6)
         self.assertIn(".anchored-card-bottom", self.layout)
