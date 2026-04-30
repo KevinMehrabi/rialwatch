@@ -55,7 +55,7 @@ INDICATOR_LABELS: Dict[str, str] = {
     "street_official_gap_pct": "Street-Official Gap",
     "street_transfer_gap_pct": "Street-Transfer Gap",
     "street_crypto_gap_pct": "Street-Crypto Gap",
-    "street_gold_gap_pct": "Gold FX Gap",
+    "street_gold_gap_pct": "Street-Gold Gap",
     "official_commercial_trend_7d": "Official 7d Trend",
 }
 

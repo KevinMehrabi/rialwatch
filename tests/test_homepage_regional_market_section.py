@@ -130,6 +130,15 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertNotIn("indicator-value-main mt-3", self.template)
         self.assertNotIn("indicator-value-row mt-3", self.template)
 
+    def test_gold_indicator_copy_matches_gap_card_pattern(self) -> None:
+        self.assertIn("Street-Gold Gap", self.template)
+        self.assertIn(
+            "Percent difference between gold-implied USD/IRR and Street USD/IRR.",
+            self.template,
+        )
+        self.assertIn("${street_gold_gap_note}", self.template)
+        self.assertNotIn("Gold FX Gap", self.template)
+
 
 if __name__ == "__main__":
     unittest.main()

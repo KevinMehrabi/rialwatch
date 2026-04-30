@@ -40,6 +40,7 @@ class RegimeModelTests(unittest.TestCase):
         self.assertNotIn("nima", pipeline.BENCHMARK_LABELS)
         self.assertNotIn("street_nima_gap", pipeline.INDICATOR_LABELS)
         self.assertNotIn("street_mobadeleh_gap", pipeline.INDICATOR_LABELS)
+        self.assertEqual(pipeline.INDICATOR_LABELS["street_gold_gap_pct"], "Street-Gold Gap")
 
     def test_legacy_navasan_samples_apply_symbol_unit_map(self) -> None:
         sample = pipeline.parse_sample_record(
