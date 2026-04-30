@@ -95,23 +95,27 @@
   .site-header-inner {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
-    gap: 16px;
-    align-items: center;
+    grid-template-areas:
+      "brand meta"
+      "subtitle subtitle";
+    column-gap: 16px;
+    row-gap: 3px;
+    align-items: start;
     padding-top: 10px;
     padding-bottom: 10px;
   }
 
   .site-brand {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+    display: contents;
     min-width: 0;
   }
 
   .site-brand-row {
+    grid-area: brand;
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
   }
 
   .site-logo {
@@ -133,7 +137,7 @@
     font-family: "Sora", "Segoe UI", sans-serif;
     font-size: 2rem;
     font-weight: 700;
-    letter-spacing: -0.03em;
+    letter-spacing: 0;
     line-height: 1.2;
     text-decoration: none;
     margin-bottom: 0;
@@ -149,16 +153,19 @@
   }
 
   .site-subtitle {
+    grid-area: subtitle;
     color: var(--rw-text-muted);
     font-size: 1.1rem;
     font-weight: 600;
     line-height: 1.2;
+    white-space: nowrap;
+    min-width: 0;
   }
 
   .site-nav {
     display: flex;
     gap: 14px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
   }
 
@@ -364,10 +371,12 @@
   }
 
   .site-meta {
+    grid-area: meta;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4px;
+    align-self: start;
+    gap: 3px;
     min-width: max-content;
   }
 
@@ -914,67 +923,40 @@
 
   @media (max-width: 700px) {
     .site-header-inner {
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 8px;
-      align-items: center;
+      column-gap: 12px;
+      row-gap: 2px;
     }
 
     .site-brand-row {
-      gap: 7px;
-    }
-
-    .site-logo {
-      height: 38px;
-    }
-
-    .site-title {
-      font-size: 1.55rem;
+      gap: 10px;
     }
 
     .site-subtitle {
-      font-size: 0.9rem;
+      font-size: 1.05rem;
       line-height: 1.15;
-      max-width: clamp(170px, 46vw, 320px);
     }
 
     .site-meta {
       align-items: flex-end;
-      gap: 3px;
+      align-self: start;
+      gap: 2px;
     }
 
     .site-nav {
-      gap: 8px;
-      flex-wrap: nowrap;
+      gap: 12px;
     }
 
     .site-nav a {
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .site-nav-row {
       justify-content: flex-end;
-      gap: 8px;
-      flex-wrap: nowrap;
-    }
-
-    .theme-toggle {
-      width: 34px;
-      height: 18px;
-    }
-
-    .theme-toggle-thumb {
-      top: 2px;
-      left: 2px;
-      width: 14px;
-      height: 14px;
-    }
-
-    html[data-theme="dark"] .theme-toggle-thumb {
-      transform: translateX(16px);
+      gap: 10px;
     }
 
     .site-updated {
-      font-size: 0.68rem;
+      font-size: 0.7rem;
       text-align: right;
       white-space: nowrap;
     }
@@ -1032,71 +1014,70 @@
 
   @media (max-width: 430px) {
     .site-header-inner {
-      gap: 6px;
+      column-gap: 8px;
+      row-gap: 2px;
     }
 
     .site-brand-row {
-      gap: 6px;
+      gap: 8px;
     }
 
     .site-logo {
-      height: 32px;
+      height: 40px;
     }
 
     .site-title {
-      font-size: 1.3rem;
+      font-size: 1.6rem;
     }
 
     .site-subtitle {
-      font-size: 0.78rem;
-      max-width: 150px;
+      font-size: 0.95rem;
     }
 
     .site-nav {
-      gap: 6px;
+      gap: 7px;
     }
 
     .site-nav a {
-      font-size: 12px;
+      font-size: 12.5px;
     }
 
     .site-nav-row {
-      gap: 6px;
+      gap: 7px;
     }
 
     .theme-toggle {
-      width: 30px;
-      height: 16px;
+      width: 34px;
+      height: 18px;
     }
 
     .theme-toggle-thumb {
       top: 2px;
       left: 2px;
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
     }
 
     html[data-theme="dark"] .theme-toggle-thumb {
-      transform: translateX(14px);
+      transform: translateX(16px);
     }
 
     .site-updated {
-      font-size: 0.62rem;
+      font-size: 0.64rem;
     }
   }
 
   @media (max-width: 360px) {
     .site-title {
-      font-size: 1.15rem;
+      font-size: 1.35rem;
     }
 
     .site-logo {
-      height: 28px;
+      height: 34px;
     }
 
     .site-subtitle {
-      font-size: 0.72rem;
-      max-width: 132px;
+      font-size: 0.84rem;
     }
 
     .site-nav {
