@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-01T15:10:17Z",
+  "generated_at": "2026-05-01T16:21:20Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1773250.0,
-  "total_usable_records": 145,
-  "total_contributing_channels": 15,
+  "total_usable_records": 133,
+  "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 69,
+    "direct_shop": 60,
     "market_channel": 46,
     "regional_market_channel": 17,
-    "settlement_exchange": 13
+    "settlement_exchange": 10
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 24,
-      "contributing_channel_count": 7,
-      "basket_confidence": 93.77,
+      "usable_record_count": 16,
+      "contributing_channel_count": 5,
+      "basket_confidence": 92.19,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -186,24 +186,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل دلار آمریکا به درهم امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 9,
-      "average_quality": 82.56,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 75.38,
+      "average_quality": 74.12,
       "average_freshness": 75.5,
       "from_new_p1": false
     },
@@ -241,17 +230,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:emeraldxe.com",
       "title": "تبدیل درهم به تومان لحظه‌ای",
       "locality": "UAE",
@@ -269,7 +247,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 88.0,
+      "average_quality": 84.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
