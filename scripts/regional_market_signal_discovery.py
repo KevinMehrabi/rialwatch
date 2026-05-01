@@ -241,6 +241,12 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s ir_dolar ریال قطر",
         "site:t.me tomandollar110 ریال قطر",
         "site:t.me/s tomandollar110 ریال قطر",
+        "site:t.me/s QAR ریال قطر",
+        "site:t.me/s قیمت ریال قطر",
+        "site:t.me/s قیمت لحظه ای ریال قطر",
+        "site:t.me/s ارزهای آزاد ریال قطر",
+        "site:t.me/s قیمت ارزهای آزاد قطر",
+        "site:t.me/s نرخ ارز قطر",
     ],
     "armenia": [
         "site:t.me arka_gold درام ارمنستان",

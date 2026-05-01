@@ -74,16 +74,48 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         text = (
             "قیمت ارزها دلار : 1,779,200 ریال یورو : 2,081,900 ریال "
             "پوند انگلیس : 2,403,500 ریال درهم امارات : 484,780 ریال "
+            "لیر ترکیه : 39,300 ریال دینار عراق : 1,360 ریال "
             "ریال قطر : 488,000 ریال درام ارمنستان : 4,550 ریال"
         )
         results = boards.extract_locality_quotes(text, benchmark_value=1_773_250.0)
         by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
         self.assertEqual(by_locality["Dubai"][1], "AED")
         self.assertAlmostEqual(by_locality["Dubai"][0], 1_780_354.55, places=2)
+        self.assertEqual(by_locality["Turkey"][1], "TRY")
+        self.assertAlmostEqual(by_locality["Turkey"][0], 1_775_574.0, places=2)
+        self.assertEqual(by_locality["Iraq"][1], "IQD")
+        self.assertAlmostEqual(by_locality["Iraq"][0], 1_781_600.0, places=2)
         self.assertEqual(by_locality["Qatar"][1], "QAR")
         self.assertAlmostEqual(by_locality["Qatar"][0], 1_776_320.0, places=2)
         self.assertEqual(by_locality["Armenia"][1], "AMD")
         self.assertAlmostEqual(by_locality["Armenia"][0], 1_774_500.0, places=2)
+
+    def test_extract_locality_quotes_handles_hundred_iqd_quote(self) -> None:
+        text = "صد دینار عراق : 136,000 ریال"
+        results = boards.extract_locality_quotes(text, benchmark_value=1_773_250.0)
+        by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
+        self.assertEqual(by_locality["Iraq"][1], "IQD")
+        self.assertAlmostEqual(by_locality["Iraq"][0], 1_781_600.0, places=2)
+
+    def test_build_navasan_currency_board_records_adds_provider_qatar_signal(self) -> None:
+        payload = {
+            "usd": {"value": 175_500, "date": 1_777_568_649},
+            "aed": {"value": 48_240, "date": 1_777_656_462},
+            "try": {"value": 3_885, "date": 1_777_568_649},
+            "iqd": {"value": 133.94, "date": 1_777_568_649},
+            "qar": {"value": 47_980, "date": 1_777_568_649},
+            "amd": {"value": 473.33, "date": 1_777_568_649},
+            "eur": {"value": 205_790, "date": 1_777_568_649},
+            "gbp": {"value": 238_340, "date": 1_777_568_649},
+        }
+        records = boards.build_navasan_currency_board_records(payload, benchmark_value=1_773_250.0)
+        by_locality = {record.locality_name: record for record in records}
+        self.assertEqual(by_locality["Qatar"].quote_currency_guess, "QAR")
+        self.assertAlmostEqual(by_locality["Qatar"].normalized_rate_irr, 1_746_472.0, places=2)
+        self.assertEqual(by_locality["Turkey"].quote_currency_guess, "TRY")
+        self.assertAlmostEqual(by_locality["Turkey"].normalized_rate_irr, 1_755_243.0, places=2)
+        self.assertEqual(by_locality["Iraq"].quote_currency_guess, "IQD")
+        self.assertAlmostEqual(by_locality["Iraq"].normalized_rate_irr, 1_754_614.0, places=2)
 
     def test_detect_localities_maps_german_city_aliases(self) -> None:
         hits = boards.detect_localities("مونیخ یورو و کلن یورو برای حواله آلمان")

@@ -9,6 +9,7 @@ It does not modify the benchmark.
 from __future__ import annotations
 
 import argparse
+import base64
 import csv
 import datetime as dt
 import html
@@ -46,6 +47,9 @@ USER_AGENT = (
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/123.0.0.0 Safari/537.36"
 )
+NAVASAN_PUBLIC_URL_DEFAULT = "https://www.navasan.net/"
+NAVASAN_PUBLIC_CSRF_SALT = "c4e5f0f492059a67696e67a7bf745c6a0ee40056"
+NAVASAN_LAST_CURRENCIES_PATH = "/last_currencies.php"
 
 PRIMARY_LOCALITIES = ("Tehran", "Herat", "Sulaymaniyah", "Dubai")
 SECONDARY_LOCALITIES = ("Istanbul", "London", "Frankfurt", "Doha", "Yerevan")
@@ -506,6 +510,12 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s ir_dolar ریال قطر",
         "site:t.me tomandollar110 ریال قطر",
         "site:t.me/s tomandollar110 ریال قطر",
+        "site:t.me/s QAR ریال قطر",
+        "site:t.me/s قیمت ریال قطر",
+        "site:t.me/s قیمت لحظه ای ریال قطر",
+        "site:t.me/s ارزهای آزاد ریال قطر",
+        "site:t.me/s قیمت ارزهای آزاد قطر",
+        "site:t.me/s نرخ ارز قطر",
     ],
     "armenia": [
         "site:t.me arka_gold درام ارمنستان",
@@ -543,7 +553,32 @@ RATE_WORDS = ("نرخ پیشنهادی", "نرخ", "قیمت", "rate", "price")
 BOARD_HINTS = ("تابلو", "board", "quote board", "نرخ", "قیمت", "بازار", "لحظه ای", "لحظه‌ای")
 NEWS_HINTS = ("خبر", "اخبار", "تحلیل", "analysis", "news", "breaking")
 SHOP_HINTS = ("صرافی", "تماس", "contact", "whatsapp", "آدرس", "address")
-QUOTE_HINTS = ("دلار", "usd", "درهم", "aed", "یورو", "eur", "پوند", "gbp", "ریال قطر", "ريال قطر", "qar", "درام", "amd", "نرخ", "قیمت", "عرض", "طلب", "خرید", "فروش")
+QUOTE_HINTS = (
+    "دلار",
+    "usd",
+    "درهم",
+    "aed",
+    "یورو",
+    "eur",
+    "پوند",
+    "gbp",
+    "لیر",
+    "try",
+    "دینار عراق",
+    "دينار عراق",
+    "iqd",
+    "ریال قطر",
+    "ريال قطر",
+    "qar",
+    "درام",
+    "amd",
+    "نرخ",
+    "قیمت",
+    "عرض",
+    "طلب",
+    "خرید",
+    "فروش",
+)
 QUOTE_SEGMENT_MARKERS = (
     "دلار",
     "usd",
@@ -647,6 +682,18 @@ DIAGNOSTIC_USD_CROSS_RATES = {
     "GBP": 1.30,
     "QAR": 3.64,
     "AMD": 390.0,
+    "TRY": 45.18,
+    "IQD": 1310.0,
+}
+NAVASAN_DIAGNOSTIC_SYMBOLS: Dict[str, Tuple[str, str]] = {
+    "usd": ("Iran", "USD"),
+    "aed": ("Dubai", "AED"),
+    "try": ("Turkey", "TRY"),
+    "iqd": ("Iraq", "IQD"),
+    "qar": ("Qatar", "QAR"),
+    "amd": ("Armenia", "AMD"),
+    "eur": ("Germany", "EUR"),
+    "gbp": ("UK", "GBP"),
 }
 
 
@@ -986,6 +1033,10 @@ def detect_rate_number(text: str) -> Optional[int]:
 
 def infer_quote_currency(text: str, locality: str) -> str:
     lowered = translit_digits(text or "").lower()
+    if locality in TURKEY_AGG_LOCALITIES and ("لیر ترکیه" in lowered or "لــیــر" in lowered or "try" in lowered):
+        return "TRY"
+    if locality in IRAQ_AGG_LOCALITIES and ("دینار عراق" in lowered or "دينار عراق" in lowered or "iqd" in lowered):
+        return "IQD"
     if locality in QATAR_AGG_LOCALITIES and ("ریال قطر" in lowered or "ريال قطر" in lowered or "qar" in lowered):
         return "QAR"
     if locality in ARMENIA_AGG_LOCALITIES and ("درام" in lowered or "amd" in lowered):
@@ -1002,6 +1053,10 @@ def infer_quote_currency(text: str, locality: str) -> str:
         return "EUR"
     if "پوند" in lowered or "gbp" in lowered:
         return "GBP"
+    if "لیر ترکیه" in lowered or "لــیــر" in lowered or "try" in lowered:
+        return "TRY"
+    if "دینار عراق" in lowered or "دينار عراق" in lowered or "iqd" in lowered:
+        return "IQD"
     if "ریال قطر" in lowered or "ريال قطر" in lowered or "qar" in lowered:
         return "QAR"
     if "درام" in lowered or "amd" in lowered:
@@ -1020,6 +1075,10 @@ def comparable_locality_irr(value_irr: float, currency: str, locality: str) -> O
         return float(value_irr)
     if currency == "AED":
         return float(value_irr) * 3.6725
+    if currency == "TRY" and locality in TURKEY_AGG_LOCALITIES:
+        return float(value_irr) * DIAGNOSTIC_USD_CROSS_RATES[currency]
+    if currency == "IQD" and locality in IRAQ_AGG_LOCALITIES:
+        return float(value_irr) * DIAGNOSTIC_USD_CROSS_RATES[currency]
     if currency == "GBP" and locality in UK_AGG_LOCALITIES:
         return float(value_irr) / DIAGNOSTIC_USD_CROSS_RATES[currency]
     if currency == "EUR" and locality in GERMANY_AGG_LOCALITIES:
@@ -1029,6 +1088,191 @@ def comparable_locality_irr(value_irr: float, currency: str, locality: str) -> O
     if currency == "AMD" and locality in ARMENIA_AGG_LOCALITIES:
         return float(value_irr) * DIAGNOSTIC_USD_CROSS_RATES[currency]
     return None
+
+
+def adjust_currency_quote_unit(value_irr: float, currency: str, text: str) -> float:
+    lowered = translit_digits(text or "").lower()
+    if currency == "IQD" and (
+        "صد دینار" in lowered
+        or "صد دينار" in lowered
+        or "یکصد دینار" in lowered
+        or "یکصد دينار" in lowered
+        or "100 دینار" in lowered
+        or "100 دينار" in lowered
+    ):
+        return float(value_irr) / 100.0
+    return float(value_irr)
+
+
+def navasan_public_csrf(url: str, session_id: str = "") -> str:
+    parsed = urllib.parse.urlparse(url)
+    host = parsed.hostname or parsed.netloc or "www.navasan.net"
+    material = f"{session_id}{NAVASAN_PUBLIC_CSRF_SALT}http://{host}/hashr"
+    return base64.b64encode(material.encode("utf-8")).decode("ascii")
+
+
+def navasan_public_endpoint_url(base_url: str, endpoint_path: str) -> str:
+    parsed = urllib.parse.urlparse(base_url)
+    scheme = parsed.scheme or "https"
+    netloc = parsed.netloc or "www.navasan.net"
+    path = endpoint_path if endpoint_path.startswith("/") else f"/{endpoint_path}"
+    raw_url = urllib.parse.urlunparse((scheme, netloc, path, "", "", ""))
+    query = urllib.parse.urlencode({"_": str(int(time.time() / 10)), "csrf": navasan_public_csrf(base_url)})
+    return f"{raw_url}?{query}"
+
+
+def fetch_navasan_last_currencies(timeout: int) -> Tuple[Dict[str, Any], Optional[str]]:
+    origin = NAVASAN_PUBLIC_URL_DEFAULT.rstrip("/")
+    endpoint_url = navasan_public_endpoint_url(NAVASAN_PUBLIC_URL_DEFAULT, NAVASAN_LAST_CURRENCIES_PATH)
+    req = urllib.request.Request(
+        url=endpoint_url,
+        method="GET",
+        headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "application/json,text/javascript,*/*;q=0.8",
+            "Referer": f"{origin}/",
+            "X-Requested-With": "XMLHttpRequest",
+        },
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            parsed = json.loads(resp.read().decode("utf-8", errors="replace"))
+            return parsed if isinstance(parsed, dict) else {}, None
+    except urllib.error.HTTPError as exc:
+        return {}, f"http_{exc.code}"
+    except urllib.error.URLError as exc:
+        return {}, f"network_error:{exc.reason}"
+    except (socket.timeout, TimeoutError):
+        return {}, "timeout"
+    except json.JSONDecodeError:
+        return {}, "invalid_json"
+
+
+def unix_timestamp_iso(raw_value: Any) -> str:
+    try:
+        value = float(raw_value)
+    except (TypeError, ValueError):
+        return now_iso()
+    if value <= 0:
+        return now_iso()
+    try:
+        return dt.datetime.fromtimestamp(value, tz=dt.timezone.utc).replace(microsecond=0).isoformat()
+    except (OSError, OverflowError, ValueError):
+        return now_iso()
+
+
+def provider_value_to_rial(raw_value: Any) -> Optional[float]:
+    if isinstance(raw_value, dict):
+        raw_value = raw_value.get("value")
+    try:
+        value = float(raw_value)
+    except (TypeError, ValueError):
+        return None
+    if value <= 0:
+        return None
+    return value * 10.0
+
+
+def build_navasan_currency_board_records(payload: Dict[str, Any], benchmark_value: float) -> List[BoardRecord]:
+    quote_map: Dict[str, float] = {}
+    raw_quote_map: Dict[str, float] = {}
+    timestamp_by_locality: Dict[str, str] = {}
+    min_rate = benchmark_value * 0.45 if benchmark_value > 0 else 500_000.0
+    max_rate = benchmark_value * 1.80 if benchmark_value > 0 else 2_500_000.0
+
+    for symbol, (locality, currency) in NAVASAN_DIAGNOSTIC_SYMBOLS.items():
+        entry = payload.get(symbol)
+        raw_irr = provider_value_to_rial(entry)
+        if raw_irr is None:
+            continue
+        normalized = comparable_locality_irr(raw_irr, currency, locality)
+        if normalized is None or not (min_rate <= normalized <= max_rate):
+            continue
+        quote_map[locality] = float(normalized)
+        raw_quote_map[locality] = float(raw_irr)
+        timestamp_by_locality[locality] = unix_timestamp_iso(entry.get("date") if isinstance(entry, dict) else None)
+
+    localities = sorted(quote_map)
+    if not localities:
+        return []
+    latest_timestamp = max(timestamp_by_locality.values()) if timestamp_by_locality else now_iso()
+    sample_bits = [
+        f"{locality} {raw_quote_map[locality] / 10.0:g} toman"
+        for locality in localities
+        if locality in raw_quote_map
+    ]
+    sample_text = "Navasan public currency board: " + "; ".join(sample_bits)
+
+    records: List[BoardRecord] = []
+    for locality in localities:
+        currency = NAVASAN_DIAGNOSTIC_SYMBOLS[
+            next(symbol for symbol, (mapped_locality, _currency) in NAVASAN_DIAGNOSTIC_SYMBOLS.items() if mapped_locality == locality)
+        ][1]
+        records.append(
+            BoardRecord(
+                handle="navasan_public_currency_board",
+                title="Navasan Public Currency Board",
+                message_text_sample=clip_text(sample_text),
+                localities_detected="|".join(localities),
+                tehran_quote=format_quote(quote_map.get("Tehran")),
+                herat_quote=format_quote(quote_map.get("Herat")),
+                sulaymaniyah_quote=format_quote(quote_map.get("Sulaymaniyah")),
+                erbil_quote=format_quote(quote_map.get("Erbil")),
+                baghdad_quote=format_quote(quote_map.get("Baghdad")),
+                iraq_quote=format_quote(quote_map.get("Iraq")),
+                dubai_quote=format_quote(quote_map.get("Dubai")),
+                istanbul_quote=format_quote(quote_map.get("Istanbul")),
+                hamburg_quote=format_quote(quote_map.get("Hamburg")),
+                berlin_quote=format_quote(quote_map.get("Berlin")),
+                germany_quote=format_quote(quote_map.get("Germany")),
+                london_quote=format_quote(quote_map.get("London")),
+                frankfurt_quote=format_quote(quote_map.get("Frankfurt")),
+                doha_quote=format_quote(quote_map.get("Doha")),
+                qatar_quote=format_quote(quote_map.get("Qatar")),
+                yerevan_quote=format_quote(quote_map.get("Yerevan")),
+                armenia_quote=format_quote(quote_map.get("Armenia")),
+                inferred_unit="toman",
+                normalized_irr_values=json.dumps({k: round(v, 2) for k, v in quote_map.items()}, ensure_ascii=False, sort_keys=True),
+                buy_quote="",
+                sell_quote="",
+                midpoint=format_quote(raw_quote_map.get(locality)),
+                freshness_indicator=freshness_from_timestamp(timestamp_by_locality.get(locality, latest_timestamp)),
+                parseability_score=94,
+                quote_density_score=100,
+                source_type="regional_fx_board",
+                timestamp_iso=timestamp_by_locality.get(locality, latest_timestamp),
+                locality_name=locality,
+                normalized_rate_irr=quote_map[locality],
+                quote_basis="provider_currency_board",
+                quote_currency_guess=currency,
+            )
+        )
+    return records
+
+
+def fetch_navasan_currency_board(timeout: int, benchmark_value: float) -> Tuple[List[BoardRecord], Optional[CandidateRow]]:
+    payload, error = fetch_navasan_last_currencies(timeout=timeout)
+    records = build_navasan_currency_board_records(payload, benchmark_value=benchmark_value) if payload else []
+    if not records and error:
+        return [], None
+    latest_timestamp = max((record.timestamp_iso for record in records), default="")
+    candidate = CandidateRow(
+        handle="navasan_public_currency_board",
+        title="Navasan Public Currency Board",
+        public_url=NAVASAN_PUBLIC_URL_DEFAULT,
+        source_type="regional_fx_board",
+        quote_message_count=1 if records else 0,
+        board_message_count=1 if records else 0,
+        locality_mentions="|".join(sorted({record.locality_name for record in records})),
+        localities_detected_count=len({record.locality_name for record in records}),
+        quote_density_score=100 if records else 0,
+        median_parseability_score=94.0 if records else 0.0,
+        latest_timestamp=latest_timestamp,
+        status="ok" if records else (error or "no_usable_records"),
+        top_sample=clip_text(records[0].message_text_sample if records else ""),
+        discovery_origins="navasan_public_currency_board",
+    )
+    return records, candidate
 
 
 def freshness_from_timestamp(timestamp_iso: str) -> str:
@@ -1118,6 +1362,7 @@ def extract_locality_quotes(text: str, benchmark_value: float) -> List[Tuple[str
                             basis = "single_value"
                 if midpoint is None:
                     continue
+                midpoint = adjust_currency_quote_unit(midpoint, currency, context)
                 comparable_value = comparable_locality_irr(midpoint, currency, locality)
                 if comparable_value is not None:
                     if not (min_rate <= comparable_value <= max_rate):
@@ -1828,6 +2073,14 @@ def main() -> int:
         board_records.extend(records)
         if args.sleep_seconds > 0 and idx < len(ordered_sources) - 1:
             time.sleep(args.sleep_seconds + random.random() * args.sleep_seconds * 0.25)
+
+    provider_records, provider_candidate = fetch_navasan_currency_board(
+        timeout=args.timeout,
+        benchmark_value=benchmark_value,
+    )
+    board_records.extend(provider_records)
+    if provider_candidate and (provider_candidate.board_message_count > 0 or provider_candidate.quote_message_count > 0):
+        candidate_rows.append(provider_candidate)
 
     candidates_csv = survey_dir / "regional_fx_board_candidates.csv"
     records_csv = survey_dir / "regional_fx_board_records.csv"
