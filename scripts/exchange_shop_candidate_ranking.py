@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 
-TARGET_LOCALITIES = ("Iran", "UAE", "Turkey", "Iraq", "Afghanistan", "UK", "Germany", "unknown")
+TARGET_LOCALITIES = ("Iran", "UAE", "Turkey", "Iraq", "Afghanistan", "UK", "Germany", "Qatar", "Armenia", "unknown")
 
 LOCALITY_KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "Iran": ("تهران", "tehran", "mashhad", "isfahan", "shiraz", "tabriz", "karaj", "qom", "ahvaz", "rasht", "kerman", "مشهد", "اصفهان", "شیراز", "تبریز", "کرج", "قم", "اهواز", "رشت", "کرمان"),
@@ -28,6 +28,8 @@ LOCALITY_KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "Afghanistan": ("afghanistan", "herat", "افغانستان", "هرات"),
     "UK": ("uk", "london", "britain", "england", "انگلستان", "لندن"),
     "Germany": ("germany", "deutschland", "frankfurt", "hamburg", "آلمان", "فرانکفورت", "هامبورگ"),
+    "Qatar": ("qatar", "doha", "قطر", "دوحه", "ریال قطر", "ريال قطر", "qar"),
+    "Armenia": ("armenia", "yerevan", "ارمنستان", "ایروان", "درام ارمنستان", "amd"),
 }
 
 LOCALITY_USEFULNESS = {
@@ -38,6 +40,8 @@ LOCALITY_USEFULNESS = {
     "Afghanistan": 10,
     "UK": 7,
     "Germany": 7,
+    "Qatar": 7,
+    "Armenia": 7,
     "unknown": 2,
 }
 

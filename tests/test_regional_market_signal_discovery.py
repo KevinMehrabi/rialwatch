@@ -22,6 +22,14 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         self.assertIn("London", uk_hits)
         self.assertIn("UK", uk_hits)
         self.assertEqual(regional.region_to_basket("London"), "UK")
+        qatar_hits = regional.detect_regions("ریال قطر و حواله دوحه امروز")
+        self.assertIn("Qatar", qatar_hits)
+        self.assertIn("Doha", qatar_hits)
+        self.assertEqual(regional.region_to_basket("Doha"), "Qatar")
+        armenia_hits = regional.detect_regions("درام ارمنستان و حواله ایروان")
+        self.assertIn("Armenia", armenia_hits)
+        self.assertIn("Yerevan", armenia_hits)
+        self.assertEqual(regional.region_to_basket("Yerevan"), "Armenia")
 
     def test_summarize_enriched_basket_allows_single_source_diagnostics_when_rich(self) -> None:
         records = [
@@ -156,6 +164,14 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         self.assertEqual(source.country_guess, "UK")
         self.assertEqual(source.city_guess, "London")
         self.assertIn("manual_uk_seed", source.origins)
+
+    def test_seed_from_manual_handles_includes_qatar_armenia_sources(self) -> None:
+        seeded = regional.seed_from_manual_handles()
+        self.assertIn("telegram:royal_rate", seeded)
+        self.assertEqual(seeded["telegram:royal_rate"].country_guess, "Qatar")
+        self.assertIn("manual_qatar_seed", seeded["telegram:royal_rate"].origins)
+        self.assertIn("telegram:arka_gold", seeded)
+        self.assertIn("manual_qatar_armenia_seed", seeded["telegram:arka_gold"].origins)
 
     def test_classify_source_type_honors_regional_market_hint(self) -> None:
         source = regional.DiscoverySource(

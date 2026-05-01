@@ -161,7 +161,7 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
         )
         self.assertEqual(
             [row["basket_name"] for row in payload["cards"]],
-            ["Iran", "UAE", "Turkey", "Afghanistan", "UK", "Iraq", "Germany"],
+            ["Iran", "UAE", "Turkey", "Afghanistan", "UK", "Iraq", "Germany", "Qatar", "Armenia"],
         )
         by_locality = {row["basket_name"]: row for row in payload["cards"]}
 
@@ -187,10 +187,14 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
         self.assertEqual(by_locality["Germany"]["display_state"], "hide")
         self.assertFalse(by_locality["Germany"]["render_on_homepage"])
         self.assertEqual(by_locality["Germany"]["alignment_label"], "Divergent")
+        self.assertEqual(by_locality["Qatar"]["display_state"], "hide")
+        self.assertEqual(by_locality["Qatar"]["signal_label"], "Qatar riyal signal")
+        self.assertEqual(by_locality["Armenia"]["display_state"], "hide")
+        self.assertEqual(by_locality["Armenia"]["signal_label"], "Armenia dram signal")
 
         self.assertEqual(payload["summary"]["publish_count"], 5)
         self.assertEqual(payload["summary"]["monitor_count"], 1)
-        self.assertEqual(payload["summary"]["hide_count"], 1)
+        self.assertEqual(payload["summary"]["hide_count"], 3)
 
     def test_build_payload_merges_complementary_uk_sources(self) -> None:
         regional_payload = {

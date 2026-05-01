@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional
 
 
-TARGET_LOCALITIES = ["Iran", "UAE", "Turkey", "Afghanistan", "UK", "Iraq", "Germany"]
+TARGET_LOCALITIES = ["Iran", "UAE", "Turkey", "Afghanistan", "UK", "Iraq", "Germany", "Qatar", "Armenia"]
 DEFAULT_HISTORY_DAYS = 365
 STATE_RANK = {"publish": 3, "monitor": 2, "hide": 1}
 SOURCE_RANK = {
@@ -169,6 +169,10 @@ def signal_label_for_locality(locality: str, display_state: str, signal_type_use
         return "Exchange network signal"
     if normalized == "UAE":
         return "Dubai settlement signal"
+    if normalized == "Qatar":
+        return "Qatar riyal signal"
+    if normalized == "Armenia":
+        return "Armenia dram signal"
     if normalized == "Afghanistan":
         return "Herat market signal"
     if normalized == "Iraq":

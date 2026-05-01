@@ -46,7 +46,7 @@ SOURCE_CATEGORY_BASE_WEIGHT = {
     "unknown": 0.50,
 }
 
-LOCALITY_ORDER = ("Iran", "Turkey", "UAE", "Iraq", "Afghanistan", "UK", "Germany", "unknown")
+LOCALITY_ORDER = ("Iran", "Turkey", "UAE", "Iraq", "Afghanistan", "UK", "Germany", "Qatar", "Armenia", "unknown")
 VALID_STATUSES = {"ready_for_research_ingestion", "monitor_only"}
 NUMBER_RE = re.compile(r"(?<!\d)(?:\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})(?!\d)")
 SIMPLE_NUMBER_RE = re.compile(r"(?<!\d)(?:\d{2,3}(?:[,٬،]\d{3})+|\d{5,8})(?!\d)")

@@ -187,6 +187,8 @@ CITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "London": ("london", "لندن"),
     "Frankfurt": ("frankfurt", "فرانکفورت"),
     "Hamburg": ("hamburg", "هامبورگ"),
+    "Doha": ("doha", "دوحه"),
+    "Yerevan": ("yerevan", "erevan", "ایروان"),
 }
 
 COUNTRY_KEYWORDS: Dict[str, Tuple[str, ...]] = {
@@ -197,6 +199,8 @@ COUNTRY_KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "Afghanistan": ("afghanistan", "herat", "افغانستان", "هرات"),
     "UK": ("uk", "united kingdom", "britain", "london", "انگلیس", "بریتانیا", "لندن"),
     "Germany": ("germany", "deutschland", "frankfurt", "hamburg", "آلمان", "فرانکفورت", "هامبورگ"),
+    "Qatar": ("qatar", "doha", "قطر", "دوحه", "ریال قطر", "ريال قطر", "qar"),
+    "Armenia": ("armenia", "yerevan", "ارمنستان", "ایروان", "درام ارمنستان", "amd"),
 }
 
 CITY_TO_COUNTRY = {
@@ -208,6 +212,8 @@ CITY_TO_COUNTRY = {
     "London": "UK",
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
+    "Doha": "Qatar",
+    "Yerevan": "Armenia",
 }
 
 SHOP_NAME_STOPWORDS = {
@@ -614,14 +620,14 @@ def detect_source_type(
     has_settlement_words = contains_keyword(lowered, SETTLEMENT_KEYWORDS)
     has_market_words = contains_keyword(lowered, MARKET_KEYWORDS)
     has_aggregator_words = contains_keyword(lowered, AGGREGATOR_KEYWORDS)
-    multiple_regions = sum(1 for city in ("tehran", "herat", "dubai", "istanbul", "sulaymaniyah") if city in lowered) >= 2
+    multiple_regions = sum(1 for city in ("tehran", "herat", "dubai", "istanbul", "sulaymaniyah", "qatar", "doha", "armenia", "yerevan") if city in lowered) >= 2
 
     likely_individual_shop = bool(has_shop_words and (has_phone or has_address))
     if likely_individual_shop:
         return "exchange_shop", True
-    if has_settlement_words and country_guess in {"UAE", "Turkey", "Iraq", "Afghanistan", "UK", "Germany"}:
+    if has_settlement_words and country_guess in {"UAE", "Turkey", "Iraq", "Afghanistan", "UK", "Germany", "Qatar", "Armenia"}:
         return "settlement_exchange", False
-    if quote_post_count >= 3 and (multiple_regions or contains_keyword(lowered, ("tehran", "herat", "dubai", "istanbul", "sulaymaniyah"))):
+    if quote_post_count >= 3 and (multiple_regions or contains_keyword(lowered, ("tehran", "herat", "dubai", "istanbul", "sulaymaniyah", "qatar", "doha", "armenia", "yerevan"))):
         return "regional_market_channel", False
     if has_aggregator_words or (quote_post_count >= 3 and has_market_words and not has_phone and not has_address):
         return "aggregator", False

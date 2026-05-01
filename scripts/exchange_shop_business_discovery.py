@@ -42,6 +42,8 @@ TARGET_LOCALITIES: Dict[str, Tuple[str, str]] = {
     "UK": ("UK", "London"),
     "Germany_Frankfurt": ("Germany", "Frankfurt"),
     "Germany_Hamburg": ("Germany", "Hamburg"),
+    "Qatar": ("Qatar", "Doha"),
+    "Armenia": ("Armenia", "Yerevan"),
     "Iraq": ("Iraq", "Sulaymaniyah"),
     "Afghanistan": ("Afghanistan", "Herat"),
 }
@@ -53,6 +55,8 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "iranian exchange london google maps",
         "iranian exchange frankfurt google maps",
         "iranian exchange hamburg google maps",
+        "iranian exchange doha google maps",
+        "iranian exchange yerevan google maps",
         "iranian exchange sulaymaniyah google maps",
         "iranian exchange herat google maps",
         "صرافی دبی گوگل مپ",
@@ -64,6 +68,8 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:instagram.com صرافی استانبول",
         "site:instagram.com صرافی لندن",
         "site:instagram.com sarafi dubai",
+        "site:instagram.com sarafi qatar",
+        "site:instagram.com sarafi armenia",
         "site:instagram.com iran exchange istanbul",
         "site:instagram.com currency exchange iran dubai",
     ],
@@ -73,6 +79,8 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "iranian exchange london directory",
         "iranian exchange frankfurt directory",
         "iranian exchange hamburg directory",
+        "iranian exchange doha directory",
+        "iranian exchange yerevan directory",
         "iranian remittance dubai directory",
         "currency exchange herat directory",
         "currency exchange sulaymaniyah directory",
@@ -83,12 +91,18 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "iranian exchange london",
         "iranian exchange frankfurt",
         "iranian exchange hamburg",
+        "iranian exchange doha",
+        "iranian exchange yerevan",
         "iranian remittance dubai",
         "صرافی دبی",
         "صرافی استانبول",
         "صرافی لندن",
         "صرافی فرانکفورت",
         "صرافی هامبورگ",
+        "صرافی قطر",
+        "صرافی دوحه",
+        "صرافی ارمنستان",
+        "صرافی ایروان",
         "صرافی سلیمانیه",
         "صرافی هرات",
     ],
@@ -213,6 +227,8 @@ CITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "London": ("london", "لندن"),
     "Frankfurt": ("frankfurt", "فرانکفورت"),
     "Hamburg": ("hamburg", "هامبورگ"),
+    "Doha": ("doha", "دوحه"),
+    "Yerevan": ("yerevan", "erevan", "ایروان"),
     "Sulaymaniyah": ("sulaymaniyah", "sulaimaniyah", "سلیمانیه", "سليمانية"),
     "Herat": ("herat", "هرات"),
 }
@@ -224,6 +240,8 @@ CITY_TO_COUNTRY = {
     "London": "UK",
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
+    "Doha": "Qatar",
+    "Yerevan": "Armenia",
     "Sulaymaniyah": "Iraq",
     "Herat": "Afghanistan",
 }
@@ -234,6 +252,8 @@ COUNTRY_KEYWORDS: Dict[str, Tuple[str, ...]] = {
     "Turkey": ("turkey", "turkish", "istanbul", "ترکیه", "استانبول"),
     "UK": ("uk", "united kingdom", "london", "england", "britain", "لندن", "انگلیس"),
     "Germany": ("germany", "deutschland", "frankfurt", "hamburg", "آلمان", "فرانکفورت", "هامبورگ"),
+    "Qatar": ("qatar", "doha", "قطر", "دوحه", "ریال قطر", "ريال قطر", "qar"),
+    "Armenia": ("armenia", "yerevan", "ارمنستان", "ایروان", "درام ارمنستان", "amd"),
     "Iraq": ("iraq", "sulaymaniyah", "sulaimaniyah", "عراق", "سلیمانیه", "سليمانية"),
     "Afghanistan": ("afghanistan", "herat", "افغانستان", "هرات"),
 }
@@ -537,7 +557,7 @@ def detect_source_type(text: str, country: str, quote_posts: int, has_phone: boo
     likely_shop = bool(has_shop_words and (has_phone or has_address or has_rate_words))
     if likely_shop:
         return "exchange_shop", True
-    if has_remittance_words and country in {"UAE", "Turkey", "UK", "Germany", "Iraq", "Afghanistan"}:
+    if has_remittance_words and country in {"UAE", "Turkey", "UK", "Germany", "Qatar", "Armenia", "Iraq", "Afghanistan"}:
         return "remittance_exchange", False
     if quote_posts >= 3 and multiple_regions:
         return "regional_market_channel", False
@@ -586,7 +606,7 @@ def compute_candidate_score(
         score += 7
     if source_type == "remittance_exchange":
         score += 6
-    if country in {"Iran", "UAE", "Turkey", "UK", "Germany"}:
+    if country in {"Iran", "UAE", "Turkey", "UK", "Germany", "Qatar", "Armenia"}:
         score += 6
     return max(0, min(score, 100))
 

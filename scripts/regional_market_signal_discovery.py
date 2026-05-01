@@ -63,7 +63,7 @@ USER_AGENT = (
     "Chrome/123.0.0.0 Safari/537.36"
 )
 
-TARGET_BASKETS = ("Iran", "UAE", "Turkey", "Iraq", "Afghanistan", "UK", "Germany")
+TARGET_BASKETS = ("Iran", "UAE", "Turkey", "Iraq", "Afghanistan", "UK", "Germany", "Qatar", "Armenia")
 CITY_TO_BASKET = {
     "Tehran": "Iran",
     "Dubai": "UAE",
@@ -74,6 +74,10 @@ CITY_TO_BASKET = {
     "Manchester": "UK",
     "Birmingham": "UK",
     "UK": "UK",
+    "Doha": "Qatar",
+    "Qatar": "Qatar",
+    "Yerevan": "Armenia",
+    "Armenia": "Armenia",
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
     "Berlin": "Germany",
@@ -139,6 +143,22 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s صرافی بریتانیا",
         "site:t.me حواله انگلستان",
         "site:t.me/s حواله انگلستان",
+        "site:t.me ریال قطر تومان",
+        "site:t.me/s ریال قطر تومان",
+        "site:t.me نرخ ریال قطر",
+        "site:t.me/s نرخ ریال قطر",
+        "site:t.me حواله قطر",
+        "site:t.me/s حواله قطر",
+        "site:t.me قطر دلار تومان",
+        "site:t.me/s قطر دلار تومان",
+        "site:t.me درام ارمنستان تومان",
+        "site:t.me/s درام ارمنستان تومان",
+        "site:t.me نرخ درام ارمنستان",
+        "site:t.me/s نرخ درام ارمنستان",
+        "site:t.me حواله ارمنستان",
+        "site:t.me/s حواله ارمنستان",
+        "site:t.me ایروان دلار تومان",
+        "site:t.me/s ایروان دلار تومان",
     ],
     "english": [
         "herat dollar telegram",
@@ -163,10 +183,20 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "persian london exchange telegram",
         "pound bazar telegram iranian uk",
         "iranian money transfer london telegram",
+        "qatar rial toman telegram",
+        "qar toman iran telegram",
+        "qatar remittance iran telegram",
+        "doha exchange iran telegram",
+        "armenian dram toman telegram",
+        "amd toman iran telegram",
+        "armenia remittance iran telegram",
+        "yerevan exchange iran telegram",
     ],
     "arabic": [
         "دولار دبي ايران",
         "سوق دبي دولار ايران",
+        "ريال قطر تومان ايران",
+        "حوالة قطر ايران",
     ],
     "german": [
         "iran wechselstube frankfurt telegram",
@@ -202,6 +232,26 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me mtc london uk sarafi",
         "site:t.me/s mtc london uk sarafi",
     ],
+    "qatar": [
+        "site:t.me royal_rate ریال قطر",
+        "site:t.me/s royal_rate ریال قطر",
+        "site:t.me arka_gold ریال قطر",
+        "site:t.me/s arka_gold ریال قطر",
+        "site:t.me ir_dolar ریال قطر",
+        "site:t.me/s ir_dolar ریال قطر",
+        "site:t.me tomandollar110 ریال قطر",
+        "site:t.me/s tomandollar110 ریال قطر",
+    ],
+    "armenia": [
+        "site:t.me arka_gold درام ارمنستان",
+        "site:t.me/s arka_gold درام ارمنستان",
+        "site:t.me ir_dolar درام ارمنستان",
+        "site:t.me/s ir_dolar درام ارمنستان",
+        "site:t.me tomandollar110 درام ارمنستان",
+        "site:t.me/s tomandollar110 درام ارمنستان",
+        "site:t.me exchangeratescountries درام ارمنستان",
+        "site:t.me/s exchangeratescountries درام ارمنستان",
+    ],
 }
 
 RAW_TME_RE = re.compile(r"https?://(?:www\.)?(?:t\.me|telegram\.me)/[^\s\"'<>]+", re.IGNORECASE)
@@ -229,6 +279,10 @@ REGION_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Manchester": ("manchester", "منچستر"),
     "Birmingham": ("birmingham", "بیرمنگام"),
     "UK": ("united kingdom", "britain", "england", "انگلستان", "انگلیس", "بریتانیا", "پوند انگلیس", "پوند بریتانیا"),
+    "Doha": ("doha", "دوحه"),
+    "Qatar": ("qatar", "قطر", "ریال قطر", "ريال قطر", "qar"),
+    "Yerevan": ("yerevan", "erevan", "ایروان", "يروان"),
+    "Armenia": ("armenia", "armenian", "ارمنستان", "درام ارمنستان", "amd"),
     "Istanbul": ("istanbul", "استانبول"),
 }
 
@@ -507,6 +561,38 @@ MANUAL_TELEGRAM_SEEDS: Tuple[Dict[str, str], ...] = (
         "city_guess": "London",
         "source_type_guess": "regional_market_channel",
         "origin": "manual_uk_seed",
+    },
+    {
+        "handle": "royal_rate",
+        "title": "Royal Rate Gulf Currency Board",
+        "country_guess": "Qatar",
+        "city_guess": "Qatar",
+        "source_type_guess": "regional_market_channel",
+        "origin": "manual_qatar_seed",
+    },
+    {
+        "handle": "arka_gold",
+        "title": "Arka Gold Currency Board",
+        "country_guess": "unknown",
+        "city_guess": "unknown",
+        "source_type_guess": "aggregator",
+        "origin": "manual_qatar_armenia_seed",
+    },
+    {
+        "handle": "ir_dolar",
+        "title": "Iran Dollar Currency Board",
+        "country_guess": "unknown",
+        "city_guess": "unknown",
+        "source_type_guess": "aggregator",
+        "origin": "manual_qatar_armenia_seed",
+    },
+    {
+        "handle": "tomandollar110",
+        "title": "Toman Dollar Currency Board",
+        "country_guess": "unknown",
+        "city_guess": "unknown",
+        "source_type_guess": "aggregator",
+        "origin": "manual_qatar_armenia_seed",
     },
 )
 
@@ -793,23 +879,27 @@ def seed_from_existing_registry(channel_rows: Sequence[Dict[str, str]]) -> Dict[
         sample = str(row.get("last_seen_text_sample", "")).strip()
         joined = " ".join(filter(None, [title, city_guess, sample]))
         has_target_locality = bool(detect_regions(joined)) or city_guess in {
-        "Dubai",
-        "Frankfurt",
-        "Hamburg",
-        "Berlin",
-        "Munich",
-        "Cologne",
-        "Dusseldorf",
-        "Essen",
-        "Hannover",
-        "Bremen",
-        "Stuttgart",
-        "Dortmund",
-        "Germany",
-        "London",
+            "Dubai",
+            "Frankfurt",
+            "Hamburg",
+            "Berlin",
+            "Munich",
+            "Cologne",
+            "Dusseldorf",
+            "Essen",
+            "Hannover",
+            "Bremen",
+            "Stuttgart",
+            "Dortmund",
+            "Germany",
+            "London",
             "Manchester",
             "Birmingham",
             "UK",
+            "Doha",
+            "Qatar",
+            "Yerevan",
+            "Armenia",
         }
         if not has_target_locality:
             continue
@@ -1009,11 +1099,11 @@ def classify_source_type(source: DiscoverySource, title: str, text: str) -> str:
         return "regional_market_channel"
     if source.source_type_guess == "aggregator":
         return "aggregator"
-    if any(word in lowered for word in ("صرافی", "sarafi", "exchange", "currency exchange")) and any(word in lowered for word in ("خرید", "فروش", "rate", "قیمت", "نرخ", "پوند", "gbp")):
+    if any(word in lowered for word in ("صرافی", "sarafi", "exchange", "currency exchange")) and any(word in lowered for word in ("خرید", "فروش", "rate", "قیمت", "نرخ", "پوند", "gbp", "ریال قطر", "qar", "درام", "amd")):
         return "exchange_shop"
     if any(word in lowered for word in ("حواله", "remittance", "transfer", "settlement", "پرداخت", "para transfer")):
         return "settlement_channel"
-    if sum(1 for region in ("تهران", "هرات", "سلیمانیه", "دبی", "istanbul", "herat", "dubai", "sulaymaniyah") if region in lowered) >= 2:
+    if sum(1 for region in ("تهران", "هرات", "سلیمانیه", "دبی", "قطر", "ارمنستان", "ایروان", "istanbul", "herat", "dubai", "sulaymaniyah", "qatar", "doha", "armenia", "yerevan") if region in lowered) >= 2:
         return "regional_market_channel"
     if "aggregator" in lowered or "اخبار" in lowered or "analysis" in lowered:
         return "aggregator"
@@ -1102,6 +1192,10 @@ def extract_quote_records_for_source(
         locality_hints.add(city_guess)
     if "Dubai" in locality_hints:
         country_guess = "UAE"
+    elif any(region in locality_hints for region in ("Doha", "Qatar")):
+        country_guess = "Qatar"
+    elif any(region in locality_hints for region in ("Yerevan", "Armenia")):
+        country_guess = "Armenia"
     elif "Sulaymaniyah" in locality_hints:
         country_guess = "Iraq"
     elif "Herat" in locality_hints:
@@ -1546,7 +1640,7 @@ def main() -> int:
     remaining_empty = [row["basket_name"] for row in enriched_baskets if int(row.get("usable_record_count", 0) or 0) == 0]
     can_render = {
         basket: any(row["basket_name"] == basket and row.get("publishable") for row in enriched_baskets)
-        for basket in ("UAE", "Iraq", "Afghanistan", "UK", "Germany")
+        for basket in ("UAE", "Iraq", "Afghanistan", "UK", "Germany", "Qatar", "Armenia")
     }
 
     candidates_csv = survey_dir / "regional_market_signal_candidates.csv"
@@ -1584,6 +1678,8 @@ def main() -> int:
     print(f"afghanistan_can_render={can_render['Afghanistan']}")
     print(f"uk_can_render={can_render['UK']}")
     print(f"germany_can_render={can_render['Germany']}")
+    print(f"qatar_can_render={can_render['Qatar']}")
+    print(f"armenia_can_render={can_render['Armenia']}")
     print(f"regional_market_signal_candidates_csv={candidates_csv}")
     print(f"regional_market_signal_summary_json={summary_json}")
     print(f"exchange_shop_baskets_enriched_json={enriched_json}")

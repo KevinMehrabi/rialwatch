@@ -48,7 +48,7 @@ USER_AGENT = (
 )
 
 PRIMARY_LOCALITIES = ("Tehran", "Herat", "Sulaymaniyah", "Dubai")
-SECONDARY_LOCALITIES = ("Istanbul", "London", "Frankfurt")
+SECONDARY_LOCALITIES = ("Istanbul", "London", "Frankfurt", "Doha", "Yerevan")
 ALL_LOCALITIES = PRIMARY_LOCALITIES + SECONDARY_LOCALITIES
 IRAQ_AGG_LOCALITIES = ("Sulaymaniyah", "Erbil", "Baghdad", "Iraq")
 TURKEY_AGG_LOCALITIES = ("Istanbul", "Ankara", "Izmir", "Turkey")
@@ -67,6 +67,8 @@ GERMANY_AGG_LOCALITIES = (
     "Germany",
 )
 UK_AGG_LOCALITIES = ("London", "Manchester", "Birmingham", "UK")
+QATAR_AGG_LOCALITIES = ("Doha", "Qatar")
+ARMENIA_AGG_LOCALITIES = ("Yerevan", "Armenia")
 AFGHANISTAN_AGG_LOCALITIES = ("Herat", "Kabul", "Mazar", "Jalalabad", "Afghanistan")
 IRAN_AGG_LOCALITIES = ("Tehran", "Mashhad", "Isfahan", "Shiraz", "Tabriz", "Karaj", "Qom", "Ahvaz", "Rasht", "Kerman", "Iran")
 AFGHANISTAN_SEED_HANDLES = (
@@ -145,6 +147,21 @@ UK_SEED_HANDLES = (
     "nerkh_uk",
     "nerkhsarafionline",
 )
+QATAR_SEED_HANDLES = (
+    "royal_rate",
+    "exchangeratescountries",
+    "arka_gold",
+    "ir_dolar",
+    "tomandollar110",
+    "nerkhsarafionline",
+)
+ARMENIA_SEED_HANDLES = (
+    "exchangeratescountries",
+    "arka_gold",
+    "ir_dolar",
+    "tomandollar110",
+    "nerkhsarafionline",
+)
 LOCALITY_TO_BASKET = {
     "Tehran": "Iran",
     "Mashhad": "Iran",
@@ -175,6 +192,10 @@ LOCALITY_TO_BASKET = {
     "Manchester": "UK",
     "Birmingham": "UK",
     "UK": "UK",
+    "Doha": "Qatar",
+    "Qatar": "Qatar",
+    "Yerevan": "Armenia",
+    "Armenia": "Armenia",
     "Frankfurt": "Germany",
     "Hamburg": "Germany",
     "Berlin": "Germany",
@@ -328,6 +349,22 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s صرافی بریتانیا",
         "site:t.me حواله انگلستان",
         "site:t.me/s حواله انگلستان",
+        "site:t.me ریال قطر تومان",
+        "site:t.me/s ریال قطر تومان",
+        "site:t.me نرخ ریال قطر",
+        "site:t.me/s نرخ ریال قطر",
+        "site:t.me حواله قطر",
+        "site:t.me/s حواله قطر",
+        "site:t.me قطر دلار تومان",
+        "site:t.me/s قطر دلار تومان",
+        "site:t.me درام ارمنستان تومان",
+        "site:t.me/s درام ارمنستان تومان",
+        "site:t.me نرخ درام ارمنستان",
+        "site:t.me/s نرخ درام ارمنستان",
+        "site:t.me حواله ارمنستان",
+        "site:t.me/s حواله ارمنستان",
+        "site:t.me ایروان دلار تومان",
+        "site:t.me/s ایروان دلار تومان",
         "site:t.me دلار تهران",
         "site:t.me/s دلار تهران",
         "site:t.me نرخ دلار تهران",
@@ -397,6 +434,14 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "persian london exchange telegram",
         "pound bazar telegram iranian uk",
         "iranian money transfer london telegram",
+        "qatar rial toman telegram",
+        "qar toman iran telegram",
+        "qatar remittance iran telegram",
+        "doha exchange iran telegram",
+        "armenian dram toman telegram",
+        "amd toman iran telegram",
+        "armenia remittance iran telegram",
+        "yerevan exchange iran telegram",
         "tehran herat dubai telegram",
         "iran fx board telegram",
     ],
@@ -452,6 +497,26 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me mtc london uk sarafi",
         "site:t.me/s mtc london uk sarafi",
     ],
+    "qatar": [
+        "site:t.me royal_rate ریال قطر",
+        "site:t.me/s royal_rate ریال قطر",
+        "site:t.me arka_gold ریال قطر",
+        "site:t.me/s arka_gold ریال قطر",
+        "site:t.me ir_dolar ریال قطر",
+        "site:t.me/s ir_dolar ریال قطر",
+        "site:t.me tomandollar110 ریال قطر",
+        "site:t.me/s tomandollar110 ریال قطر",
+    ],
+    "armenia": [
+        "site:t.me arka_gold درام ارمنستان",
+        "site:t.me/s arka_gold درام ارمنستان",
+        "site:t.me ir_dolar درام ارمنستان",
+        "site:t.me/s ir_dolar درام ارمنستان",
+        "site:t.me tomandollar110 درام ارمنستان",
+        "site:t.me/s tomandollar110 درام ارمنستان",
+        "site:t.me exchangeratescountries درام ارمنستان",
+        "site:t.me/s exchangeratescountries درام ارمنستان",
+    ],
     "afghan": [
         "site:t.me kabul dollar",
         "site:t.me/s kabul dollar",
@@ -467,6 +532,7 @@ QUERY_GROUPS: Dict[str, List[str]] = {
 RAW_TME_RE = re.compile(r"https?://(?:www\.)?(?:t\.me|telegram\.me)/[^\s\"'<>]+", re.IGNORECASE)
 URL_RE = re.compile(r"https?://[^\s\"'<>]+", re.IGNORECASE)
 NUMBER_RE = re.compile(r"(?<!\d)(?:\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})(?!\d)")
+SMALL_LOCAL_CURRENCY_NUMBER_RE = re.compile(r"(?<!\d)\d{1,4}(?:[,٬،]\d{3})?(?!\d)")
 SLASH_PAIR_RE = re.compile(
     r"(?<!\d)(\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})(?!\d)\s*[/\\|\-]\s*(\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})(?!\d)"
 )
@@ -476,7 +542,8 @@ RATE_WORDS = ("نرخ پیشنهادی", "نرخ", "قیمت", "rate", "price")
 BOARD_HINTS = ("تابلو", "board", "quote board", "نرخ", "قیمت", "بازار", "لحظه ای", "لحظه‌ای")
 NEWS_HINTS = ("خبر", "اخبار", "تحلیل", "analysis", "news", "breaking")
 SHOP_HINTS = ("صرافی", "تماس", "contact", "whatsapp", "آدرس", "address")
-QUOTE_HINTS = ("دلار", "usd", "درهم", "aed", "یورو", "eur", "پوند", "gbp", "نرخ", "قیمت", "عرض", "طلب", "خرید", "فروش")
+QUOTE_HINTS = ("دلار", "usd", "درهم", "aed", "یورو", "eur", "پوند", "gbp", "ریال قطر", "ريال قطر", "qar", "درام", "amd", "نرخ", "قیمت", "عرض", "طلب", "خرید", "فروش")
+LOCAL_CURRENCY_RIAL_PHRASES = ("ریال قطر", "ريال قطر", "qatar rial", "qatari rial")
 EXCLUDED_DOMAINS = {
     "r.jina.ai",
     "duckduckgo.com",
@@ -526,6 +593,10 @@ LOCALITY_ALIASES: Dict[str, Tuple[str, ...]] = {
     "Manchester": ("manchester", "منچستر"),
     "Birmingham": ("birmingham", "بیرمنگام"),
     "UK": ("uk", "united kingdom", "britain", "england", "انگلیس", "بریتانیا"),
+    "Doha": ("doha", "دوحه"),
+    "Qatar": ("qatar", "قطر", "ریال قطر", "ريال قطر", "qar"),
+    "Yerevan": ("yerevan", "erevan", "ایروان", "يروان"),
+    "Armenia": ("armenia", "armenian", "ارمنستان", "درام ارمنستان", "amd"),
     "Frankfurt": ("frankfurt", "فرانکفورت"),
     "Hamburg": ("hamburg", "هامبورگ", "هامبرگ"),
     "Berlin": ("berlin", "برلین"),
@@ -551,6 +622,8 @@ SOURCE_TYPE_MULTIPLIER = {
 DIAGNOSTIC_USD_CROSS_RATES = {
     "EUR": 1.14,
     "GBP": 1.30,
+    "QAR": 3.64,
+    "AMD": 390.0,
 }
 
 
@@ -600,6 +673,10 @@ class BoardRecord:
     germany_quote: str
     london_quote: str
     frankfurt_quote: str
+    doha_quote: str
+    qatar_quote: str
+    yerevan_quote: str
+    armenia_quote: str
     inferred_unit: str
     normalized_irr_values: str
     buy_quote: str
@@ -748,7 +825,7 @@ def detect_unit(text: str, numbers: Sequence[int]) -> str:
     lowered = translit_digits(text or "").lower()
     if "تومان" in lowered or "toman" in lowered or "tmn" in lowered:
         return "toman"
-    if "ریال" in lowered or "irr" in lowered or "rial" in lowered:
+    if has_iranian_rial_unit(lowered):
         return "rial"
     if numbers:
         median_value = statistics.median(numbers)
@@ -756,10 +833,36 @@ def detect_unit(text: str, numbers: Sequence[int]) -> str:
     return "unknown"
 
 
+def has_iranian_rial_unit(text: str) -> bool:
+    lowered = translit_digits(text or "").lower()
+    if "irr" in lowered or "rial" in lowered:
+        return True
+    if re.search(r"\d[\d\s,٬،.]*\s*ریال", lowered):
+        return True
+    if "ریال" in lowered and not any(phrase in lowered for phrase in LOCAL_CURRENCY_RIAL_PHRASES):
+        return True
+    return False
+
+
 def to_rial(value: Optional[int], unit: str) -> Optional[float]:
     if value is None:
         return None
     return float(value * 10) if unit == "toman" else float(value)
+
+
+def line_number_values(text: str, currency: str = "UNKNOWN") -> List[int]:
+    normalized = translit_digits(text or "")
+    values = [parse_number_token(m.group(0)) for m in NUMBER_RE.finditer(normalized)]
+    if currency in {"AMD"}:
+        values.extend(parse_number_token(m.group(0)) for m in SMALL_LOCAL_CURRENCY_NUMBER_RE.finditer(normalized))
+    out: List[int] = []
+    seen: Set[int] = set()
+    for value in values:
+        if value is None or value in seen:
+            continue
+        seen.add(value)
+        out.append(value)
+    return out
 
 
 def detect_buy_sell_numbers(text: str) -> Tuple[Optional[int], Optional[int]]:
@@ -813,9 +916,13 @@ def infer_quote_currency(text: str, locality: str) -> str:
         return "EUR"
     if "پوند" in lowered or "gbp" in lowered:
         return "GBP"
+    if "ریال قطر" in lowered or "ريال قطر" in lowered or "qar" in lowered:
+        return "QAR"
+    if "درام" in lowered or "amd" in lowered:
+        return "AMD"
     if "دلار" in lowered or "usd" in lowered:
         return "USD"
-    if locality in {"Tehran", "Mashhad", "Isfahan", "Shiraz", "Tabriz", "Karaj", "Qom", "Ahvaz", "Rasht", "Kerman", "Iran", "Herat", "Kabul", "Mazar", "Jalalabad", "Afghanistan", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq", "Istanbul", "Ankara", "Izmir", "Turkey", "London", "Manchester", "Birmingham", "UK", "Frankfurt", "Hamburg", "Berlin", "Germany"}:
+    if locality in {"Tehran", "Mashhad", "Isfahan", "Shiraz", "Tabriz", "Karaj", "Qom", "Ahvaz", "Rasht", "Kerman", "Iran", "Herat", "Kabul", "Mazar", "Jalalabad", "Afghanistan", "Sulaymaniyah", "Erbil", "Baghdad", "Iraq", "Istanbul", "Ankara", "Izmir", "Turkey", "London", "Manchester", "Birmingham", "UK", "Doha", "Qatar", "Yerevan", "Armenia", "Frankfurt", "Hamburg", "Berlin", "Germany"}:
         return "USD"
     if locality == "Dubai":
         return "AED"
@@ -831,6 +938,10 @@ def comparable_locality_irr(value_irr: float, currency: str, locality: str) -> O
         return float(value_irr) / DIAGNOSTIC_USD_CROSS_RATES[currency]
     if currency == "EUR" and locality in GERMANY_AGG_LOCALITIES:
         return float(value_irr) / DIAGNOSTIC_USD_CROSS_RATES[currency]
+    if currency == "QAR" and locality in QATAR_AGG_LOCALITIES:
+        return float(value_irr) * DIAGNOSTIC_USD_CROSS_RATES[currency]
+    if currency == "AMD" and locality in ARMENIA_AGG_LOCALITIES:
+        return float(value_irr) * DIAGNOSTIC_USD_CROSS_RATES[currency]
     return None
 
 
@@ -876,12 +987,11 @@ def extract_locality_quotes(text: str, benchmark_value: float) -> List[Tuple[str
                 continue
             if not any(hint in line.lower() for hint in QUOTE_HINTS + BOARD_HINTS) and not SLASH_PAIR_RE.search(line):
                 continue
-            line_numbers = [parse_number_token(m.group(0)) for m in NUMBER_RE.finditer(line)]
-            line_numbers = [n for n in line_numbers if n is not None]
+            currency = infer_quote_currency(line, locality)
+            line_numbers = line_number_values(line, currency)
             if not line_numbers:
                 continue
             local_unit = detect_unit(line, line_numbers)
-            currency = infer_quote_currency(line, locality)
             buy, sell = detect_buy_sell_numbers(line)
             rate_number = detect_rate_number(line)
             midpoint: Optional[float] = None
@@ -1052,6 +1162,10 @@ def primary_currency_from_record(record_currency: str) -> str:
         return "EUR"
     if "GBP" in labels:
         return "GBP"
+    if "QAR" in labels:
+        return "QAR"
+    if "AMD" in labels:
+        return "AMD"
     return "UNKNOWN"
 
 
@@ -1188,6 +1302,10 @@ def process_source(source: DiscoverySource, benchmark_value: float, timeout: int
                     germany_quote=format_quote(quote_map.get("Germany")),
                     london_quote=format_quote(quote_map.get("London")),
                     frankfurt_quote=format_quote(quote_map.get("Frankfurt")),
+                    doha_quote=format_quote(quote_map.get("Doha")),
+                    qatar_quote=format_quote(quote_map.get("Qatar")),
+                    yerevan_quote=format_quote(quote_map.get("Yerevan")),
+                    armenia_quote=format_quote(quote_map.get("Armenia")),
                     inferred_unit=unit or inferred_unit,
                     normalized_irr_values=json.dumps({k: round(v, 2) for k, v in quote_map.items()}, ensure_ascii=False, sort_keys=True),
                     buy_quote=str(_buy or buy_quote or ""),
@@ -1404,6 +1522,10 @@ def write_records_csv(path: Path, rows: Sequence[BoardRecord]) -> None:
         "germany_quote",
         "london_quote",
         "frankfurt_quote",
+        "doha_quote",
+        "qatar_quote",
+        "yerevan_quote",
+        "armenia_quote",
         "inferred_unit",
         "normalized_irr_values",
         "buy_quote",
@@ -1552,11 +1674,45 @@ def main() -> int:
             source.query_hits.add("uk_seed")
             source.discovery_origins.add("uk_seed")
 
+    for handle in QATAR_SEED_HANDLES:
+        public_url = f"https://t.me/s/{handle}"
+        source = discovered.get(handle)
+        if source is None:
+            discovered[handle] = DiscoverySource(
+                handle=handle,
+                public_url=public_url,
+                query_hits={"qatar_seed"},
+                discovery_origins={"qatar_seed"},
+                source_type_hint="regional_market_channel",
+            )
+        else:
+            source.public_url = source.public_url or public_url
+            source.query_hits.add("qatar_seed")
+            source.discovery_origins.add("qatar_seed")
+
+    for handle in ARMENIA_SEED_HANDLES:
+        public_url = f"https://t.me/s/{handle}"
+        source = discovered.get(handle)
+        if source is None:
+            discovered[handle] = DiscoverySource(
+                handle=handle,
+                public_url=public_url,
+                query_hits={"armenia_seed"},
+                discovery_origins={"armenia_seed"},
+                source_type_hint="regional_market_channel",
+            )
+        else:
+            source.public_url = source.public_url or public_url
+            source.query_hits.add("armenia_seed")
+            source.discovery_origins.add("armenia_seed")
+
     afghan_seed_set = set(AFGHANISTAN_SEED_HANDLES)
     iran_seed_set = set(IRAN_SEED_HANDLES)
     uae_seed_set = set(UAE_SEED_HANDLES)
     germany_seed_set = set(GERMANY_SEED_HANDLES)
     uk_seed_set = set(UK_SEED_HANDLES)
+    qatar_seed_set = set(QATAR_SEED_HANDLES)
+    armenia_seed_set = set(ARMENIA_SEED_HANDLES)
     ordered_sources = sorted(
         discovered.values(),
         key=lambda item: (
@@ -1565,6 +1721,8 @@ def main() -> int:
             0 if item.handle in uae_seed_set else 1,
             0 if item.handle in germany_seed_set else 1,
             0 if item.handle in uk_seed_set else 1,
+            0 if item.handle in qatar_seed_set else 1,
+            0 if item.handle in armenia_seed_set else 1,
             item.handle,
         ),
     )
@@ -1604,6 +1762,10 @@ def main() -> int:
             locality_records = [record for record in board_records if record.locality_name in UK_AGG_LOCALITIES]
         elif locality == "Frankfurt":
             locality_records = [record for record in board_records if record.locality_name in GERMANY_AGG_LOCALITIES]
+        elif locality == "Doha":
+            locality_records = [record for record in board_records if record.locality_name in QATAR_AGG_LOCALITIES]
+        elif locality == "Yerevan":
+            locality_records = [record for record in board_records if record.locality_name in ARMENIA_AGG_LOCALITIES]
         else:
             locality_records = [record for record in board_records if record.locality_name == locality]
         summary_row = summarize_locality(locality, locality_records, benchmark_value=benchmark_value)
@@ -1658,6 +1820,12 @@ def main() -> int:
     channels_with_germany_quotes = sorted(
         {record.handle for record in board_records if record.locality_name in GERMANY_AGG_LOCALITIES}
     )
+    channels_with_qatar_quotes = sorted(
+        {record.handle for record in board_records if record.locality_name in QATAR_AGG_LOCALITIES}
+    )
+    channels_with_armenia_quotes = sorted(
+        {record.handle for record in board_records if record.locality_name in ARMENIA_AGG_LOCALITIES}
+    )
     locality_support = {row["locality_name"]: row["recommended_display_state"] for row in locality_basket_rows}
 
     summary = {
@@ -1670,10 +1838,14 @@ def main() -> int:
         "channels_with_turkey_quotes": channels_with_turkey_quotes,
         "channels_with_uk_quotes": channels_with_uk_quotes,
         "channels_with_germany_quotes": channels_with_germany_quotes,
+        "channels_with_qatar_quotes": channels_with_qatar_quotes,
+        "channels_with_armenia_quotes": channels_with_armenia_quotes,
         "which_locality_baskets_gained_usable_records": sorted(set(gained_localities)),
         "uae_display_state": locality_support.get("UAE", "hide"),
         "iraq_display_state": locality_support.get("Iraq", "hide"),
         "afghanistan_display_state": locality_support.get("Afghanistan", "hide"),
+        "qatar_display_state": locality_support.get("Qatar", "hide"),
+        "armenia_display_state": locality_support.get("Armenia", "hide"),
         "search_debug": search_debug,
         "queries_run": len(query_plan),
         "sources_crawled": len(ordered_sources),

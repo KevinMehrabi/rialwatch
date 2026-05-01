@@ -54,11 +54,32 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         self.assertEqual(by_locality["Germany"][2], "EUR")
         self.assertAlmostEqual(by_locality["Germany"][0], 1_754_385.96, places=2)
 
+    def test_extract_locality_quotes_converts_qatar_riyal_signal(self) -> None:
+        text = "ریال قطر : 48,750 تومان"
+        results = boards.extract_locality_quotes(text, benchmark_value=1_773_250.0)
+        by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
+        self.assertIn("Qatar", by_locality)
+        self.assertEqual(by_locality["Qatar"][1], "QAR")
+        self.assertAlmostEqual(by_locality["Qatar"][0], 1_774_500.0, places=2)
+
+    def test_extract_locality_quotes_converts_small_armenia_dram_signal(self) -> None:
+        text = "درام ارمنستان : 455 تومان"
+        results = boards.extract_locality_quotes(text, benchmark_value=1_773_250.0)
+        by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
+        self.assertIn("Armenia", by_locality)
+        self.assertEqual(by_locality["Armenia"][1], "AMD")
+        self.assertAlmostEqual(by_locality["Armenia"][0], 1_774_500.0, places=2)
+
     def test_detect_localities_maps_german_city_aliases(self) -> None:
         hits = boards.detect_localities("مونیخ یورو و کلن یورو برای حواله آلمان")
         self.assertIn("Munich", hits)
         self.assertIn("Cologne", hits)
         self.assertIn("Germany", hits)
+
+    def test_detect_localities_maps_qatar_and_armenia_currency_aliases(self) -> None:
+        hits = boards.detect_localities("ریال قطر و درام ارمنستان روی تابلو")
+        self.assertIn("Qatar", hits)
+        self.assertIn("Armenia", hits)
 
     def test_classify_source_type_prefers_board(self) -> None:
         source_type = boards.classify_source_type(
@@ -92,6 +113,10 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
                 germany_quote="",
                 london_quote="",
                 frankfurt_quote="",
+                doha_quote="",
+                qatar_quote="",
+                yerevan_quote="",
+                armenia_quote="",
                 inferred_unit="toman",
                 normalized_irr_values="{}",
                 buy_quote="147300",
@@ -125,6 +150,10 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
                 germany_quote="",
                 london_quote="",
                 frankfurt_quote="",
+                doha_quote="",
+                qatar_quote="",
+                yerevan_quote="",
+                armenia_quote="",
                 inferred_unit="toman",
                 normalized_irr_values="{}",
                 buy_quote="147800",
