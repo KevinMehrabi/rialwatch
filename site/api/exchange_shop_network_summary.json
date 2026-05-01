@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-01T05:15:06Z",
+  "generated_at": "2026-05-01T15:10:17Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1449922.07,
-  "total_usable_records": 151,
-  "total_contributing_channels": 16,
+  "benchmark_weighted_rate": 1773250.0,
+  "total_usable_records": 145,
+  "total_contributing_channels": 15,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -39,7 +39,7 @@
     "direct_shop": 69,
     "market_channel": 46,
     "regional_market_channel": 17,
-    "settlement_exchange": 19
+    "settlement_exchange": 13
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 27,
+      "usable_record_count": 24,
       "contributing_channel_count": 7,
-      "basket_confidence": 92.38,
+      "basket_confidence": 93.77,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -159,8 +159,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 17,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 87.0,
+      "average_freshness": 76.0,
       "from_new_p1": true
     },
     {
@@ -172,17 +172,6 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 13,
-      "average_quality": 77.92,
-      "average_freshness": 81.85,
       "from_new_p1": false
     },
     {
@@ -205,6 +194,17 @@
       "usable_record_count": 9,
       "average_quality": 82.56,
       "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 75.38,
+      "average_freshness": 75.5,
       "from_new_p1": false
     },
     {
@@ -281,17 +281,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranintl.com",
-      "title": "Rapid deterioration of Iran-UAE ties threatens a critical trade lifeline",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 69.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
