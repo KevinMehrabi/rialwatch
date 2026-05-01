@@ -531,10 +531,11 @@ QUERY_GROUPS: Dict[str, List[str]] = {
 
 RAW_TME_RE = re.compile(r"https?://(?:www\.)?(?:t\.me|telegram\.me)/[^\s\"'<>]+", re.IGNORECASE)
 URL_RE = re.compile(r"https?://[^\s\"'<>]+", re.IGNORECASE)
-NUMBER_RE = re.compile(r"(?<!\d)(?:\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})(?!\d)")
+GROUPED_NUMBER_PATTERN = r"\d{1,3}(?:[\s,٬،]\d{3})+|\d{5,8}"
+NUMBER_RE = re.compile(rf"(?<!\d)(?:{GROUPED_NUMBER_PATTERN})(?!\d)")
 SMALL_LOCAL_CURRENCY_NUMBER_RE = re.compile(r"(?<!\d)\d{1,4}(?:[,٬،]\d{3})?(?!\d)")
 SLASH_PAIR_RE = re.compile(
-    r"(?<!\d)(\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})(?!\d)\s*[/\\|\-]\s*(\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})(?!\d)"
+    rf"(?<!\d)({GROUPED_NUMBER_PATTERN})(?!\d)\s*[/\\|\-]\s*({GROUPED_NUMBER_PATTERN})(?!\d)"
 )
 BUY_WORDS = ("خرید", "buy", "bid")
 SELL_WORDS = ("فروش", "sell", "offer", "ask")
@@ -543,6 +544,28 @@ BOARD_HINTS = ("تابلو", "board", "quote board", "نرخ", "قیمت", "با
 NEWS_HINTS = ("خبر", "اخبار", "تحلیل", "analysis", "news", "breaking")
 SHOP_HINTS = ("صرافی", "تماس", "contact", "whatsapp", "آدرس", "address")
 QUOTE_HINTS = ("دلار", "usd", "درهم", "aed", "یورو", "eur", "پوند", "gbp", "ریال قطر", "ريال قطر", "qar", "درام", "amd", "نرخ", "قیمت", "عرض", "طلب", "خرید", "فروش")
+QUOTE_SEGMENT_MARKERS = (
+    "دلار",
+    "usd",
+    "یورو",
+    "eur",
+    "پوند",
+    "gbp",
+    "درهم امارات",
+    "درهم",
+    "aed",
+    "لیر",
+    "try",
+    "ریال قطر",
+    "ريال قطر",
+    "qar",
+    "درام ارمنستان",
+    "درام",
+    "amd",
+    "فرانک",
+    "کرون",
+    "دینار",
+)
 LOCAL_CURRENCY_RIAL_PHRASES = ("ریال قطر", "ريال قطر", "qatar rial", "qatari rial")
 EXCLUDED_DOMAINS = {
     "r.jina.ai",
@@ -805,9 +828,62 @@ def detect_localities(text: str) -> List[str]:
     lowered = translit_digits(text or "").lower()
     hits: List[str] = []
     for locality, aliases in LOCALITY_ALIASES.items():
-        if any(alias in lowered for alias in aliases):
+        if any(alias.lower() in lowered for alias in aliases):
             hits.append(locality)
     return hits
+
+
+def marker_positions(text: str, markers: Sequence[str]) -> List[int]:
+    lowered = translit_digits(text or "").lower()
+    positions: Set[int] = set()
+    for marker in markers:
+        token = marker.lower()
+        if not token:
+            continue
+        start = 0
+        while True:
+            idx = lowered.find(token, start)
+            if idx < 0:
+                break
+            positions.add(idx)
+            start = idx + max(len(token), 1)
+    return sorted(positions)
+
+
+def quote_marker_count(text: str) -> int:
+    return len(marker_positions(text, QUOTE_SEGMENT_MARKERS))
+
+
+def alias_contexts(text: str, aliases: Sequence[str]) -> List[str]:
+    lowered = translit_digits(text or "").lower()
+    alias_spans: List[Tuple[int, int]] = []
+    for alias in aliases:
+        token = alias.lower()
+        if not token:
+            continue
+        start = 0
+        while True:
+            idx = lowered.find(token, start)
+            if idx < 0:
+                break
+            alias_spans.append((idx, idx + len(token)))
+            start = idx + max(len(token), 1)
+    if not alias_spans:
+        return []
+
+    markers = marker_positions(text, QUOTE_SEGMENT_MARKERS)
+    contexts: List[str] = []
+    seen: Set[str] = set()
+    for start, end in sorted(alias_spans):
+        previous_markers = [pos for pos in markers if pos <= start]
+        next_markers = [pos for pos in markers if pos > start]
+        context_start = previous_markers[-1] if previous_markers else max(0, start - 32)
+        context_end = next_markers[0] if next_markers else len(text)
+        context = text[context_start:context_end].strip()
+        if context and context not in seen:
+            seen.add(context)
+            contexts.append(context)
+    return contexts
 
 
 def parse_number_token(token: str) -> Optional[int]:
@@ -872,15 +948,15 @@ def detect_buy_sell_numbers(text: str) -> Tuple[Optional[int], Optional[int]]:
     buy = None
     sell = None
     for word in BUY_WORDS:
-        forward = re.compile(rf"{re.escape(word)}[^0-9]{{0,32}}(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})")
-        reverse = re.compile(rf"(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})[^0-9]{{0,32}}{re.escape(word)}")
+        forward = re.compile(rf"{re.escape(word)}[^0-9]{{0,32}}({GROUPED_NUMBER_PATTERN})")
+        reverse = re.compile(rf"({GROUPED_NUMBER_PATTERN})[^0-9]{{0,32}}{re.escape(word)}")
         match = forward.search(lowered) or reverse.search(lowered)
         if match:
             buy = parse_number_token(match.group(1))
             break
     for word in SELL_WORDS:
-        forward = re.compile(rf"{re.escape(word)}[^0-9]{{0,32}}(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})")
-        reverse = re.compile(rf"(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})[^0-9]{{0,32}}{re.escape(word)}")
+        forward = re.compile(rf"{re.escape(word)}[^0-9]{{0,32}}({GROUPED_NUMBER_PATTERN})")
+        reverse = re.compile(rf"({GROUPED_NUMBER_PATTERN})[^0-9]{{0,32}}{re.escape(word)}")
         match = forward.search(lowered) or reverse.search(lowered)
         if match:
             sell = parse_number_token(match.group(1))
@@ -897,7 +973,7 @@ def detect_buy_sell_numbers(text: str) -> Tuple[Optional[int], Optional[int]]:
 
 def detect_rate_number(text: str) -> Optional[int]:
     lowered = translit_digits(text or "").lower()
-    number_pattern = r"(\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})"
+    number_pattern = rf"({GROUPED_NUMBER_PATTERN})"
     for word in RATE_WORDS:
         pattern = re.compile(rf"{re.escape(word)}[^0-9]{{0,40}}{number_pattern}")
         match = pattern.search(lowered)
@@ -910,6 +986,16 @@ def detect_rate_number(text: str) -> Optional[int]:
 
 def infer_quote_currency(text: str, locality: str) -> str:
     lowered = translit_digits(text or "").lower()
+    if locality in QATAR_AGG_LOCALITIES and ("ریال قطر" in lowered or "ريال قطر" in lowered or "qar" in lowered):
+        return "QAR"
+    if locality in ARMENIA_AGG_LOCALITIES and ("درام" in lowered or "amd" in lowered):
+        return "AMD"
+    if locality == "Dubai" and ("درهم" in lowered or "aed" in lowered):
+        return "AED"
+    if locality in UK_AGG_LOCALITIES and ("پوند" in lowered or "gbp" in lowered):
+        return "GBP"
+    if locality in GERMANY_AGG_LOCALITIES and ("یورو" in lowered or "eur" in lowered):
+        return "EUR"
     if "درهم" in lowered or "aed" in lowered:
         return "AED"
     if "یورو" in lowered or "eur" in lowered:
@@ -983,61 +1069,65 @@ def extract_locality_quotes(text: str, benchmark_value: float) -> List[Tuple[str
     for locality, aliases in LOCALITY_ALIASES.items():
         best: Optional[Tuple[Optional[int], Optional[int], Optional[float], str, str, str]] = None
         for line in lines:
-            if not any(alias in line.lower() for alias in aliases):
+            if not any(alias.lower() in line.lower() for alias in aliases):
                 continue
-            if not any(hint in line.lower() for hint in QUOTE_HINTS + BOARD_HINTS) and not SLASH_PAIR_RE.search(line):
-                continue
-            currency = infer_quote_currency(line, locality)
-            line_numbers = line_number_values(line, currency)
-            if not line_numbers:
-                continue
-            local_unit = detect_unit(line, line_numbers)
-            buy, sell = detect_buy_sell_numbers(line)
-            rate_number = detect_rate_number(line)
-            midpoint: Optional[float] = None
-            basis = "inferred"
-            if buy is not None and sell is not None:
-                buy_rial = to_rial(buy, local_unit)
-                sell_rial = to_rial(sell, local_unit)
-                if buy_rial is not None and sell_rial is not None:
-                    midpoint = (buy_rial + sell_rial) / 2.0
-                    basis = "midpoint"
-            elif sell is not None:
-                midpoint = to_rial(sell, local_unit)
-                basis = "sell"
-            elif buy is not None:
-                midpoint = to_rial(buy, local_unit)
-                basis = "buy"
-            else:
-                pair = SLASH_PAIR_RE.search(line)
-                if pair:
-                    first = parse_number_token(pair.group(1))
-                    second = parse_number_token(pair.group(2))
-                    if first is not None and second is not None:
-                        buy = first
-                        sell = second
-                        midpoint = (to_rial(first, local_unit) + to_rial(second, local_unit)) / 2.0
-                        basis = "midpoint"
-                elif rate_number is not None:
-                    midpoint = to_rial(rate_number, local_unit)
-                    basis = "single_value"
-                elif line_numbers:
-                    candidate = to_rial(line_numbers[0], local_unit)
-                    if candidate is not None:
-                        midpoint = candidate
-                        basis = "single_value"
-            if midpoint is None:
-                continue
-            comparable_value = comparable_locality_irr(midpoint, currency, locality)
-            if comparable_value is not None:
-                if not (min_rate <= comparable_value <= max_rate):
+            contexts = [line]
+            if len(detect_localities(line)) > 1 or quote_marker_count(line) > 2:
+                contexts = alias_contexts(line, aliases) or contexts
+            for context in contexts:
+                if not any(hint in context.lower() for hint in QUOTE_HINTS + BOARD_HINTS) and not SLASH_PAIR_RE.search(context):
                     continue
-            else:
-                continue
-            board_density = len(detect_localities(line))
-            candidate_tuple = (buy, sell, comparable_value if comparable_value is not None else midpoint, local_unit, basis, currency)
-            if best is None or board_density > 1:
-                best = candidate_tuple
+                currency = infer_quote_currency(context, locality)
+                line_numbers = line_number_values(context, currency)
+                if not line_numbers:
+                    continue
+                local_unit = detect_unit(context, line_numbers)
+                buy, sell = detect_buy_sell_numbers(context)
+                rate_number = detect_rate_number(context)
+                midpoint: Optional[float] = None
+                basis = "inferred"
+                if buy is not None and sell is not None:
+                    buy_rial = to_rial(buy, local_unit)
+                    sell_rial = to_rial(sell, local_unit)
+                    if buy_rial is not None and sell_rial is not None:
+                        midpoint = (buy_rial + sell_rial) / 2.0
+                        basis = "midpoint"
+                elif sell is not None:
+                    midpoint = to_rial(sell, local_unit)
+                    basis = "sell"
+                elif buy is not None:
+                    midpoint = to_rial(buy, local_unit)
+                    basis = "buy"
+                else:
+                    pair = SLASH_PAIR_RE.search(context)
+                    if pair:
+                        first = parse_number_token(pair.group(1))
+                        second = parse_number_token(pair.group(2))
+                        if first is not None and second is not None:
+                            buy = first
+                            sell = second
+                            midpoint = (to_rial(first, local_unit) + to_rial(second, local_unit)) / 2.0
+                            basis = "midpoint"
+                    elif rate_number is not None:
+                        midpoint = to_rial(rate_number, local_unit)
+                        basis = "single_value"
+                    elif line_numbers:
+                        candidate = to_rial(line_numbers[0], local_unit)
+                        if candidate is not None:
+                            midpoint = candidate
+                            basis = "single_value"
+                if midpoint is None:
+                    continue
+                comparable_value = comparable_locality_irr(midpoint, currency, locality)
+                if comparable_value is not None:
+                    if not (min_rate <= comparable_value <= max_rate):
+                        continue
+                else:
+                    continue
+                board_density = len(detect_localities(context))
+                candidate_tuple = (buy, sell, comparable_value if comparable_value is not None else midpoint, local_unit, basis, currency)
+                if best is None or board_density > 1:
+                    best = candidate_tuple
         if best is not None:
             out.append((locality, best[0], best[1], best[2], best[3], best[4], best[5]))
     return out

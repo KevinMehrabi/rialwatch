@@ -70,6 +70,21 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         self.assertEqual(by_locality["Armenia"][1], "AMD")
         self.assertAlmostEqual(by_locality["Armenia"][0], 1_774_500.0, places=2)
 
+    def test_extract_locality_quotes_segments_inline_currency_board(self) -> None:
+        text = (
+            "قیمت ارزها دلار : 1,779,200 ریال یورو : 2,081,900 ریال "
+            "پوند انگلیس : 2,403,500 ریال درهم امارات : 484,780 ریال "
+            "ریال قطر : 488,000 ریال درام ارمنستان : 4,550 ریال"
+        )
+        results = boards.extract_locality_quotes(text, benchmark_value=1_773_250.0)
+        by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
+        self.assertEqual(by_locality["Dubai"][1], "AED")
+        self.assertAlmostEqual(by_locality["Dubai"][0], 1_780_354.55, places=2)
+        self.assertEqual(by_locality["Qatar"][1], "QAR")
+        self.assertAlmostEqual(by_locality["Qatar"][0], 1_776_320.0, places=2)
+        self.assertEqual(by_locality["Armenia"][1], "AMD")
+        self.assertAlmostEqual(by_locality["Armenia"][0], 1_774_500.0, places=2)
+
     def test_detect_localities_maps_german_city_aliases(self) -> None:
         hits = boards.detect_localities("مونیخ یورو و کلن یورو برای حواله آلمان")
         self.assertIn("Munich", hits)
