@@ -173,6 +173,42 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         self.assertIn("telegram:arka_gold", seeded)
         self.assertIn("manual_qatar_armenia_seed", seeded["telegram:arka_gold"].origins)
 
+    def test_seed_from_previous_candidates_replays_prior_regional_sources(self) -> None:
+        seeded = regional.seed_from_previous_candidates(
+            [
+                {
+                    "handle_or_url": "hmtransfer",
+                    "platform": "telegram",
+                    "country_guess": "Germany",
+                    "city_guess": "Berlin",
+                    "source_type": "settlement_channel",
+                    "quote_message_count": "2",
+                    "usable_record_count": "1",
+                },
+                {
+                    "handle_or_url": "https://example.com/rates",
+                    "platform": "website",
+                    "country_guess": "UAE",
+                    "city_guess": "Dubai",
+                    "source_type": "exchange_shop",
+                    "quote_message_count": "0",
+                    "usable_record_count": "1",
+                },
+                {
+                    "handle_or_url": "emptychannel",
+                    "platform": "telegram",
+                    "quote_message_count": "0",
+                    "usable_record_count": "0",
+                },
+            ]
+        )
+        self.assertIn("telegram:hmtransfer", seeded)
+        self.assertEqual(seeded["telegram:hmtransfer"].url, "https://t.me/s/hmtransfer")
+        self.assertEqual(seeded["telegram:hmtransfer"].country_guess, "Germany")
+        self.assertIn("previous_candidate_registry", seeded["telegram:hmtransfer"].origins)
+        self.assertIn("website:https://example.com/rates", seeded)
+        self.assertNotIn("telegram:emptychannel", seeded)
+
     def test_classify_source_type_honors_regional_market_hint(self) -> None:
         source = regional.DiscoverySource(
             key="telegram:test",

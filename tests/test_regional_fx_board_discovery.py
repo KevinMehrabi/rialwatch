@@ -117,6 +117,36 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         self.assertEqual(by_locality["Iraq"].quote_currency_guess, "IQD")
         self.assertAlmostEqual(by_locality["Iraq"].normalized_rate_irr, 1_754_614.0, places=2)
 
+    def test_seed_from_previous_candidates_replays_search_discovered_handles(self) -> None:
+        seeded = boards.seed_from_previous_candidates(
+            [
+                {
+                    "handle": "nrxidolar",
+                    "public_url": "https://t.me/s/nrxidolar",
+                    "source_type": "regional_fx_board",
+                    "quote_message_count": "1",
+                    "board_message_count": "1",
+                },
+                {
+                    "handle": "navasan_public_currency_board",
+                    "public_url": "https://www.navasan.net/",
+                    "quote_message_count": "1",
+                    "board_message_count": "1",
+                },
+                {
+                    "handle": "emptyboard",
+                    "public_url": "https://t.me/s/emptyboard",
+                    "quote_message_count": "0",
+                    "board_message_count": "0",
+                },
+            ]
+        )
+        self.assertIn("nrxidolar", seeded)
+        self.assertEqual(seeded["nrxidolar"].public_url, "https://t.me/s/nrxidolar")
+        self.assertIn("previous_candidate_registry", seeded["nrxidolar"].discovery_origins)
+        self.assertNotIn("navasan_public_currency_board", seeded)
+        self.assertNotIn("emptyboard", seeded)
+
     def test_detect_localities_maps_german_city_aliases(self) -> None:
         hits = boards.detect_localities("مونیخ یورو و کلن یورو برای حواله آلمان")
         self.assertIn("Munich", hits)

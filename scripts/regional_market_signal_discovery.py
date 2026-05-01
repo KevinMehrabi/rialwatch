@@ -1007,6 +1007,57 @@ def seed_from_quote_message_samples(survey_dir: Path) -> Dict[str, DiscoverySour
     return seeded
 
 
+def int_from_row(row: Dict[str, str], key: str) -> int:
+    raw = str(row.get(key, "")).strip()
+    if not raw:
+        return 0
+    try:
+        return int(float(raw))
+    except ValueError:
+        return 0
+
+
+def seed_from_previous_candidates(candidate_rows: Sequence[Dict[str, str]]) -> Dict[str, DiscoverySource]:
+    seeded: Dict[str, DiscoverySource] = {}
+    for row in candidate_rows:
+        quote_count = int_from_row(row, "quote_message_count")
+        usable_count = int_from_row(row, "usable_record_count")
+        if quote_count <= 0 and usable_count <= 0:
+            continue
+        platform = str(row.get("platform", "")).strip().lower() or "telegram"
+        handle_or_url = str(row.get("handle_or_url", "")).strip()
+        if not handle_or_url:
+            continue
+        if platform == "telegram":
+            handle = handle_or_url.lower()
+            if not re.fullmatch(r"[a-z0-9_]{5,}", handle):
+                continue
+            key = f"telegram:{handle}"
+            url = f"https://t.me/s/{handle}"
+        else:
+            parsed = urllib.parse.urlparse(handle_or_url)
+            if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+                continue
+            key = f"website:{handle_or_url}"
+            url = handle_or_url
+        city_guess = str(row.get("city_guess", "unknown")).strip() or "unknown"
+        country_guess = str(row.get("country_guess", "")).strip()
+        if not country_guess:
+            country_guess = region_to_basket(city_guess)
+        seeded[key] = DiscoverySource(
+            key=key,
+            platform=platform,
+            url=url,
+            handle_or_url=handle_or_url,
+            origins={"previous_candidate_registry"},
+            seed_title=str(row.get("title", "")).strip(),
+            country_guess=country_guess or "unknown",
+            city_guess=city_guess,
+            source_type_guess=str(row.get("source_type", "")).strip() or "unknown",
+        )
+    return seeded
+
+
 def seed_from_manual_handles() -> Dict[str, DiscoverySource]:
     seeded: Dict[str, DiscoverySource] = {}
     for entry in MANUAL_TELEGRAM_SEEDS:
@@ -1573,6 +1624,11 @@ def main() -> int:
     site_api_dir.mkdir(parents=True, exist_ok=True)
 
     channel_rows = load_csv(survey_dir / "channel_survey.csv")
+    previous_candidate_rows = (
+        load_csv(survey_dir / "regional_market_signal_candidates.csv")
+        if (survey_dir / "regional_market_signal_candidates.csv").exists()
+        else []
+    )
     base_basket_payload = json.loads((site_api_dir / "exchange_shop_baskets.json").read_text(encoding="utf-8")) if (site_api_dir / "exchange_shop_baskets.json").exists() else {"baskets": []}
     previous_usable = {row["basket_name"]: int(row.get("usable_record_count", 0) or 0) for row in base_basket_payload.get("baskets", []) if isinstance(row, dict)}
 
@@ -1594,9 +1650,11 @@ def main() -> int:
         )
     existing_seeded = seed_from_existing_registry(channel_rows)
     germany_hint_seeded = seed_from_quote_message_samples(survey_dir)
+    previous_candidate_seeded = seed_from_previous_candidates(previous_candidate_rows)
     manual_seeded = seed_from_manual_handles()
     merge_discovery_sources(discovered_sources, existing_seeded)
     merge_discovery_sources(discovered_sources, germany_hint_seeded)
+    merge_discovery_sources(discovered_sources, previous_candidate_seeded)
     merge_discovery_sources(discovered_sources, manual_seeded)
 
     def source_sort_key(item: DiscoverySource) -> Tuple[int, str, str]:
@@ -1607,8 +1665,10 @@ def main() -> int:
             priority = 1
         elif "quote_sample_hint" in origins:
             priority = 2
-        else:
+        elif "previous_candidate_registry" in origins:
             priority = 3
+        else:
+            priority = 4
         return priority, item.platform, item.url
 
     ordered_sources = sorted(discovered_sources.values(), key=source_sort_key)

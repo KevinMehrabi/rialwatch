@@ -82,6 +82,7 @@ AFGHANISTAN_SEED_HANDLES = (
     "toofan_harirod",
     "turan_ex",
     "kabul_dollarrate",
+    "denar_online",
     "herat_channel2024",
     "boonbas",
     "lubrinol",
@@ -107,6 +108,12 @@ IRAN_SEED_HANDLES = (
     "zarscan",
     "herat_channel2024",
     "dirhamdubai",
+    "iranaex",
+    "mellalex",
+    "nrxidolar",
+    "pargarexchangegroup",
+    "roya_mah_e_sefid",
+    "sepehrexchange1",
 )
 UAE_SEED_HANDLES = (
     "dirhamdubai",
@@ -150,6 +157,20 @@ UK_SEED_HANDLES = (
     "poundlandonline",
     "nerkh_uk",
     "nerkhsarafionline",
+    "danielexchange",
+    "hmbcexchangebureau",
+    "sarafibartarlondon",
+    "sarafijavan",
+)
+IRAQ_SEED_HANDLES = (
+    "iranianerbil2",
+    "dollariraqi",
+    "nerkh_uk",
+    "nerkhsarafionline",
+    "moneytransfersarafi",
+    "sarafionline7groupuk",
+    "sarafionlineuk",
+    "exchangeratescountries",
 )
 QATAR_SEED_HANDLES = (
     "royal_rate",
@@ -1477,6 +1498,42 @@ def seed_from_channel_survey(channel_rows: Sequence[Dict[str, str]]) -> Dict[str
     return seeded
 
 
+def int_from_row(row: Dict[str, str], key: str) -> int:
+    raw = str(row.get(key, "")).strip()
+    if not raw:
+        return 0
+    try:
+        return int(float(raw))
+    except ValueError:
+        return 0
+
+
+def seed_from_previous_candidates(candidate_rows: Sequence[Dict[str, str]]) -> Dict[str, DiscoverySource]:
+    seeded: Dict[str, DiscoverySource] = {}
+    for row in candidate_rows:
+        handle = str(row.get("handle", "")).strip().lower()
+        if not re.fullmatch(r"[a-z0-9_]{5,}", handle):
+            continue
+        if handle == "navasan_public_currency_board":
+            continue
+        quote_count = int_from_row(row, "quote_message_count")
+        board_count = int_from_row(row, "board_message_count")
+        if quote_count <= 0 and board_count <= 0:
+            continue
+        public_url = str(row.get("public_url", "")).strip() or f"https://t.me/s/{handle}"
+        if "t.me/" not in public_url and "telegram.me/" not in public_url:
+            public_url = f"https://t.me/s/{handle}"
+        source_type = str(row.get("source_type", "")).strip() or "regional_market_channel"
+        seeded[handle] = DiscoverySource(
+            handle=handle,
+            public_url=normalize_public_url(handle, public_url),
+            query_hits={"previous_candidate_registry"},
+            discovery_origins={"previous_candidate_registry"},
+            source_type_hint=source_type,
+        )
+    return seeded
+
+
 def freshness_indicator(timestamp_iso: str, freshness_score: int) -> str:
     if freshness_score >= 85:
         return "fresh"
@@ -1904,6 +1961,11 @@ def main() -> int:
 
     benchmark_value = benchmark_rate(site_api_dir)
     channel_rows = load_csv(survey_dir / "channel_survey.csv") if (survey_dir / "channel_survey.csv").exists() else []
+    previous_candidate_rows = (
+        load_csv(survey_dir / "regional_fx_board_candidates.csv")
+        if (survey_dir / "regional_fx_board_candidates.csv").exists()
+        else []
+    )
 
     query_plan = [(group, query) for group, queries in QUERY_GROUPS.items() for query in queries]
     if args.skip_search:
@@ -1928,6 +1990,16 @@ def main() -> int:
         else:
             discovered[handle].discovery_origins.update(source.discovery_origins)
             discovered[handle].query_hits.update(source.query_hits)
+
+    previous_seeded = seed_from_previous_candidates(previous_candidate_rows)
+    for handle, source in previous_seeded.items():
+        if handle not in discovered:
+            discovered[handle] = source
+        else:
+            discovered[handle].discovery_origins.update(source.discovery_origins)
+            discovered[handle].query_hits.update(source.query_hits)
+            if not discovered[handle].source_type_hint or discovered[handle].source_type_hint == "unknown":
+                discovered[handle].source_type_hint = source.source_type_hint
 
     for handle in AFGHANISTAN_SEED_HANDLES:
         public_url = f"https://t.me/s/{handle}"
@@ -2009,6 +2081,22 @@ def main() -> int:
             source.query_hits.add("uk_seed")
             source.discovery_origins.add("uk_seed")
 
+    for handle in IRAQ_SEED_HANDLES:
+        public_url = f"https://t.me/s/{handle}"
+        source = discovered.get(handle)
+        if source is None:
+            discovered[handle] = DiscoverySource(
+                handle=handle,
+                public_url=public_url,
+                query_hits={"iraq_seed"},
+                discovery_origins={"iraq_seed"},
+                source_type_hint="regional_market_channel",
+            )
+        else:
+            source.public_url = source.public_url or public_url
+            source.query_hits.add("iraq_seed")
+            source.discovery_origins.add("iraq_seed")
+
     for handle in QATAR_SEED_HANDLES:
         public_url = f"https://t.me/s/{handle}"
         source = discovered.get(handle)
@@ -2046,6 +2134,7 @@ def main() -> int:
     uae_seed_set = set(UAE_SEED_HANDLES)
     germany_seed_set = set(GERMANY_SEED_HANDLES)
     uk_seed_set = set(UK_SEED_HANDLES)
+    iraq_seed_set = set(IRAQ_SEED_HANDLES)
     qatar_seed_set = set(QATAR_SEED_HANDLES)
     armenia_seed_set = set(ARMENIA_SEED_HANDLES)
     ordered_sources = sorted(
@@ -2056,6 +2145,7 @@ def main() -> int:
             0 if item.handle in uae_seed_set else 1,
             0 if item.handle in germany_seed_set else 1,
             0 if item.handle in uk_seed_set else 1,
+            0 if item.handle in iraq_seed_set else 1,
             0 if item.handle in qatar_seed_set else 1,
             0 if item.handle in armenia_seed_set else 1,
             item.handle,
