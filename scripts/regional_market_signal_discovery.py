@@ -47,6 +47,13 @@ from scripts.exchange_shop_baskets import (
     source_category_mix,
     weighted_mean,
 )
+from scripts.regional_source_registry import (
+    REGISTRY_FILENAME,
+    load_registry as load_source_registry,
+    registry_sources,
+    upsert_sources as upsert_registry_sources,
+    write_registry as write_source_registry,
+)
 from scripts.telegram_quote_pilot_ingestion import (
     MessageRow,
     PilotChannel,
@@ -1058,6 +1065,65 @@ def seed_from_previous_candidates(candidate_rows: Sequence[Dict[str, str]]) -> D
     return seeded
 
 
+def seed_from_source_registry(registry_payload: Dict[str, Any]) -> Dict[str, DiscoverySource]:
+    seeded: Dict[str, DiscoverySource] = {}
+    for row in registry_sources(
+        registry_payload,
+        platform="telegram",
+        signal_families={"regional_fx_board", "regional_market_signal", "direct_shop_expansion"},
+        active_only=True,
+    ):
+        handle = str(row.get("handle_or_url", "")).strip().lower()
+        if not re.fullmatch(r"[a-z0-9_]{5,}", handle):
+            continue
+        key = f"telegram:{handle}"
+        seeded[key] = DiscoverySource(
+            key=key,
+            platform="telegram",
+            url=str(row.get("public_url", "")).strip() or f"https://t.me/s/{handle}",
+            handle_or_url=handle,
+            origins={"source_registry"},
+            seed_title=str(row.get("title", "")).strip(),
+            country_guess=str(row.get("country_guess", "")).strip() or "unknown",
+            city_guess=str(row.get("city_guess", "")).strip() or "unknown",
+            source_type_guess=str(row.get("source_kind", "")).strip() or "unknown",
+        )
+    return seeded
+
+
+def public_url_for_source_row(row: SourceSummary) -> str:
+    if row.platform == "telegram":
+        return f"https://t.me/s/{row.handle_or_url}"
+    return row.handle_or_url
+
+
+def registry_updates_from_source_rows(source_rows: Sequence[SourceSummary]) -> List[Dict[str, Any]]:
+    updates: List[Dict[str, Any]] = []
+    for row in source_rows:
+        updates.append(
+            {
+                "platform": row.platform,
+                "handle_or_url": row.handle_or_url,
+                "public_url": public_url_for_source_row(row),
+                "title": row.title,
+                "country_guess": row.country_guess,
+                "city_guess": row.city_guess,
+                "source_kind": row.source_type,
+                "signal_families": ["regional_market_signal"],
+                "locality_hints": row.locality_hints,
+                "quote_message_count": row.quote_message_count,
+                "usable_record_count": row.usable_record_count,
+                "buy_sell_pair_count": row.buy_sell_pair_count,
+                "parseability_score": row.median_parseability_score,
+                "latest_timestamp": row.latest_timestamp,
+                "status": row.status,
+                "top_sample": row.top_sample,
+                "origins": row.discovery_origins,
+            }
+        )
+    return updates
+
+
 def seed_from_manual_handles() -> Dict[str, DiscoverySource]:
     seeded: Dict[str, DiscoverySource] = {}
     for entry in MANUAL_TELEGRAM_SEEDS:
@@ -1629,6 +1695,8 @@ def main() -> int:
         if (survey_dir / "regional_market_signal_candidates.csv").exists()
         else []
     )
+    registry_path = survey_dir / REGISTRY_FILENAME
+    source_registry = load_source_registry(registry_path)
     base_basket_payload = json.loads((site_api_dir / "exchange_shop_baskets.json").read_text(encoding="utf-8")) if (site_api_dir / "exchange_shop_baskets.json").exists() else {"baskets": []}
     previous_usable = {row["basket_name"]: int(row.get("usable_record_count", 0) or 0) for row in base_basket_payload.get("baskets", []) if isinstance(row, dict)}
 
@@ -1651,10 +1719,12 @@ def main() -> int:
     existing_seeded = seed_from_existing_registry(channel_rows)
     germany_hint_seeded = seed_from_quote_message_samples(survey_dir)
     previous_candidate_seeded = seed_from_previous_candidates(previous_candidate_rows)
+    registry_seeded = seed_from_source_registry(source_registry)
     manual_seeded = seed_from_manual_handles()
     merge_discovery_sources(discovered_sources, existing_seeded)
     merge_discovery_sources(discovered_sources, germany_hint_seeded)
     merge_discovery_sources(discovered_sources, previous_candidate_seeded)
+    merge_discovery_sources(discovered_sources, registry_seeded)
     merge_discovery_sources(discovered_sources, manual_seeded)
 
     def source_sort_key(item: DiscoverySource) -> Tuple[int, str, str]:
@@ -1667,8 +1737,10 @@ def main() -> int:
             priority = 2
         elif "previous_candidate_registry" in origins:
             priority = 3
-        else:
+        elif "source_registry" in origins:
             priority = 4
+        else:
+            priority = 5
         return priority, item.platform, item.url
 
     ordered_sources = sorted(discovered_sources.values(), key=source_sort_key)
@@ -1714,6 +1786,11 @@ def main() -> int:
     enriched_json = site_api_dir / "exchange_shop_baskets_enriched.json"
 
     write_csv(candidates_csv, source_rows)
+    source_registry = upsert_registry_sources(
+        source_registry,
+        registry_updates_from_source_rows(source_rows),
+    )
+    write_source_registry(registry_path, source_registry)
     enriched_payload = {
         "generated_at": now_iso(),
         "diagnostics_only": True,
@@ -1730,6 +1807,7 @@ def main() -> int:
         "which_baskets_remain_empty": remaining_empty,
         "can_render_meaningful_cards": can_render,
         "top_sources_contributing_to_each_improved_basket": {basket: top_sources_by_locality.get(basket, []) for basket in gained_localities},
+        "source_registry": source_registry.get("summary", {}),
         "search_debug": search_debug,
         "queries_run": len(query_plan),
         "sources_crawled": len(ordered_sources),

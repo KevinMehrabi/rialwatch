@@ -32,6 +32,13 @@ if str(ROOT_DIR) not in sys.path:
     sys.path.insert(0, str(ROOT_DIR))
 
 from scripts.exchange_shop_baskets import benchmark_rate, fallback_usd_rate_from_text, record_weight
+from scripts.regional_source_registry import (
+    REGISTRY_FILENAME,
+    load_registry as load_source_registry,
+    registry_sources,
+    upsert_sources as upsert_registry_sources,
+    write_registry as write_source_registry,
+)
 from scripts.telegram_quote_pilot_ingestion import (
     MessageRow,
     PilotChannel,
@@ -1534,6 +1541,75 @@ def seed_from_previous_candidates(candidate_rows: Sequence[Dict[str, str]]) -> D
     return seeded
 
 
+def seed_from_source_registry(registry_payload: Dict[str, Any]) -> Dict[str, DiscoverySource]:
+    seeded: Dict[str, DiscoverySource] = {}
+    for row in registry_sources(
+        registry_payload,
+        platform="telegram",
+        signal_families={"regional_fx_board", "regional_market_signal", "direct_shop_expansion"},
+        active_only=True,
+    ):
+        handle = str(row.get("handle_or_url", "")).strip().lower()
+        if not re.fullmatch(r"[a-z0-9_]{5,}", handle):
+            continue
+        public_url = str(row.get("public_url", "")).strip() or f"https://t.me/s/{handle}"
+        source_type = str(row.get("source_kind", "")).strip() or "regional_market_channel"
+        seeded[handle] = DiscoverySource(
+            handle=handle,
+            public_url=normalize_public_url(handle, public_url),
+            query_hits={"source_registry"},
+            discovery_origins={"source_registry"},
+            source_type_hint=source_type,
+        )
+    return seeded
+
+
+def country_from_localities(localities: Iterable[str]) -> str:
+    baskets = [LOCALITY_TO_BASKET.get(locality, locality) for locality in localities if locality]
+    for basket in ("Iran", "UAE", "Turkey", "Afghanistan", "Iraq", "UK", "Germany", "Qatar", "Armenia"):
+        if basket in baskets:
+            return basket
+    return baskets[0] if baskets else "unknown"
+
+
+def registry_updates_from_candidates(
+    candidate_rows: Sequence[CandidateRow],
+    board_records: Sequence[BoardRecord],
+) -> List[Dict[str, Any]]:
+    records_by_handle: Dict[str, int] = {}
+    localities_by_handle: Dict[str, Set[str]] = {}
+    for record in board_records:
+        records_by_handle[record.handle] = records_by_handle.get(record.handle, 0) + 1
+        localities_by_handle.setdefault(record.handle, set()).add(record.locality_name)
+
+    updates: List[Dict[str, Any]] = []
+    for row in candidate_rows:
+        if row.handle == "navasan_public_currency_board":
+            continue
+        localities = set(filter(None, row.locality_mentions.split("|"))) | localities_by_handle.get(row.handle, set())
+        updates.append(
+            {
+                "platform": "telegram",
+                "handle_or_url": row.handle,
+                "public_url": row.public_url,
+                "title": row.title,
+                "source_kind": row.source_type or "regional_market_channel",
+                "signal_families": ["regional_fx_board"],
+                "country_guess": country_from_localities(localities),
+                "locality_hints": sorted(localities),
+                "quote_message_count": row.quote_message_count,
+                "board_message_count": row.board_message_count,
+                "usable_record_count": records_by_handle.get(row.handle, 0),
+                "parseability_score": row.median_parseability_score,
+                "latest_timestamp": row.latest_timestamp,
+                "status": row.status,
+                "top_sample": row.top_sample,
+                "origins": row.discovery_origins,
+            }
+        )
+    return updates
+
+
 def freshness_indicator(timestamp_iso: str, freshness_score: int) -> str:
     if freshness_score >= 85:
         return "fresh"
@@ -1966,6 +2042,8 @@ def main() -> int:
         if (survey_dir / "regional_fx_board_candidates.csv").exists()
         else []
     )
+    registry_path = survey_dir / REGISTRY_FILENAME
+    source_registry = load_source_registry(registry_path)
 
     query_plan = [(group, query) for group, queries in QUERY_GROUPS.items() for query in queries]
     if args.skip_search:
@@ -1993,6 +2071,16 @@ def main() -> int:
 
     previous_seeded = seed_from_previous_candidates(previous_candidate_rows)
     for handle, source in previous_seeded.items():
+        if handle not in discovered:
+            discovered[handle] = source
+        else:
+            discovered[handle].discovery_origins.update(source.discovery_origins)
+            discovered[handle].query_hits.update(source.query_hits)
+            if not discovered[handle].source_type_hint or discovered[handle].source_type_hint == "unknown":
+                discovered[handle].source_type_hint = source.source_type_hint
+
+    registry_seeded = seed_from_source_registry(source_registry)
+    for handle, source in registry_seeded.items():
         if handle not in discovered:
             discovered[handle] = source
         else:
@@ -2179,6 +2267,11 @@ def main() -> int:
 
     write_candidates_csv(candidates_csv, candidate_rows)
     write_records_csv(records_csv, board_records)
+    source_registry = upsert_registry_sources(
+        source_registry,
+        registry_updates_from_candidates(candidate_rows, board_records),
+    )
+    write_source_registry(registry_path, source_registry)
 
     locality_basket_rows = []
     gained_localities = []
@@ -2279,6 +2372,7 @@ def main() -> int:
         "afghanistan_display_state": locality_support.get("Afghanistan", "hide"),
         "qatar_display_state": locality_support.get("Qatar", "hide"),
         "armenia_display_state": locality_support.get("Armenia", "hide"),
+        "source_registry": source_registry.get("summary", {}),
         "search_debug": search_debug,
         "queries_run": len(query_plan),
         "sources_crawled": len(ordered_sources),

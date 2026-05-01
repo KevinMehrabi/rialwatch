@@ -14,6 +14,7 @@ import html
 import json
 import random
 import re
+import sys
 import time
 import urllib.error
 import urllib.parse
@@ -21,6 +22,18 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Sequence, Set, Tuple
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
+from scripts.regional_source_registry import (
+    REGISTRY_FILENAME,
+    load_registry as load_source_registry,
+    registry_sources,
+    upsert_sources as upsert_registry_sources,
+    write_registry as write_source_registry,
+)
 
 USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -47,6 +60,20 @@ DEFAULT_QUERIES = [
     "currency exchange iran telegram",
     "حواله صرافی",
     "حواله دلار صرافی",
+    "site:t.me/s صرافی تهران دلار",
+    "site:t.me/s نرخ دلار صرافی تهران",
+    "site:t.me/s خرید فروش دلار تهران صرافی",
+    "site:t.me/s صرافی سبزه میدان",
+    "site:t.me/s صرافی فردوسی",
+    "site:t.me/s صرافی منوچهری",
+    "site:t.me/s تابلوی صرافی دلار",
+    "site:t.me/s قیمت لحظه ای دلار صرافی",
+    "site:t.me/s نرخ حواله دلار صرافی",
+    "site:t.me/s صرافی مشهد دلار",
+    "site:t.me/s صرافی اصفهان دلار",
+    "site:t.me/s صرافی شیراز دلار",
+    "site:t.me/s صرافی تبریز دلار",
+    "site:t.me/s صرافی کرج دلار",
 ]
 
 EXCLUDED_HANDLES = {
@@ -514,6 +541,57 @@ def load_existing_registry(path: Path) -> Tuple[Set[str], int]:
     return handles, inside_shop_count
 
 
+def registry_handles(payload: Dict[str, object]) -> Set[str]:
+    handles: Set[str] = set()
+    for row in registry_sources(payload, platform="telegram", active_only=False):
+        handle = str(row.get("handle_or_url", "")).strip().lower()
+        if handle:
+            handles.add(handle)
+    return handles
+
+
+def country_from_city(city: str) -> str:
+    if city in INSIDE_IRAN_CITIES:
+        return "Iran"
+    if city == "Dubai":
+        return "UAE"
+    if city == "Istanbul":
+        return "Turkey"
+    if city in {"Frankfurt", "Hamburg"}:
+        return "Germany"
+    if city == "London":
+        return "UK"
+    return "unknown"
+
+
+def registry_updates_from_scores(rows: Sequence[ChannelScore]) -> List[Dict[str, object]]:
+    updates: List[Dict[str, object]] = []
+    for row in rows:
+        country = country_from_city(row.city_guess)
+        source_kind = "exchange_shop" if row.likely_individual_shop else "regional_market_channel"
+        updates.append(
+            {
+                "platform": "telegram",
+                "handle_or_url": row.handle,
+                "public_url": row.public_url,
+                "title": row.title,
+                "country_guess": country,
+                "city_guess": row.city_guess,
+                "source_kind": source_kind,
+                "signal_families": ["direct_shop_expansion"],
+                "locality_hints": [item for item in (country, row.city_guess) if item and item != "unknown"],
+                "quote_message_count": row.quote_post_count,
+                "usable_record_count": row.quote_post_count if row.likely_individual_shop else 0,
+                "buy_sell_pair_count": row.buy_sell_pair_count,
+                "parseability_score": row.parseability_score,
+                "status": row.status,
+                "top_sample": row.last_seen_text_sample,
+                "origins": row.discovery_queries,
+            }
+        )
+    return updates
+
+
 def estimate_additional_usable_records(rows: Sequence[ChannelScore]) -> int:
     total = 0
     for r in rows:
@@ -613,8 +691,12 @@ def main() -> int:
 
     candidates_csv = survey_dir / "direct_shop_expansion_candidates.csv"
     summary_json = survey_dir / "direct_shop_expansion_summary.json"
+    registry_path = survey_dir / REGISTRY_FILENAME
 
     existing_handles, existing_inside_shop_count = load_existing_registry(existing_csv)
+    source_registry = load_source_registry(registry_path)
+    known_registry_handles = registry_handles(source_registry)
+    existing_handles.update(known_registry_handles)
 
     print("[1/4] Running discovery expansion...")
     discovered, search_debug = run_discovery(
@@ -654,6 +736,11 @@ def main() -> int:
 
     print("[3/4] Writing candidate dataset...")
     write_candidates(candidates_csv, filtered)
+    source_registry = upsert_registry_sources(
+        source_registry,
+        registry_updates_from_scores(filtered),
+    )
+    write_source_registry(registry_path, source_registry)
 
     likely_direct_shops = [r for r in filtered if r.likely_individual_shop]
     with_pairs = [r for r in filtered if r.buy_sell_pair_count > 0]
@@ -666,6 +753,7 @@ def main() -> int:
         "generated_at": now_iso(),
         "search_debug": search_debug,
         "existing_registry_handles": len(existing_handles),
+        "durable_source_registry": source_registry.get("summary", {}),
         "existing_inside_iran_likely_shop_channels": existing_inside_shop_count,
         "new_channels_discovered": len(new_candidates),
         "new_channels_retained_after_scoring": len(filtered),

@@ -147,6 +147,29 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         self.assertNotIn("navasan_public_currency_board", seeded)
         self.assertNotIn("emptyboard", seeded)
 
+    def test_seed_from_source_registry_replays_active_telegram_sources(self) -> None:
+        payload = {
+            "sources": [
+                {
+                    "platform": "telegram",
+                    "handle_or_url": "nrxidolar",
+                    "public_url": "https://t.me/s/nrxidolar",
+                    "source_kind": "regional_fx_board",
+                    "signal_families": ["regional_fx_board"],
+                    "last_success_at": "2026-05-01T12:00:00Z",
+                },
+                {
+                    "platform": "telegram",
+                    "handle_or_url": "inactive",
+                    "signal_families": ["regional_fx_board"],
+                },
+            ]
+        }
+        seeded = boards.seed_from_source_registry(payload)
+        self.assertIn("nrxidolar", seeded)
+        self.assertIn("source_registry", seeded["nrxidolar"].discovery_origins)
+        self.assertNotIn("inactive", seeded)
+
     def test_detect_localities_maps_german_city_aliases(self) -> None:
         hits = boards.detect_localities("مونیخ یورو و کلن یورو برای حواله آلمان")
         self.assertIn("Munich", hits)

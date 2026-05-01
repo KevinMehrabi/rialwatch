@@ -50,7 +50,7 @@ jobs:
           python3 scripts/telegram_direct_shop_expansion.py \
             --survey-dir state/survey_outputs \
             --pages-per-query 2 \
-            --max-crawl 320 \
+            --max-crawl 420 \
             --timeout 20 \
             --sleep 0.55
 
@@ -60,6 +60,7 @@ jobs:
           targets=(
             "survey_outputs/direct_shop_expansion_candidates.csv"
             "survey_outputs/direct_shop_expansion_summary.json"
+            "survey_outputs/regional_signal_source_registry.json"
           )
 
           if [ -z "$(git -C state status --porcelain -- "${targets[@]}")" ]; then

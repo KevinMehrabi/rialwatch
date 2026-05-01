@@ -9,6 +9,7 @@ on:
       - "scripts/uae_exchange_discovery.py"
       - "scripts/uae_basket_review.py"
       - "scripts/uae_signal_watchlist.py"
+      - "scripts/regional_source_registry.py"
       - "scripts/regional_fx_board_discovery.py"
       - "scripts/exchange_shop_baskets.py"
       - "scripts/regional_market_signal_discovery.py"
@@ -69,8 +70,8 @@ jobs:
               basket_only_fast_path=true
             fi
             uae_max_seeds=90
-            regional_max_sources=90
-            market_max_sources=90
+            regional_max_sources=140
+            market_max_sources=140
             uae_timeout=12
             regional_timeout=10
             market_timeout=12
@@ -82,8 +83,8 @@ jobs:
             discovery_search_args="--skip-search"
           else
             uae_max_seeds=240
-            regional_max_sources=180
-            market_max_sources=180
+            regional_max_sources=260
+            market_max_sources=260
             uae_timeout=20
             regional_timeout=15
             market_timeout=20
@@ -165,6 +166,7 @@ jobs:
             "survey_outputs/regional_fx_board_summary.json"
             "survey_outputs/regional_market_signal_candidates.csv"
             "survey_outputs/regional_market_signal_summary.json"
+            "survey_outputs/regional_signal_source_registry.json"
             "site/api/uae_signal_watchlist.json"
             "site/api/regional_fx_board_basket_review.json"
             "site/api/exchange_shop_baskets.json"

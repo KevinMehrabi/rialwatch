@@ -209,6 +209,34 @@ class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
         self.assertIn("website:https://example.com/rates", seeded)
         self.assertNotIn("telegram:emptychannel", seeded)
 
+    def test_seed_from_source_registry_replays_active_regional_sources(self) -> None:
+        payload = {
+            "sources": [
+                {
+                    "platform": "telegram",
+                    "handle_or_url": "sarafitehran",
+                    "public_url": "https://t.me/s/sarafitehran",
+                    "country_guess": "Iran",
+                    "city_guess": "Tehran",
+                    "source_kind": "exchange_shop",
+                    "signal_families": ["direct_shop_expansion"],
+                    "last_success_at": "2026-05-01T12:00:00Z",
+                },
+                {
+                    "platform": "telegram",
+                    "handle_or_url": "inactive",
+                    "signal_families": ["regional_market_signal"],
+                },
+            ]
+        }
+        seeded = regional.seed_from_source_registry(payload)
+        self.assertIn("telegram:sarafitehran", seeded)
+        source = seeded["telegram:sarafitehran"]
+        self.assertEqual(source.country_guess, "Iran")
+        self.assertEqual(source.source_type_guess, "exchange_shop")
+        self.assertIn("source_registry", source.origins)
+        self.assertNotIn("telegram:inactive", seeded)
+
     def test_classify_source_type_honors_regional_market_hint(self) -> None:
         source = regional.DiscoverySource(
             key="telegram:test",
