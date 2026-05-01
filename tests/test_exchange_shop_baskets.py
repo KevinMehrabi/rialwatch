@@ -1,4 +1,7 @@
+import json
+import tempfile
 import unittest
+from pathlib import Path
 
 from scripts import exchange_shop_baskets as baskets
 
@@ -46,6 +49,30 @@ class ExchangeShopBasketTests(unittest.TestCase):
         )
         self.assertEqual(rate, 1_450_000.0)
         self.assertEqual(basis, "midpoint")
+
+    def test_benchmark_rate_prefers_current_latest_artifact(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            site_api_dir = Path(tmpdir)
+            (site_api_dir / "benchmark.json").write_text(
+                json.dumps({"weighted_rate": 1_449_922.07}),
+                encoding="utf-8",
+            )
+            (site_api_dir / "latest.json").write_text(
+                json.dumps(
+                    {
+                        "computed": {
+                            "fix": 1_773_250.0,
+                            "benchmarks": {
+                                "open_market": {
+                                    "value": 1_773_250.0,
+                                },
+                            },
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
+            self.assertEqual(baskets.benchmark_rate(site_api_dir), 1_773_250.0)
 
     def test_fallback_usd_rate_from_text_handles_two_column_toman_posts(self) -> None:
         rate, basis = baskets.fallback_usd_rate_from_text(

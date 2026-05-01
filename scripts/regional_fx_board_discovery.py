@@ -472,6 +472,7 @@ SLASH_PAIR_RE = re.compile(
 )
 BUY_WORDS = ("خرید", "buy", "bid")
 SELL_WORDS = ("فروش", "sell", "offer", "ask")
+RATE_WORDS = ("نرخ پیشنهادی", "نرخ", "قیمت", "rate", "price")
 BOARD_HINTS = ("تابلو", "board", "quote board", "نرخ", "قیمت", "بازار", "لحظه ای", "لحظه‌ای")
 NEWS_HINTS = ("خبر", "اخبار", "تحلیل", "analysis", "news", "breaking")
 SHOP_HINTS = ("صرافی", "تماس", "contact", "whatsapp", "آدرس", "address")
@@ -545,6 +546,11 @@ SOURCE_TYPE_MULTIPLIER = {
     "exchange_shop": 0.72,
     "aggregator": 0.55,
     "unknown": 0.45,
+}
+
+DIAGNOSTIC_USD_CROSS_RATES = {
+    "EUR": 1.14,
+    "GBP": 1.30,
 }
 
 
@@ -763,16 +769,18 @@ def detect_buy_sell_numbers(text: str) -> Tuple[Optional[int], Optional[int]]:
     buy = None
     sell = None
     for word in BUY_WORDS:
-        pattern = re.compile(rf"{re.escape(word)}[^0-9]{{0,24}}(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})|(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})[^0-9]{{0,24}}{re.escape(word)}")
-        match = pattern.search(lowered)
+        forward = re.compile(rf"{re.escape(word)}[^0-9]{{0,32}}(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})")
+        reverse = re.compile(rf"(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})[^0-9]{{0,32}}{re.escape(word)}")
+        match = forward.search(lowered) or reverse.search(lowered)
         if match:
-            buy = parse_number_token(match.group(1) or match.group(2))
+            buy = parse_number_token(match.group(1))
             break
     for word in SELL_WORDS:
-        pattern = re.compile(rf"{re.escape(word)}[^0-9]{{0,24}}(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})|(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})[^0-9]{{0,24}}{re.escape(word)}")
-        match = pattern.search(lowered)
+        forward = re.compile(rf"{re.escape(word)}[^0-9]{{0,32}}(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})")
+        reverse = re.compile(rf"(\d{{2,3}}(?:[\s,٬،]\d{{3}})+|\d{{5,8}})[^0-9]{{0,32}}{re.escape(word)}")
+        match = forward.search(lowered) or reverse.search(lowered)
         if match:
-            sell = parse_number_token(match.group(1) or match.group(2))
+            sell = parse_number_token(match.group(1))
             break
     if buy is None and sell is None:
         pair = SLASH_PAIR_RE.search(lowered)
@@ -782,6 +790,19 @@ def detect_buy_sell_numbers(text: str) -> Tuple[Optional[int], Optional[int]]:
     if buy is None and sell is None and len(nums) >= 2 and any(h in lowered for h in BUY_WORDS + SELL_WORDS):
         buy, sell = nums[0], nums[1]
     return buy, sell
+
+
+def detect_rate_number(text: str) -> Optional[int]:
+    lowered = translit_digits(text or "").lower()
+    number_pattern = r"(\d{2,3}(?:[\s,٬،]\d{3})+|\d{5,8})"
+    for word in RATE_WORDS:
+        pattern = re.compile(rf"{re.escape(word)}[^0-9]{{0,40}}{number_pattern}")
+        match = pattern.search(lowered)
+        if match:
+            value = parse_number_token(match.group(1))
+            if value is not None:
+                return value
+    return None
 
 
 def infer_quote_currency(text: str, locality: str) -> str:
@@ -807,9 +828,9 @@ def comparable_locality_irr(value_irr: float, currency: str, locality: str) -> O
     if currency == "AED":
         return float(value_irr) * 3.6725
     if currency == "GBP" and locality in UK_AGG_LOCALITIES:
-        return float(value_irr)
+        return float(value_irr) / DIAGNOSTIC_USD_CROSS_RATES[currency]
     if currency == "EUR" and locality in GERMANY_AGG_LOCALITIES:
-        return float(value_irr)
+        return float(value_irr) / DIAGNOSTIC_USD_CROSS_RATES[currency]
     return None
 
 
@@ -862,6 +883,7 @@ def extract_locality_quotes(text: str, benchmark_value: float) -> List[Tuple[str
             local_unit = detect_unit(line, line_numbers)
             currency = infer_quote_currency(line, locality)
             buy, sell = detect_buy_sell_numbers(line)
+            rate_number = detect_rate_number(line)
             midpoint: Optional[float] = None
             basis = "inferred"
             if buy is not None and sell is not None:
@@ -870,6 +892,12 @@ def extract_locality_quotes(text: str, benchmark_value: float) -> List[Tuple[str
                 if buy_rial is not None and sell_rial is not None:
                     midpoint = (buy_rial + sell_rial) / 2.0
                     basis = "midpoint"
+            elif sell is not None:
+                midpoint = to_rial(sell, local_unit)
+                basis = "sell"
+            elif buy is not None:
+                midpoint = to_rial(buy, local_unit)
+                basis = "buy"
             else:
                 pair = SLASH_PAIR_RE.search(line)
                 if pair:
@@ -880,6 +908,9 @@ def extract_locality_quotes(text: str, benchmark_value: float) -> List[Tuple[str
                         sell = second
                         midpoint = (to_rial(first, local_unit) + to_rial(second, local_unit)) / 2.0
                         basis = "midpoint"
+                elif rate_number is not None:
+                    midpoint = to_rial(rate_number, local_unit)
+                    basis = "single_value"
                 elif line_numbers:
                     candidate = to_rial(line_numbers[0], local_unit)
                     if candidate is not None:

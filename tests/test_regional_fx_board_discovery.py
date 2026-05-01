@@ -32,7 +32,7 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
         self.assertIn("London", by_locality)
         self.assertEqual(by_locality["London"][1], "GBP")
-        self.assertGreaterEqual(by_locality["London"][0], 1_900_000.0)
+        self.assertAlmostEqual(by_locality["London"][0], 1_557_692.31, places=2)
 
     def test_extract_locality_quotes_keeps_germany_euro_signal(self) -> None:
         text = "حواله بانکی آلمان فروش یورو 185,000 تومان"
@@ -40,7 +40,19 @@ class RegionalFxBoardDiscoveryTests(unittest.TestCase):
         by_locality = {loc: (midpoint, currency) for loc, _buy, _sell, midpoint, _unit, _basis, currency in results}
         self.assertIn("Germany", by_locality)
         self.assertEqual(by_locality["Germany"][1], "EUR")
-        self.assertEqual(by_locality["Germany"][0], 1_850_000.0)
+        self.assertAlmostEqual(by_locality["Germany"][0], 1_622_807.02, places=2)
+
+    def test_extract_locality_quotes_uses_rate_keyword_over_listing_id(self) -> None:
+        text = "حواله 68788 بابت #فروش یورو نرخ پیشنهادی: 200,000 تومان حساب از آلمان"
+        results = boards.extract_locality_quotes(text, benchmark_value=1_773_250.0)
+        by_locality = {
+            loc: (midpoint, basis, currency)
+            for loc, _buy, _sell, midpoint, _unit, basis, currency in results
+        }
+        self.assertIn("Germany", by_locality)
+        self.assertEqual(by_locality["Germany"][1], "sell")
+        self.assertEqual(by_locality["Germany"][2], "EUR")
+        self.assertAlmostEqual(by_locality["Germany"][0], 1_754_385.96, places=2)
 
     def test_detect_localities_maps_german_city_aliases(self) -> None:
         hits = boards.detect_localities("مونیخ یورو و کلن یورو برای حواله آلمان")

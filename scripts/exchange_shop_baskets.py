@@ -425,9 +425,41 @@ def record_weight(rec: BasketRecord) -> float:
 
 
 def benchmark_rate(site_api_dir: Path) -> float:
-    benchmark_path = site_api_dir / "benchmark.json"
-    payload = json.loads(benchmark_path.read_text(encoding="utf-8"))
-    return safe_float(payload.get("weighted_rate"))
+    candidates = (
+        (
+            site_api_dir / "latest.json",
+            (
+                ("computed", "benchmarks", "open_market", "value"),
+                ("computed", "fix"),
+            ),
+        ),
+        (
+            site_api_dir / "benchmark_card.json",
+            (("benchmark_rate",),),
+        ),
+        (
+            site_api_dir / "benchmark.json",
+            (("weighted_rate",),),
+        ),
+    )
+    for path, field_paths in candidates:
+        if not path.exists():
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        for field_path in field_paths:
+            current: Any = payload
+            for key in field_path:
+                if not isinstance(current, dict):
+                    current = None
+                    break
+                current = current.get(key)
+            parsed = safe_float(current)
+            if parsed > 0:
+                return parsed
+    return 0.0
 
 
 def normalize_existing_records(
