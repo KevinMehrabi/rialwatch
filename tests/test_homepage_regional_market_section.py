@@ -36,7 +36,9 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertNotIn("toLocaleString() + ' IRR'", self.template)
 
     def test_cards_render_in_payload_order(self) -> None:
-        self.assertIn("holder.innerHTML = cards.map(card => `", self.template)
+        self.assertIn("holder.innerHTML = cards.map(card => {", self.template)
+        self.assertIn("fresh / ${usedSources} used", self.template)
+        self.assertIn("remembered", self.template)
         self.assertNotIn("sortedCards", self.template)
 
     def test_latest_point_pulse_uses_overlay_not_chart_padding(self) -> None:

@@ -211,6 +211,11 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
                         "kabul_dollarrate",
                         "lubrinol",
                     ],
+                    "fresh_contributing_source_count": 2,
+                    "fresh_contributing_sources": [
+                        "aghayebazar_official",
+                        "exchangeratescountries",
+                    ],
                     "weighted_rate": 2_252_953.27,
                     "median_rate": 2_397_040.75,
                     "spread_vs_benchmark_pct": 55.3844,
@@ -238,6 +243,12 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
                         "sarafionline7groupuk",
                         "exchangeratescountries",
                     ],
+                    "fresh_contributing_source_count": 3,
+                    "fresh_contributing_sources": [
+                        "groupsarafilondonuk",
+                        "sarafionline7groupuk",
+                        "exchangeratescountries",
+                    ],
                     "basket_confidence": 95.13,
                     "publishable": True,
                     "suppression_reason": "",
@@ -250,6 +261,7 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
         self.assertEqual(uk["source_artifact"], "merged_diagnostics")
         self.assertEqual(uk["display_state"], "publish")
         self.assertEqual(uk["contributing_source_count"], 6)
+        self.assertEqual(uk["fresh_contributing_source_count"], 4)
         self.assertEqual(
             uk["contributing_sources"],
             [
@@ -258,6 +270,15 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
                 "groupsarafilondonuk",
                 "kabul_dollarrate",
                 "lubrinol",
+                "sarafionline7groupuk",
+            ],
+        )
+        self.assertEqual(
+            uk["fresh_contributing_sources"],
+            [
+                "aghayebazar_official",
+                "exchangeratescountries",
+                "groupsarafilondonuk",
                 "sarafionline7groupuk",
             ],
         )
@@ -272,6 +293,8 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
                     "usable_record_count": 20,
                     "contributing_source_count": 3,
                     "contributing_sources": ["dirhamdubai", "dhsgroupdubai", "iranian_uae"],
+                    "fresh_contributing_source_count": 2,
+                    "fresh_contributing_sources": ["dirhamdubai", "iranian_uae"],
                     "weighted_rate": 1_590_000.0,
                     "median_rate": 1_592_000.0,
                     "spread_vs_benchmark_pct": 9.4,
@@ -295,6 +318,8 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
                     "usable_record_count": 16,
                     "contributing_source_count": 3,
                     "contributing_sources": ["emeraldxe.com", "hiemarat.com", "iranian_uae"],
+                    "fresh_contributing_source_count": 2,
+                    "fresh_contributing_sources": ["emeraldxe.com", "iranian_uae"],
                     "basket_confidence": 92.0,
                     "publishable": True,
                     "suppression_reason": "",
@@ -302,15 +327,72 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
                 }
             ],
         }
-        payload = cards.build_regional_market_cards_payload(regional_payload, enriched_payload, {"cards": []})
+        registry_payload = {
+            "sources": [
+                {"country_guess": "UAE", "handle_or_url": f"uae{i}", "last_success_at": "2026-04-28T15:00:00Z"}
+                for i in range(7)
+            ]
+            + [
+                {"country_guess": "UAE", "handle_or_url": "unproven"},
+                {"country_guess": "Iran", "handle_or_url": "iran1", "last_success_at": "2026-04-28T15:00:00Z"},
+            ],
+        }
+        payload = cards.build_regional_market_cards_payload(regional_payload, enriched_payload, {"cards": []}, registry_payload)
         uae = {row["basket_name"]: row for row in payload["cards"]}["UAE"]
         self.assertEqual(uae["source_artifact"], "merged_diagnostics")
         self.assertEqual(uae["display_state"], "publish")
         self.assertEqual(uae["contributing_source_count"], 5)
+        self.assertEqual(uae["fresh_contributing_source_count"], 3)
+        self.assertEqual(uae["remembered_source_count"], 7)
+        self.assertEqual(uae["source_coverage_text"], "3 fresh / 5 used / 7 remembered")
         self.assertEqual(
             uae["contributing_sources"],
             ["dhsgroupdubai", "dirhamdubai", "emeraldxe.com", "hiemarat.com", "iranian_uae"],
         )
+        self.assertEqual(uae["fresh_contributing_sources"], ["dirhamdubai", "emeraldxe.com", "iranian_uae"])
+
+    def test_build_payload_uses_registry_timestamp_for_fresh_fallback(self) -> None:
+        regional_payload = {
+            "generated_at": "2026-04-28T15:00:00Z",
+            "localities": [
+                {
+                    "locality_name": "UK",
+                    "signal_type_used": "regional_market_channel",
+                    "usable_record_count": 12,
+                    "contributing_source_count": 2,
+                    "contributing_sources": ["fresh_shop", "old_shop"],
+                    "weighted_rate": 1_590_000.0,
+                    "median_rate": 1_590_000.0,
+                    "spread_vs_benchmark_pct": 1.5,
+                    "freshness_status": "fresh",
+                    "dispersion_level": "low",
+                    "basket_confidence": 80.0,
+                    "recommended_display_state": "publish",
+                    "suppression_reason": "",
+                }
+            ],
+        }
+        registry_payload = {
+            "sources": [
+                {
+                    "country_guess": "UK",
+                    "handle_or_url": "fresh_shop",
+                    "latest_timestamp": "2026-04-28T03:30:00Z",
+                    "best_usable_record_count": 5,
+                },
+                {
+                    "country_guess": "UK",
+                    "handle_or_url": "old_shop",
+                    "latest_timestamp": "2026-04-22T03:30:00Z",
+                    "best_usable_record_count": 5,
+                },
+            ]
+        }
+        payload = cards.build_regional_market_cards_payload(regional_payload, {"baskets": []}, {"cards": []}, registry_payload)
+        uk = {row["basket_name"]: row for row in payload["cards"]}["UK"]
+        self.assertEqual(uk["fresh_contributing_source_count"], 1)
+        self.assertEqual(uk["fresh_contributing_sources"], ["fresh_shop"])
+        self.assertEqual(uk["source_coverage_text"], "1 fresh / 2 used")
 
     def test_build_payload_does_not_merge_suppressed_artifacts(self) -> None:
         regional_payload = {

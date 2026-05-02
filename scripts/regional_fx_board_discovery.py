@@ -1854,6 +1854,8 @@ def summarize_locality(locality_name: str, records: Sequence[BoardRecord], bench
             "usable_record_count": 0,
             "contributing_source_count": 0,
             "contributing_sources": [],
+            "fresh_contributing_source_count": 0,
+            "fresh_contributing_sources": [],
             "median_rate": None,
             "weighted_rate": None,
             "spread_vs_benchmark_pct": None,
@@ -1890,6 +1892,7 @@ def summarize_locality(locality_name: str, records: Sequence[BoardRecord], bench
     freshness = locality_freshness(records)
     dispersion = dispersion_level(values)
     contributing_source_ids = sorted({r.handle for r in records})
+    fresh_source_ids = sorted({r.handle for r in records if r.freshness_indicator == "fresh"})
     contributing_sources = len(contributing_source_ids)
     avg_parse = statistics.mean(r.parseability_score for r in records)
     confidence = (
@@ -1919,6 +1922,8 @@ def summarize_locality(locality_name: str, records: Sequence[BoardRecord], bench
         "usable_record_count": len(records),
         "contributing_source_count": contributing_sources,
         "contributing_sources": contributing_source_ids,
+        "fresh_contributing_source_count": len(fresh_source_ids),
+        "fresh_contributing_sources": fresh_source_ids,
         "median_rate": round(median_rate, 2),
         "weighted_rate": round(weighted_rate, 2),
         "spread_vs_benchmark_pct": round(spread, 4) if spread is not None else None,

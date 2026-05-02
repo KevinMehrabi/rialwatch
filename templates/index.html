@@ -620,7 +620,14 @@ function renderRegionalMarketCards(payload) {
     return;
   }
 
-  holder.innerHTML = cards.map(card => `
+  holder.innerHTML = cards.map(card => {
+    const freshSources = Number(card.fresh_contributing_source_count || 0);
+    const usedSources = Number(card.contributing_source_count || 0);
+    const rememberedSources = Math.max(Number(card.remembered_source_count || 0), usedSources);
+    const sourceCoverage = rememberedSources > usedSources
+      ? `${freshSources} fresh / ${usedSources} used / ${rememberedSources} remembered`
+      : `${freshSources} fresh / ${usedSources} used`;
+    return `
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
         <div class="panel-top">
@@ -641,7 +648,7 @@ function renderRegionalMarketCards(payload) {
           </div>
           <div class="panel-meta-row mt-2">
             <span>Usable records: ${card.usable_record_count}</span>
-            <span>Sources: ${card.contributing_source_count}</span>
+            <span>Sources: ${sourceCoverage}</span>
             <span>Confidence: ${Number(card.basket_confidence || 0).toFixed(1)}</span>
           </div>
           <div class="panel-meta-row mt-2">
@@ -653,7 +660,7 @@ function renderRegionalMarketCards(payload) {
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 }
 
 async function loadRegionalMarketCards() {

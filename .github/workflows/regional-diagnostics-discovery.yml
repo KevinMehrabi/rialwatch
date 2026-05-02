@@ -146,6 +146,7 @@ jobs:
             --regional state/site/api/regional_fx_board_basket_review.json \
             --enriched state/site/api/exchange_shop_baskets_enriched.json \
             --legacy state/site/api/exchange_shop_baskets_card.json \
+            --registry state/survey_outputs/regional_signal_source_registry.json \
             --out state/site/api/regional_market_signals_card.json \
             --history-out state/site/api/regional_market_signals_history.json \
             --timeseries-out state/site/api/regional_market_signals_timeseries.json

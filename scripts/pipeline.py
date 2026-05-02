@@ -4713,6 +4713,15 @@ def publish_status(
             return 0
         return max(0, int(parsed))
 
+    def format_diagnostics_source_coverage(card: Dict[str, Any]) -> str:
+        used_count = parse_nonnegative_count(card.get("contributing_source_count"))
+        fresh_count = parse_nonnegative_count(card.get("fresh_contributing_source_count"))
+        remembered_count = parse_nonnegative_count(card.get("remembered_source_count"))
+        remembered_count = max(remembered_count, used_count)
+        if remembered_count > used_count:
+            return f"{fresh_count} fresh / {used_count} used / {remembered_count} remembered"
+        return f"{fresh_count} fresh / {used_count} used"
+
     def map_pipeline_state(value: str) -> str:
         upper = value.strip().upper()
         if upper in {"OK", "IMMUTABLE"}:
@@ -5208,7 +5217,7 @@ def publish_status(
                         {
                             "name": f"{basket_name} — {signal_label}" if signal_label else basket_name,
                             "status": status,
-                            "sources": str(parse_nonnegative_count(card.get("contributing_source_count"))),
+                            "sources": format_diagnostics_source_coverage(card),
                             "records": str(parse_nonnegative_count(card.get("usable_record_count"))),
                             "note": note,
                         }

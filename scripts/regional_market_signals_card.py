@@ -19,6 +19,7 @@ SOURCE_RANK = {
 }
 HIDE_REASONS = {"", "no_usable_records", "stale_signal"}
 MERGE_MAX_RATE_RATIO = 1.25
+FRESH_SOURCE_WINDOW_HOURS = 30
 
 
 def read_json(path: Path) -> Dict[str, Any]:
@@ -89,6 +90,151 @@ def normalize_source_list(value: Any) -> List[str]:
         ]
         return sorted(set(parts))
     return []
+
+
+def split_registry_tokens(value: Any) -> List[str]:
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item or "").strip()]
+    if isinstance(value, str):
+        return [
+            part.strip()
+            for token in value.split("|")
+            for part in token.split(",")
+            if part.strip()
+        ]
+    return []
+
+
+def registry_source_was_useful(source: Dict[str, Any]) -> bool:
+    if str(source.get("last_success_at") or "").strip():
+        return True
+    for field in (
+        "best_usable_record_count",
+        "best_quote_message_count",
+        "best_board_message_count",
+        "last_usable_record_count",
+        "last_quote_message_count",
+        "last_board_message_count",
+    ):
+        if to_int(source.get(field)) > 0:
+            return True
+    return False
+
+
+LOCALITY_ALIASES = {
+    "iran": "Iran",
+    "uae": "UAE",
+    "united arab emirates": "UAE",
+    "dubai": "UAE",
+    "turkey": "Turkey",
+    "turkiye": "Turkey",
+    "afghanistan": "Afghanistan",
+    "herat": "Afghanistan",
+    "uk": "UK",
+    "united kingdom": "UK",
+    "britain": "UK",
+    "england": "UK",
+    "iraq": "Iraq",
+    "sulaymaniyah": "Iraq",
+    "sulaimaniyah": "Iraq",
+    "germany": "Germany",
+    "deutschland": "Germany",
+    "qatar": "Qatar",
+    "armenia": "Armenia",
+}
+
+
+def normalize_locality_alias(value: Any) -> Optional[str]:
+    text = str(value or "").strip().lower()
+    if not text:
+        return None
+    return LOCALITY_ALIASES.get(text)
+
+
+def remembered_source_counts_by_locality(registry_payload: Dict[str, Any]) -> Dict[str, int]:
+    sources = registry_payload.get("sources", []) if isinstance(registry_payload, dict) else []
+    counts: Dict[str, int] = {}
+    if not isinstance(sources, list):
+        return counts
+    for source in sources:
+        if not isinstance(source, dict) or not registry_source_was_useful(source):
+            continue
+        locality = normalize_locality_alias(source.get("country_guess"))
+        if locality is None:
+            for field in ("country_hints", "locality_hints", "city_guess"):
+                for token in split_registry_tokens(source.get(field)):
+                    locality = normalize_locality_alias(token)
+                    if locality is not None:
+                        break
+                if locality is not None:
+                    break
+        if locality is None:
+            continue
+        counts[locality] = counts.get(locality, 0) + 1
+    return counts
+
+
+def registry_source_ids(source: Dict[str, Any]) -> List[str]:
+    ids = []
+    for field in ("handle_or_url", "public_url", "key"):
+        value = str(source.get(field) or "").strip()
+        if value:
+            ids.append(value)
+    key = str(source.get("key") or "").strip()
+    if ":" in key:
+        suffix = key.split(":", 1)[1].strip()
+        if suffix:
+            ids.append(suffix)
+    return normalize_source_list(ids)
+
+
+def fresh_registry_source_ids_by_locality(
+    registry_payload: Dict[str, Any],
+    reference_timestamp: str,
+) -> Dict[str, List[str]]:
+    sources = registry_payload.get("sources", []) if isinstance(registry_payload, dict) else []
+    if not isinstance(sources, list):
+        return {}
+    reference = parse_iso(reference_timestamp) or datetime.now(timezone.utc)
+    if reference.tzinfo is None:
+        reference = reference.replace(tzinfo=timezone.utc)
+    max_age = timedelta(hours=FRESH_SOURCE_WINDOW_HOURS)
+    out: Dict[str, set] = {}
+    for source in sources:
+        if not isinstance(source, dict) or not registry_source_was_useful(source):
+            continue
+        latest = parse_iso(source.get("latest_timestamp"))
+        if latest is None:
+            continue
+        if latest.tzinfo is None:
+            latest = latest.replace(tzinfo=timezone.utc)
+        age = reference - latest.astimezone(timezone.utc)
+        if age < timedelta(0) or age > max_age:
+            continue
+        locality = normalize_locality_alias(source.get("country_guess"))
+        if locality is None:
+            continue
+        out.setdefault(locality, set()).update(registry_source_ids(source))
+    return {locality: sorted(ids) for locality, ids in out.items()}
+
+
+def apply_registry_fresh_fallback(
+    candidate: Dict[str, Any],
+    locality: str,
+    registry_fresh_ids: Dict[str, List[str]],
+) -> Dict[str, Any]:
+    if to_int(candidate.get("fresh_contributing_source_count")) > 0:
+        return candidate
+    source_ids = normalize_source_list(candidate.get("contributing_sources"))
+    if not source_ids:
+        return candidate
+    fresh_source_ids = sorted(set(source_ids).intersection(registry_fresh_ids.get(locality, [])))
+    if not fresh_source_ids:
+        return candidate
+    updated = dict(candidate)
+    updated["fresh_contributing_source_count"] = len(fresh_source_ids)
+    updated["fresh_contributing_sources"] = fresh_source_ids
+    return updated
 
 
 def normalize_state(value: Any) -> str:
@@ -202,6 +348,8 @@ def build_candidate(
     freshness_status: Any = None,
     dispersion_level: Any = None,
     contributing_sources: Any = None,
+    fresh_contributing_source_count: Any = None,
+    fresh_contributing_sources: Any = None,
 ) -> Dict[str, Any]:
     usable = to_int(usable_record_count)
     contributing = to_int(contributing_source_count)
@@ -212,6 +360,10 @@ def build_candidate(
     freshness = normalize_freshness(freshness_status, suppression, state)
     dispersion = str(dispersion_level or "").strip() or "unknown"
     source_ids = normalize_source_list(contributing_sources)
+    fresh_source_ids = normalize_source_list(fresh_contributing_sources)
+    fresh_count = len(fresh_source_ids) if fresh_source_ids else to_int(fresh_contributing_source_count)
+    if contributing > 0:
+        fresh_count = min(fresh_count, contributing)
 
     return {
         "basket_name": locality,
@@ -221,6 +373,7 @@ def build_candidate(
         "spread_vs_benchmark_pct": to_float(spread_vs_benchmark_pct),
         "usable_record_count": usable,
         "contributing_source_count": contributing,
+        "fresh_contributing_source_count": fresh_count,
         "basket_confidence": confidence,
         "freshness_status": freshness,
         "dispersion_level": dispersion,
@@ -228,6 +381,7 @@ def build_candidate(
         "suppression_reason": suppression,
         "source_artifact": source_artifact,
         "contributing_sources": source_ids,
+        "fresh_contributing_sources": fresh_source_ids,
     }
 
 
@@ -252,6 +406,8 @@ def build_regional_candidates(payload: Dict[str, Any]) -> Dict[str, List[Dict[st
             freshness_status=row.get("freshness_status"),
             dispersion_level=row.get("dispersion_level"),
             contributing_sources=row.get("contributing_sources"),
+            fresh_contributing_source_count=row.get("fresh_contributing_source_count"),
+            fresh_contributing_sources=row.get("fresh_contributing_sources"),
         )
         result.setdefault(locality, []).append(candidate)
     return result
@@ -285,6 +441,8 @@ def build_enriched_candidates(payload: Dict[str, Any]) -> Dict[str, List[Dict[st
             freshness_status=row.get("freshness_status"),
             dispersion_level=dispersion_level_from_cv(row.get("dispersion_cv")),
             contributing_sources=row.get("contributing_sources") or row.get("top_sources"),
+            fresh_contributing_source_count=row.get("fresh_contributing_source_count"),
+            fresh_contributing_sources=row.get("fresh_contributing_sources"),
         )
         result.setdefault(locality, []).append(candidate)
     return result
@@ -318,6 +476,8 @@ def build_legacy_candidates(payload: Dict[str, Any]) -> Dict[str, List[Dict[str,
             freshness_status="unknown",
             dispersion_level="unknown",
             contributing_sources=row.get("channels"),
+            fresh_contributing_source_count=row.get("fresh_contributing_channel_count"),
+            fresh_contributing_sources=row.get("fresh_contributing_channels"),
         )
         result.setdefault(locality, []).append(candidate)
     return result
@@ -328,6 +488,7 @@ def candidate_sort_key(candidate: Dict[str, Any]) -> tuple:
     return (
         STATE_RANK.get(candidate.get("display_state"), 0),
         has_rate,
+        to_int(candidate.get("fresh_contributing_source_count")),
         to_int(candidate.get("contributing_source_count")),
         to_int(candidate.get("usable_record_count")),
         SOURCE_RANK.get(candidate.get("source_artifact"), 0),
@@ -376,6 +537,16 @@ def merge_locality_candidates(locality: str, candidates: List[Dict[str, Any]]) -
         if has_complete_source_lists
         else sum(to_int(row.get("contributing_source_count")) for row in publishable)
     )
+    fresh_source_lists = [normalize_source_list(row.get("fresh_contributing_sources")) for row in publishable]
+    fresh_source_ids = sorted({source_id for sources in fresh_source_lists for source_id in sources})
+    has_fresh_source_lists = any(fresh_source_lists)
+    fresh_contributing_count = (
+        len(fresh_source_ids)
+        if has_fresh_source_lists
+        else sum(to_int(row.get("fresh_contributing_source_count")) for row in publishable)
+    )
+    if contributing_count > 0:
+        fresh_contributing_count = min(fresh_contributing_count, contributing_count)
 
     def weighted(field: str) -> Optional[float]:
         values = [to_float(row.get(field)) for row in publishable]
@@ -421,14 +592,26 @@ def merge_locality_candidates(locality: str, candidates: List[Dict[str, Any]]) -
         freshness_status=freshness,
         dispersion_level=dispersion,
         contributing_sources=source_ids,
+        fresh_contributing_source_count=fresh_contributing_count,
+        fresh_contributing_sources=fresh_source_ids,
     )
     return merged
 
 
-def finalize_card(candidate: Dict[str, Any]) -> Dict[str, Any]:
+def format_source_coverage_text(fresh_count: int, used_count: int, remembered_count: int) -> str:
+    remembered = max(remembered_count, used_count)
+    if remembered > used_count:
+        return f"{fresh_count} fresh / {used_count} used / {remembered} remembered"
+    return f"{fresh_count} fresh / {used_count} used"
+
+
+def finalize_card(candidate: Dict[str, Any], remembered_source_count: Any = None) -> Dict[str, Any]:
     state = normalize_state(candidate.get("display_state"))
     suppression_reason = str(candidate.get("suppression_reason") or "").strip()
     signal_type = humanize_token(candidate.get("signal_type_used"), fallback="unknown")
+    fresh_count = to_int(candidate.get("fresh_contributing_source_count"))
+    used_count = to_int(candidate.get("contributing_source_count"))
+    remembered_count = max(to_int(remembered_source_count), used_count)
 
     if state == "publish":
         status_text = f"Diagnostics signal available ({signal_type})"
@@ -450,6 +633,9 @@ def finalize_card(candidate: Dict[str, Any]) -> Dict[str, Any]:
     card["status_text"] = status_text
     card["rate_text"] = format_rate(candidate.get("weighted_rate"))
     card["spread_text"] = format_spread(candidate.get("spread_vs_benchmark_pct"))
+    card["fresh_contributing_source_count"] = fresh_count
+    card["remembered_source_count"] = remembered_count
+    card["source_coverage_text"] = format_source_coverage_text(fresh_count, used_count, remembered_count)
     return card
 
 
@@ -457,8 +643,12 @@ def build_regional_market_cards_payload(
     regional_payload: Dict[str, Any],
     enriched_payload: Dict[str, Any],
     legacy_payload: Dict[str, Any],
+    registry_payload: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     per_locality: Dict[str, List[Dict[str, Any]]] = {}
+    generated_at = resolve_generated_at((regional_payload, enriched_payload, legacy_payload))
+    remembered_counts = remembered_source_counts_by_locality(registry_payload or {})
+    registry_fresh_ids = fresh_registry_source_ids_by_locality(registry_payload or {}, generated_at)
 
     for mapping in (
         build_regional_candidates(regional_payload),
@@ -490,20 +680,22 @@ def build_regional_market_cards_payload(
                 spread_vs_benchmark_pct=None,
                 usable_record_count=0,
                 contributing_source_count=0,
+                fresh_contributing_source_count=0,
                 basket_confidence=0.0,
                 suppression_reason="no_usable_records",
                 display_state="hide",
             )
         else:
             best = max(candidates, key=candidate_sort_key)
-        cards.append(finalize_card(best))
+        best = apply_registry_fresh_fallback(best, locality, registry_fresh_ids)
+        cards.append(finalize_card(best, remembered_counts.get(locality)))
 
     publish_count = len([card for card in cards if card.get("display_state") == "publish"])
     monitor_count = len([card for card in cards if card.get("display_state") == "monitor"])
     hide_count = len([card for card in cards if card.get("display_state") == "hide"])
 
     return {
-        "generated_at": resolve_generated_at((regional_payload, enriched_payload, legacy_payload)),
+        "generated_at": generated_at,
         "diagnostics_only": True,
         "cards": cards,
         "summary": {
@@ -515,6 +707,7 @@ def build_regional_market_cards_payload(
             "regional_fx_board_basket_review": "site/api/regional_fx_board_basket_review.json",
             "exchange_shop_baskets_enriched": "site/api/exchange_shop_baskets_enriched.json",
             "exchange_shop_baskets_card": "site/api/exchange_shop_baskets_card.json",
+            "regional_signal_source_registry": "survey_outputs/regional_signal_source_registry.json",
         },
     }
 
@@ -543,6 +736,8 @@ def history_row_from_card(card: Dict[str, Any], generated_at: str) -> Dict[str, 
         "spread_vs_benchmark_pct": to_float(card.get("spread_vs_benchmark_pct")),
         "usable_record_count": to_int(card.get("usable_record_count")),
         "contributing_source_count": to_int(card.get("contributing_source_count")),
+        "fresh_contributing_source_count": to_int(card.get("fresh_contributing_source_count")),
+        "remembered_source_count": to_int(card.get("remembered_source_count")),
         "basket_confidence": to_float(card.get("basket_confidence")),
         "freshness_status": str(card.get("freshness_status") or "").strip(),
         "dispersion_level": str(card.get("dispersion_level") or "").strip(),
@@ -638,6 +833,8 @@ def build_regional_timeseries_payload(history_payload: Dict[str, Any]) -> Dict[s
                 "basket_confidence": to_float(row.get("basket_confidence")),
                 "usable_record_count": to_int(row.get("usable_record_count")),
                 "contributing_source_count": to_int(row.get("contributing_source_count")),
+                "fresh_contributing_source_count": to_int(row.get("fresh_contributing_source_count")),
+                "remembered_source_count": to_int(row.get("remembered_source_count")),
                 "display_state": str(row.get("display_state") or "").strip(),
                 "freshness_status": str(row.get("freshness_status") or "").strip(),
                 "dispersion_level": str(row.get("dispersion_level") or "").strip(),
@@ -701,6 +898,12 @@ def parse_args() -> argparse.Namespace:
         help="Path to legacy exchange shop cards artifact.",
     )
     parser.add_argument(
+        "--registry",
+        type=Path,
+        default=Path("survey_outputs/regional_signal_source_registry.json"),
+        help="Path to durable regional source registry artifact.",
+    )
+    parser.add_argument(
         "--out",
         type=Path,
         default=Path("site/api/regional_market_signals_card.json"),
@@ -732,8 +935,9 @@ def main() -> None:
     regional_payload = read_json(args.regional)
     enriched_payload = read_json(args.enriched)
     legacy_payload = read_json(args.legacy)
+    registry_payload = read_json(args.registry)
 
-    payload = build_regional_market_cards_payload(regional_payload, enriched_payload, legacy_payload)
+    payload = build_regional_market_cards_payload(regional_payload, enriched_payload, legacy_payload, registry_payload)
     write_json(args.out, payload)
     existing_history = read_json(args.history_out)
     history_payload = build_regional_history_payload(payload, existing_history, args.history_days)

@@ -15,6 +15,7 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
 
     def test_status_template_has_diagnostics_signal_section(self) -> None:
         self.assertIn("Diagnostics Signal Coverage", self.template_text)
+        self.assertIn("Source Coverage", self.template_text)
         self.assertIn("$diagnostics_source_note", self.template_text)
         self.assertIn("$diagnostics_source_rows", self.template_text)
 
@@ -31,7 +32,9 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
                       "basket_name": "UAE",
                       "signal_label": "Dubai settlement signal",
                       "display_state": "publish",
+                      "fresh_contributing_source_count": 2,
                       "contributing_source_count": 3,
+                      "remembered_source_count": 5,
                       "usable_record_count": 12,
                       "suppression_reason": ""
                     },
@@ -39,7 +42,9 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
                       "basket_name": "Iraq",
                       "signal_label": "Sulaymaniyah market (monitoring)",
                       "display_state": "monitor",
+                      "fresh_contributing_source_count": 0,
                       "contributing_source_count": 1,
+                      "remembered_source_count": 2,
                       "usable_record_count": 6,
                       "suppression_reason": "limited_coverage"
                     },
@@ -47,7 +52,9 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
                       "basket_name": "Germany",
                       "signal_label": "Exchange network signal",
                       "display_state": "hide",
+                      "fresh_contributing_source_count": 0,
                       "contributing_source_count": 0,
+                      "remembered_source_count": 1,
                       "usable_record_count": 0,
                       "suppression_reason": "no_usable_records"
                     }
@@ -75,6 +82,9 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertIn("Diagnostics signal available.", rendered)
             self.assertIn("Monitoring: limited coverage.", rendered)
             self.assertIn("Hidden: no usable records.", rendered)
+            self.assertIn("2 fresh / 3 used / 5 remembered", rendered)
+            self.assertIn("0 fresh / 1 used / 2 remembered", rendered)
+            self.assertIn("0 fresh / 0 used / 1 remembered", rendered)
 
     def test_publish_status_does_not_show_historical_withheld_day_note(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

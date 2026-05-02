@@ -662,6 +662,8 @@ def summarize_basket(
         "spread_vs_benchmark_pct": None,
         "usable_record_count": 0,
         "contributing_channel_count": 0,
+        "fresh_contributing_channel_count": 0,
+        "fresh_contributing_channels": [],
         "basket_confidence": 0.0,
         "publishable": False,
         "suppression_reason": "no_usable_records",
@@ -686,9 +688,12 @@ def summarize_basket(
     direct_share = (direct_weight / total_weight) if total_weight > 0 else 0.0
 
     channel_weights: Dict[str, float] = {}
+    channel_freshness: Dict[str, float] = {}
     for rec, weight in zip(cleaned, weights):
         channel_weights[rec.handle] = channel_weights.get(rec.handle, 0.0) + weight
+        channel_freshness[rec.handle] = max(channel_freshness.get(rec.handle, 0.0), rec.freshness_score)
     contributing_channel_count = len(channel_weights)
+    fresh_channels = sorted(handle for handle, score in channel_freshness.items() if score >= 85.0)
     top_channel_share = (max(channel_weights.values()) / total_weight) if channel_weights and total_weight > 0 else 1.0
 
     count_component = min(30.0, len(cleaned) * 3.0)
@@ -725,6 +730,8 @@ def summarize_basket(
         "spread_vs_benchmark_pct": round(spread_pct, 4) if spread_pct is not None else None,
         "usable_record_count": len(cleaned),
         "contributing_channel_count": contributing_channel_count,
+        "fresh_contributing_channel_count": len(fresh_channels),
+        "fresh_contributing_channels": fresh_channels,
         "basket_confidence": confidence,
         "publishable": publishable,
         "suppression_reason": suppression_reason,

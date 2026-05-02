@@ -1475,6 +1475,8 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
         "suppression_reason": "no_usable_records",
         "top_sources": [],
         "contributing_sources": [],
+        "fresh_contributing_source_count": 0,
+        "fresh_contributing_sources": [],
     }
     if not records:
         return base
@@ -1572,6 +1574,7 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
         publishable = False
         suppression_reason = "extreme_divergence"
     top_sources = sorted(source_weights.items(), key=lambda item: (-item[1], item[0]))[:3]
+    fresh_sources = sorted(handle for handle, score in source_freshness.items() if score >= 85.0)
     signal_type_label = {
         "direct_shop": "exchange_shop",
         "regional_market_channel": "regional_market_channel",
@@ -1597,6 +1600,8 @@ def summarize_enriched_basket(basket_name: str, records: Sequence[BasketRecord],
         "outliers_removed": outliers_removed,
         "top_sources": [handle for handle, _ in top_sources],
         "contributing_sources": sorted(source_weights),
+        "fresh_contributing_source_count": len(fresh_sources),
+        "fresh_contributing_sources": fresh_sources,
     }
 
 
