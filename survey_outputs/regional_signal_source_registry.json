@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-02T16:30:55Z",
+  "generated_at": "2026-05-02T20:27:20Z",
   "schema_version": 1,
   "sources": [
     {
@@ -2282,6 +2282,37 @@
       "title": "کابل ډالر نرخونه"
     },
     {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 58.0,
+      "best_quote_message_count": 6,
+      "best_usable_record_count": 6,
+      "city_guess": "unknown",
+      "country_guess": "unknown",
+      "first_seen_at": "2026-05-02T20:27:20Z",
+      "handle_or_url": "kiyancad",
+      "key": "telegram:kiyancad",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 58.0,
+      "last_quote_message_count": 6,
+      "last_seen_at": "2026-05-02T20:27:20Z",
+      "last_success_at": "2026-05-02T20:27:20Z",
+      "last_usable_record_count": 6,
+      "origins": [
+        "site:t.me صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/kiyancad",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "🇨🇦 ® صرافی کیان کانادا",
+      "top_sample": "📍 آدرس دفتر نورث یورک کانادا (پلازای ایرانیان) 🇨🇦 6087 Yonge St, Toronto, Ontario, M2M 3W2, Iranian Plaza ☎️ +1(647)554-7000"
+    },
+    {
       "best_board_message_count": 1,
       "best_buy_sell_pair_count": 0,
       "best_parseability_score": 40.0,
@@ -4476,7 +4507,7 @@
   ],
   "summary": {
     "active_iran_sources": 65,
-    "active_sources": 102,
+    "active_sources": 103,
     "sources_by_country": {
       "Afghanistan": 4,
       "Germany": 5,
@@ -4485,21 +4516,21 @@
       "Turkey": 3,
       "UAE": 9,
       "UK": 9,
-      "unknown": 4
+      "unknown": 5
     },
     "sources_by_kind": {
       "aggregator": 6,
-      "exchange_shop": 41,
+      "exchange_shop": 42,
       "regional_fx_board": 8,
       "regional_market_channel": 30,
       "settlement_channel": 10,
       "unknown": 8
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 14,
+      "direct_shop_expansion": 15,
       "regional_fx_board": 100,
       "regional_market_signal": 100
     },
-    "total_sources": 103
+    "total_sources": 104
   }
 }
