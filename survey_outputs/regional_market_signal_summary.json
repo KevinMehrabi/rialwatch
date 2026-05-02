@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-05-01T20:47:53Z",
-  "new_regional_signal_sources_discovered": 55,
-  "existing_registry_signal_sources_used": 28,
+  "generated_at": "2026-05-02T15:20:52Z",
+  "new_regional_signal_sources_discovered": 70,
+  "existing_registry_signal_sources_used": 30,
   "which_locality_baskets_gained_usable_data": [
     "Afghanistan",
     "Germany"
@@ -23,8 +23,8 @@
   "top_sources_contributing_to_each_improved_basket": {
     "Afghanistan": [
       "poshtkhati_dollar",
-      "haratdollar",
-      "turan_ex"
+      "turan_ex",
+      "toofan_harirod"
     ],
     "Germany": [
       "hmtransfer",
@@ -33,31 +33,32 @@
     ]
   },
   "source_registry": {
-    "total_sources": 85,
-    "active_sources": 85,
+    "total_sources": 103,
+    "active_sources": 102,
     "sources_by_country": {
       "Afghanistan": 4,
       "Germany": 5,
-      "Iran": 53,
+      "Iran": 66,
       "Iraq": 3,
-      "Turkey": 2,
+      "Turkey": 3,
       "UAE": 9,
-      "UK": 7,
-      "unknown": 2
+      "UK": 9,
+      "unknown": 4
     },
     "sources_by_kind": {
-      "aggregator": 4,
-      "exchange_shop": 27,
-      "regional_fx_board": 7,
-      "regional_market_channel": 27,
+      "aggregator": 6,
+      "exchange_shop": 41,
+      "regional_fx_board": 8,
+      "regional_market_channel": 30,
       "settlement_channel": 10,
-      "unknown": 10
+      "unknown": 8
     },
     "sources_by_signal_family": {
-      "regional_fx_board": 76,
-      "regional_market_signal": 83
+      "direct_shop_expansion": 14,
+      "regional_fx_board": 100,
+      "regional_market_signal": 100
     },
-    "active_iran_sources": 53
+    "active_iran_sources": 65
   },
   "search_debug": {
     "successful_search_requests": 0,
@@ -66,5 +67,5 @@
     "skipped": true
   },
   "queries_run": 151,
-  "sources_crawled": 110
+  "sources_crawled": 125
 }

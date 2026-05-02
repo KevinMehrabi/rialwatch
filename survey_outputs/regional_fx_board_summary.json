@@ -1,10 +1,12 @@
 {
-  "generated_at": "2026-05-01T20:45:43Z",
-  "new_board_channels_discovered": 64,
+  "generated_at": "2026-05-02T15:19:11Z",
+  "new_board_channels_discovered": 87,
   "channels_with_dubai_quotes": [
     "banehdollar",
+    "baradarane_jafari",
     "exchangeratescountries",
     "groupsarafilondonuk",
+    "hiemarat",
     "ir_dolar",
     "lubrinol",
     "moneytransfersarafi",
@@ -12,6 +14,9 @@
     "navasanchannel",
     "nerkh_uk",
     "nerkhsarafionline",
+    "nerkhtetheruk",
+    "new_onlin",
+    "persepolissarafi",
     "qheimat_dolar_sabze",
     "royal_rate",
     "sarafha_com",
@@ -26,6 +31,7 @@
     "haratdollar",
     "herat_tomen",
     "poshtkhati_dollar",
+    "sarafijafari",
     "tomandollar110",
     "toofan_harirod",
     "turan_ex"
@@ -43,6 +49,7 @@
   ],
   "channels_with_tehran_quotes": [
     "boonbas",
+    "dolarsaghez",
     "dollar_tehran3bze",
     "dollarlahzei1",
     "dollarsst",
@@ -51,13 +58,15 @@
     "herat_channel2024",
     "hiemarat",
     "ir_dolar",
-    "iranaex",
+    "iranbroker_net",
     "irancurrency",
     "mellalex",
     "navasan_public_currency_board",
-    "navasanchannel",
+    "nerkhedolar1",
+    "new_onlin",
     "nrxidolar",
     "pargarexchangegroup",
+    "poshtkhati_dollar",
     "roya_mah_e_sefid",
     "sabzemaidan",
     "sepehrexchange1",
@@ -85,19 +94,21 @@
     "exchangeratescountries",
     "groupsarafilondonuk",
     "hmbcexchangebureau",
-    "hmtransfer",
     "ir_dolar",
     "moneytransfersarafi",
     "navasan_public_currency_board",
     "navasanchannel",
     "nerkh_uk",
     "nerkhsarafionline",
+    "nerkhtetheruk",
+    "new_onlin",
     "sarafha_com",
     "sarafha_rate",
     "sarafibartarlondon",
     "sarafijavan",
     "sarafionline7groupuk",
-    "sarafionlineuk"
+    "sarafionlineuk",
+    "zarwanex"
   ],
   "channels_with_germany_quotes": [
     "berlin_pay",
@@ -106,7 +117,6 @@
     "hamburg_euro",
     "hmtransfer",
     "koln_euro",
-    "munich_online",
     "navasan_public_currency_board"
   ],
   "channels_with_qatar_quotes": [
@@ -144,29 +154,32 @@
   "qatar_display_state": "publish",
   "armenia_display_state": "publish",
   "source_registry": {
-    "total_sources": 76,
-    "active_sources": 76,
+    "total_sources": 101,
+    "active_sources": 100,
     "sources_by_country": {
       "Afghanistan": 4,
       "Germany": 5,
-      "Iran": 48,
-      "Iraq": 2,
-      "Turkey": 2,
-      "UAE": 7,
-      "UK": 4,
+      "Iran": 64,
+      "Iraq": 3,
+      "Turkey": 3,
+      "UAE": 9,
+      "UK": 9,
       "unknown": 4
     },
     "sources_by_kind": {
-      "aggregator": 5,
-      "exchange_shop": 13,
-      "regional_fx_board": 25,
-      "regional_market_channel": 18,
-      "unknown": 15
+      "aggregator": 6,
+      "exchange_shop": 41,
+      "regional_fx_board": 17,
+      "regional_market_channel": 21,
+      "settlement_channel": 10,
+      "unknown": 6
     },
     "sources_by_signal_family": {
-      "regional_fx_board": 76
+      "direct_shop_expansion": 14,
+      "regional_fx_board": 100,
+      "regional_market_signal": 83
     },
-    "active_iran_sources": 48
+    "active_iran_sources": 63
   },
   "search_debug": {
     "successful_search_requests": 0,
@@ -175,5 +188,5 @@
     "skipped": true
   },
   "queries_run": 307,
-  "sources_crawled": 89
+  "sources_crawled": 111
 }
