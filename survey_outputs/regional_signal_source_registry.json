@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-02T01:06:11Z",
+  "generated_at": "2026-05-02T05:18:47Z",
   "schema_version": 1,
   "sources": [
     {
@@ -120,6 +120,37 @@
       "source_kind": "settlement_channel",
       "status": "ok",
       "title": "حواله یورو | حواله دلار | حواله درهم | حواله لیر| Almaexchange"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 65.0,
+      "best_quote_message_count": 20,
+      "best_usable_record_count": 0,
+      "city_guess": "unknown",
+      "country_guess": "unknown",
+      "first_seen_at": "2026-05-02T05:18:47Z",
+      "handle_or_url": "aria_ex",
+      "key": "telegram:aria_ex",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 65.0,
+      "last_quote_message_count": 20,
+      "last_seen_at": "2026-05-02T05:18:47Z",
+      "last_success_at": "2026-05-02T05:18:47Z",
+      "last_usable_record_count": 0,
+      "origins": [
+        "site:t.me/s صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/aria_ex",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "regional_market_channel",
+      "status": "ok",
+      "title": "Aria Exchange",
+      "top_sample": "Daily rates 12-04-2026 با درود نرخ حواله از اروپا به شرح زیر است: 🇸🇪 1SEK= 15500 Tom‌an 🇳🇴 1 NOK=14800 Tom‌an 🇩🇰 1 DKK= 21000 Tom‌an 🇸🇪 1 SEK= 6.6 AFN 🇳🇴 1 NOK=6.3 AFN 🇩🇰 1 DKK=9.6 AFN 🇺🇸 1 USD=9.9 SEK 🇺🇸 1 USD=10.4 NOK 🇺🇸 1 USD=6.9 DKK 🇪🇺 EUR=145500 🇺🇸 USD=12"
     },
     {
       "best_board_message_count": 0,
@@ -2718,6 +2749,44 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 30.0,
+      "best_quote_message_count": 2,
+      "best_usable_record_count": 2,
+      "city_guess": "Tehran",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-02T05:18:47Z",
+      "handle_or_url": "persepolissarafi",
+      "key": "telegram:persepolissarafi",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 30.0,
+      "last_quote_message_count": 2,
+      "last_seen_at": "2026-05-02T05:18:47Z",
+      "last_success_at": "2026-05-02T05:18:47Z",
+      "last_usable_record_count": 2,
+      "locality_hints": [
+        "Iran",
+        "Tehran"
+      ],
+      "origins": [
+        "site:t.me صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/persepolissarafi",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "صرافی پرسپولیس",
+      "top_sample": "سکه امامی ✴️ : 179,500,000 تومان سکه بهار آزادی ✴️ : 173,000,000 تومان نیم سکه ✴️ : 94,000,000 تومان ربع سکه ✴️ : 53,500,000 تومان سکه گرمی ✴️ : 27,000,000 تومان طلای 18 عیار هر گرم ✴️ : 18,165,430 تومان مثقال طلای آبشده ✴️ : 78,690,000 تومان"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
       "best_quote_message_count": 5,
       "best_usable_record_count": 0,
       "city_guess": "London",
@@ -3946,31 +4015,31 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 54,
-    "active_sources": 93,
+    "active_iran_sources": 55,
+    "active_sources": 95,
     "sources_by_country": {
       "Afghanistan": 4,
       "Germany": 5,
-      "Iran": 54,
+      "Iran": 55,
       "Iraq": 3,
       "Turkey": 2,
       "UAE": 9,
       "UK": 9,
-      "unknown": 7
+      "unknown": 8
     },
     "sources_by_kind": {
       "aggregator": 4,
-      "exchange_shop": 32,
+      "exchange_shop": 33,
       "regional_fx_board": 7,
-      "regional_market_channel": 30,
+      "regional_market_channel": 31,
       "settlement_channel": 10,
       "unknown": 10
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 8,
+      "direct_shop_expansion": 10,
       "regional_fx_board": 76,
       "regional_market_signal": 83
     },
-    "total_sources": 93
+    "total_sources": 95
   }
 }
