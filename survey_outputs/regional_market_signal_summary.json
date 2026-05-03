@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-05-03T15:47:21Z",
-  "new_regional_signal_sources_discovered": 73,
+  "generated_at": "2026-05-03T16:09:16Z",
+  "new_regional_signal_sources_discovered": 74,
   "existing_registry_signal_sources_used": 28,
   "which_locality_baskets_gained_usable_data": [
     "Afghanistan",
@@ -28,16 +28,16 @@
     ],
     "Germany": [
       "hmtransfer",
-      "eurobazaar",
-      "berlin_pay"
+      "berlin_pay",
+      "eurobazaar"
     ]
   },
   "source_registry": {
-    "total_sources": 107,
-    "active_sources": 106,
+    "total_sources": 108,
+    "active_sources": 107,
     "sources_by_country": {
       "Afghanistan": 4,
-      "Germany": 5,
+      "Germany": 6,
       "Iran": 69,
       "Iraq": 3,
       "Turkey": 3,
@@ -49,14 +49,14 @@
       "aggregator": 6,
       "exchange_shop": 45,
       "regional_fx_board": 8,
-      "regional_market_channel": 30,
+      "regional_market_channel": 31,
       "settlement_channel": 11,
       "unknown": 7
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 18,
-      "regional_fx_board": 104,
-      "regional_market_signal": 104
+      "regional_fx_board": 105,
+      "regional_market_signal": 105
     },
     "active_iran_sources": 68
   },
@@ -66,6 +66,6 @@
     "query_stats": {},
     "skipped": true
   },
-  "queries_run": 151,
-  "sources_crawled": 129
+  "queries_run": 157,
+  "sources_crawled": 132
 }
