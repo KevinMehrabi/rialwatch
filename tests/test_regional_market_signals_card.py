@@ -23,7 +23,7 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
                 "publish",
                 "regional_market_channel+settlement_channel",
             ),
-            "Germany settlement signal",
+            "EUR settlement signal",
         )
 
     def test_build_payload_selects_best_signal_per_locality(self) -> None:

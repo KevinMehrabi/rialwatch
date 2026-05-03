@@ -322,7 +322,7 @@ def signal_label_for_locality(locality: str, display_state: str, signal_type_use
     if normalized == "Afghanistan":
         return "Herat market signal"
     if normalized == "Germany":
-        return "Germany settlement signal"
+        return "EUR settlement signal"
     if normalized == "Iraq":
         if display_state == "monitor":
             return "Sulaymaniyah market (monitoring)"
