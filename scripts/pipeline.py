@@ -5082,10 +5082,11 @@ def publish_status(
     )
     recent_fix_samples = load_recent_fix_source_samples(status_history_lookback_days)
 
-    # Status page should show the full configured source universe, even when
-    # the latest published day is based on older artifacts with fewer source keys.
+    # Status should retain recently observed configured sources, but avoid showing
+    # newly introduced sources as unknown before their first collection has run.
     for cfg in build_source_configs():
-        sources.setdefault(cfg.name, {"samples": []})
+        if cfg.name in sources or recent_fix_samples.get(cfg.name):
+            sources.setdefault(cfg.name, {"samples": []})
 
     fix = parse_number(computed.get("fix"))
     withheld = bool(computed.get("withheld", True))
