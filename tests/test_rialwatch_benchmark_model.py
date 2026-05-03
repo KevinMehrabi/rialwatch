@@ -195,7 +195,7 @@ class RialWatchBenchmarkModelTests(unittest.TestCase):
 
             self.assertEqual(artifacts.card["benchmark_rate"], artifacts.benchmark["weighted_rate"])
             self.assertEqual(artifacts.card["dispersion_level"], "low")
-            self.assertIn("Navasan", artifacts.card["diagnostics_warning"])
+            self.assertIn("Commercial Market Feed (Public)", artifacts.card["diagnostics_warning"])
             self.assertIn("moderate confidence", artifacts.card["benchmark_status_text"].lower())
 
     def test_methodology_payload_generation(self) -> None:
@@ -211,7 +211,8 @@ class RialWatchBenchmarkModelTests(unittest.TestCase):
             self.assertIn("eligibility_rules", methodology)
             self.assertIn("accepted_quote_bases", methodology)
             self.assertIn("bonbast", methodology["current_benchmark_eligible_sources"])
-            self.assertIn("navasan", methodology["current_diagnostics_only_sources"])
+            self.assertIn("navasan", methodology["current_benchmark_eligible_sources"])
+            self.assertNotIn("navasan", methodology["current_diagnostics_only_sources"])
 
     def test_timeseries_payload_generation(self) -> None:
         history_payload = {

@@ -1229,7 +1229,7 @@ def build_navasan_currency_board_records(payload: Dict[str, Any], benchmark_valu
         for locality in localities
         if locality in raw_quote_map
     ]
-    sample_text = "Navasan public currency board: " + "; ".join(sample_bits)
+    sample_text = "Public currency board: " + "; ".join(sample_bits)
 
     records: List[BoardRecord] = []
     for locality in localities:
@@ -1239,7 +1239,7 @@ def build_navasan_currency_board_records(payload: Dict[str, Any], benchmark_valu
         records.append(
             BoardRecord(
                 handle="navasan_public_currency_board",
-                title="Navasan Public Currency Board",
+                title="Public Currency Board",
                 message_text_sample=clip_text(sample_text),
                 localities_detected="|".join(localities),
                 tehran_quote=format_quote(quote_map.get("Tehran")),
@@ -1286,7 +1286,7 @@ def fetch_navasan_currency_board(timeout: int, benchmark_value: float) -> Tuple[
     latest_timestamp = max((record.timestamp_iso for record in records), default="")
     candidate = CandidateRow(
         handle="navasan_public_currency_board",
-        title="Navasan Public Currency Board",
+        title="Public Currency Board",
         public_url=NAVASAN_PUBLIC_URL_DEFAULT,
         source_type="regional_fx_board",
         quote_message_count=1 if records else 0,

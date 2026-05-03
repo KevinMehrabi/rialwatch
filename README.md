@@ -28,6 +28,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 ## Benchmarks
 
 - Primary benchmark (flagship): `open_market` (`Open Market / Street Rate`)
+  - primary source universe: `bonbast`, `alanchand_street`, `navasan`
 - Supplementary benchmarks:
   - `official` (`Official Commercial USD Rate`)
   - `regional_transfer` (`Regional Transfer Rate`)
@@ -65,6 +66,10 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
 
 ### Supplementary Source Wiring
 
+- `open_market`:
+  - canonical mapping: `bonbast -> usd1/usd2 midpoint`, `alanchand_street -> public USD buy/sell page`, `navasan public site -> usd`
+  - selection rule: median of valid, non-stale primary street-source readings after source-level validation
+  - methodology note: all primary street inputs are normalized to IRR before aggregation; one-way public-board quotes are accepted when buy/sell midpoint is not available
 - `official`:
   - canonical mapping: `commercial_aux|commercial_aux_a|commercial_aux_b|commercial_aux_c -> ice_transfer_usd_sell`
   - selection rule: freshest quote timestamp across official-source families; if multiple sources are equally fresh, pick the source(s) with highest in-window update cadence and median only those ties

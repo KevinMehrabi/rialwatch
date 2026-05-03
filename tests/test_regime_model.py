@@ -583,7 +583,67 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(navasan.auth_mode, "public_html")
         self.assertEqual(navasan.secret_fields, ())
         self.assertEqual(navasan.url, pipeline.NAVASAN_PUBLIC_URL_DEFAULT)
+        self.assertIn("navasan", pipeline.PRIMARY_STREET_SOURCE_UNIVERSE)
+        self.assertIn("open_market", navasan.benchmark_families)
         self.assertNotIn("official", navasan.benchmark_families)
+
+    def test_primary_open_market_benchmark_includes_navasan(self) -> None:
+        sampled_at = dt.datetime(2026, 5, 3, 14, 0, tzinfo=dt.timezone.utc)
+        samples = {
+            "bonbast": [
+                pipeline.Sample(
+                    source="bonbast",
+                    sampled_at=sampled_at,
+                    value=1_875_000.0,
+                    benchmark_values={"open_market": 1_875_000.0},
+                    quote_time=sampled_at,
+                    ok=True,
+                    stale=False,
+                    health={"fetch_success": True},
+                    source_unit="toman",
+                )
+            ],
+            "alanchand_street": [
+                pipeline.Sample(
+                    source="alanchand_street",
+                    sampled_at=sampled_at,
+                    value=1_894_500.0,
+                    benchmark_values={"open_market": 1_894_500.0},
+                    quote_time=sampled_at,
+                    ok=True,
+                    stale=False,
+                    health={"fetch_success": True},
+                    source_unit="rial",
+                )
+            ],
+            "navasan": [
+                pipeline.Sample(
+                    source="navasan",
+                    sampled_at=sampled_at,
+                    value=1_870_000.0,
+                    benchmark_values={"open_market": 1_870_000.0},
+                    quote_time=sampled_at,
+                    ok=True,
+                    stale=False,
+                    health={"fetch_success": True},
+                    source_unit="mixed",
+                )
+            ],
+        }
+        benchmark_sources = {
+            "bonbast": ("open_market",),
+            "alanchand_street": ("open_market",),
+            "navasan": ("open_market",),
+        }
+
+        result = pipeline.compute_benchmark_result(samples, "open_market", benchmark_sources)
+
+        self.assertEqual(result["fix"], 1_875_000.0)
+        self.assertEqual(
+            result["source_medians"],
+            {"bonbast": 1_875_000.0, "alanchand_street": 1_894_500.0, "navasan": 1_870_000.0},
+        )
+        self.assertNotIn("navasan", result["source_notes"])
 
     def test_fetch_one_navasan_public_website_combines_endpoint_payloads(self) -> None:
         config = pipeline.SourceConfig(

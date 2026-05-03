@@ -48,9 +48,8 @@ BENCHMARK_LABELS: Dict[str, str] = {
 }
 
 PRIMARY_BENCHMARK = "open_market"
-# Primary street benchmark universe is intentionally conservative.
-# Navasan open-market symbol quality is currently under review and excluded from primary publication.
-PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("bonbast", "alanchand_street")
+# Production-approved primary street sources with canonical open-market USD/IRR mappings.
+PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("bonbast", "alanchand_street", "navasan")
 
 INDICATOR_LABELS: Dict[str, str] = {
     "street_official_gap_pct": "Street-Official Gap",
@@ -2589,7 +2588,7 @@ def fetch_navasan_public_website(
     fetch_success = any(endpoint_successes)
     validation: Dict[str, Any] = {"ok": True, "reason": None}
     if value is None:
-        validation = {"ok": False, "reason": "unable to parse Navasan public USD quote"}
+        validation = {"ok": False, "reason": "unable to parse public USD quote"}
 
     health = {
         "collector": "http_json",
@@ -2623,7 +2622,7 @@ def fetch_navasan_public_website(
             quote_time,
             ok=False,
             stale=stale,
-            error=str(validation.get("reason") or "unable to parse Navasan public quote"),
+            error=str(validation.get("reason") or "unable to parse public quote"),
             health=health,
             source_unit="mixed",
             normalized_unit="rial",
