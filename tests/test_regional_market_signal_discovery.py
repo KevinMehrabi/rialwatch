@@ -7,6 +7,12 @@ from scripts import regional_market_signal_discovery as regional
 
 
 class RegionalMarketSignalDiscoveryTests(unittest.TestCase):
+    def test_manual_germany_seeds_include_fresh_hilfen_sources(self) -> None:
+        handles = {row["handle"] for row in regional.MANUAL_TELEGRAM_SEEDS if row.get("country_guess") == "Germany"}
+        self.assertIn("berlinereuro", handles)
+        self.assertIn("helfenassist", handles)
+        self.assertIn("nord_deutschland", handles)
+
     def test_detect_regions_finds_multiple_targets(self) -> None:
         hits = regional.detect_regions("نرخ دلار هرات و دبی امروز")
         self.assertIn("Herat", hits)

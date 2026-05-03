@@ -16,6 +16,16 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
         self.assertEqual(cards.display_state_from_publishable(False, 7, "stale_signal"), "hide")
         self.assertEqual(cards.display_state_from_publishable(False, 0, "no_usable_records"), "hide")
 
+    def test_germany_uses_readable_signal_label(self) -> None:
+        self.assertEqual(
+            cards.signal_label_for_locality(
+                "Germany",
+                "publish",
+                "regional_market_channel+settlement_channel",
+            ),
+            "Germany settlement signal",
+        )
+
     def test_build_payload_selects_best_signal_per_locality(self) -> None:
         regional_payload = {
             "generated_at": "2026-03-16T17:42:27Z",

@@ -4,6 +4,11 @@ from scripts import regional_fx_board_discovery as boards
 
 
 class RegionalFxBoardDiscoveryTests(unittest.TestCase):
+    def test_germany_seed_handles_include_fresh_hilfen_sources(self) -> None:
+        self.assertIn("berlinereuro", boards.GERMANY_SEED_HANDLES)
+        self.assertIn("helfenassist", boards.GERMANY_SEED_HANDLES)
+        self.assertIn("nord_deutschland", boards.GERMANY_SEED_HANDLES)
+
     def test_extract_locality_quotes_handles_multiline_board(self) -> None:
         text = """
         تهران 147300 / 147500

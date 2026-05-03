@@ -132,6 +132,7 @@ UAE_SEED_HANDLES = (
 )
 GERMANY_SEED_HANDLES = (
     "berlin_pay",
+    "berlinereuro",
     "hmtransfer",
     "eurobazaar",
     "euro_bazaar",
@@ -148,6 +149,8 @@ GERMANY_SEED_HANDLES = (
     "koln_online",
     "munich_online",
     "helfenads",
+    "helfenassist",
+    "nord_deutschland",
     "hawaladari",
 )
 UK_SEED_HANDLES = (
@@ -500,6 +503,12 @@ QUERY_GROUPS: Dict[str, List[str]] = {
         "site:t.me/s eurobazaar",
         "site:t.me euro_bazaar",
         "site:t.me/s euro_bazaar",
+        "site:t.me berlinereuro",
+        "site:t.me/s berlinereuro",
+        "site:t.me helfenassist",
+        "site:t.me/s helfenassist",
+        "site:t.me nord_deutschland یورو",
+        "site:t.me/s nord_deutschland یورو",
         "site:t.me alman_exchange",
         "site:t.me/s alman_exchange",
         "site:t.me frankfurt_euro",
