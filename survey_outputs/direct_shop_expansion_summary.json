@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-02T20:27:20+00:00",
+  "generated_at": "2026-05-03T01:14:03+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
-        "candidate_hits": 66
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی": {
-        "candidate_hits": 70
+        "candidate_hits": 34
       },
       "صرافی تهران": {
         "candidate_hits": 0
@@ -81,7 +81,7 @@
         "candidate_hits": 0
       },
       "site:t.me/s نرخ حواله دلار صرافی": {
-        "candidate_hits": 0
+        "candidate_hits": 40
       },
       "site:t.me/s صرافی مشهد دلار": {
         "candidate_hits": 0
@@ -99,13 +99,13 @@
         "candidate_hits": 0
       }
     },
-    "successful_requests": 20,
-    "failed_requests": 44
+    "successful_requests": 27,
+    "failed_requests": 37
   },
-  "existing_registry_handles": 274,
+  "existing_registry_handles": 275,
   "durable_source_registry": {
-    "total_sources": 104,
-    "active_sources": 103,
+    "total_sources": 107,
+    "active_sources": 106,
     "sources_by_country": {
       "Afghanistan": 4,
       "Germany": 5,
@@ -114,29 +114,29 @@
       "Turkey": 3,
       "UAE": 9,
       "UK": 9,
-      "unknown": 5
+      "unknown": 8
     },
     "sources_by_kind": {
       "aggregator": 6,
-      "exchange_shop": 42,
+      "exchange_shop": 44,
       "regional_fx_board": 8,
-      "regional_market_channel": 30,
+      "regional_market_channel": 31,
       "settlement_channel": 10,
       "unknown": 8
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 15,
+      "direct_shop_expansion": 18,
       "regional_fx_board": 100,
       "regional_market_signal": 100
     },
     "active_iran_sources": 65
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 12,
-  "new_channels_retained_after_scoring": 1,
-  "likely_direct_shop_channels": 1,
+  "new_channels_discovered": 9,
+  "new_channels_retained_after_scoring": 3,
+  "likely_direct_shop_channels": 2,
   "inside_iran_likely_direct_shop_channels": 0,
-  "channels_with_buy_sell_quotes": 0,
+  "channels_with_buy_sell_quotes": 2,
   "total_inside_iran_shop_channels_now_known": 5,
   "estimated_additional_usable_records_if_ingested": 0,
   "target_progress_note": "aiming toward 80-150 usable inside-Iran dealer records"
