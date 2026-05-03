@@ -28,7 +28,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 ## Benchmarks
 
 - Primary benchmark (flagship): `open_market` (`Open Market / Street Rate`)
-  - primary source universe: `bonbast`, `alanchand_street`, `navasan`
+  - primary source universe: `bonbast`, `alanchand_street`, `navasan`, `tgju_street`
 - Supplementary benchmarks:
   - `official` (`Official Commercial USD Rate`)
   - `regional_transfer` (`Regional Transfer Rate`)
@@ -67,7 +67,7 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
 ### Supplementary Source Wiring
 
 - `open_market`:
-  - canonical mapping: `bonbast -> usd1/usd2 midpoint`, `alanchand_street -> public USD buy/sell page`, `navasan public site -> usd`
+  - canonical mapping: `bonbast -> usd1/usd2 midpoint`, `alanchand_street -> public USD buy/sell page`, `navasan public site -> usd`, `tgju_street -> price_dollar_rl profile page`
   - selection rule: median of valid, non-stale primary street-source readings after source-level validation
   - methodology note: all primary street inputs are normalized to IRR before aggregation; one-way public-board quotes are accepted when buy/sell midpoint is not available
 - `official`:
@@ -106,6 +106,7 @@ Optional endpoint overrides and site overrides:
 
 - `BONBAST_SITE_URL` (repository variable, defaults to `https://bonbast.com`)
 - `NAVASAN_PUBLIC_URL` (repository variable, defaults to `https://www.navasan.net/`)
+- `TGJU_STREET_PROFILE_URL` (repository variable, defaults to `https://www.tgju.org/profile/price_dollar_rl`)
 - `ALANCHAND_API_URL`
 
 No Navasan API secret is required; RialWatch collects Navasan readings from the public website endpoints used by the web UI.

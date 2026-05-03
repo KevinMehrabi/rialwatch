@@ -212,6 +212,7 @@ class RialWatchBenchmarkModelTests(unittest.TestCase):
             self.assertIn("accepted_quote_bases", methodology)
             self.assertIn("bonbast", methodology["current_benchmark_eligible_sources"])
             self.assertIn("navasan", methodology["current_benchmark_eligible_sources"])
+            self.assertIn("tgju_street", methodology["current_benchmark_eligible_sources"])
             self.assertNotIn("navasan", methodology["current_diagnostics_only_sources"])
 
     def test_timeseries_payload_generation(self) -> None:

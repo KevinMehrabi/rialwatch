@@ -256,6 +256,16 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
                         }
                     ]
                 },
+                "tgju_street": {
+                    "samples": [
+                        {
+                            "sampled_at": "2026-04-30T21:19:00Z",
+                            "fetch_success": True,
+                            "value": 1_778_000.0,
+                            "benchmarks": {"open_market": 1_778_000.0},
+                        }
+                    ]
+                },
             }
             for source_name in (
                 "commercial_aux",
@@ -304,7 +314,7 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertIn("Commercial Market Feed (Official)", rendered)
             self.assertNotIn("Commercial Market Feed (Auxiliary A)", rendered)
             self.assertNotIn("Commercial Market Feed (Profile Transfer)", rendered)
-            self.assertIn("4/5 sources online.", rendered)
+            self.assertIn("5/6 sources online.", rendered)
             self.assertIn("1 market feed is currently degraded.", rendered)
             self.assertNotIn("6 market feeds are currently degraded.", rendered)
 

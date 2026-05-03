@@ -155,6 +155,26 @@ class RegimeModelTests(unittest.TestCase):
         parsed = pipeline.parse_tgju_profile_current_value(body)
         self.assertEqual(parsed, 1_306_541.0)
 
+    def test_parse_tgju_profile_current_quote_time_from_visible_profile(self) -> None:
+        sampled_at = dt.datetime(2026, 5, 3, 15, 10, tzinfo=dt.timezone.utc)
+        body = """
+        <div>یکشنبه ۱۳ اردیبهشت - ۱۸:۴۰:۰۰</div>
+        <table>
+          <tr>
+            <td class="text-right">زمان ثبت آخرین نرخ</td>
+            <td class="text-left">۱۸:۳۳:۳۱</td>
+          </tr>
+        </table>
+        """
+        parsed = pipeline.parse_tgju_profile_current_quote_time(body, sampled_at)
+        self.assertEqual(parsed, dt.datetime(2026, 5, 3, 15, 3, 31, tzinfo=dt.timezone.utc))
+
+    def test_parse_tgju_profile_current_quote_time_falls_back_to_sampled_date(self) -> None:
+        sampled_at = dt.datetime(2026, 5, 3, 15, 10, tzinfo=dt.timezone.utc)
+        body = """<span class="tgju-widget-up-i">۱۸:۳۳:۳۱</span>"""
+        parsed = pipeline.parse_tgju_profile_current_quote_time(body, sampled_at)
+        self.assertEqual(parsed, dt.datetime(2026, 5, 3, 15, 3, 31, tzinfo=dt.timezone.utc))
+
     def test_legacy_source_alias_maps_commercial_to_aux(self) -> None:
         self.assertEqual(pipeline.canonical_source_name("commercial"), "commercial_aux")
 
@@ -577,7 +597,11 @@ class RegimeModelTests(unittest.TestCase):
         self.assertEqual(fallback_mock.call_count, 1)
 
     def test_build_source_configs_uses_public_navasan_site(self) -> None:
-        with mock.patch.dict("os.environ", {"NAVASAN_PUBLIC_URL": "", "NAVASAN_SITE_URL": ""}, clear=False):
+        with mock.patch.dict(
+            "os.environ",
+            {"NAVASAN_PUBLIC_URL": "", "NAVASAN_SITE_URL": "", "TGJU_STREET_PROFILE_URL": ""},
+            clear=False,
+        ):
             configs = {cfg.name: cfg for cfg in pipeline.build_source_configs()}
         navasan = configs["navasan"]
         self.assertEqual(navasan.auth_mode, "public_html")
@@ -586,6 +610,13 @@ class RegimeModelTests(unittest.TestCase):
         self.assertIn("navasan", pipeline.PRIMARY_STREET_SOURCE_UNIVERSE)
         self.assertIn("open_market", navasan.benchmark_families)
         self.assertNotIn("official", navasan.benchmark_families)
+        tgju_street = configs["tgju_street"]
+        self.assertEqual(tgju_street.auth_mode, "public_html")
+        self.assertEqual(tgju_street.secret_fields, ())
+        self.assertEqual(tgju_street.url, pipeline.TGJU_STREET_PROFILE_URL_DEFAULT)
+        self.assertIn("tgju_street", pipeline.PRIMARY_STREET_SOURCE_UNIVERSE)
+        self.assertIn("open_market", tgju_street.benchmark_families)
+        self.assertNotIn("official", tgju_street.benchmark_families)
 
     def test_primary_open_market_benchmark_includes_navasan(self) -> None:
         sampled_at = dt.datetime(2026, 5, 3, 14, 0, tzinfo=dt.timezone.utc)
@@ -629,21 +660,41 @@ class RegimeModelTests(unittest.TestCase):
                     source_unit="mixed",
                 )
             ],
+            "tgju_street": [
+                pipeline.Sample(
+                    source="tgju_street",
+                    sampled_at=sampled_at,
+                    value=1_864_100.0,
+                    benchmark_values={"open_market": 1_864_100.0},
+                    quote_time=sampled_at,
+                    ok=True,
+                    stale=False,
+                    health={"fetch_success": True},
+                    source_unit="rial",
+                )
+            ],
         }
         benchmark_sources = {
             "bonbast": ("open_market",),
             "alanchand_street": ("open_market",),
             "navasan": ("open_market",),
+            "tgju_street": ("open_market",),
         }
 
         result = pipeline.compute_benchmark_result(samples, "open_market", benchmark_sources)
 
-        self.assertEqual(result["fix"], 1_875_000.0)
+        self.assertEqual(result["fix"], 1_872_500.0)
         self.assertEqual(
             result["source_medians"],
-            {"bonbast": 1_875_000.0, "alanchand_street": 1_894_500.0, "navasan": 1_870_000.0},
+            {
+                "bonbast": 1_875_000.0,
+                "alanchand_street": 1_894_500.0,
+                "navasan": 1_870_000.0,
+                "tgju_street": 1_864_100.0,
+            },
         )
         self.assertNotIn("navasan", result["source_notes"])
+        self.assertNotIn("tgju_street", result["source_notes"])
 
     def test_fetch_one_navasan_public_website_combines_endpoint_payloads(self) -> None:
         config = pipeline.SourceConfig(
@@ -682,6 +733,39 @@ class RegimeModelTests(unittest.TestCase):
         selected = sample.health.get("selected_symbol_by_benchmark")
         self.assertEqual(selected.get("open_market"), "usd")
         self.assertEqual(selected.get("crypto_usdt"), "usd_usdt")
+
+    def test_fetch_one_tgju_street_profile_public_extracts_open_market(self) -> None:
+        config = pipeline.SourceConfig(
+            name="tgju_street",
+            url="https://www.tgju.org/profile/price_dollar_rl",
+            auth_mode="public_html",
+            secret_fields=(),
+            benchmark_families=("open_market",),
+            default_unit="rial",
+        )
+        sampled_at = dt.datetime(2026, 5, 3, 15, 10, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 5, 3, 14, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 5, 3, 15, 15, tzinfo=dt.timezone.utc)
+        body = """
+        <div>یکشنبه ۱۳ اردیبهشت - ۱۸:۴۰:۰۰</div>
+        <table>
+          <tr><td class="text-right">نرخ فعلی</td><td class="text-left">1,864,100</td></tr>
+          <tr><td class="text-right">زمان ثبت آخرین نرخ</td><td class="text-left">۱۸:۳۳:۳۱</td></tr>
+        </table>
+        """
+
+        with mock.patch("scripts.pipeline.fetch_request_body", return_value=(body, config.url)):
+            sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
+
+        self.assertTrue(sample.ok)
+        self.assertFalse(sample.stale)
+        self.assertEqual(sample.value, 1_864_100.0)
+        self.assertEqual(sample.benchmark_values["open_market"], 1_864_100.0)
+        self.assertEqual(sample.quote_time, dt.datetime(2026, 5, 3, 15, 3, 31, tzinfo=dt.timezone.utc))
+        health = sample.health or {}
+        self.assertTrue(health.get("fetch_success"))
+        selected = health.get("selected_symbol_by_benchmark")
+        self.assertEqual(selected.get("open_market"), "price_dollar_rl")
 
     def test_fetch_one_redacts_query_secret_from_final_url(self) -> None:
         config = pipeline.SourceConfig(

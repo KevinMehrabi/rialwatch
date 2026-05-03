@@ -49,7 +49,7 @@ BENCHMARK_LABELS: Dict[str, str] = {
 
 PRIMARY_BENCHMARK = "open_market"
 # Production-approved primary street sources with canonical open-market USD/IRR mappings.
-PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("bonbast", "alanchand_street", "navasan")
+PRIMARY_STREET_SOURCE_UNIVERSE: Tuple[str, ...] = ("bonbast", "alanchand_street", "navasan", "tgju_street")
 
 INDICATOR_LABELS: Dict[str, str] = {
     "street_official_gap_pct": "Street-Official Gap",
@@ -138,6 +138,9 @@ CANONICAL_SOURCE_SYMBOLS: Dict[str, Dict[str, Tuple[str, ...]]] = {
         "regional_transfer": ("usd_shakhs", "usd_sherkat"),
         "crypto_usdt": ("usdt", "usd_usdt"),
         "emami_gold_coin": ("sekkeh",),
+    },
+    "tgju_street": {
+        "open_market": ("price_dollar_rl",),
     },
     **{name: dict(COMMERCIAL_AUX_OFFICIAL_SYMBOLS) for name in COMMERCIAL_AUX_SOURCE_SET},
     **{name: {"official": COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS.get(name, ())} for name in COMMERCIAL_PROFILE_SOURCE_SET},
@@ -277,6 +280,7 @@ ALANCHAND_PUBLIC_SINGLE_RATE_PATTERNS: Tuple[str, ...] = (
 ALANCHAND_PUBLIC_REGIONAL_URL_DEFAULT = "https://alanchand.com/en/currencies-price/usd-hav"
 ALANCHAND_PUBLIC_USDT_URL_DEFAULT = "https://alanchand.com/en/crypto-price/usdt"
 NAVASAN_PUBLIC_URL_DEFAULT = "https://www.navasan.net/"
+TGJU_STREET_PROFILE_URL_DEFAULT = "https://www.tgju.org/profile/price_dollar_rl"
 NAVASAN_PUBLIC_CSRF_SALT = "c4e5f0f492059a67696e67a7bf745c6a0ee40056"
 NAVASAN_PUBLIC_ENDPOINTS: Dict[str, str] = {
     "last_currencies": "/last_currencies.php",
@@ -585,6 +589,31 @@ def normalize_eastern_digits(text: str) -> str:
     return text.translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
 
 
+JALALI_MONTH_NAMES: Dict[str, int] = {
+    "فروردین": 1,
+    "اردیبهشت": 2,
+    "خرداد": 3,
+    "تیر": 4,
+    "مرداد": 5,
+    "شهریور": 6,
+    "مهر": 7,
+    "آبان": 8,
+    "آذر": 9,
+    "دی": 10,
+    "بهمن": 11,
+    "اسفند": 12,
+}
+
+
+def normalize_persian_token(text: str) -> str:
+    return (
+        text.replace("ي", "ی")
+        .replace("ك", "ک")
+        .replace("\u200c", "")
+        .strip()
+    )
+
+
 def jalali_to_gregorian_date(jy: int, jm: int, jd: int) -> Optional[dt.date]:
     if jy < 1200 or jy > 1700:
         return None
@@ -660,6 +689,61 @@ def parse_tgju_profile_quote_time(page_html: str) -> Optional[dt.datetime]:
     # TGJU profile pages publish daily bars; use local noon to avoid edge rollover artifacts.
     local_noon = dt.datetime.combine(gregorian_date, dt.time(12, 0), tzinfo=IRAN_TZ)
     return local_noon.astimezone(UTC)
+
+
+def infer_tgju_visible_jalali_date(day: int, month: int, sampled_at: dt.datetime) -> Optional[dt.date]:
+    sampled_local = sampled_at.astimezone(IRAN_TZ).date()
+    candidates: List[Tuple[int, dt.date]] = []
+    for jalali_year in range(sampled_local.year - 625, sampled_local.year - 617):
+        gregorian_date = jalali_to_gregorian_date(jalali_year, month, day)
+        if gregorian_date is None:
+            continue
+        candidates.append((abs((gregorian_date - sampled_local).days), gregorian_date))
+    if not candidates:
+        return None
+    candidates.sort(key=lambda row: row[0])
+    return candidates[0][1]
+
+
+def parse_tgju_profile_current_quote_time(page_html: str, sampled_at: dt.datetime) -> Optional[dt.datetime]:
+    normalized = normalize_eastern_digits(html_lib.unescape(page_html))
+    time_patterns = (
+        r"(?is)<td[^>]*>\s*زمان\s*ثبت\s*آخرین\s*نرخ\s*</td>\s*<td[^>]*>\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*</td>",
+        r"(?is)tgju-widget-up-i[^>]*>\s*(\d{1,2}):(\d{2})(?::(\d{2}))?\s*<",
+    )
+    quote_time: Optional[dt.time] = None
+    for pattern in time_patterns:
+        match = re.search(pattern, normalized)
+        if not match:
+            continue
+        hour = int(match.group(1))
+        minute = int(match.group(2))
+        second = int(match.group(3) or "0")
+        if hour <= 23 and minute <= 59 and second <= 59:
+            quote_time = dt.time(hour, minute, second)
+            break
+    if quote_time is None:
+        return None
+
+    quote_date = sampled_at.astimezone(IRAN_TZ).date()
+    date_match = re.search(
+        r"(?is)(?:شنبه|یکشنبه|دوشنبه|سه[\s\u200c]*شنبه|چهارشنبه|پنجشنبه|جمعه)\s+(\d{1,2})\s+([آ-یءئؤإأا-ي]+)\s*[-–]",
+        normalized,
+    )
+    if date_match:
+        day = int(date_match.group(1))
+        month_name = normalize_persian_token(date_match.group(2))
+        month = JALALI_MONTH_NAMES.get(month_name)
+        if month is not None:
+            inferred_date = infer_tgju_visible_jalali_date(day, month, sampled_at)
+            if inferred_date is not None:
+                quote_date = inferred_date
+
+    candidate_local = dt.datetime.combine(quote_date, quote_time, tzinfo=IRAN_TZ)
+    sampled_local = sampled_at.astimezone(IRAN_TZ)
+    if candidate_local > sampled_local + dt.timedelta(minutes=10):
+        candidate_local -= dt.timedelta(days=1)
+    return candidate_local.astimezone(UTC)
 
 
 def parse_tgju_profile_current_value(page_html: str) -> Optional[float]:
@@ -1145,6 +1229,14 @@ def build_source_configs() -> List[SourceConfig]:
             secret_fields=(),
             benchmark_families=("open_market", "regional_transfer", "crypto_usdt", "emami_gold_coin"),
             default_unit="toman",
+        ),
+        SourceConfig(
+            name="tgju_street",
+            url=env_first("TGJU_STREET_PROFILE_URL", default=TGJU_STREET_PROFILE_URL_DEFAULT),
+            auth_mode="public_html",
+            secret_fields=(),
+            benchmark_families=("open_market",),
+            default_unit="rial",
         ),
         SourceConfig(
             name="commercial_aux_a",
@@ -2132,6 +2224,139 @@ def fetch_tgju_profile_official_public(
     )
 
 
+def fetch_tgju_street_profile_public(
+    config: SourceConfig,
+    sampled_at: dt.datetime,
+    window_start_dt: dt.datetime,
+    window_end_dt: dt.datetime,
+) -> Sample:
+    profile_symbol = "price_dollar_rl"
+    health: Dict[str, Any] = {
+        "collector": "http_html",
+        "fetch_mode": "public_street_profile",
+        "scrape_timestamp": iso_ts(sampled_at),
+        "fetch_success": False,
+        "failure_reason": None,
+        "error_type": None,
+        "selector_used": None,
+        "profile_symbol": profile_symbol,
+    }
+    benchmark_values = blank_benchmark_values()
+    normalized_unit = "rial"
+    source_unit = config.default_unit
+
+    body = ""
+    final_url = ""
+    request_urls: List[str] = []
+    user_agents = (
+        "rialwatch-pipeline/0.2",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    )
+    last_error: Optional[str] = None
+
+    for ua in user_agents:
+        try:
+            req = urllib.request.Request(
+                url=config.url,
+                method="GET",
+                headers={
+                    "User-Agent": ua,
+                    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+                    "Accept-Language": "fa,en-US;q=0.9,en;q=0.8",
+                },
+            )
+            redacted_url = redact_url_for_health(req.full_url)
+            request_urls.append(redacted_url)
+            health["request_url"] = redacted_url
+            body, final_url = fetch_request_body(req, 20)
+            if body.strip():
+                health["user_agent"] = ua
+                break
+            last_error = "empty response body"
+        except urllib.error.HTTPError as exc:
+            last_error = f"http {exc.code}"
+            health["error_type"] = "http_error"
+            health["failure_reason"] = last_error
+        except urllib.error.URLError as exc:
+            last_error = f"network: {exc.reason}"
+            health["error_type"] = "network_error"
+            health["failure_reason"] = last_error
+        except TimeoutError:
+            last_error = "timeout"
+            health["error_type"] = "timeout"
+            health["failure_reason"] = last_error
+
+    health["request_urls"] = request_urls
+    health["final_url"] = redact_url_for_health(final_url) if final_url else None
+    health["content_length"] = len(body.encode("utf-8")) if body else 0
+    health["page_load_ok"] = bool(body.strip())
+
+    if not body.strip():
+        reason = last_error or "empty response body"
+        if health.get("error_type") is None:
+            health["error_type"] = "empty_body"
+        health["failure_reason"] = reason
+        return Sample(
+            config.name,
+            sampled_at,
+            None,
+            benchmark_values,
+            None,
+            ok=False,
+            stale=False,
+            error=reason,
+            health=health,
+            source_unit=source_unit,
+            normalized_unit=normalized_unit,
+        )
+
+    raw_value = parse_tgju_profile_current_value(body)
+    quote_time = parse_tgju_profile_current_quote_time(body, sampled_at)
+    open_market_value = normalize_unit(raw_value, source_unit)
+    benchmark_values["open_market"] = open_market_value
+
+    if quote_time is not None:
+        health["benchmark_quote_times"] = {"open_market": iso_ts(quote_time)}
+    health["source_unit"] = source_unit
+    health["normalized_unit"] = normalized_unit
+    health["raw_extracted_values"] = {"open_market": raw_value}
+    health["extracted_values"] = {"open_market": open_market_value}
+    health["selected_symbol_by_benchmark"] = {"open_market": profile_symbol}
+    health["source_fields"] = {"open_market": [profile_symbol]}
+    health["selector_used"] = "tgju_profile_current_rate_and_last_rate_time"
+
+    stale = bool(quote_time is not None and not is_within_window_minute(quote_time, window_start_dt, window_end_dt))
+    failure_reason: Optional[str] = None
+    error_type: Optional[str] = None
+    if open_market_value is None:
+        failure_reason = "unable to parse street quote from profile page"
+        error_type = "selector_parse_failed"
+    elif quote_time is None:
+        failure_reason = "unable to parse street quote timestamp from profile page"
+        error_type = "timestamp_parse_failed"
+    elif stale:
+        failure_reason = "stale quote"
+        error_type = "stale_quote"
+
+    health["fetch_success"] = open_market_value is not None and quote_time is not None
+    health["failure_reason"] = failure_reason
+    health["error_type"] = error_type
+    health["validation_result"] = {"ok": failure_reason is None, "reason": failure_reason}
+    return Sample(
+        config.name,
+        sampled_at,
+        open_market_value,
+        benchmark_values,
+        quote_time,
+        ok=failure_reason is None,
+        stale=stale,
+        error=failure_reason,
+        health=health,
+        source_unit=source_unit,
+        normalized_unit=normalized_unit,
+    )
+
+
 def fetch_tgju_profile_official_fallback_aux(
     config: SourceConfig,
     sampled_at: dt.datetime,
@@ -3004,6 +3229,8 @@ def fetch_one(config: SourceConfig, sampled_at: dt.datetime, window_start_dt: dt
             return fetch_alanchand_street_public(config, sampled_at, window_start_dt, window_end_dt)
         if config.name == "navasan":
             return fetch_navasan_public_website(config, sampled_at, window_start_dt, window_end_dt)
+        if config.name == "tgju_street":
+            return fetch_tgju_street_profile_public(config, sampled_at, window_start_dt, window_end_dt)
         profile_symbols = COMMERCIAL_PROFILE_OFFICIAL_SYMBOLS.get(config.name, ())
         if profile_symbols:
             return fetch_tgju_profile_official_with_fallback(
@@ -4637,6 +4864,7 @@ def publish_status(
         mapping = {
             "alanchand_street": "Street Market Feed",
             "bonbast": "Street Market Feed (Secondary)",
+            "tgju_street": "Street Market Feed (Tertiary)",
             "navasan": "Commercial Market Feed (Public)",
             "commercial_aux": "Commercial Market Feed (Auxiliary)",
             "commercial_aux_a": "Commercial Market Feed (Auxiliary A)",

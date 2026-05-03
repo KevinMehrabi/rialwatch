@@ -53,6 +53,16 @@ SOURCE_REGISTRY: Dict[str, Dict[str, Any]] = {
         "exclusion_reason_default": None,
         "base_weight": 0.75,
     },
+    "tgju_street": {
+        "source_label": "Street Market Feed (Tertiary)",
+        "market_type": "iran_open_market",
+        "quote_type": "public_profile_quote",
+        "unit_type": "rial",
+        "benchmark_eligible": True,
+        "diagnostics_only": False,
+        "exclusion_reason_default": None,
+        "base_weight": 0.82,
+    },
     "alanchand": {
         "source_label": "AlanChand API",
         "market_type": "regional_transfer_api",
