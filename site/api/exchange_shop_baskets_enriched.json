@@ -1,22 +1,22 @@
 {
-  "generated_at": "2026-05-03T16:09:16Z",
+  "generated_at": "2026-05-03T16:16:09Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1884250.0,
   "baskets": [
     {
       "basket_name": "Iran",
       "signal_type_used": "exchange_shop",
-      "weighted_rate": 1849902.4,
+      "weighted_rate": 1849995.55,
       "median_rate": 1865000.0,
-      "spread_vs_benchmark_pct": -1.8229,
+      "spread_vs_benchmark_pct": -1.8179,
       "usable_record_count": 155,
       "contributing_source_count": 14,
-      "basket_confidence": 92.48,
+      "basket_confidence": 92.42,
       "freshness_score": 100.0,
       "freshness_status": "fresh",
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.018485,
+      "dispersion_cv": 0.0185,
       "outliers_removed": 80,
       "top_sources": [
         "nerkhedolar1",
@@ -126,22 +126,22 @@
     {
       "basket_name": "Afghanistan",
       "signal_type_used": "regional_market_channel",
-      "weighted_rate": 1835932.84,
-      "median_rate": 1843500.0,
-      "spread_vs_benchmark_pct": -2.5643,
-      "usable_record_count": 49,
+      "weighted_rate": 1834779.55,
+      "median_rate": 1842500.0,
+      "spread_vs_benchmark_pct": -2.6255,
+      "usable_record_count": 40,
       "contributing_source_count": 6,
-      "basket_confidence": 92.76,
-      "freshness_score": 97.06,
+      "basket_confidence": 92.92,
+      "freshness_score": 96.4,
       "freshness_status": "fresh",
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.005523,
+      "dispersion_cv": 0.005941,
       "outliers_removed": 19,
       "top_sources": [
         "poshtkhati_dollar",
-        "toofan_harirod",
-        "haratdollar"
+        "haratdollar",
+        "toofan_harirod"
       ],
       "contributing_sources": [
         "haratdollar",
@@ -164,9 +164,9 @@
     {
       "basket_name": "UK",
       "signal_type_used": "exchange_shop",
-      "weighted_rate": 1999963.41,
+      "weighted_rate": 1999808.35,
       "median_rate": 1975000.0,
-      "spread_vs_benchmark_pct": 6.1411,
+      "spread_vs_benchmark_pct": 6.1329,
       "usable_record_count": 135,
       "contributing_source_count": 13,
       "basket_confidence": 89.25,
@@ -213,33 +213,31 @@
     {
       "basket_name": "Germany",
       "signal_type_used": "settlement_channel",
-      "weighted_rate": 1855988.81,
-      "median_rate": 1785000.0,
-      "spread_vs_benchmark_pct": -1.4999,
-      "usable_record_count": 44,
-      "contributing_source_count": 5,
-      "basket_confidence": 76.96,
-      "freshness_score": 52.27,
+      "weighted_rate": 1945557.02,
+      "median_rate": 1789000.0,
+      "spread_vs_benchmark_pct": 3.2537,
+      "usable_record_count": 41,
+      "contributing_source_count": 4,
+      "basket_confidence": 78.0,
+      "freshness_score": 48.78,
       "freshness_status": "stale",
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.113536,
-      "outliers_removed": 5,
+      "dispersion_cv": 0.094099,
+      "outliers_removed": 7,
       "top_sources": [
         "hmtransfer",
         "berlin_pay",
-        "eurobazaar"
+        "helfenassist"
       ],
       "contributing_sources": [
         "berlin_pay",
-        "eurobazaar",
         "frankfurt_euro",
         "helfenassist",
         "hmtransfer"
       ],
-      "fresh_contributing_source_count": 2,
+      "fresh_contributing_source_count": 1,
       "fresh_contributing_sources": [
-        "eurobazaar",
         "hmtransfer"
       ]
     },
