@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-03T16:14:25Z",
+  "generated_at": "2026-05-04T05:11:11Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1884250.0,
-  "total_usable_records": 134,
-  "total_contributing_channels": 13,
+  "total_usable_records": 148,
+  "total_contributing_channels": 15,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 60,
+    "direct_shop": 72,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 10
+    "settlement_exchange": 12
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 16,
+      "usable_record_count": 23,
       "contributing_channel_count": 5,
-      "basket_confidence": 92.19,
+      "basket_confidence": 94.81,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 95.17,
-      "average_freshness": 98.0,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -204,13 +204,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 10,
+      "average_quality": 85.1,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 74.12,
+      "average_quality": 75.38,
       "average_freshness": 75.5,
       "from_new_p1": false
     },
@@ -248,6 +259,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:cityexchangeuae.com",
+      "title": "KARAMA – City Exchange Uae",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 81.33,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:emeraldxe.com",
       "title": "تبدیل درهم به تومان لحظه‌ای",
       "locality": "UAE",
@@ -264,8 +286,8 @@
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 84.0,
+      "usable_record_count": 2,
+      "average_quality": 79.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
