@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-05-04T12:53:06+00:00",
+  "generated_at": "2026-05-04T16:51:48+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
         "candidate_hits": 31
       },
       "site:t.me/s صرافی": {
-        "candidate_hits": 72
+        "candidate_hits": 34
       },
       "صرافی تهران": {
         "candidate_hits": 0
@@ -102,37 +102,38 @@
     "successful_requests": 20,
     "failed_requests": 44
   },
-  "existing_registry_handles": 300,
+  "existing_registry_handles": 328,
   "durable_source_registry": {
-    "total_sources": 130,
-    "active_sources": 129,
+    "total_sources": 160,
+    "active_sources": 159,
     "sources_by_country": {
-      "Afghanistan": 4,
-      "Germany": 6,
-      "Iran": 79,
+      "Afghanistan": 6,
+      "Armenia": 1,
+      "Germany": 7,
+      "Iran": 95,
       "Iraq": 3,
-      "Turkey": 6,
-      "UAE": 13,
-      "UK": 12,
-      "unknown": 7
+      "Turkey": 7,
+      "UAE": 16,
+      "UK": 15,
+      "unknown": 10
     },
     "sources_by_kind": {
-      "aggregator": 9,
-      "exchange_shop": 50,
-      "regional_fx_board": 14,
-      "regional_market_channel": 39,
+      "aggregator": 15,
+      "exchange_shop": 61,
+      "regional_fx_board": 16,
+      "regional_market_channel": 45,
       "settlement_channel": 11,
-      "unknown": 7
+      "unknown": 12
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 19,
-      "regional_fx_board": 127,
-      "regional_market_signal": 125
+      "regional_fx_board": 157,
+      "regional_market_signal": 156
     },
-    "active_iran_sources": 78
+    "active_iran_sources": 94
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 13,
+  "new_channels_discovered": 7,
   "new_channels_retained_after_scoring": 0,
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
