@@ -2334,9 +2334,6 @@ def fetch_tgju_street_profile_public(
     elif quote_time is None:
         failure_reason = "unable to parse street quote timestamp from profile page"
         error_type = "timestamp_parse_failed"
-    elif stale:
-        failure_reason = "stale quote"
-        error_type = "stale_quote"
 
     health["fetch_success"] = open_market_value is not None and quote_time is not None
     health["failure_reason"] = failure_reason
@@ -2348,9 +2345,9 @@ def fetch_tgju_street_profile_public(
         open_market_value,
         benchmark_values,
         quote_time,
-        ok=failure_reason is None,
+        ok=failure_reason is None and not stale,
         stale=stale,
-        error=failure_reason,
+        error=failure_reason or ("stale quote" if stale else None),
         health=health,
         source_unit=source_unit,
         normalized_unit=normalized_unit,

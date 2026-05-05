@@ -767,6 +767,46 @@ class RegimeModelTests(unittest.TestCase):
         selected = health.get("selected_symbol_by_benchmark")
         self.assertEqual(selected.get("open_market"), "price_dollar_rl")
 
+    def test_tgju_street_stale_profile_quote_remains_recovery_eligible(self) -> None:
+        config = pipeline.SourceConfig(
+            name="tgju_street",
+            url="https://www.tgju.org/profile/price_dollar_rl",
+            auth_mode="public_html",
+            secret_fields=(),
+            benchmark_families=("open_market",),
+            default_unit="rial",
+        )
+        sampled_at = dt.datetime(2026, 5, 3, 15, 40, tzinfo=dt.timezone.utc)
+        window_start = dt.datetime(2026, 5, 3, 13, 45, tzinfo=dt.timezone.utc)
+        window_end = dt.datetime(2026, 5, 3, 14, 15, tzinfo=dt.timezone.utc)
+        body = """
+        <div>یکشنبه ۱۳ اردیبهشت - ۱۹:۱۰:۰۰</div>
+        <table>
+          <tr><td class="text-right">نرخ فعلی</td><td class="text-left">1,864,100</td></tr>
+          <tr><td class="text-right">زمان ثبت آخرین نرخ</td><td class="text-left">۱۹:۰۳:۳۱</td></tr>
+        </table>
+        """
+
+        with mock.patch("scripts.pipeline.fetch_request_body", return_value=(body, config.url)):
+            sample = pipeline.fetch_one(config, sampled_at, window_start, window_end)
+
+        self.assertFalse(sample.ok)
+        self.assertTrue(sample.stale)
+        self.assertEqual(sample.error, "stale quote")
+        self.assertEqual(sample.value, 1_864_100.0)
+        health = sample.health or {}
+        self.assertTrue(health.get("fetch_success"))
+        self.assertIsNone(health.get("failure_reason"))
+        self.assertEqual(health.get("validation_result"), {"ok": True, "reason": None})
+
+        result = pipeline.compute_benchmark_result(
+            {"tgju_street": [sample]},
+            "open_market",
+            {"tgju_street": ("open_market",)},
+            primary_allow_stale=True,
+        )
+        self.assertEqual(result["source_medians"], {"tgju_street": 1_864_100.0})
+
     def test_fetch_one_redacts_query_secret_from_final_url(self) -> None:
         config = pipeline.SourceConfig(
             name="navasan",
