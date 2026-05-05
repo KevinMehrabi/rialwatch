@@ -6562,6 +6562,22 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
     elif value is None:
         value = parse_number(benchmark_values.get(PRIMARY_BENCHMARK))
 
+    stale = bool(payload.get("stale"))
+    error = str(payload.get("error")) if payload.get("error") is not None else None
+    if source == "tgju_street" and stale:
+        failure_reason = str(health.get("failure_reason") or "").strip().lower()
+        validation = health.get("validation_result")
+        validation_reason = ""
+        if isinstance(validation, dict):
+            validation_reason = str(validation.get("reason") or "").strip().lower()
+        if failure_reason == "stale quote" or validation_reason == "stale quote":
+            health["failure_reason"] = None
+            if str(health.get("error_type") or "").strip().lower() == "stale_quote":
+                health["error_type"] = None
+            health["validation_result"] = {"ok": True, "reason": None}
+            if not error:
+                error = "stale quote"
+
     return Sample(
         source=source,
         sampled_at=sampled_at,
@@ -6569,8 +6585,8 @@ def parse_sample_record(source: str, payload: Dict[str, Any]) -> Optional[Sample
         benchmark_values=benchmark_values,
         quote_time=quote_time,
         ok=bool(payload.get("ok")),
-        stale=bool(payload.get("stale")),
-        error=str(payload.get("error")) if payload.get("error") is not None else None,
+        stale=stale,
+        error=error,
         health=health,
         source_unit=source_unit,
         normalized_unit=normalized_unit,

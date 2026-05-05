@@ -807,6 +807,40 @@ class RegimeModelTests(unittest.TestCase):
         )
         self.assertEqual(result["source_medians"], {"tgju_street": 1_864_100.0})
 
+    def test_legacy_tgju_stale_failure_reason_is_repaired_for_rebuild(self) -> None:
+        payload = {
+            "sampled_at": "2026-05-05T15:53:08Z",
+            "quote_time": "2026-05-05T15:44:34Z",
+            "value": 1_808_800.0,
+            "benchmarks": {"open_market": 1_808_800.0},
+            "ok": False,
+            "stale": True,
+            "error": "sample outside observation window",
+            "fetch_success": True,
+            "failure_reason": "stale quote",
+            "validation_result": {"ok": False, "reason": "stale quote"},
+            "source_unit": "rial",
+            "normalized_unit": "rial",
+        }
+        sample = pipeline.parse_sample_record("tgju_street", payload)
+        self.assertIsNotNone(sample)
+        assert sample is not None
+        self.assertTrue(sample.stale)
+        self.assertFalse(sample.ok)
+        self.assertEqual(sample.error, "sample outside observation window")
+        self.assertEqual(sample.value, 1_808_800.0)
+        health = sample.health or {}
+        self.assertIsNone(health.get("failure_reason"))
+        self.assertEqual(health.get("validation_result"), {"ok": True, "reason": None})
+
+        result = pipeline.compute_benchmark_result(
+            {"tgju_street": [sample]},
+            "open_market",
+            {"tgju_street": ("open_market",)},
+            primary_allow_stale=True,
+        )
+        self.assertEqual(result["source_medians"], {"tgju_street": 1_808_800.0})
+
     def test_fetch_one_redacts_query_secret_from_final_url(self) -> None:
         config = pipeline.SourceConfig(
             name="navasan",
