@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-04T20:43:16Z",
+  "generated_at": "2026-05-05T01:04:27Z",
   "schema_version": 1,
   "sources": [
     {
@@ -1124,6 +1124,44 @@
       "source_kind": "exchange_shop",
       "status": "ok",
       "title": "چاپ رویان"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 42.0,
+      "best_quote_message_count": 4,
+      "best_usable_record_count": 4,
+      "city_guess": "Tehran",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-05T01:04:27Z",
+      "handle_or_url": "coinexofficialpersianchannel",
+      "key": "telegram:coinexofficialpersianchannel",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 42.0,
+      "last_quote_message_count": 4,
+      "last_seen_at": "2026-05-05T01:04:27Z",
+      "last_success_at": "2026-05-05T01:04:27Z",
+      "last_usable_record_count": 4,
+      "locality_hints": [
+        "Iran",
+        "Tehran"
+      ],
+      "origins": [
+        "site:t.me صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/coinexofficialpersianchannel",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "CoinEx Official Persian",
+      "top_sample": "🚨 هشدار بسیار مهم 🚨 ❌ هرگونه پیام در پیوی را کلاهبرداری در نظر بگیرید! ❌ ⚠️ به هیچ عنوان به پیام‌های خصوصی اعتماد نکنید. افراد سودجو با جعل هویت، قصد سرقت اطلاعات و دارایی شما را دارند. ⸻ ✅ برای اطمینان از رسمی بودن هر آیدی / ایمیل / شماره تماس: حتماً آن را فق"
     },
     {
       "best_board_message_count": 6,
@@ -6985,13 +7023,13 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 97,
-    "active_sources": 162,
+    "active_iran_sources": 98,
+    "active_sources": 163,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 7,
-      "Iran": 100,
+      "Iran": 101,
       "Iraq": 3,
       "Turkey": 7,
       "UAE": 16,
@@ -7000,17 +7038,17 @@
     },
     "sources_by_kind": {
       "aggregator": 15,
-      "exchange_shop": 66,
+      "exchange_shop": 67,
       "regional_fx_board": 16,
       "regional_market_channel": 45,
       "settlement_channel": 11,
       "unknown": 12
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 24,
+      "direct_shop_expansion": 25,
       "regional_fx_board": 157,
       "regional_market_signal": 156
     },
-    "total_sources": 165
+    "total_sources": 166
   }
 }
