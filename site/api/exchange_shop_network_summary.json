@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-04T16:41:15Z",
+  "generated_at": "2026-05-06T05:13:04Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1911000.0,
-  "total_usable_records": 147,
-  "total_contributing_channels": 15,
+  "total_usable_records": 148,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -39,7 +39,7 @@
     "direct_shop": 71,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 12
+    "settlement_exchange": 13
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 25,
+      "usable_record_count": 24,
       "contributing_channel_count": 6,
-      "basket_confidence": 94.44,
+      "basket_confidence": 94.71,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 94.61,
-      "average_freshness": 96.67,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -210,7 +210,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 10,
-      "average_quality": 86.4,
+      "average_quality": 85.1,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -221,7 +221,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 74.12,
+      "average_quality": 75.38,
       "average_freshness": 75.5,
       "from_new_p1": false
     },
@@ -287,7 +287,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 89.5,
+      "average_quality": 84.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -300,6 +300,17 @@
       "usable_record_count": 1,
       "average_quality": 82.0,
       "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 71.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     }
   ]
