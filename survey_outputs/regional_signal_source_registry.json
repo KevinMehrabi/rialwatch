@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-06T09:12:45Z",
+  "generated_at": "2026-05-06T12:55:51Z",
   "schema_version": 1,
   "sources": [
     {
@@ -2346,6 +2346,37 @@
       "source_kind": "unknown",
       "status": "ok",
       "title": "EddiesCodes - Stake.us 🇺🇸"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 18,
+      "best_parseability_score": 100.0,
+      "best_quote_message_count": 18,
+      "best_usable_record_count": 18,
+      "city_guess": "unknown",
+      "country_guess": "unknown",
+      "first_seen_at": "2026-05-06T12:55:51Z",
+      "handle_or_url": "elahiexchange",
+      "key": "telegram:elahiexchange",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 18,
+      "last_parseability_score": 100.0,
+      "last_quote_message_count": 18,
+      "last_seen_at": "2026-05-06T12:55:51Z",
+      "last_success_at": "2026-05-06T12:55:51Z",
+      "last_usable_record_count": 18,
+      "origins": [
+        "site:t.me/s صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/elahiexchange",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "صرافی الهی",
+      "top_sample": "🇮🇷 شنبه ۳۰ دی ۱۴۰۲ ساعت ۰۹:۴۹ 🔶 آخرین نرخ سکه : ✨ تمام (امامي) ▫️ فروش : ۳۱,۷۰۰,۰۰۰ ▫️ خرید : ۳۱,۱۰۰,۰۰۰ ✨ تمام بهارآزادي ▫️ فروش : ۲۸,۵۰۰,۰۰۰ ▫️ خرید : ۲۸,۰۰۰,۰۰۰ ✨ نيم بهارآزادي ▫️ فروش : ۱۷,۹۰۰,۰۰۰ ▫️ خرید : ۱۷,۴۰۰,۰۰۰ ✨ ربع بهارآزادي ▫️ فروش : ۱۱,۰۰۰,۰۰۰ ▫"
     },
     {
       "best_board_message_count": 20,
@@ -8462,7 +8493,7 @@
   ],
   "summary": {
     "active_iran_sources": 120,
-    "active_sources": 195,
+    "active_sources": 196,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
@@ -8472,21 +8503,21 @@
       "Turkey": 9,
       "UAE": 20,
       "UK": 17,
-      "unknown": 12
+      "unknown": 13
     },
     "sources_by_kind": {
       "aggregator": 18,
-      "exchange_shop": 86,
+      "exchange_shop": 87,
       "regional_fx_board": 21,
       "regional_market_channel": 51,
       "settlement_channel": 11,
       "unknown": 13
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 31,
+      "direct_shop_expansion": 32,
       "regional_fx_board": 192,
       "regional_market_signal": 191
     },
-    "total_sources": 200
+    "total_sources": 201
   }
 }
