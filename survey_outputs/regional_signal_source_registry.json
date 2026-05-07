@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-07T05:26:26Z",
+  "generated_at": "2026-05-07T09:09:54Z",
   "schema_version": 1,
   "sources": [
     {
@@ -9040,6 +9040,44 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 25.0,
+      "best_quote_message_count": 1,
+      "best_usable_record_count": 1,
+      "city_guess": "Rasht",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-07T09:09:54Z",
+      "handle_or_url": "wallexchange",
+      "key": "telegram:wallexchange",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 25.0,
+      "last_quote_message_count": 1,
+      "last_seen_at": "2026-05-07T09:09:54Z",
+      "last_success_at": "2026-05-07T09:09:54Z",
+      "last_usable_record_count": 1,
+      "locality_hints": [
+        "Iran",
+        "Rasht"
+      ],
+      "origins": [
+        "site:t.me/s صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/wallexchange",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "Wallex | صفحه رسمی والکس",
+      "top_sample": "🔔 کاربر گرامی؛ به اطلاع می‌رسانیم اکنون معاملات تعهدی تتر، تترگلد، بیت‌کوین و اتریوم در دو پایه بازار تومان و تتر در دسترسی همه کاربران است. لازم به ذکر است، در حال حاضر معاملات تعهدی در والکس با نسبت اعتبار ۵ و با توجه به مدیریت ریسک دارایی کاربران در شرایط پ"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
       "best_parseability_score": 9.0,
       "best_quote_message_count": 0,
       "best_usable_record_count": 0,
@@ -9266,13 +9304,13 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 131,
-    "active_sources": 214,
+    "active_iran_sources": 132,
+    "active_sources": 215,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 7,
-      "Iran": 136,
+      "Iran": 137,
       "Iraq": 3,
       "Turkey": 10,
       "UAE": 21,
@@ -9281,17 +9319,17 @@
     },
     "sources_by_kind": {
       "aggregator": 17,
-      "exchange_shop": 95,
+      "exchange_shop": 96,
       "regional_fx_board": 25,
       "regional_market_channel": 58,
       "settlement_channel": 11,
       "unknown": 13
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 36,
+      "direct_shop_expansion": 37,
       "regional_fx_board": 209,
       "regional_market_signal": 206
     },
-    "total_sources": 219
+    "total_sources": 220
   }
 }
