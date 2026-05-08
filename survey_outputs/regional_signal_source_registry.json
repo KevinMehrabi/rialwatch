@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-08T12:47:38Z",
+  "generated_at": "2026-05-08T16:50:17Z",
   "schema_version": 1,
   "sources": [
     {
@@ -4272,6 +4272,44 @@
       "title": "بازرگانی ایده پردازان"
     },
     {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 3,
+      "best_parseability_score": 82.0,
+      "best_quote_message_count": 12,
+      "best_usable_record_count": 12,
+      "city_guess": "Isfahan",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-08T16:50:17Z",
+      "handle_or_url": "iee_en",
+      "key": "telegram:iee_en",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 3,
+      "last_parseability_score": 82.0,
+      "last_quote_message_count": 12,
+      "last_seen_at": "2026-05-08T16:50:17Z",
+      "last_success_at": "2026-05-08T16:50:17Z",
+      "last_usable_record_count": 12,
+      "locality_hints": [
+        "Iran",
+        "Isfahan"
+      ],
+      "origins": [
+        "exchange telegram iran"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/iee_en",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "Iran Energy Exchange (IEE)",
+      "top_sample": "📉 “ Auction Results on IEE International Ring” 🗓️ ”Wednesday , February 18, 2026” 📊 Product : LPG (Propane and Butane) 🏭 Supplier : Kangan Petrorefining Company ⚖️ Ask Volume : 44,000 MT 📈 Bid Volume : 264,000 MT 📉 Maximum Possible Increase in Supply Volume :"
+    },
+    {
       "best_board_message_count": 4,
       "best_buy_sell_pair_count": 0,
       "best_parseability_score": 53.0,
@@ -6361,6 +6399,37 @@
       "status": "ok",
       "title": "قیمت آنلاین ارز،طلا_خودرو",
       "top_sample": "#1404_12_06 ⏰ 20:07 💵 #دلار تهران_نقدی 🇮🇷 164,800 تا 164,900 دلار 🇺🇸 تهران بین همکاران 165,200 دینار عراق 🇮🇶 105,000 تومان 🅱 بیت‌کوین 67.947.00 💵 📈 💰 قیمت ارز،طلا و خودرو 👇 @ir_dolar @new_onlin"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 65.0,
+      "best_quote_message_count": 14,
+      "best_usable_record_count": 0,
+      "city_guess": "unknown",
+      "country_guess": "unknown",
+      "first_seen_at": "2026-05-08T16:50:17Z",
+      "handle_or_url": "niknooran",
+      "key": "telegram:niknooran",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 65.0,
+      "last_quote_message_count": 14,
+      "last_seen_at": "2026-05-08T16:50:17Z",
+      "last_success_at": "2026-05-08T16:50:17Z",
+      "last_usable_record_count": 0,
+      "origins": [
+        "site:t.me/s صرافی منوچهری"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/niknooran",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "regional_market_channel",
+      "status": "ok",
+      "title": "صنایع روشنایی نیک نوران",
+      "top_sample": "زنبق کریستالی مدل NIKZ09 #قطعات_کریستالی 65000-200000تومان موجود کسب اطلاعات بیشتر فروشگاه نیک نوران لاله زار 33116403"
     },
     {
       "best_board_message_count": 0,
@@ -9341,32 +9410,32 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 132,
-    "active_sources": 215,
+    "active_iran_sources": 133,
+    "active_sources": 217,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 7,
-      "Iran": 138,
+      "Iran": 139,
       "Iraq": 3,
       "Turkey": 10,
       "UAE": 21,
       "UK": 18,
-      "unknown": 17
+      "unknown": 18
     },
     "sources_by_kind": {
       "aggregator": 17,
-      "exchange_shop": 97,
+      "exchange_shop": 98,
       "regional_fx_board": 25,
-      "regional_market_channel": 58,
+      "regional_market_channel": 59,
       "settlement_channel": 11,
       "unknown": 13
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 38,
+      "direct_shop_expansion": 40,
       "regional_fx_board": 209,
       "regional_market_signal": 206
     },
-    "total_sources": 221
+    "total_sources": 223
   }
 }
