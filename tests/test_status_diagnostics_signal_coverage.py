@@ -86,6 +86,50 @@ class StatusDiagnosticsSignalCoverageTests(unittest.TestCase):
             self.assertIn("0 fresh / 1 used / 2 remembered", rendered)
             self.assertIn("0 fresh / 0 used / 1 remembered", rendered)
 
+    def test_publish_status_marks_old_diagnostics_artifact_stale(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            site_dir = Path(tmp_dir) / "site"
+            api_dir = site_dir / "api"
+            api_dir.mkdir(parents=True, exist_ok=True)
+            (api_dir / "regional_market_signals_card.json").write_text(
+                """
+                {
+                  "generated_at": "2026-05-09T05:19:02Z",
+                  "cards": [
+                    {
+                      "basket_name": "UAE",
+                      "signal_label": "Dubai settlement signal",
+                      "display_state": "publish",
+                      "fresh_contributing_source_count": 9,
+                      "contributing_source_count": 29,
+                      "remembered_source_count": 29,
+                      "usable_record_count": 142,
+                      "suppression_reason": ""
+                    }
+                  ]
+                }
+                """.strip(),
+                encoding="utf-8",
+            )
+
+            pipeline.publish_status(
+                site_dir=site_dir,
+                templates_dir=self.templates_dir,
+                generated_at="2026-05-10T14:39:31Z",
+                status_title="OK",
+                status_detail="Published daily benchmark.",
+                latest={
+                    "as_of": "2026-05-10T14:39:31Z",
+                    "computed": {},
+                    "sources": {},
+                },
+            )
+
+            rendered = (site_dir / "status" / "index.html").read_text(encoding="utf-8")
+            self.assertIn("0/1 locality signals active. 0 publish, 0 monitor, 1 stale.", rendered)
+            self.assertIn("Stale diagnostics artifact; last refreshed May 09, 2026, 05:19 UTC.", rendered)
+            self.assertIn("0 fresh / 29 used", rendered)
+
     def test_publish_status_does_not_show_historical_withheld_day_note(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             site_dir = Path(tmp_dir) / "site"

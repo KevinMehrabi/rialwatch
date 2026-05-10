@@ -584,6 +584,18 @@ function humanizeToken(value, fallback = 'unknown') {
   return text || fallback;
 }
 
+const REGIONAL_SIGNAL_MAX_AGE_MS = 30 * 60 * 60 * 1000;
+
+function parseGeneratedAt(value) {
+  const parsed = Date.parse(String(value || ''));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function regionalPayloadIsStale(payload) {
+  const generatedAt = parseGeneratedAt(payload && payload.generated_at);
+  return generatedAt !== null && Date.now() - generatedAt > REGIONAL_SIGNAL_MAX_AGE_MS;
+}
+
 function alignmentBadgeClass(label) {
   const normalized = String(label || '').trim().toLowerCase();
   if (normalized === 'aligned') return 'alignment-aligned';
@@ -604,6 +616,7 @@ function formatIrrDisplayValue(value) {
 function renderRegionalMarketCards(payload) {
   const holder = document.getElementById('regional-market-cards');
   if (!holder) return;
+  const payloadStale = regionalPayloadIsStale(payload);
   const cards = (Array.isArray(payload && payload.cards) ? payload.cards : [])
     .filter(card => card && card.display_state !== 'hide' && card.render_on_homepage !== false);
   if (!cards.length) {
@@ -621,7 +634,10 @@ function renderRegionalMarketCards(payload) {
   }
 
   holder.innerHTML = cards.map(card => {
-    const freshSources = Number(card.fresh_contributing_source_count || 0);
+    const displayState = payloadStale && card.display_state !== 'hide' ? 'monitor' : card.display_state;
+    const freshnessStatus = payloadStale ? 'stale' : card.freshness_status;
+    const suppressionReason = payloadStale ? 'stale_diagnostics_artifact' : card.suppression_reason;
+    const freshSources = payloadStale ? 0 : Number(card.fresh_contributing_source_count || 0);
     const usedSources = Number(card.contributing_source_count || 0);
     const rememberedSources = Math.max(Number(card.remembered_source_count || 0), usedSources);
     const sourceCoverage = rememberedSources > usedSources
@@ -631,8 +647,8 @@ function renderRegionalMarketCards(payload) {
     <div class="card bg-dark text-white dashboard-card">
       <div class="card-body">
         <div class="panel-top">
-          <div class="fw-semibold mb-1">${card.basket_name}${card.display_state === 'monitor' ? ' (monitoring)' : ''}</div>
-          <div class="text-secondary small mb-2">${card.display_state === 'monitor' ? 'Monitoring' : 'Diagnostics signal available'} • Signal type: ${card.signal_label || humanizeToken(card.signal_type_used)}</div>
+          <div class="fw-semibold mb-1">${card.basket_name}${displayState === 'monitor' ? ' (monitoring)' : ''}</div>
+          <div class="text-secondary small mb-2">${displayState === 'monitor' ? 'Monitoring' : 'Diagnostics signal available'} • Signal type: ${card.signal_label || humanizeToken(card.signal_type_used)}</div>
         </div>
         <div class="panel-middle">
           <div class="value-row">
@@ -652,11 +668,11 @@ function renderRegionalMarketCards(payload) {
             <span>Confidence: ${Number(card.basket_confidence || 0).toFixed(1)}</span>
           </div>
           <div class="panel-meta-row mt-2">
-            <span>Freshness: ${humanizeToken(card.freshness_status)}</span>
+            <span>Freshness: ${humanizeToken(freshnessStatus)}</span>
             <span>Dispersion: ${humanizeToken(card.dispersion_level)}</span>
           </div>
           ${card.dispersion_level === 'high' ? `<div class="text-warning small mt-2">High dispersion &mdash; indicative signal only</div>` : ''}
-          ${card.display_state === 'monitor' ? `<div class="text-warning small mt-2">Monitoring only. Reason: ${humanizeToken(card.suppression_reason, 'limited coverage')}</div>` : ''}
+          ${displayState === 'monitor' ? `<div class="text-warning small mt-2">Monitoring only. Reason: ${humanizeToken(suppressionReason, 'limited coverage')}</div>` : ''}
         </div>
       </div>
     </div>

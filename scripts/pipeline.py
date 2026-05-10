@@ -36,6 +36,7 @@ WINDOW_START = dt.time(13, 45)
 WINDOW_END = dt.time(14, 15)
 PUBLISH_AT = dt.time(14, 20)
 DEFAULT_INTRADAY_SAMPLE_TIMES = ("13:45", "14:00", "14:15")
+DIAGNOSTICS_SIGNAL_MAX_AGE = dt.timedelta(hours=30)
 
 REQUIRED_SECRETS: Tuple[str, ...] = ()
 
@@ -4946,6 +4947,23 @@ def publish_status(
             return f"{fresh_count} fresh / {used_count} used / {remembered_count} remembered"
         return f"{fresh_count} fresh / {used_count} used"
 
+    def diagnostics_payload_age(payload: Dict[str, Any]) -> Optional[dt.timedelta]:
+        generated = try_parse_datetime(payload.get("generated_at"))
+        if generated is None:
+            return None
+        reference = try_parse_datetime(latest.get("as_of")) or try_parse_datetime(generated_at) or utc_now()
+        return reference - generated
+
+    def diagnostics_payload_is_stale(payload: Dict[str, Any]) -> bool:
+        age = diagnostics_payload_age(payload)
+        return age is not None and age > DIAGNOSTICS_SIGNAL_MAX_AGE
+
+    def diagnostics_generated_text(payload: Dict[str, Any]) -> str:
+        generated = try_parse_datetime(payload.get("generated_at"))
+        if generated is None:
+            return "unknown time"
+        return generated.strftime("%b %d, %Y, %H:%M UTC")
+
     def map_pipeline_state(value: str) -> str:
         upper = value.strip().upper()
         if upper in {"OK", "IMMUTABLE"}:
@@ -5405,9 +5423,12 @@ def publish_status(
             diagnostics_payload = json.loads(diagnostics_cards_path.read_text(encoding="utf-8"))
             cards = diagnostics_payload.get("cards", []) if isinstance(diagnostics_payload, dict) else []
             if isinstance(cards, list) and cards:
+                diagnostics_stale = diagnostics_payload_is_stale(diagnostics_payload)
+                diagnostics_generated = diagnostics_generated_text(diagnostics_payload)
                 diagnostics_rows: List[Dict[str, str]] = []
                 publish_count = 0
                 monitor_count = 0
+                stale_count = 0
                 active_count = 0
                 for card in cards:
                     if not isinstance(card, dict):
@@ -5418,7 +5439,10 @@ def publish_status(
                     suppression_reason = str(card.get("suppression_reason", "")).strip()
 
                     status = "Unknown"
-                    if display_state == "publish":
+                    if diagnostics_stale and display_state in {"publish", "monitor"}:
+                        status = "Degraded"
+                        stale_count += 1
+                    elif display_state == "publish":
                         status = "Online"
                         publish_count += 1
                         active_count += 1
@@ -5429,7 +5453,9 @@ def publish_status(
                     elif display_state == "hide":
                         status = "Offline"
 
-                    if status == "Online":
+                    if diagnostics_stale and display_state in {"publish", "monitor"}:
+                        note = f"Stale diagnostics artifact; last refreshed {diagnostics_generated}."
+                    elif status == "Online":
                         note = "Diagnostics signal available."
                     elif status == "Degraded":
                         reason = suppression_reason.replace("_", " ") if suppression_reason else "limited coverage"
@@ -5438,11 +5464,15 @@ def publish_status(
                         reason = suppression_reason.replace("_", " ") if suppression_reason else "not available"
                         note = f"Hidden: {reason}."
 
+                    coverage_card = dict(card)
+                    if diagnostics_stale:
+                        coverage_card["fresh_contributing_source_count"] = 0
+
                     diagnostics_rows.append(
                         {
                             "name": f"{basket_name} — {signal_label}" if signal_label else basket_name,
                             "status": status,
-                            "sources": format_diagnostics_source_coverage(card),
+                            "sources": format_diagnostics_source_coverage(coverage_card),
                             "records": str(parse_nonnegative_count(card.get("usable_record_count"))),
                             "note": note,
                         }
@@ -5460,7 +5490,8 @@ def publish_status(
                     )
                     diagnostics_source_note = (
                         f"{active_count}/{len(diagnostics_rows)} locality signals active. "
-                        f"{publish_count} publish, {monitor_count} monitor."
+                        f"{publish_count} publish, {monitor_count} monitor"
+                        + (f", {stale_count} stale." if stale_count else ".")
                     )
         except json.JSONDecodeError:
             diagnostics_source_note = "Diagnostics locality-signal artifact could not be parsed."

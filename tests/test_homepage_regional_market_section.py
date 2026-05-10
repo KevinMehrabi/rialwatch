@@ -25,7 +25,13 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
     def test_display_state_filter_and_monitor_copy_present(self) -> None:
         self.assertIn("card.display_state !== 'hide'", self.template)
         self.assertIn("Monitoring only. Reason:", self.template)
-        self.assertIn("${card.basket_name}${card.display_state === 'monitor' ? ' (monitoring)' : ''}", self.template)
+        self.assertIn("${card.basket_name}${displayState === 'monitor' ? ' (monitoring)' : ''}", self.template)
+
+    def test_stale_regional_payload_is_downgraded_client_side(self) -> None:
+        self.assertIn("const REGIONAL_SIGNAL_MAX_AGE_MS = 30 * 60 * 60 * 1000", self.template)
+        self.assertIn("regionalPayloadIsStale(payload)", self.template)
+        self.assertIn("payloadStale ? 'stale' : card.freshness_status", self.template)
+        self.assertIn("payloadStale ? 0 : Number(card.fresh_contributing_source_count || 0)", self.template)
 
     def test_alignment_and_high_dispersion_presentation(self) -> None:
         self.assertIn("alignmentBadgeClass(card.alignment_label)", self.template)
