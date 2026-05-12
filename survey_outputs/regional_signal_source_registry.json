@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-12T05:26:35Z",
+  "generated_at": "2026-05-12T09:16:08Z",
   "schema_version": 1,
   "sources": [
     {
@@ -5098,6 +5098,44 @@
       "status": "ok",
       "title": "Iran Energy Exchange (IEE)",
       "top_sample": "📉 “ Auction Results on IEE International Ring” 🗓️ ”Wednesday , February 18, 2026” 📊 Product : LPG (Propane and Butane) 🏭 Supplier : Kangan Petrorefining Company ⚖️ Ask Volume : 44,000 MT 📈 Bid Volume : 264,000 MT 📉 Maximum Possible Increase in Supply Volume :"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 31.0,
+      "best_quote_message_count": 2,
+      "best_usable_record_count": 2,
+      "city_guess": "Qom",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-12T09:16:08Z",
+      "handle_or_url": "interchange0",
+      "key": "telegram:interchange0",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 31.0,
+      "last_quote_message_count": 2,
+      "last_seen_at": "2026-05-12T09:16:08Z",
+      "last_success_at": "2026-05-12T09:16:08Z",
+      "last_usable_record_count": 2,
+      "locality_hints": [
+        "Iran",
+        "Qom"
+      ],
+      "origins": [
+        "site:t.me/s صرافی اصفهان دلار"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/interchange0",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "صرافی دلار InterChange",
+      "top_sample": "🔻 درگیری‌ها در خلیج فارس فعلاً متوقف شده اما احتمال آغاز مجدد آن وجود دارد 🔹 یک منبع نظامی گفت: پس از اقدام خصمانه تروریستهای آمریکایی علیه نفتکشهای ایران، نیروی دریایی کشورمان با آتش حملات خود به نقض آتش‌بس و تروریسم آمریکایی پاسخ داد. 🔹 پس از مدتی تبادل آتش،"
     },
     {
       "best_board_message_count": 4,
@@ -10725,13 +10763,13 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 153,
-    "active_sources": 247,
+    "active_iran_sources": 154,
+    "active_sources": 248,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 7,
-      "Iran": 160,
+      "Iran": 161,
       "Iraq": 5,
       "Turkey": 10,
       "UAE": 24,
@@ -10740,17 +10778,17 @@
     },
     "sources_by_kind": {
       "aggregator": 22,
-      "exchange_shop": 110,
+      "exchange_shop": 111,
       "regional_fx_board": 32,
       "regional_market_channel": 63,
       "settlement_channel": 11,
       "unknown": 16
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 43,
+      "direct_shop_expansion": 44,
       "regional_fx_board": 238,
       "regional_market_signal": 238
     },
-    "total_sources": 254
+    "total_sources": 255
   }
 }
