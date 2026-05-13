@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-12T05:17:58Z",
+  "generated_at": "2026-05-13T05:19:36Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1826000.0,
-  "total_usable_records": 156,
-  "total_contributing_channels": 16,
+  "benchmark_weighted_rate": 1805950.0,
+  "total_usable_records": 141,
+  "total_contributing_channels": 15,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 68,
+    "direct_shop": 66,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 24
+    "settlement_exchange": 11
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 22,
+      "usable_record_count": 20,
       "contributing_channel_count": 6,
-      "basket_confidence": 93.14,
+      "basket_confidence": 94.27,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -193,17 +193,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -281,24 +270,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:exchangerates.org.uk",
-      "title": "AED to IRR",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 94.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:hiemarat.com",
       "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 88.0,
+      "average_quality": 84.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -310,6 +288,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 78.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
