@@ -13,6 +13,7 @@ import argparse
 import csv
 import datetime as dt
 import html
+import http.client
 import json
 import random
 import re
@@ -351,6 +352,20 @@ def clip_text(text: str, limit: int = 220) -> str:
     return text if len(text) <= limit else text[:limit] + "..."
 
 
+def read_response_text(response: Any) -> Tuple[Optional[str], Optional[str]]:
+    try:
+        body = response.read()
+        error = None
+    except http.client.IncompleteRead as exc:
+        body = exc.partial or b""
+        error = "incomplete_read"
+    if body is None:
+        return None, error
+    if isinstance(body, str):
+        return body, error
+    return body.decode("utf-8", errors="replace"), error
+
+
 def fetch_url(url: str, timeout: int) -> Tuple[Optional[str], Optional[int], Optional[str]]:
     req = urllib.request.Request(
         url=url,
@@ -363,9 +378,14 @@ def fetch_url(url: str, timeout: int) -> Tuple[Optional[str], Optional[int], Opt
     )
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.read().decode("utf-8", errors="replace"), int(resp.status), None
+            body, read_error = read_response_text(resp)
+            return body, int(resp.status), read_error
     except urllib.error.HTTPError as exc:
-        return exc.read().decode("utf-8", errors="replace"), int(exc.code), f"http_{exc.code}"
+        body, read_error = read_response_text(exc)
+        error = f"http_{exc.code}"
+        if read_error:
+            error = f"{error}:{read_error}"
+        return body, int(exc.code), error
     except urllib.error.URLError as exc:
         return None, None, f"network_error:{exc.reason}"
     except socket.timeout:

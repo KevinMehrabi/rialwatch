@@ -1,4 +1,6 @@
 import unittest
+import urllib.error
+from http.client import IncompleteRead
 
 from scripts import uae_exchange_discovery as discovery
 
@@ -89,6 +91,34 @@ class UAEExchangeDiscoveryTests(unittest.TestCase):
         queries = {query for _group, query in discovery.build_query_plan()}
         self.assertIn("نرخ حواله درهم امارات دبی تومان", queries)
         self.assertIn("site:t.me/s درهم دبی تومان", queries)
+
+    def test_fetch_url_handles_incomplete_http_error_body(self) -> None:
+        class PartialErrorBody:
+            def read(self) -> bytes:
+                raise IncompleteRead(b"partial error page", 128)
+
+            def close(self) -> None:
+                pass
+
+        def raise_http_error(*_args, **_kwargs):
+            raise urllib.error.HTTPError(
+                url="https://example.test/rates",
+                code=502,
+                msg="Bad Gateway",
+                hdrs={},
+                fp=PartialErrorBody(),
+            )
+
+        original_urlopen = discovery.urllib.request.urlopen
+        discovery.urllib.request.urlopen = raise_http_error
+        try:
+            body, status, err = discovery.fetch_url("https://example.test/rates", timeout=1)
+        finally:
+            discovery.urllib.request.urlopen = original_urlopen
+
+        self.assertEqual(body, "partial error page")
+        self.assertEqual(status, 502)
+        self.assertEqual(err, "http_502:incomplete_read")
 
 
 if __name__ == "__main__":
