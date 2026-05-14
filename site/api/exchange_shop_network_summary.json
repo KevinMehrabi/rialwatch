@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-13T05:19:36Z",
+  "generated_at": "2026-05-14T05:25:42Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1805950.0,
-  "total_usable_records": 141,
+  "benchmark_weighted_rate": 1800450.0,
+  "total_usable_records": 146,
   "total_contributing_channels": 15,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 66,
+    "direct_shop": 69,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 11
+    "settlement_exchange": 13
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 20,
+      "usable_record_count": 23,
       "contributing_channel_count": 6,
-      "basket_confidence": 94.27,
+      "basket_confidence": 94.88,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -204,6 +204,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 83.89,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
@@ -237,17 +248,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل دلار آمریکا به درهم امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 85.17,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -256,6 +256,17 @@
       "usable_record_count": 5,
       "average_quality": 78.8,
       "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -276,7 +287,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 84.0,
+      "average_quality": 88.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -288,17 +299,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 78.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
