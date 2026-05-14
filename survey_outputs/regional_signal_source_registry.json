@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-14T16:56:01Z",
+  "generated_at": "2026-05-14T20:46:24Z",
   "schema_version": 1,
   "sources": [
     {
@@ -8764,6 +8764,44 @@
       "title": "Persian London Exchange | صرافی پرشین لندن"
     },
     {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 65.0,
+      "best_quote_message_count": 17,
+      "best_usable_record_count": 0,
+      "city_guess": "Tehran",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-14T20:46:24Z",
+      "handle_or_url": "pi_jt",
+      "key": "telegram:pi_jt",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 65.0,
+      "last_quote_message_count": 17,
+      "last_seen_at": "2026-05-14T20:46:24Z",
+      "last_success_at": "2026-05-14T20:46:24Z",
+      "last_usable_record_count": 0,
+      "locality_hints": [
+        "Iran",
+        "Tehran"
+      ],
+      "origins": [
+        "site:t.me/s قیمت لحظه ای دلار صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/pi_jt",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "regional_market_channel",
+      "status": "ok",
+      "title": "قیمت لحظه ای دلار تهران",
+      "top_sample": "دلار فردایی تهران ⏳ 180,000 فروش 🔴"
+    },
+    {
       "best_board_message_count": 18,
       "best_buy_sell_pair_count": 0,
       "best_parseability_score": 76.0,
@@ -11371,13 +11409,13 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 165,
-    "active_sources": 261,
+    "active_iran_sources": 166,
+    "active_sources": 262,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 7,
-      "Iran": 172,
+      "Iran": 173,
       "Iraq": 5,
       "Turkey": 10,
       "UAE": 24,
@@ -11388,15 +11426,15 @@
       "aggregator": 20,
       "exchange_shop": 118,
       "regional_fx_board": 30,
-      "regional_market_channel": 73,
+      "regional_market_channel": 74,
       "settlement_channel": 11,
       "unknown": 16
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 45,
+      "direct_shop_expansion": 46,
       "regional_fx_board": 251,
       "regional_market_signal": 247
     },
-    "total_sources": 268
+    "total_sources": 269
   }
 }
