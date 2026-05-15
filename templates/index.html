@@ -46,9 +46,39 @@
             <div class="history-range-summary" id="historyRangeSummary" aria-live="polite">Full history</div>
             <button type="button" class="history-range-reset" id="historyRangeReset">Reset</button>
           </div>
-          <div class="history-range-selector" id="historyRangeSelector" aria-label="Visible date range selector">
-            <input type="range" id="historyRangeStart" min="0" max="0" value="0" aria-label="Start date">
-            <input type="range" id="historyRangeEnd" min="0" max="0" value="0" aria-label="End date">
+          <div class="history-range-brush" aria-label="Visible date range selector">
+            <div
+              class="history-range-brush-track"
+              id="historyRangeBrushTrack"
+              role="slider"
+              tabindex="0"
+              aria-label="Visible date range"
+              aria-valuemin="0"
+              aria-valuemax="0"
+              aria-valuenow="0">
+              <svg
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                class="history-range-overview"
+                aria-hidden="true">
+                <path id="historyRangeOverviewArea" class="history-range-overview-area"></path>
+                <path id="historyRangeOverviewLine" class="history-range-overview-line"></path>
+              </svg>
+              <div class="history-range-dim history-range-dim-left" id="historyRangeDimLeft" aria-hidden="true"></div>
+              <div class="history-range-dim history-range-dim-right" id="historyRangeDimRight" aria-hidden="true"></div>
+              <div class="history-range-window" id="historyRangeWindow" aria-hidden="true">
+                <span class="history-range-handle history-range-handle-left" id="historyRangeLeftHandle">
+                  <span class="history-range-handle-grip"></span>
+                </span>
+                <span class="history-range-handle history-range-handle-right" id="historyRangeRightHandle">
+                  <span class="history-range-handle-grip"></span>
+                </span>
+              </div>
+            </div>
+            <div class="history-range-native-inputs" aria-hidden="true">
+              <input type="range" id="historyRangeStart" min="0" max="0" value="0" tabindex="-1">
+              <input type="range" id="historyRangeEnd" min="0" max="0" value="0" tabindex="-1">
+            </div>
           </div>
           <div class="history-range-presets" aria-label="Timeline range presets">
             <button type="button" data-history-window="30">30D</button>
@@ -319,7 +349,12 @@ let historyChartWrapObserver = null;
 let historyVisibleRange = null;
 let historyRangeControlsBound = false;
 let historyZoomPluginRegistered = false;
+let historyRangeDragState = null;
+let historyRangeDragFrame = null;
+let historyRangePendingX = null;
+let historyRangeLastApply = 0;
 const historyChartCompactQuery = window.matchMedia('(max-width: 700px)');
+const HISTORY_RANGE_DRAG_THROTTLE_MS = 16;
 const latestPointPulsePlugin = {
   id: 'rwLatestPointPulse',
   afterDraw(chart, _args, pluginOptions) {
@@ -463,6 +498,12 @@ function historyRowForIndex(index) {
   return cachedValidRows[bounded] || null;
 }
 
+function clampHistoryValue(value, min, max) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return min;
+  return Math.min(max, Math.max(min, parsed));
+}
+
 function historyMinimumVisibleSpan(rowCount) {
   return rowCount > 1 ? 1 : 0;
 }
@@ -506,15 +547,83 @@ function getHistoryVisibleRange() {
   return normalizeHistoryRange(scale.min, scale.max, cachedValidRows.length);
 }
 
-function updateHistoryRangeTrack(range) {
-  const selector = document.getElementById('historyRangeSelector');
-  if (!selector || !range || cachedValidRows.length <= 1) return;
+function historyRangeToPercents(range) {
+  if (!range || cachedValidRows.length <= 1) return { startPct: 0, endPct: 100 };
 
   const maxIndex = cachedValidRows.length - 1;
-  const startPct = maxIndex > 0 ? (range.start / maxIndex) * 100 : 0;
-  const endPct = maxIndex > 0 ? (range.end / maxIndex) * 100 : 100;
-  selector.style.setProperty('--history-range-start', `${startPct}%`);
-  selector.style.setProperty('--history-range-end', `${endPct}%`);
+  return {
+    startPct: maxIndex > 0 ? (range.start / maxIndex) * 100 : 0,
+    endPct: maxIndex > 0 ? (range.end / maxIndex) * 100 : 100
+  };
+}
+
+function applyHistoryChartRangeFromPercents(startPct, endPct) {
+  if (cachedValidRows.length <= 1) return;
+
+  const maxIndex = cachedValidRows.length - 1;
+  applyHistoryChartRange((startPct / 100) * maxIndex, (endPct / 100) * maxIndex);
+}
+
+function buildHistoryOverviewPath(rows) {
+  if (!rows.length) return { line: '', area: '' };
+  if (rows.length === 1) {
+    return {
+      line: 'M 0 50 L 100 50',
+      area: 'M 0 50 L 100 50 L 100 100 L 0 100 Z'
+    };
+  }
+
+  const values = rows.map(row => row.fixNum).filter(value => Number.isFinite(value));
+  if (!values.length) return { line: '', area: '' };
+
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  const span = Math.max(maxValue - minValue, 1);
+  const points = rows.map((row, index) => {
+    const x = (index / (rows.length - 1)) * 100;
+    const y = 96 - ((row.fixNum - minValue) / span) * 88;
+    return { x, y };
+  });
+  const line = points
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(3)} ${point.y.toFixed(3)}`)
+    .join(' ');
+  return {
+    line,
+    area: `${line} L 100 100 L 0 100 Z`
+  };
+}
+
+function renderHistoryRangeOverview(rows = cachedValidRows) {
+  const line = document.getElementById('historyRangeOverviewLine');
+  const area = document.getElementById('historyRangeOverviewArea');
+  if (!line || !area) return;
+
+  const path = buildHistoryOverviewPath(rows);
+  line.setAttribute('d', path.line);
+  area.setAttribute('d', path.area);
+}
+
+function updateHistoryRangeTrack(range) {
+  const track = document.getElementById('historyRangeBrushTrack');
+  const windowEl = document.getElementById('historyRangeWindow');
+  const leftDim = document.getElementById('historyRangeDimLeft');
+  const rightDim = document.getElementById('historyRangeDimRight');
+  const leftHandle = document.getElementById('historyRangeLeftHandle');
+  const rightHandle = document.getElementById('historyRangeRightHandle');
+  if (!track || !windowEl || !leftDim || !rightDim || !range || cachedValidRows.length <= 1) return;
+
+  const { startPct, endPct } = historyRangeToPercents(range);
+  const widthPct = Math.max(endPct - startPct, 0.8);
+  windowEl.style.left = `${startPct}%`;
+  windowEl.style.width = `${widthPct}%`;
+  leftDim.style.width = `${startPct}%`;
+  rightDim.style.left = `${endPct}%`;
+  track.setAttribute('aria-valuemax', String(cachedValidRows.length - 1));
+  track.setAttribute('aria-valuenow', String(range.start));
+  track.setAttribute('aria-valuetext', historyRangeText(range));
+  if (leftHandle) leftHandle.classList.toggle('is-active', historyRangeDragState && historyRangeDragState.type !== 'right');
+  if (rightHandle) rightHandle.classList.toggle('is-active', historyRangeDragState && historyRangeDragState.type !== 'left');
+  windowEl.classList.toggle('is-dragging', historyRangeDragState && historyRangeDragState.type === 'window');
 }
 
 function updateHistoryPresetState(range) {
@@ -531,6 +640,16 @@ function updateHistoryPresetState(range) {
       : !isFull && range.end === rowCount - 1 && visiblePoints === Math.min(rowCount, Number(value));
     button.classList.toggle('is-active', Boolean(isActive));
   });
+}
+
+function historyRangeText(range) {
+  if (!range) return 'Full history';
+
+  const startRow = cachedValidRows[range.start];
+  const endRow = cachedValidRows[range.end];
+  if (!startRow || !endRow) return 'Full history';
+
+  return `${formatHistoryDate(startRow.date)} - ${formatHistoryDate(endRow.date)}`;
 }
 
 function syncHistoryRangeControls(range = getHistoryVisibleRange()) {
@@ -557,9 +676,7 @@ function syncHistoryRangeControls(range = getHistoryVisibleRange()) {
   const startRow = cachedValidRows[range.start];
   const endRow = cachedValidRows[range.end];
   const fullRange = range.start === 0 && range.end === rowCount - 1;
-  const dateText = startRow && endRow
-    ? `${formatHistoryDate(startRow.date)} - ${formatHistoryDate(endRow.date)}`
-    : 'Full history';
+  const dateText = startRow && endRow ? historyRangeText(range) : 'Full history';
   summary.textContent = fullRange ? `Full history: ${dateText}` : dateText;
 
   updateHistoryRangeTrack(range);
@@ -569,7 +686,11 @@ function syncHistoryRangeControls(range = getHistoryVisibleRange()) {
 function syncHistoryRangeControlsFromChart() {
   const range = getHistoryVisibleRange();
   historyVisibleRange = range;
+  applyHistoryChartViewportSettings(range);
   syncHistoryRangeControls(range);
+  if (historyChart) {
+    historyChart.update('none');
+  }
 }
 
 function applyHistoryChartRange(start, end) {
@@ -579,6 +700,7 @@ function applyHistoryChartRange(start, end) {
   historyVisibleRange = range;
   historyChart.options.scales.x.min = range.start;
   historyChart.options.scales.x.max = range.end;
+  applyHistoryChartViewportSettings(range);
   historyChart.update('none');
   syncHistoryRangeControls(range);
 }
@@ -595,12 +717,137 @@ function resetHistoryRange() {
   }
 }
 
+function applyHistoryRangeDragAtX(clientX) {
+  if (!historyRangeDragState) return;
+
+  const track = document.getElementById('historyRangeBrushTrack');
+  if (!track) return;
+
+  const rect = track.getBoundingClientRect();
+  const deltaPct = rect.width > 0 ? ((clientX - historyRangeDragState.startX) / rect.width) * 100 : 0;
+  const minSpanPct = cachedValidRows.length > 1
+    ? (historyMinimumVisibleSpan(cachedValidRows.length) / (cachedValidRows.length - 1)) * 100
+    : 100;
+  const span = historyRangeDragState.endPct - historyRangeDragState.startPct;
+  let nextStartPct = historyRangeDragState.startPct;
+  let nextEndPct = historyRangeDragState.endPct;
+
+  if (historyRangeDragState.type === 'left') {
+    nextStartPct = clampHistoryValue(historyRangeDragState.startPct + deltaPct, 0, historyRangeDragState.endPct - minSpanPct);
+  } else if (historyRangeDragState.type === 'right') {
+    nextEndPct = clampHistoryValue(historyRangeDragState.endPct + deltaPct, historyRangeDragState.startPct + minSpanPct, 100);
+  } else {
+    nextStartPct = clampHistoryValue(historyRangeDragState.startPct + deltaPct, 0, 100 - span);
+    nextEndPct = nextStartPct + span;
+  }
+
+  applyHistoryChartRangeFromPercents(nextStartPct, nextEndPct);
+}
+
+function requestHistoryRangeDragFrame(event) {
+  if (!historyRangeDragState) return;
+
+  historyRangePendingX = event.clientX;
+  if (historyRangeDragFrame) return;
+
+  historyRangeDragFrame = window.requestAnimationFrame(() => {
+    historyRangeDragFrame = null;
+    if (!Number.isFinite(historyRangePendingX)) return;
+
+    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    if (now - historyRangeLastApply < HISTORY_RANGE_DRAG_THROTTLE_MS) {
+      requestHistoryRangeDragFrame({ clientX: historyRangePendingX });
+      return;
+    }
+
+    historyRangeLastApply = now;
+    const nextX = historyRangePendingX;
+    historyRangePendingX = null;
+    applyHistoryRangeDragAtX(nextX);
+  });
+}
+
+function stopHistoryRangeDrag() {
+  if (historyRangeDragFrame) {
+    window.cancelAnimationFrame(historyRangeDragFrame);
+  }
+  historyRangeDragFrame = null;
+  historyRangePendingX = null;
+  historyRangeDragState = null;
+  updateHistoryRangeTrack(getHistoryVisibleRange());
+  window.removeEventListener('pointermove', requestHistoryRangeDragFrame);
+  window.removeEventListener('pointerup', stopHistoryRangeDrag);
+  window.removeEventListener('pointercancel', stopHistoryRangeDrag);
+}
+
+function startHistoryRangeDrag(type, event, range = getHistoryVisibleRange()) {
+  if (!range || cachedValidRows.length <= 1 || !event) return;
+
+  event.preventDefault();
+  const { startPct, endPct } = historyRangeToPercents(range);
+  historyRangeDragState = {
+    type,
+    startX: event.clientX,
+    startPct,
+    endPct
+  };
+  historyRangeLastApply = 0;
+  updateHistoryRangeTrack(range);
+  window.addEventListener('pointermove', requestHistoryRangeDragFrame);
+  window.addEventListener('pointerup', stopHistoryRangeDrag);
+  window.addEventListener('pointercancel', stopHistoryRangeDrag);
+}
+
+function handleHistoryRangeTrackPointerDown(event) {
+  if (!event || (event.pointerType === 'mouse' && event.button !== 0) || cachedValidRows.length <= 1) return;
+
+  const track = document.getElementById('historyRangeBrushTrack');
+  const range = getHistoryVisibleRange();
+  if (!track || !range) return;
+
+  const rect = track.getBoundingClientRect();
+  const clickPct = rect.width > 0 ? clampHistoryValue(((event.clientX - rect.left) / rect.width) * 100, 0, 100) : 0;
+  const { startPct, endPct } = historyRangeToPercents(range);
+  const span = Math.max(endPct - startPct, 0.8);
+  const nextStartPct = clampHistoryValue(clickPct - span / 2, 0, 100 - span);
+  const nextEndPct = nextStartPct + span;
+  applyHistoryChartRangeFromPercents(nextStartPct, nextEndPct);
+  startHistoryRangeDrag('window', event, getHistoryVisibleRange());
+}
+
+function handleHistoryRangeKeydown(event) {
+  if (!event || cachedValidRows.length <= 1) return;
+
+  const range = getHistoryVisibleRange();
+  if (!range) return;
+
+  const visibleSpan = range.end - range.start;
+  const step = event.shiftKey ? Math.max(3, Math.round(visibleSpan / 3)) : 1;
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    applyHistoryChartRange(range.start - step, range.end - step);
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    applyHistoryChartRange(range.start + step, range.end + step);
+  } else if (event.key === 'Home') {
+    event.preventDefault();
+    applyHistoryChartRange(0, visibleSpan);
+  } else if (event.key === 'End') {
+    event.preventDefault();
+    applyHistoryChartRange(cachedValidRows.length - 1 - visibleSpan, cachedValidRows.length - 1);
+  }
+}
+
 function bindHistoryRangeControls() {
   if (historyRangeControlsBound) return;
 
   const startInput = document.getElementById('historyRangeStart');
   const endInput = document.getElementById('historyRangeEnd');
   const resetButton = document.getElementById('historyRangeReset');
+  const track = document.getElementById('historyRangeBrushTrack');
+  const windowEl = document.getElementById('historyRangeWindow');
+  const leftHandle = document.getElementById('historyRangeLeftHandle');
+  const rightHandle = document.getElementById('historyRangeRightHandle');
   if (!startInput || !endInput) return;
 
   historyRangeControlsBound = true;
@@ -617,6 +864,32 @@ function bindHistoryRangeControls() {
 
   if (resetButton) {
     resetButton.addEventListener('click', resetHistoryRange);
+  }
+
+  if (track) {
+    track.addEventListener('pointerdown', handleHistoryRangeTrackPointerDown);
+    track.addEventListener('keydown', handleHistoryRangeKeydown);
+  }
+
+  if (windowEl) {
+    windowEl.addEventListener('pointerdown', (event) => {
+      event.stopPropagation();
+      startHistoryRangeDrag('window', event);
+    });
+  }
+
+  if (leftHandle) {
+    leftHandle.addEventListener('pointerdown', (event) => {
+      event.stopPropagation();
+      startHistoryRangeDrag('left', event);
+    });
+  }
+
+  if (rightHandle) {
+    rightHandle.addEventListener('pointerdown', (event) => {
+      event.stopPropagation();
+      startHistoryRangeDrag('right', event);
+    });
   }
 
   document.querySelectorAll('[data-history-window]').forEach(button => {
@@ -638,23 +911,45 @@ function bindHistoryRangeControls() {
   });
 }
 
-function historyChartViewportSettings() {
+function historyChartViewportSettings(rangeOverride = null) {
   const isCompact = historyChartCompactQuery.matches;
+  const range = rangeOverride || getHistoryVisibleRange();
+  const visiblePoints = range
+    ? range.end - range.start + 1
+    : Math.max(cachedValidRows.length, 1);
+  const chartWidth = historyChart && historyChart.canvas && historyChart.canvas.parentElement
+    ? historyChart.canvas.parentElement.getBoundingClientRect().width
+    : 0;
+  const targetSpacing = isCompact ? 54 : 58;
+  const maxTicksFromWidth = chartWidth > 0 ? Math.floor(chartWidth / targetSpacing) : (isCompact ? 6 : 12);
+  const maxTicks = Math.min(
+    isCompact ? 8 : 14,
+    Math.max(isCompact ? 4 : 6, maxTicksFromWidth)
+  );
+  const dailyLimit = isCompact ? 7 : 16;
+  const stepSize = visiblePoints <= dailyLimit
+    ? 1
+    : Math.max(1, Math.ceil((visiblePoints - 1) / Math.max(maxTicks - 1, 1)));
+  const tickLimit = Math.min(visiblePoints, Math.floor((visiblePoints - 1) / stepSize) + 1);
+
   return {
     mode: isCompact ? 'compact' : 'regular',
-    tickLimit: isCompact ? 6 : 10,
+    tickLimit,
+    stepSize,
     tickRotation: isCompact ? 35 : 0
   };
 }
 
-function applyHistoryChartViewportSettings() {
+function applyHistoryChartViewportSettings(rangeOverride = null) {
   if (!historyChart || !historyChart.options || !historyChart.options.scales) return;
 
-  const settings = historyChartViewportSettings();
+  const settings = historyChartViewportSettings(rangeOverride);
   const xTicks = historyChart.options.scales.x && historyChart.options.scales.x.ticks;
   if (!xTicks) return;
 
   xTicks.maxTicksLimit = settings.tickLimit;
+  xTicks.stepSize = settings.stepSize;
+  xTicks.autoSkip = false;
   xTicks.minRotation = settings.tickRotation;
   xTicks.maxRotation = settings.tickRotation;
   historyChartLastViewportMode = settings.mode;
@@ -745,11 +1040,11 @@ function renderHistoryChart(validRows) {
       holder.appendChild(note);
     }
     syncHistoryRangeControls(null);
+    renderHistoryRangeOverview([]);
     return;
   }
 
   const colors = historyThemeColors();
-  const viewportSettings = historyChartViewportSettings();
   const zoomEnabled = registerHistoryZoomPlugin() && validRows.length > 1;
   const maxIndex = validRows.length - 1;
   const initialRange = normalizeHistoryRange(
@@ -757,6 +1052,7 @@ function renderHistoryChart(validRows) {
     historyVisibleRange ? historyVisibleRange.end : maxIndex,
     validRows.length
   );
+  const viewportSettings = historyChartViewportSettings(initialRange);
   const ctx = canvas.getContext('2d');
   historyChart = new Chart(ctx, {
     type: 'line',
@@ -843,17 +1139,22 @@ function renderHistoryChart(validRows) {
           max: validRows.length > 1 && initialRange ? initialRange.end : 0.5,
           ticks: {
             color: colors.label,
-            autoSkip: true,
+            autoSkip: false,
             maxTicksLimit: viewportSettings.tickLimit,
+            stepSize: viewportSettings.stepSize,
             minRotation: viewportSettings.tickRotation,
             maxRotation: viewportSettings.tickRotation,
             precision: 0,
             callback(value) {
+              if (Math.abs(value - Math.round(value)) > 0.001) return '';
               const row = historyRowForIndex(value);
               return row ? formatHistoryDate(row.date, { compact: true }) : '';
             }
           },
-          grid: { color: colors.grid }
+          grid: {
+            color: colors.grid,
+            lineWidth: 1.05
+          }
         },
         y: {
           ticks: {
@@ -869,6 +1170,7 @@ function renderHistoryChart(validRows) {
   });
   historyVisibleRange = initialRange;
   historyChartLastViewportMode = viewportSettings.mode;
+  renderHistoryRangeOverview(validRows);
   syncHistoryRangeControls(initialRange);
   scheduleHistoryChartLayoutRefresh();
 }
