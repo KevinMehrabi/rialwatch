@@ -101,6 +101,33 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertIn("rebuildOnModeChange", self.template)
         self.assertIn("bindHistoryChartResizeHandling()", self.template)
 
+    def test_history_chart_supports_touch_tooltip_zoom_and_range_selection(self) -> None:
+        self.assertIn("hammerjs@2.0.8", self.layout)
+        self.assertIn("chartjs-plugin-zoom@2.2.0", self.layout)
+        self.assertIn('id="historyRangePanel"', self.template)
+        self.assertIn('id="historyRangeStart"', self.template)
+        self.assertIn('id="historyRangeEnd"', self.template)
+        self.assertIn('data-history-window="30"', self.template)
+        self.assertIn('data-history-window="all"', self.template)
+        self.assertIn("Chart.register(window.ChartZoom)", self.template)
+        self.assertIn("interaction: {", self.template)
+        self.assertIn("mode: 'nearest'", self.template)
+        self.assertIn("axis: 'x'", self.template)
+        self.assertIn("intersect: false", self.template)
+        self.assertIn("touchstart", self.template)
+        self.assertIn("touchmove", self.template)
+        self.assertIn("tooltip: {", self.template)
+        self.assertIn("Rate: ${formatHistoryRate(item.parsed.y)} IRR per USD", self.template)
+        self.assertIn("pinch: { enabled: true }", self.template)
+        self.assertIn("pan: {", self.template)
+        self.assertIn("onPanComplete: syncHistoryRangeControlsFromChart", self.template)
+        self.assertIn("onZoomComplete: syncHistoryRangeControlsFromChart", self.template)
+        self.assertIn("historyChart.options.scales.x.min = range.start", self.template)
+        self.assertIn("historyChart.options.scales.x.max = range.end", self.template)
+        self.assertIn(".history-range-panel", self.layout)
+        self.assertIn(".history-range-selector", self.layout)
+        self.assertIn("touch-action: none", self.layout)
+
     def test_homepage_grids_use_stable_responsive_tracks(self) -> None:
         self.assertIn(
             "grid-template-columns: minmax(280px, 360px) minmax(0, 1fr)",

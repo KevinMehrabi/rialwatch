@@ -20,6 +20,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
 <style>
   :root {
     color-scheme: dark;
@@ -611,6 +613,146 @@
     flex: 1 1 auto;
   }
 
+  .history-range-panel {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .history-range-panel[hidden] {
+    display: none;
+  }
+
+  .history-range-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .history-range-summary {
+    color: var(--rw-text-muted);
+    font-size: 0.78rem;
+    line-height: 1.2;
+    min-width: 0;
+  }
+
+  .history-range-reset,
+  .history-range-presets button {
+    border: 1px solid var(--rw-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--rw-text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 6px 9px;
+    white-space: nowrap;
+    transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  }
+
+  .history-range-reset:hover,
+  .history-range-reset:focus-visible,
+  .history-range-presets button:hover,
+  .history-range-presets button:focus-visible,
+  .history-range-presets button.is-active {
+    background: rgba(var(--rw-accent-rgb), 0.14);
+    border-color: rgba(var(--rw-accent-rgb), 0.56);
+    color: var(--rw-text-strong);
+  }
+
+  .history-range-selector {
+    position: relative;
+    height: 28px;
+    --history-range-start: 0%;
+    --history-range-end: 100%;
+  }
+
+  .history-range-selector::before,
+  .history-range-selector::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    height: 4px;
+    border-radius: 999px;
+    pointer-events: none;
+  }
+
+  .history-range-selector::before {
+    left: 0;
+    right: 0;
+    background: var(--rw-surface-3);
+  }
+
+  .history-range-selector::after {
+    left: var(--history-range-start);
+    right: calc(100% - var(--history-range-end));
+    background: var(--rw-accent);
+    box-shadow: 0 0 0 1px rgba(var(--rw-accent-rgb), 0.22);
+  }
+
+  .history-range-selector input[type="range"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 28px;
+    margin: 0;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .history-range-selector input[type="range"]::-webkit-slider-runnable-track {
+    height: 28px;
+    background: transparent;
+  }
+
+  .history-range-selector input[type="range"]::-moz-range-track {
+    height: 28px;
+    background: transparent;
+    border: 0;
+  }
+
+  .history-range-selector input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: 6px;
+    border: 2px solid var(--rw-bg);
+    border-radius: 999px;
+    background: var(--rw-text-strong);
+    box-shadow: 0 0 0 1px rgba(var(--rw-accent-rgb), 0.56);
+    cursor: grab;
+    pointer-events: auto;
+  }
+
+  .history-range-selector input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--rw-bg);
+    border-radius: 999px;
+    background: var(--rw-text-strong);
+    box-shadow: 0 0 0 1px rgba(var(--rw-accent-rgb), 0.56);
+    cursor: grab;
+    pointer-events: auto;
+  }
+
+  .history-range-selector input[type="range"]:active::-webkit-slider-thumb {
+    cursor: grabbing;
+  }
+
+  .history-range-selector input[type="range"]:active::-moz-range-thumb {
+    cursor: grabbing;
+  }
+
+  .history-range-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
   .history-point-pulse {
     position: absolute;
     display: none;
@@ -824,6 +966,8 @@
     width: 100%;
     height: 100%;
     min-height: 0;
+    cursor: crosshair;
+    touch-action: none;
   }
 
   .recent-table-wrap {

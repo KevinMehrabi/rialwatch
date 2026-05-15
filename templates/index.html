@@ -41,6 +41,22 @@
             <span class="history-point-marker"></span>
           </div>
         </div>
+        <div class="history-range-panel" id="historyRangePanel" hidden>
+          <div class="history-range-meta">
+            <div class="history-range-summary" id="historyRangeSummary" aria-live="polite">Full history</div>
+            <button type="button" class="history-range-reset" id="historyRangeReset">Reset</button>
+          </div>
+          <div class="history-range-selector" id="historyRangeSelector" aria-label="Visible date range selector">
+            <input type="range" id="historyRangeStart" min="0" max="0" value="0" aria-label="Start date">
+            <input type="range" id="historyRangeEnd" min="0" max="0" value="0" aria-label="End date">
+          </div>
+          <div class="history-range-presets" aria-label="Timeline range presets">
+            <button type="button" data-history-window="30">30D</button>
+            <button type="button" data-history-window="90">90D</button>
+            <button type="button" data-history-window="365">1Y</button>
+            <button type="button" data-history-window="all">All</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -300,6 +316,9 @@ let cachedValidRows = [];
 let historyChartResizeFrame = null;
 let historyChartLastViewportMode = null;
 let historyChartWrapObserver = null;
+let historyVisibleRange = null;
+let historyRangeControlsBound = false;
+let historyZoomPluginRegistered = false;
 const historyChartCompactQuery = window.matchMedia('(max-width: 700px)');
 const latestPointPulsePlugin = {
   id: 'rwLatestPointPulse',
@@ -324,6 +343,15 @@ const latestPointPulsePlugin = {
     }
 
     const coords = point.getProps(['x', 'y'], false);
+    const area = chart.chartArea;
+    if (
+      area &&
+      (coords.x < area.left || coords.x > area.right || coords.y < area.top || coords.y > area.bottom)
+    ) {
+      pulse.style.display = 'none';
+      return;
+    }
+
     pulse.style.left = `${chart.canvas.offsetLeft + coords.x}px`;
     pulse.style.top = `${chart.canvas.offsetTop + coords.y}px`;
     pulse.style.display = 'block';
@@ -331,6 +359,42 @@ const latestPointPulsePlugin = {
   afterDestroy() {
     const pulse = document.getElementById('historyChartPulse');
     if (pulse) pulse.style.display = 'none';
+  }
+};
+
+const historyHoverGuidePlugin = {
+  id: 'rwHistoryHoverGuide',
+  afterDraw(chart) {
+    const active = chart.tooltip && typeof chart.tooltip.getActiveElements === 'function'
+      ? chart.tooltip.getActiveElements()
+      : [];
+    if (!active.length || !active[0].element) return;
+
+    const area = chart.chartArea;
+    const coords = active[0].element.getProps(['x', 'y'], false);
+    if (!area || coords.x < area.left || coords.x > area.right || coords.y < area.top || coords.y > area.bottom) {
+      return;
+    }
+
+    const colors = historyThemeColors();
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = `rgba(${colors.accentRgb}, 0.56)`;
+    ctx.moveTo(coords.x, area.top);
+    ctx.lineTo(coords.x, area.bottom);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.arc(coords.x, coords.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = colors.accent;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
   }
 };
 
@@ -348,6 +412,230 @@ function historyThemeColors() {
     label: styles.getPropertyValue('--rw-chart-label').trim() || '#94a3b8',
     grid: styles.getPropertyValue('--rw-chart-grid').trim() || '#1e293b'
   };
+}
+
+function registerHistoryZoomPlugin() {
+  if (historyZoomPluginRegistered) return true;
+  if (!window.Chart || !window.ChartZoom) return false;
+
+  try {
+    const pluginRegistry = Chart.registry && Chart.registry.plugins;
+    if (pluginRegistry && typeof pluginRegistry.get === 'function' && pluginRegistry.get('zoom')) {
+      historyZoomPluginRegistered = true;
+      return true;
+    }
+    Chart.register(window.ChartZoom);
+    historyZoomPluginRegistered = true;
+    return true;
+  } catch (_error) {
+    return false;
+  }
+}
+
+function formatHistoryRate(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed)
+    ? parsed.toLocaleString('en-US', { maximumFractionDigits: 0 })
+    : 'Unavailable';
+}
+
+function formatHistoryDate(dateText, { compact = false } = {}) {
+  const raw = String(dateText || '').trim();
+  if (!raw) return 'Unknown date';
+
+  const parsed = new Date(`${raw}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return raw;
+
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: compact ? undefined : 'numeric',
+    timeZone: 'UTC'
+  });
+  return formatter.format(parsed);
+}
+
+function historyRowForIndex(index) {
+  if (!cachedValidRows.length) return null;
+  const numeric = Number(index);
+  if (!Number.isFinite(numeric)) return null;
+  const bounded = Math.min(cachedValidRows.length - 1, Math.max(0, Math.round(numeric)));
+  return cachedValidRows[bounded] || null;
+}
+
+function historyMinimumVisibleSpan(rowCount) {
+  return rowCount > 1 ? 1 : 0;
+}
+
+function normalizeHistoryRange(start, end, rowCount) {
+  if (rowCount <= 0) return null;
+
+  const maxIndex = rowCount - 1;
+  const minSpan = historyMinimumVisibleSpan(rowCount);
+  let nextStart = Math.round(Number(start));
+  let nextEnd = Math.round(Number(end));
+
+  if (!Number.isFinite(nextStart)) nextStart = 0;
+  if (!Number.isFinite(nextEnd)) nextEnd = maxIndex;
+  nextStart = Math.min(maxIndex, Math.max(0, nextStart));
+  nextEnd = Math.min(maxIndex, Math.max(0, nextEnd));
+
+  if (nextEnd < nextStart) {
+    const swap = nextStart;
+    nextStart = nextEnd;
+    nextEnd = swap;
+  }
+
+  if (nextEnd - nextStart < minSpan) {
+    if (nextStart + minSpan <= maxIndex) {
+      nextEnd = nextStart + minSpan;
+    } else {
+      nextStart = Math.max(0, nextEnd - minSpan);
+    }
+  }
+
+  return { start: nextStart, end: nextEnd };
+}
+
+function getHistoryVisibleRange() {
+  if (!historyChart || !historyChart.scales || !historyChart.scales.x) {
+    return normalizeHistoryRange(0, cachedValidRows.length - 1, cachedValidRows.length);
+  }
+
+  const scale = historyChart.scales.x;
+  return normalizeHistoryRange(scale.min, scale.max, cachedValidRows.length);
+}
+
+function updateHistoryRangeTrack(range) {
+  const selector = document.getElementById('historyRangeSelector');
+  if (!selector || !range || cachedValidRows.length <= 1) return;
+
+  const maxIndex = cachedValidRows.length - 1;
+  const startPct = maxIndex > 0 ? (range.start / maxIndex) * 100 : 0;
+  const endPct = maxIndex > 0 ? (range.end / maxIndex) * 100 : 100;
+  selector.style.setProperty('--history-range-start', `${startPct}%`);
+  selector.style.setProperty('--history-range-end', `${endPct}%`);
+}
+
+function updateHistoryPresetState(range) {
+  const buttons = document.querySelectorAll('[data-history-window]');
+  const rowCount = cachedValidRows.length;
+  if (!buttons.length || !range || rowCount <= 1) return;
+
+  const visiblePoints = range.end - range.start + 1;
+  buttons.forEach(button => {
+    const value = button.getAttribute('data-history-window');
+    const isFull = range.start === 0 && range.end === rowCount - 1;
+    const isActive = value === 'all'
+      ? isFull
+      : !isFull && range.end === rowCount - 1 && visiblePoints === Math.min(rowCount, Number(value));
+    button.classList.toggle('is-active', Boolean(isActive));
+  });
+}
+
+function syncHistoryRangeControls(range = getHistoryVisibleRange()) {
+  const panel = document.getElementById('historyRangePanel');
+  const startInput = document.getElementById('historyRangeStart');
+  const endInput = document.getElementById('historyRangeEnd');
+  const summary = document.getElementById('historyRangeSummary');
+  const rowCount = cachedValidRows.length;
+
+  if (!panel || !startInput || !endInput || !summary) return;
+  if (rowCount <= 1 || !range) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  startInput.min = '0';
+  startInput.max = String(rowCount - 1);
+  endInput.min = '0';
+  endInput.max = String(rowCount - 1);
+  startInput.value = String(range.start);
+  endInput.value = String(range.end);
+
+  const startRow = cachedValidRows[range.start];
+  const endRow = cachedValidRows[range.end];
+  const fullRange = range.start === 0 && range.end === rowCount - 1;
+  const dateText = startRow && endRow
+    ? `${formatHistoryDate(startRow.date)} - ${formatHistoryDate(endRow.date)}`
+    : 'Full history';
+  summary.textContent = fullRange ? `Full history: ${dateText}` : dateText;
+
+  updateHistoryRangeTrack(range);
+  updateHistoryPresetState(range);
+}
+
+function syncHistoryRangeControlsFromChart() {
+  const range = getHistoryVisibleRange();
+  historyVisibleRange = range;
+  syncHistoryRangeControls(range);
+}
+
+function applyHistoryChartRange(start, end) {
+  const range = normalizeHistoryRange(start, end, cachedValidRows.length);
+  if (!range || !historyChart || !historyChart.options || !historyChart.options.scales) return;
+
+  historyVisibleRange = range;
+  historyChart.options.scales.x.min = range.start;
+  historyChart.options.scales.x.max = range.end;
+  historyChart.update('none');
+  syncHistoryRangeControls(range);
+}
+
+function resetHistoryRange() {
+  const fullRange = normalizeHistoryRange(0, cachedValidRows.length - 1, cachedValidRows.length);
+  historyVisibleRange = fullRange;
+  if (historyChart && typeof historyChart.resetZoom === 'function') {
+    historyChart.resetZoom('none');
+  }
+
+  if (fullRange) {
+    applyHistoryChartRange(fullRange.start, fullRange.end);
+  }
+}
+
+function bindHistoryRangeControls() {
+  if (historyRangeControlsBound) return;
+
+  const startInput = document.getElementById('historyRangeStart');
+  const endInput = document.getElementById('historyRangeEnd');
+  const resetButton = document.getElementById('historyRangeReset');
+  if (!startInput || !endInput) return;
+
+  historyRangeControlsBound = true;
+  startInput.addEventListener('input', () => {
+    const minSpan = historyMinimumVisibleSpan(cachedValidRows.length);
+    const start = Math.min(Number(startInput.value), Number(endInput.value) - minSpan);
+    applyHistoryChartRange(start, Number(endInput.value));
+  });
+  endInput.addEventListener('input', () => {
+    const minSpan = historyMinimumVisibleSpan(cachedValidRows.length);
+    const end = Math.max(Number(endInput.value), Number(startInput.value) + minSpan);
+    applyHistoryChartRange(Number(startInput.value), end);
+  });
+
+  if (resetButton) {
+    resetButton.addEventListener('click', resetHistoryRange);
+  }
+
+  document.querySelectorAll('[data-history-window]').forEach(button => {
+    button.addEventListener('click', () => {
+      const value = button.getAttribute('data-history-window');
+      const rowCount = cachedValidRows.length;
+      if (rowCount <= 0) return;
+      if (value === 'all') {
+        applyHistoryChartRange(0, rowCount - 1);
+        return;
+      }
+
+      const windowSize = Number(value);
+      if (!Number.isFinite(windowSize)) return;
+      const end = rowCount - 1;
+      const start = Math.max(0, end - windowSize + 1);
+      applyHistoryChartRange(start, end);
+    });
+  });
 }
 
 function historyChartViewportSettings() {
@@ -456,20 +744,27 @@ function renderHistoryChart(validRows) {
       note.textContent = 'No valid published historical fixes available yet.';
       holder.appendChild(note);
     }
+    syncHistoryRangeControls(null);
     return;
   }
 
   const colors = historyThemeColors();
   const viewportSettings = historyChartViewportSettings();
+  const zoomEnabled = registerHistoryZoomPlugin() && validRows.length > 1;
+  const maxIndex = validRows.length - 1;
+  const initialRange = normalizeHistoryRange(
+    historyVisibleRange ? historyVisibleRange.start : 0,
+    historyVisibleRange ? historyVisibleRange.end : maxIndex,
+    validRows.length
+  );
   const ctx = canvas.getContext('2d');
   historyChart = new Chart(ctx, {
     type: 'line',
-    plugins: [latestPointPulsePlugin],
+    plugins: [latestPointPulsePlugin, historyHoverGuidePlugin],
     data: {
-      labels: validRows.map(r => r.date),
       datasets: [{
         label: 'USD/IRR',
-        data: validRows.map(r => r.fixNum),
+        data: validRows.map((r, index) => ({ x: index, y: r.fixNum })),
         borderColor: colors.accent,
         backgroundColor: colors.accentFill,
         pointBackgroundColor: colors.accent,
@@ -477,6 +772,7 @@ function renderHistoryChart(validRows) {
         pointBorderWidth: 0,
         pointRadius: 0,
         pointHoverRadius: 0,
+        pointHitRadius: 18,
         tension: 0.2,
         fill: true
       }]
@@ -484,33 +780,96 @@ function renderHistoryChart(validRows) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      parsing: false,
+      normalized: true,
+      events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove', 'touchend'],
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      },
       plugins: {
         legend: { display: false },
-        rwLatestPointPulse: { enabled: true }
+        tooltip: {
+          enabled: true,
+          displayColors: false,
+          backgroundColor: 'rgba(15, 23, 42, 0.94)',
+          borderColor: `rgba(${colors.accentRgb}, 0.38)`,
+          borderWidth: 1,
+          titleColor: '#ffffff',
+          bodyColor: '#e5edf8',
+          padding: 10,
+          callbacks: {
+            title(items) {
+              const item = Array.isArray(items) && items.length ? items[0] : null;
+              const row = item ? historyRowForIndex(item.parsed.x) : null;
+              return row ? formatHistoryDate(row.date) : '';
+            },
+            label(item) {
+              return `Rate: ${formatHistoryRate(item.parsed.y)} IRR per USD`;
+            }
+          }
+        },
+        rwLatestPointPulse: { enabled: true },
+        zoom: zoomEnabled ? {
+          limits: {
+            x: {
+              min: 0,
+              max: maxIndex,
+              minRange: Math.min(Math.max(historyMinimumVisibleSpan(validRows.length), 1), Math.max(maxIndex, 1))
+            }
+          },
+          pan: {
+            enabled: true,
+            mode: 'x',
+            threshold: 8,
+            onPanComplete: syncHistoryRangeControlsFromChart
+          },
+          zoom: {
+            mode: 'x',
+            wheel: {
+              enabled: true,
+              speed: 0.08
+            },
+            pinch: { enabled: true },
+            onZoomComplete: syncHistoryRangeControlsFromChart
+          }
+        } : {}
       },
       scales: {
         x: {
+          type: 'linear',
+          min: validRows.length > 1 && initialRange ? initialRange.start : -0.5,
+          max: validRows.length > 1 && initialRange ? initialRange.end : 0.5,
           ticks: {
             color: colors.label,
             autoSkip: true,
             maxTicksLimit: viewportSettings.tickLimit,
             minRotation: viewportSettings.tickRotation,
             maxRotation: viewportSettings.tickRotation,
+            precision: 0,
             callback(value) {
-              const raw = this.getLabelForValue(value);
-              if (typeof raw !== 'string') return raw;
-              const parts = raw.split('-');
-              if (parts.length === 3) return `${parts[1]}-${parts[2]}`;
-              return raw;
+              const row = historyRowForIndex(value);
+              return row ? formatHistoryDate(row.date, { compact: true }) : '';
             }
           },
           grid: { color: colors.grid }
         },
-        y: { ticks: { color: colors.label }, grid: { color: colors.grid } }
+        y: {
+          ticks: {
+            color: colors.label,
+            callback(value) {
+              return formatHistoryRate(value);
+            }
+          },
+          grid: { color: colors.grid }
+        }
       }
     }
   });
+  historyVisibleRange = initialRange;
   historyChartLastViewportMode = viewportSettings.mode;
+  syncHistoryRangeControls(initialRange);
   scheduleHistoryChartLayoutRefresh();
 }
 
@@ -693,5 +1052,6 @@ async function loadRegionalMarketCards() {
 loadSeries();
 loadRegionalMarketCards();
 bindHistoryChartResizeHandling();
+bindHistoryRangeControls();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
