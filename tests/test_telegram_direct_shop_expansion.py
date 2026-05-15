@@ -4,6 +4,57 @@ from scripts import telegram_direct_shop_expansion as direct
 
 
 class TelegramDirectShopExpansionTests(unittest.TestCase):
+    def test_search_urls_include_brave_and_duckduckgo_surfaces(self) -> None:
+        urls = direct.search_urls_for_query("site:t.me/s صرافی تهران دلار", pages=1)
+        self.assertEqual(len(urls), 2)
+        self.assertIn("lite.duckduckgo.com", urls[0])
+        self.assertIn("search.brave.com", urls[1])
+
+    def test_quote_active_tehran_shop_is_likely_direct_shop(self) -> None:
+        self.assertTrue(
+            direct.is_likely_direct_shop(
+                has_phone=False,
+                has_address=False,
+                has_map=False,
+                has_shop_name=True,
+                city_guess="Tehran",
+                quote_posts=4,
+                pair_posts=0,
+                parseability_score=48,
+                commentary_heavy=False,
+            )
+        )
+
+    def test_commentary_heavy_channel_is_not_likely_direct_shop(self) -> None:
+        self.assertFalse(
+            direct.is_likely_direct_shop(
+                has_phone=True,
+                has_address=True,
+                has_map=False,
+                has_shop_name=True,
+                city_guess="Tehran",
+                quote_posts=6,
+                pair_posts=3,
+                parseability_score=80,
+                commentary_heavy=True,
+            )
+        )
+
+    def test_contactable_shop_identity_is_likely_even_before_quotes(self) -> None:
+        self.assertTrue(
+            direct.is_likely_direct_shop(
+                has_phone=True,
+                has_address=False,
+                has_map=False,
+                has_shop_name=True,
+                city_guess="unknown",
+                quote_posts=0,
+                pair_posts=0,
+                parseability_score=18,
+                commentary_heavy=False,
+            )
+        )
+
     def test_registry_updates_mark_inside_iran_shop(self) -> None:
         row = direct.ChannelScore(
             handle="sarafitehran",

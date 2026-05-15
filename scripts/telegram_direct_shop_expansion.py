@@ -11,9 +11,11 @@ import argparse
 import csv
 import datetime as dt
 import html
+import http.client
 import json
 import random
 import re
+import socket
 import sys
 import time
 import urllib.error
@@ -44,6 +46,8 @@ USER_AGENT = (
 DEFAULT_QUERIES = [
     "site:t.me صرافی",
     "site:t.me/s صرافی",
+    "site:t.me/s صرافی ایران",
+    "site:t.me/s صرافی تهران",
     "صرافی تهران",
     "صرافی مشهد",
     "صرافی اصفهان",
@@ -60,6 +64,11 @@ DEFAULT_QUERIES = [
     "currency exchange iran telegram",
     "حواله صرافی",
     "حواله دلار صرافی",
+    "کانال صرافی تهران",
+    "کانال نرخ دلار تهران",
+    "کانال قیمت دلار تهران",
+    "تلگرام صرافی تهران دلار",
+    "تلگرام نرخ دلار صرافی",
     "site:t.me/s صرافی تهران دلار",
     "site:t.me/s نرخ دلار صرافی تهران",
     "site:t.me/s خرید فروش دلار تهران صرافی",
@@ -69,6 +78,13 @@ DEFAULT_QUERIES = [
     "site:t.me/s تابلوی صرافی دلار",
     "site:t.me/s قیمت لحظه ای دلار صرافی",
     "site:t.me/s نرخ حواله دلار صرافی",
+    "site:t.me/s نرخ دلار فردوسی",
+    "site:t.me/s قیمت دلار فردوسی",
+    "site:t.me/s نرخ دلار سبزه میدان",
+    "site:t.me/s قیمت دلار سبزه میدان",
+    "site:t.me/s قیمت دلار تهران صرافی",
+    "site:t.me/s خرید دلار تهران صرافی",
+    "site:t.me/s فروش دلار تهران صرافی",
     "site:t.me/s صرافی مشهد دلار",
     "site:t.me/s صرافی اصفهان دلار",
     "site:t.me/s صرافی شیراز دلار",
@@ -115,7 +131,17 @@ COMMENTARY_WORDS = (
     "signal",
     "forex",
     "crypto",
+    "کریپتو",
     "bitcoin",
+    "بیت کوین",
+    "اتریوم",
+    "ریپل",
+    "دوج",
+    "چارت",
+    "تکنیکال",
+    "ارز مجازی",
+    "نوبیتکس",
+    "تترلند",
 )
 QUOTE_WORDS = ("دلار", "usd", "یورو", "eur", "نرخ", "قیمت", "buy", "sell", "خرید", "فروش")
 
@@ -203,6 +229,20 @@ def clean_text(raw_html: str) -> str:
     return text.strip()
 
 
+def read_response_text(response: object) -> Tuple[Optional[str], Optional[str]]:
+    try:
+        body = response.read()  # type: ignore[attr-defined]
+        error = None
+    except http.client.IncompleteRead as exc:
+        body = exc.partial or b""
+        error = "incomplete_read"
+    if body is None:
+        return None, error
+    if isinstance(body, str):
+        return body, error
+    return body.decode("utf-8", errors="replace"), error
+
+
 def fetch_url(url: str, timeout: int) -> Tuple[Optional[str], Optional[int], Optional[str]]:
     req = urllib.request.Request(
         url=url,
@@ -216,15 +256,22 @@ def fetch_url(url: str, timeout: int) -> Tuple[Optional[str], Optional[int], Opt
 
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
-            body = resp.read().decode("utf-8", errors="replace")
-            return body, int(resp.status), None
+            body, read_error = read_response_text(resp)
+            return body, int(resp.status), read_error
     except urllib.error.HTTPError as exc:
-        body = exc.read().decode("utf-8", errors="replace")
-        return body, int(exc.code), f"http_{exc.code}"
+        body, read_error = read_response_text(exc)
+        error = f"http_{exc.code}"
+        if read_error:
+            error = f"{error}:{read_error}"
+        return body, int(exc.code), error
     except urllib.error.URLError as exc:
         return None, None, f"network_error:{exc.reason}"
+    except socket.timeout:
+        return None, None, "timeout"
     except TimeoutError:
         return None, None, "timeout"
+    except OSError as exc:
+        return None, None, f"os_error:{exc}"
 
 
 def normalize_channel_url(raw: str) -> Optional[Tuple[str, str]]:
@@ -286,6 +333,9 @@ def search_urls_for_query(query: str, pages: int) -> List[str]:
     for page_idx in range(pages):
         offset = page_idx * 30
         urls.append(f"https://r.jina.ai/http://lite.duckduckgo.com/lite/?q={encoded}&s={offset}")
+        brave_query = urllib.parse.quote(query, safe="")
+        brave_path = f"search.brave.com/search%3Fq%3D{brave_query}%26source%3Dweb%26offset%3D{offset}%26spellcheck%3D0"
+        urls.append(f"https://r.jina.ai/http://{brave_path}")
     return urls
 
 
@@ -415,6 +465,55 @@ def quote_like(msg: str) -> Tuple[bool, bool]:
     return is_quote, has_pair
 
 
+def is_likely_direct_shop(
+    *,
+    has_phone: bool,
+    has_address: bool,
+    has_map: bool,
+    has_shop_name: bool,
+    city_guess: str,
+    quote_posts: int,
+    pair_posts: int,
+    parseability_score: int,
+    commentary_heavy: bool,
+) -> bool:
+    if commentary_heavy:
+        return False
+
+    direct_signals = sum(
+        [
+            1 if has_phone else 0,
+            1 if has_address else 0,
+            1 if has_map else 0,
+            1 if has_shop_name else 0,
+            1 if city_guess in INSIDE_IRAN_CITIES else 0,
+            1 if pair_posts >= 2 else 0,
+            1 if quote_posts >= 4 else 0,
+        ]
+    )
+    if direct_signals >= 4:
+        return True
+
+    quote_active_inside_iran_shop = (
+        city_guess in INSIDE_IRAN_CITIES
+        and has_shop_name
+        and quote_posts >= 4
+        and parseability_score >= 45
+    )
+    contactable_shop_with_quotes = (
+        has_shop_name
+        and (has_phone or has_address or has_map)
+        and (quote_posts >= 2 or pair_posts >= 1)
+        and parseability_score >= 35
+    )
+    contactable_shop_identity = (
+        has_shop_name
+        and (has_phone or has_address or has_map)
+        and parseability_score >= 10
+    )
+    return quote_active_inside_iran_shop or contactable_shop_with_quotes or contactable_shop_identity
+
+
 def score_channel(candidate: Candidate, timeout: int) -> ChannelScore:
     page, status, err = fetch_url(candidate.public_url, timeout=timeout)
     title = ""
@@ -467,9 +566,11 @@ def score_channel(candidate: Candidate, timeout: int) -> ChannelScore:
     has_address = any(w in text_with_title.lower() for w in [x.lower() for x in ADDR_WORDS])
     has_shop_name = "صرافی" in text_with_title or "sarafi" in text_with_title.lower() or "exchange" in text_with_title.lower()
 
-    commentary_hits = sum(text_with_title.lower().count(w.lower()) for w in COMMENTARY_WORDS)
-    shop_hits = sum(text_with_title.lower().count(w.lower()) for w in SHOP_WORDS)
-    commentary_heavy = commentary_hits > max(4, shop_hits * 1.3)
+    lowered_text = text_with_title.lower()
+    commentary_hits = sum(lowered_text.count(w.lower()) for w in COMMENTARY_WORDS)
+    shop_hits = sum(lowered_text.count(w.lower()) for w in SHOP_WORDS)
+    has_direct_contact = has_phone or has_address or has_map
+    commentary_heavy = commentary_hits >= max(3, shop_hits * 1.2) and not has_direct_contact
 
     for msg in blocks:
         is_quote, has_pair = quote_like(msg)
@@ -488,19 +589,17 @@ def score_channel(candidate: Candidate, timeout: int) -> ChannelScore:
     else:
         parseability = 0
 
-    direct_signals = sum(
-        [
-            1 if has_phone else 0,
-            1 if has_address else 0,
-            1 if has_map else 0,
-            1 if has_shop_name else 0,
-            1 if city_guess in INSIDE_IRAN_CITIES else 0,
-            1 if pair_posts >= 2 else 0,
-            1 if quote_posts >= 4 else 0,
-        ]
+    likely_shop = is_likely_direct_shop(
+        has_phone=has_phone,
+        has_address=has_address,
+        has_map=has_map,
+        has_shop_name=has_shop_name,
+        city_guess=city_guess,
+        quote_posts=quote_posts,
+        pair_posts=pair_posts,
+        parseability_score=parseability,
+        commentary_heavy=commentary_heavy,
     )
-
-    likely_shop = bool(direct_signals >= 4 and not commentary_heavy)
 
     return ChannelScore(
         handle=candidate.handle,
@@ -546,6 +645,26 @@ def registry_handles(payload: Dict[str, object]) -> Set[str]:
     for row in registry_sources(payload, platform="telegram", active_only=False):
         handle = str(row.get("handle_or_url", "")).strip().lower()
         if handle:
+            handles.add(handle)
+    return handles
+
+
+def parse_int(value: object) -> int:
+    try:
+        return int(float(str(value or "").strip()))
+    except ValueError:
+        return 0
+
+
+def registry_skip_handles(payload: Dict[str, object]) -> Set[str]:
+    handles: Set[str] = set()
+    for row in registry_sources(payload, platform="telegram", active_only=False):
+        handle = str(row.get("handle_or_url", "")).strip().lower()
+        if not handle:
+            continue
+        source_kind = str(row.get("source_kind", "")).strip()
+        best_usable = parse_int(row.get("best_usable_record_count"))
+        if source_kind == "exchange_shop" or best_usable > 0:
             handles.add(handle)
     return handles
 
@@ -675,6 +794,30 @@ def write_candidates(path: Path, rows: Sequence[ChannelScore]) -> None:
             )
 
 
+def rejection_reasons(rows: Sequence[ChannelScore]) -> Dict[str, int]:
+    reasons: Dict[str, int] = {}
+
+    def add(reason: str) -> None:
+        reasons[reason] = reasons.get(reason, 0) + 1
+
+    for row in rows:
+        if row.likely_individual_shop:
+            continue
+        if row.commentary_heavy:
+            add("commentary_heavy")
+        elif row.quote_post_count < 3 and row.buy_sell_pair_count < 2:
+            add("too_few_quote_posts")
+        elif row.parseability_score < 45:
+            add("low_parseability")
+        elif not row.has_shop_name:
+            add("missing_shop_identity")
+        elif row.city_guess not in INSIDE_IRAN_CITIES and not (row.has_phone or row.has_address or row.has_map_link):
+            add("not_inside_iran_or_contactable")
+        else:
+            add("monitor_only")
+    return dict(sorted(reasons.items()))
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Expand inside-Iran direct-shop Telegram channels")
     parser.add_argument("--survey-dir", default="survey_outputs", help="Survey output directory")
@@ -690,13 +833,16 @@ def main() -> int:
         raise SystemExit(f"missing required file: {existing_csv}")
 
     candidates_csv = survey_dir / "direct_shop_expansion_candidates.csv"
+    scored_candidates_csv = survey_dir / "direct_shop_expansion_scored_candidates.csv"
     summary_json = survey_dir / "direct_shop_expansion_summary.json"
     registry_path = survey_dir / REGISTRY_FILENAME
 
     existing_handles, existing_inside_shop_count = load_existing_registry(existing_csv)
     source_registry = load_source_registry(registry_path)
     known_registry_handles = registry_handles(source_registry)
-    existing_handles.update(known_registry_handles)
+    all_known_handles = set(existing_handles) | known_registry_handles
+    skip_handles = set(existing_handles)
+    skip_handles.update(registry_skip_handles(source_registry))
 
     print("[1/4] Running discovery expansion...")
     discovered, search_debug = run_discovery(
@@ -706,13 +852,16 @@ def main() -> int:
         request_sleep=args.sleep,
     )
 
-    # Keep only handles not already present in existing registry.
-    new_candidates = [c for h, c in discovered.items() if h not in existing_handles]
+    # Keep new handles, plus known registry handles that have not already been
+    # classified as exchange shops or produced usable records.
+    new_candidates = [c for h, c in discovered.items() if h not in skip_handles]
     new_candidates.sort(key=lambda c: (len(c.query_hits), c.handle), reverse=True)
     if args.max_crawl > 0:
         new_candidates = new_candidates[: args.max_crawl]
+    new_candidate_count = sum(1 for candidate in new_candidates if candidate.handle not in all_known_handles)
+    known_suspect_count = len(new_candidates) - new_candidate_count
 
-    print(f"Discovered candidate handles (new vs existing): {len(new_candidates)}")
+    print(f"Discovered candidate handles selected for scoring: {len(new_candidates)}")
 
     print("[2/4] Crawling and scoring candidate channels...")
     scored: List[ChannelScore] = []
@@ -736,6 +885,7 @@ def main() -> int:
 
     print("[3/4] Writing candidate dataset...")
     write_candidates(candidates_csv, filtered)
+    write_candidates(scored_candidates_csv, scored)
     source_registry = upsert_registry_sources(
         source_registry,
         registry_updates_from_scores(filtered),
@@ -752,11 +902,18 @@ def main() -> int:
     summary = {
         "generated_at": now_iso(),
         "search_debug": search_debug,
-        "existing_registry_handles": len(existing_handles),
+        "existing_registry_handles": len(all_known_handles),
+        "channel_survey_handles": len(existing_handles),
+        "known_registry_handles": len(known_registry_handles),
+        "known_handles_skipped_as_sufficiently_tracked": len(skip_handles),
         "durable_source_registry": source_registry.get("summary", {}),
         "existing_inside_iran_likely_shop_channels": existing_inside_shop_count,
-        "new_channels_discovered": len(new_candidates),
+        "new_channels_discovered": new_candidate_count,
+        "known_suspect_channels_rescored": known_suspect_count,
+        "channels_selected_for_scoring": len(new_candidates),
+        "channels_scored": len(scored),
         "new_channels_retained_after_scoring": len(filtered),
+        "rejection_reasons": rejection_reasons(scored),
         "likely_direct_shop_channels": len(likely_direct_shops),
         "inside_iran_likely_direct_shop_channels": len(inside_iran_likely),
         "channels_with_buy_sell_quotes": len(with_pairs),

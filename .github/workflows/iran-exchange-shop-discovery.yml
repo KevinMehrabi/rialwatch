@@ -1,6 +1,13 @@
 name: Iran Exchange Shop Discovery
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/iran-exchange-shop-discovery.yml"
+      - "scripts/telegram_direct_shop_expansion.py"
+      - "scripts/regional_source_registry.py"
   schedule:
     # Run 6x daily (UTC) for continuous discovery refresh.
     # Rough Iran local-time cadence: early morning, morning, noon, afternoon, evening, late night.
@@ -59,6 +66,7 @@ jobs:
           data_branch="data/live"
           targets=(
             "survey_outputs/direct_shop_expansion_candidates.csv"
+            "survey_outputs/direct_shop_expansion_scored_candidates.csv"
             "survey_outputs/direct_shop_expansion_summary.json"
             "survey_outputs/regional_signal_source_registry.json"
           )
