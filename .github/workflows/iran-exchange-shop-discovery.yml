@@ -19,7 +19,7 @@ permissions:
 
 concurrency:
   group: iran-exchange-shop-discovery
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   discover_iran_exchange_shops:
@@ -57,9 +57,9 @@ jobs:
           python3 scripts/telegram_direct_shop_expansion.py \
             --survey-dir state/survey_outputs \
             --pages-per-query 2 \
-            --max-crawl 420 \
-            --timeout 20 \
-            --sleep 0.55
+            --max-crawl 160 \
+            --timeout 12 \
+            --sleep 0.35
 
       - name: Persist discovery outputs
         run: |
