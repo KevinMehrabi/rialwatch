@@ -56,10 +56,10 @@ jobs:
         run: |
           python3 scripts/telegram_direct_shop_expansion.py \
             --survey-dir state/survey_outputs \
-            --pages-per-query 2 \
-            --max-crawl 160 \
-            --timeout 12 \
-            --sleep 0.35
+            --pages-per-query 1 \
+            --max-crawl 80 \
+            --timeout 10 \
+            --sleep 0.25
 
       - name: Persist discovery outputs
         run: |
