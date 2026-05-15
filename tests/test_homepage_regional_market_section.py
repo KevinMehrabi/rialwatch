@@ -143,7 +143,10 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertIn("height: 38px", self.layout)
         self.assertIn("min-height: 38px", self.layout)
         self.assertIn(".history-range-overview-line", self.layout)
+        self.assertIn("stroke: rgba(var(--rw-accent-rgb), 0.56)", self.layout)
         self.assertIn(".history-range-window", self.layout)
+        self.assertIn(".history-range-window::before", self.layout)
+        self.assertIn(".history-range-window::after", self.layout)
         self.assertIn(".history-range-handle", self.layout)
         self.assertIn("touch-action: none", self.layout)
 
