@@ -6043,7 +6043,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         used_fallback = bool(publication_selection.get("used_fallback"))
         same_as_previous_day = bool(publication_selection.get("same_as_previous_day"))
         previous_day_fix = parse_number(publication_selection.get("previous_day_fix"))
-        delta_vs_previous_day = parse_number(publication_selection.get("delta_vs_previous_day"))
+        delta_vs_previous_day = parse_float(publication_selection.get("delta_vs_previous_day"))
         delta_pct_vs_previous_day = parse_float(publication_selection.get("delta_pct_vs_previous_day"))
         if selected_sample:
             if used_fallback:
@@ -6084,7 +6084,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         delta_meta = compute_previous_day_delta_metadata(site_dir, latest_day, street)
         same_as_previous_day = bool(delta_meta.get("same_as_previous_day"))
         previous_day_fix = parse_number(delta_meta.get("previous_day_fix"))
-        delta_vs_previous_day = parse_number(delta_meta.get("delta_vs_previous_day"))
+        delta_vs_previous_day = parse_float(delta_meta.get("delta_vs_previous_day"))
         delta_pct_vs_previous_day = parse_float(delta_meta.get("delta_pct_vs_previous_day"))
     if delta_vs_previous_day is not None and delta_pct_vs_previous_day is not None:
         prior_day_change_text = (
