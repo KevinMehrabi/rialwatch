@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-16T05:24:19Z",
+  "generated_at": "2026-05-16T08:51:39Z",
   "schema_version": 1,
   "sources": [
     {
@@ -7921,6 +7921,44 @@
       "title": "مظنه ارز در بازار تهران"
     },
     {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 14,
+      "best_parseability_score": 100.0,
+      "best_quote_message_count": 15,
+      "best_usable_record_count": 15,
+      "city_guess": "Tehran",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-16T08:51:39Z",
+      "handle_or_url": "melisarafi",
+      "key": "telegram:melisarafi",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 14,
+      "last_parseability_score": 100.0,
+      "last_quote_message_count": 15,
+      "last_seen_at": "2026-05-16T08:51:39Z",
+      "last_success_at": "2026-05-16T08:51:39Z",
+      "last_usable_record_count": 15,
+      "locality_hints": [
+        "Iran",
+        "Tehran"
+      ],
+      "origins": [
+        "site:t.me/s صرافی ایران"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/melisarafi",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "🇮🇷 صرافی ملی ایران 🇮🇷",
+      "top_sample": "اخرین نرخ بازار امروز چهار شنبه 💠 1405/02/09 #هرات_نقدی دلار آمریکا 🇺🇸 170000 خریدار 🔵 دلار آمریکا 🇺🇸 170500 فروش 🔴 ✅ @TomanDollar110 🌹 🌹 🌹"
+    },
+    {
       "best_board_message_count": 20,
       "best_buy_sell_pair_count": 0,
       "best_parseability_score": 62.0,
@@ -12099,13 +12137,13 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 172,
-    "active_sources": 272,
+    "active_iran_sources": 173,
+    "active_sources": 273,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 8,
-      "Iran": 180,
+      "Iran": 181,
       "Iraq": 6,
       "Turkey": 12,
       "UAE": 26,
@@ -12114,17 +12152,17 @@
     },
     "sources_by_kind": {
       "aggregator": 19,
-      "exchange_shop": 134,
+      "exchange_shop": 135,
       "regional_fx_board": 31,
       "regional_market_channel": 75,
       "settlement_channel": 11,
       "unknown": 17
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 58,
+      "direct_shop_expansion": 59,
       "regional_fx_board": 258,
       "regional_market_signal": 263
     },
-    "total_sources": 287
+    "total_sources": 288
   }
 }
