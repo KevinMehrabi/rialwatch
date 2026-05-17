@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T05:35:19Z",
+  "generated_at": "2026-05-17T08:56:53Z",
   "schema_version": 1,
   "sources": [
     {
@@ -6947,8 +6947,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-05-17T05:35:19Z",
-      "last_success_at": "2026-05-17T05:35:19Z",
+      "last_seen_at": "2026-05-17T08:56:53Z",
+      "last_success_at": "2026-05-17T08:56:53Z",
       "last_usable_record_count": 0,
       "origins": [
         "site:t.me/s صرافی ایران"
@@ -11407,9 +11407,12 @@
       "best_buy_sell_pair_count": 0,
       "best_parseability_score": 47.0,
       "best_quote_message_count": 5,
-      "best_usable_record_count": 0,
-      "city_guess": "unknown",
-      "country_guess": "unknown",
+      "best_usable_record_count": 5,
+      "city_guess": "Qom",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
       "first_seen_at": "2026-05-10T16:33:30Z",
       "handle_or_url": "tabdealplatform",
       "key": "telegram:tabdealplatform",
@@ -11417,9 +11420,13 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 47.0,
       "last_quote_message_count": 5,
-      "last_seen_at": "2026-05-10T16:33:30Z",
-      "last_success_at": "2026-05-10T16:33:30Z",
-      "last_usable_record_count": 0,
+      "last_seen_at": "2026-05-17T08:56:53Z",
+      "last_success_at": "2026-05-17T08:56:53Z",
+      "last_usable_record_count": 5,
+      "locality_hints": [
+        "Iran",
+        "Qom"
+      ],
       "origins": [
         "site:t.me صرافی"
       ],
@@ -11428,10 +11435,10 @@
       "signal_families": [
         "direct_shop_expansion"
       ],
-      "source_kind": "regional_market_channel",
+      "source_kind": "exchange_shop",
       "status": "ok",
       "title": "Tabdeal.org | صرافی تبدیل",
-      "top_sample": "📣 چرا با وجود جنگ، بازارهای جهانی در حال صعودند؟ 🔸 شاخص S&P 500 روز گذشته با وجود ادامه بسته ماندن تنگه هرمز رکوردشکنی کرد و بیت‌کوین هم رشدی ۳ درصدی ثبت کرد. ماجرا چیست و چرا با وجود ادامه جنگ، بازارها به فاز صعود برگشته‌اند؟ 🔗 ادامه مطلب... اخبار لحظه‌به‌لحظ"
+      "top_sample": "🔴 ۱۰ شانس ویژه برای اولین‌ها 🔸 با انجام اولین معامله در بازارهای معاملاتی صرافی ارز دیجیتال تبدیل ۱۰ شانس جدید برای برنده شدن PS5، آيفون 17، طلا و میلیون‌ها ارز دیجیتال دریافت خواهید کرد. همین حالا اولین معامله را انجام دهید تا شانس بیشتری برای چرخاندن گردونه"
     },
     {
       "best_board_message_count": 0,
@@ -12374,24 +12381,24 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 175,
+    "active_iran_sources": 176,
     "active_sources": 277,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 8,
-      "Iran": 183,
+      "Iran": 184,
       "Iraq": 6,
       "Turkey": 12,
       "UAE": 26,
       "UK": 22,
-      "unknown": 31
+      "unknown": 30
     },
     "sources_by_kind": {
       "aggregator": 19,
-      "exchange_shop": 139,
+      "exchange_shop": 140,
       "regional_fx_board": 31,
-      "regional_market_channel": 78,
+      "regional_market_channel": 77,
       "settlement_channel": 11,
       "unknown": 17
     },
