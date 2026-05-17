@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T12:37:01Z",
+  "generated_at": "2026-05-17T16:35:21Z",
   "schema_version": 1,
   "sources": [
     {
@@ -6947,8 +6947,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-05-17T12:37:01Z",
-      "last_success_at": "2026-05-17T12:37:01Z",
+      "last_seen_at": "2026-05-17T16:35:21Z",
+      "last_success_at": "2026-05-17T16:35:21Z",
       "last_usable_record_count": 0,
       "origins": [
         "site:t.me/s صرافی ایران"
@@ -7137,8 +7137,8 @@
       "last_buy_sell_pair_count": 20,
       "last_parseability_score": 100.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-05-17T12:37:01Z",
-      "last_success_at": "2026-05-17T12:37:01Z",
+      "last_seen_at": "2026-05-17T16:35:21Z",
+      "last_success_at": "2026-05-17T16:35:21Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Istanbul",
@@ -7162,7 +7162,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "top_sample": "شنبه ۲۶ اردیبهشت ۱۴۰۵ ساعت ۱۱:۳۱ ترکیه نرخ ارزهای استانبول با تومان نام ارز فروش خرید دلار 181,270 176,400 یورو 210,820 204,500 لیر 4,016 3,857 درهم 49,150 47,920 پوند 241,850 232,700 یوان 28,120 25,560 تتر 180,530 174,960 نرخ ارزهای استانبول با لیر نام ارز فر"
+      "top_sample": "شنبه ۲۶ اردیبهشت ۱۴۰۵ ساعت ۱۲:۳۱ ترکیه نرخ ارزهای استانبول با تومان نام ارز فروش خرید دلار 180,620 175,800 یورو 210,070 203,800 لیر 4,015 3,843 درهم 48,980 47,750 پوند 240,930 231,900 یوان 28,010 25,470 تتر 180,220 174,660 نرخ ارزهای استانبول با لیر نام ارز فر"
     },
     {
       "best_board_message_count": 0,
@@ -11365,6 +11365,44 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 63.0,
+      "best_quote_message_count": 18,
+      "best_usable_record_count": 18,
+      "city_guess": "Qom",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-17T16:35:21Z",
+      "handle_or_url": "soleimaniex",
+      "key": "telegram:soleimaniex",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 63.0,
+      "last_quote_message_count": 18,
+      "last_seen_at": "2026-05-17T16:35:21Z",
+      "last_success_at": "2026-05-17T16:35:21Z",
+      "last_usable_record_count": 18,
+      "locality_hints": [
+        "Iran",
+        "Qom"
+      ],
+      "origins": [
+        "site:t.me/s صرافی مشهد دلار"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/soleimaniex",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "کانال صرافي سليماني",
+      "top_sample": "💰 سکه امام۸۶: 199/500/000 💰 نیم سکه ۸۶: 103/000/000 💰 ربع سکه ۸۶: 57/000/000 💰 سکه امام زیر ۸۶: 196/000/000 💰 نیم سکه زیر ۸۶: 98/000/000 💰 ربع سکه زیر۸۶: 50/000/000 (تمامي نرخ ها حدودي جهت اطلاع ميباشد براي انجام معامله و قيمت قطعي فقط تماس بگيرید.) آدرس کانال"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
       "best_parseability_score": 59.0,
       "best_quote_message_count": 16,
       "best_usable_record_count": 14,
@@ -12383,13 +12421,13 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 176,
-    "active_sources": 277,
+    "active_iran_sources": 177,
+    "active_sources": 278,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 8,
-      "Iran": 184,
+      "Iran": 185,
       "Iraq": 6,
       "Turkey": 12,
       "UAE": 26,
@@ -12398,17 +12436,17 @@
     },
     "sources_by_kind": {
       "aggregator": 19,
-      "exchange_shop": 140,
+      "exchange_shop": 141,
       "regional_fx_board": 31,
       "regional_market_channel": 77,
       "settlement_channel": 11,
       "unknown": 17
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 66,
+      "direct_shop_expansion": 67,
       "regional_fx_board": 258,
       "regional_market_signal": 263
     },
-    "total_sources": 295
+    "total_sources": 296
   }
 }
