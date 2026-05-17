@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-17T01:16:42Z",
+  "generated_at": "2026-05-17T05:35:19Z",
   "schema_version": 1,
   "sources": [
     {
@@ -1386,6 +1386,43 @@
       "source_kind": "unknown",
       "status": "ok",
       "title": "BBCPersian"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 16.0,
+      "best_quote_message_count": 0,
+      "best_usable_record_count": 0,
+      "city_guess": "London",
+      "country_guess": "UK",
+      "country_hints": [
+        "UK"
+      ],
+      "first_seen_at": "2026-05-17T05:35:19Z",
+      "handle_or_url": "beholdisraelchannel",
+      "key": "telegram:beholdisraelchannel",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 16.0,
+      "last_quote_message_count": 0,
+      "last_seen_at": "2026-05-17T05:35:19Z",
+      "last_usable_record_count": 0,
+      "locality_hints": [
+        "London",
+        "UK"
+      ],
+      "origins": [
+        "sarafi telegram"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/beholdisraelchannel",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "Amir Tsarfati",
+      "top_sample": "The New York Times reports that the United States has arrested Mohammed Baqir Saad Daoud al-Saadi, a senior commander in the Iraqi Hezbollah Brigades militia, and filed terrorism charges against him. He is accused of planning at least 18 attacks in Europe, the"
     },
     {
       "best_board_message_count": 0,
@@ -6910,8 +6947,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-05-16T20:30:44Z",
-      "last_success_at": "2026-05-16T20:30:44Z",
+      "last_seen_at": "2026-05-17T05:35:19Z",
+      "last_success_at": "2026-05-17T05:35:19Z",
       "last_usable_record_count": 0,
       "origins": [
         "site:t.me/s صرافی ایران"
@@ -11212,6 +11249,45 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 62.0,
+      "best_quote_message_count": 15,
+      "best_usable_record_count": 15,
+      "city_guess": "Kerman",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-17T05:35:19Z",
+      "handle_or_url": "shahin_exchange",
+      "key": "telegram:shahin_exchange",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 62.0,
+      "last_quote_message_count": 15,
+      "last_seen_at": "2026-05-17T05:35:19Z",
+      "last_success_at": "2026-05-17T05:35:19Z",
+      "last_usable_record_count": 15,
+      "locality_hints": [
+        "Iran",
+        "Kerman"
+      ],
+      "origins": [
+        "site:t.me صرافی",
+        "site:t.me/s صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/shahin_exchange",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "سکه و صرافی زمردی",
+      "top_sample": "1404/11/29 ⏱ 16:02 ♻️ آخرین انواع ارز در #بازار_آزاد (تومان) 💰 #دلار 🇺🇸 [بازار: ۱۶۳,۳۸۰][واقعی : ۱۶۲,۳۲۰] 💰 #یورو 🇪🇺 [بازار: ۱۹۲,۷۹۰][واقعی : ۱۹۱,۵۴۰] 💰 #پوند_انگلستان 🏴 󐁧󐁢󐁥󐁮󐁧󐁿 [بازار: ۲۲۲,۲۰۰][واقعی : ۲۲۰,۷۶۰] 💰 #دلار_کانادا 🇨🇦 [بازار: ۱۱۹,۲۷۰][واقعی : ۱۱۸,۵۰"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
       "best_parseability_score": 42.0,
       "best_quote_message_count": 5,
       "best_usable_record_count": 5,
@@ -12298,32 +12374,32 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 174,
-    "active_sources": 276,
+    "active_iran_sources": 175,
+    "active_sources": 277,
     "sources_by_country": {
       "Afghanistan": 6,
       "Armenia": 1,
       "Germany": 8,
-      "Iran": 182,
+      "Iran": 183,
       "Iraq": 6,
       "Turkey": 12,
       "UAE": 26,
-      "UK": 21,
+      "UK": 22,
       "unknown": 31
     },
     "sources_by_kind": {
       "aggregator": 19,
-      "exchange_shop": 137,
+      "exchange_shop": 139,
       "regional_fx_board": 31,
       "regional_market_channel": 78,
       "settlement_channel": 11,
       "unknown": 17
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 64,
+      "direct_shop_expansion": 66,
       "regional_fx_board": 258,
       "regional_market_signal": 263
     },
-    "total_sources": 293
+    "total_sources": 295
   }
 }
