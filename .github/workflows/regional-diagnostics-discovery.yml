@@ -16,7 +16,9 @@ on:
       - "scripts/regional_market_signals_card.py"
   schedule:
     # Refresh regional diagnostics twice daily without coupling it to benchmark publication.
-    - cron: "42 3,15 * * *"
+    # Keep this away from the Iran exchange-shop discovery cadence, which writes
+    # the shared regional source registry at 00/04/08/12/16/20 UTC.
+    - cron: "37 6,18 * * *"
   workflow_dispatch:
 
 permissions:
@@ -192,6 +194,11 @@ jobs:
             exit 0
           fi
 
+          if ! git -C state pull --rebase --autostash origin "${data_branch}"; then
+            echo "::error::Could not rebase regional diagnostics outputs onto latest ${data_branch}; refusing to silently drop refreshed diagnostics."
+            exit 1
+          fi
+
           if [ -z "$(git -C state status --porcelain -- "${existing_targets[@]}")" ]; then
             echo "No regional diagnostics output changes to commit."
             exit 0
@@ -210,13 +217,13 @@ jobs:
 
             echo "Push rejected on attempt ${attempt}; rebasing onto origin/${data_branch} and retrying..."
             if ! git -C state pull --rebase --autostash origin "${data_branch}"; then
-              echo "::warning::Rebase failed after push rejection. Skipping this cycle to avoid workflow noise."
-              exit 0
+              echo "::error::Rebase failed after push rejection; refreshed regional diagnostics were not persisted."
+              exit 1
             fi
           done
 
-          echo "::warning::Failed to push regional diagnostics updates to ${data_branch} after 3 attempts."
-          exit 0
+          echo "::error::Failed to push regional diagnostics updates to ${data_branch} after 3 attempts."
+          exit 1
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
