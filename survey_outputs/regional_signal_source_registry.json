@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-18T09:30:25Z",
+  "generated_at": "2026-05-18T13:38:26Z",
   "schema_version": 1,
   "sources": [
     {
@@ -400,6 +400,36 @@
       "status": "ok",
       "title": "صرافی آنکارا (خدمات ارزی وریالی)",
       "top_sample": "لیر ترکیه در بازار آزاد ترکیه در پنجشنبه ۱۵ تیر ۱۴۰۲ ساعت: ۱۰:۴۱ قیمت فروش: ( 2,000 تومان ) قیمت خرید: ( 1,900 تومان ) اعلام شده است. همچنین نرخ تبدیل تتر(دلار) به لیر در حال حاضر ( 26.09 ) می باشد @ankaraexchange"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 20.0,
+      "best_quote_message_count": 0,
+      "best_usable_record_count": 0,
+      "city_guess": "unknown",
+      "country_guess": "unknown",
+      "first_seen_at": "2026-05-18T13:38:26Z",
+      "handle_or_url": "apadanacurrencyexchange",
+      "key": "telegram:apadanacurrencyexchange",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 20.0,
+      "last_quote_message_count": 0,
+      "last_seen_at": "2026-05-18T13:38:26Z",
+      "last_usable_record_count": 0,
+      "origins": [
+        "site:t.me صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/apadanacurrencyexchange",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "ApadanaCurrencyExchange",
+      "top_sample": "https://t.me/ApadanaCurrencyExchange"
     },
     {
       "best_board_message_count": 0,
@@ -3907,22 +3937,25 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 38.0,
       "best_quote_message_count": 4,
-      "best_usable_record_count": 0,
-      "city_guess": "unknown",
+      "best_usable_record_count": 3,
+      "city_guess": "Istanbul",
       "country_guess": "Iran",
       "country_hints": [
-        "Iran"
+        "Iran",
+        "Turkey"
       ],
       "first_seen_at": "2026-05-04T05:11:08Z",
       "handle_or_url": "exchange_doviz_sarafi",
       "key": "telegram:exchange_doviz_sarafi",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
-      "last_quote_message_count": 4,
-      "last_seen_at": "2026-05-15T05:33:42Z",
-      "last_success_at": "2026-05-15T05:33:42Z",
-      "last_usable_record_count": 0,
+      "last_parseability_score": 38.0,
+      "last_quote_message_count": 3,
+      "last_seen_at": "2026-05-18T13:38:26Z",
+      "last_success_at": "2026-05-18T13:38:26Z",
+      "last_usable_record_count": 3,
       "locality_hints": [
         "Dubai",
         "Herat",
@@ -3933,17 +3966,21 @@
       "origins": [
         "persian",
         "previous_candidate_registry",
+        "site:t.me/s خرید فروش دلار تهران صرافی",
+        "site:t.me/s فروش دلار تهران صرافی",
         "source_registry"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/exchange_doviz_sarafi",
       "signal_families": [
+        "direct_shop_expansion",
         "regional_fx_board",
         "regional_market_signal"
       ],
-      "source_kind": "regional_fx_board",
+      "source_kind": "exchange_shop",
       "status": "ok",
-      "title": "Exchange Doviz صرافی"
+      "title": "Exchange Doviz صرافی",
+      "top_sample": "‏ 🇹🇷 قيمت هاى لحظه اى ارز استانبول 🇹🇷 . . ‏ 🇺🇸 دلار هرات _______25100 ‏ 🇺🇸 دلار استانبول ____26050 ‏ 🇺🇸 دلار تهران ________25450 ‏ 🇪🇺 يورو استانبول ____31450 ‏ 🇪🇺 يورو تهران________30905 ‏ 🇹🇷 لير استانبول _____ 3570 ‏ 🇦🇪 درهم امارات _____ 7030 ‏ 🇬🇧 پوند انگليس"
     },
     {
       "best_board_message_count": 0,
@@ -7138,8 +7175,8 @@
       "last_buy_sell_pair_count": 20,
       "last_parseability_score": 100.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-05-17T20:31:20Z",
-      "last_success_at": "2026-05-17T20:31:20Z",
+      "last_seen_at": "2026-05-18T13:38:26Z",
+      "last_success_at": "2026-05-18T13:38:26Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Istanbul",
@@ -7163,7 +7200,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "top_sample": "شنبه ۲۶ اردیبهشت ۱۴۰۵ ساعت ۱۲:۳۱ ترکیه نرخ ارزهای استانبول با تومان نام ارز فروش خرید دلار 180,620 175,800 یورو 210,070 203,800 لیر 4,015 3,843 درهم 48,980 47,750 پوند 240,930 231,900 یوان 28,010 25,470 تتر 180,220 174,660 نرخ ارزهای استانبول با لیر نام ارز فر"
+      "top_sample": "یکشنبه ۲۷ اردیبهشت ۱۴۰۵ ساعت ۱۲:۳۱ ترکیه نرخ ارزهای استانبول با تومان نام ارز فروش خرید دلار 181,300 176,500 یورو 210,860 204,500 لیر 4,017 3,857 درهم 49,220 47,970 پوند 241,870 232,800 یوان 27,930 25,400 تتر 181,480 175,880 نرخ ارزهای استانبول با لیر نام ارز"
     },
     {
       "best_board_message_count": 0,
@@ -12502,21 +12539,21 @@
       "Turkey": 12,
       "UAE": 26,
       "UK": 22,
-      "unknown": 31
+      "unknown": 32
     },
     "sources_by_kind": {
       "aggregator": 19,
-      "exchange_shop": 143,
-      "regional_fx_board": 31,
+      "exchange_shop": 145,
+      "regional_fx_board": 30,
       "regional_market_channel": 77,
       "settlement_channel": 11,
       "unknown": 17
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 69,
+      "direct_shop_expansion": 71,
       "regional_fx_board": 258,
       "regional_market_signal": 263
     },
-    "total_sources": 298
+    "total_sources": 299
   }
 }
