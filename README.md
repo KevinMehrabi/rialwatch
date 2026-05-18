@@ -19,8 +19,11 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/` dashboard homepage
 - `/fix/YYYY-MM-DD/` daily permalink page
 - `/fix/YYYY-MM-DD.json` daily JSON payload
-- `/api/latest.json` latest payload
+- `/api/latest.json` latest official daily fix payload
+- `/api/intraday/latest.json` latest observed intraday pulse payload
 - `/api/series.json` ordered public historical rows (only valid published fixes: numeric, non-withheld, Green/Amber/Red)
+- `/api/daily_full.json` richer historical export generated from `/fix/*.json`
+- `/api/revisions.json` revision metadata generated from `/fix/*.json`
 - `/api/mapping_audit.json` mapping-version audit for historical backfill/rebuild targeting
 - `/intraday/YYYY-MM-DD/HH-MM-SS.json` timestamped intraday collection attempts
 - `/archive/`, `/status/`, `/methodology/`, `/governance/`
@@ -38,16 +41,17 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
   - `street_official_gap_pct`
   - `street_transfer_gap_pct`
   - `street_crypto_gap_pct`
+  - `street_gold_gap_pct`
   - `official_commercial_trend_7d`
 
-Daily JSON (`/fix/YYYY-MM-DD.json` and `/api/latest.json`) includes:
+Daily JSON (`/fix/YYYY-MM-DD.json`, with the newest official daily fix mirrored to `/api/latest.json`) includes:
 
 - `computed.fix` for the primary benchmark
 - top-level `benchmarks` with per-benchmark results (`fix`, `band`, `status`, `withheld`, etc.)
 - `computed.benchmarks` lightweight summary for homepage/UI compatibility
 - top-level `indicators` and `computed.indicators` for derived percentage signals
 
-Public historical series (`/api/series.json`) remains strict and primary-only.
+Public historical series (`/api/series.json`) remains strict and primary-only. `/api/daily_full.json` is the richer historical export with benchmark layers, source medians/units, indicators, revision metadata, and publication-selection metadata from immutable daily fix files. `/api/intraday/latest.json` is separate and may show a newer observed intraday pulse than the official daily fix.
 
 ## Intraday Collection And Daily Publication
 
@@ -58,10 +62,11 @@ Public historical series (`/api/series.json`) remains strict and primary-only.
   - `13:45`
   - `14:00`
   - `14:15`
-- Official daily publication runs once at `14:20 UTC` and selects from intraday attempts in the publication window (`13:45-14:15 UTC`) using this explicit rule:
-  - choose the latest valid intraday attempt
-  - if the latest attempt is invalid, fall back to the most recent valid attempt
+- Official daily publication runs once at `14:20 UTC` and selects only from intraday attempts collected inside the publication window (`13:45-14:15 UTC`) using this explicit rule:
+  - choose the latest valid in-window intraday attempt
+  - if the latest in-window attempt is invalid, fall back to the most recent valid in-window attempt
   - if none are valid, publish a WITHHOLD daily snapshot (no fabricated rate)
+- Later outside-window intraday attempts may update `/api/intraday/latest.json`, but they do not replace `/fix/YYYY-MM-DD.json` or `/api/latest.json`.
 - Homepage remains daily-only (no live ticker behavior).
 
 ### Supplementary Source Wiring
@@ -165,6 +170,7 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
 - Self-heal schedules (`14:30 UTC`, `15:00 UTC`) rebuild/deploy without pushing snapshot commits.
 - `main` intentionally stays code-only; generated `site/*` and `survey_outputs*` artifacts are ignored on `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
+- Build-only preserves existing `/site/fix/YYYY-MM-DD.json` official fix, `as_of`, and `publication_selection`; it may regenerate pages, archive, series exports, status, and intraday pulse files.
 - Every build writes `/site/api/mapping_audit.json` with the current mapping fingerprint and any stale historical day payloads, so mapping changes can be backfilled explicitly instead of silently drifting.
 
 ## One-Time Backfill (If Early Days Were Lost)

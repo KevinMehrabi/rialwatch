@@ -4646,6 +4646,66 @@ def load_existing_days(site_dir: Path) -> List[str]:
     return dates
 
 
+def load_daily_fix_payload(site_dir: Path, day: Any) -> Optional[Dict[str, Any]]:
+    day_s = day if isinstance(day, str) else iso_date(day)
+    path = site_dir / "fix" / f"{day_s}.json"
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict):
+        return None
+    if not isinstance(payload.get("date"), str):
+        payload["date"] = day_s
+    return payload
+
+
+def load_daily_fix_payloads(site_dir: Path) -> List[Dict[str, Any]]:
+    payloads: List[Dict[str, Any]] = []
+    for day_s in load_existing_days(site_dir):
+        payload = load_daily_fix_payload(site_dir, day_s)
+        if payload is not None:
+            payloads.append(payload)
+    payloads.sort(key=lambda payload: str(payload.get("date") or ""))
+    return payloads
+
+
+def load_latest_official_daily_payload(site_dir: Path) -> Optional[Dict[str, Any]]:
+    payloads = load_daily_fix_payloads(site_dir)
+    if not payloads:
+        return None
+    return json.loads(json.dumps(payloads[-1]))
+
+
+def is_intraday_pulse_payload(payload: Any) -> bool:
+    if not isinstance(payload, dict):
+        return False
+    return any(
+        key in payload
+        for key in (
+            "in_publication_window",
+            "primary_open_market_value",
+            "related_official_fix_date",
+            "related_official_fix_value",
+        )
+    )
+
+
+def load_legacy_latest_official_payload(site_dir: Path) -> Optional[Dict[str, Any]]:
+    latest_path = site_dir / "api" / "latest.json"
+    if not latest_path.exists():
+        return None
+    try:
+        payload = json.loads(latest_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(payload, dict) or is_intraday_pulse_payload(payload):
+        return None
+    return payload
+
+
 def normalize_series_row(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     date = row.get("date")
     if not isinstance(date, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
@@ -4729,6 +4789,123 @@ def load_series_rows(site_dir: Path) -> List[Dict[str, Any]]:
 
     rows = sorted(rows_by_date.values(), key=lambda r: r["date"])
     return rows
+
+
+def revision_int(value: Any) -> int:
+    parsed = parse_float(value)
+    if parsed is None:
+        return 0
+    return max(0, int(parsed))
+
+
+def revision_metadata_changed(existing: Dict[str, Any], daily: Dict[str, Any]) -> bool:
+    existing_computed = existing.get("computed", {}) if isinstance(existing.get("computed"), dict) else {}
+    daily_computed = daily.get("computed", {}) if isinstance(daily.get("computed"), dict) else {}
+    if parse_float(existing_computed.get("fix")) != parse_float(daily_computed.get("fix")):
+        return True
+    if existing.get("as_of") != daily.get("as_of"):
+        return True
+    return existing.get("publication_selection") != daily.get("publication_selection")
+
+
+def ensure_revision_metadata(
+    daily: Dict[str, Any],
+    existing: Optional[Dict[str, Any]] = None,
+    revision_reason: Optional[str] = None,
+) -> None:
+    if existing is None:
+        daily["revision"] = revision_int(daily.get("revision"))
+        daily.setdefault("revision_reason", None)
+        daily.setdefault("revised_at", None)
+        daily.setdefault("original_as_of", daily.get("as_of"))
+        daily.setdefault(
+            "original_publication_selection",
+            json.loads(json.dumps(daily.get("publication_selection")))
+            if isinstance(daily.get("publication_selection"), dict)
+            else None,
+        )
+        return
+
+    original_as_of = existing.get("original_as_of") or existing.get("as_of")
+    original_selection = existing.get("original_publication_selection")
+    if original_selection is None and isinstance(existing.get("publication_selection"), dict):
+        original_selection = json.loads(json.dumps(existing.get("publication_selection")))
+
+    existing_revision = revision_int(existing.get("revision"))
+    if revision_metadata_changed(existing, daily):
+        daily["revision"] = existing_revision + 1
+        daily["revision_reason"] = revision_reason or "daily fix revised from existing published artifact"
+        daily["revised_at"] = iso_ts(utc_now())
+    else:
+        daily["revision"] = existing_revision
+        daily["revision_reason"] = existing.get("revision_reason")
+        daily["revised_at"] = existing.get("revised_at")
+
+    daily["original_as_of"] = original_as_of
+    daily["original_publication_selection"] = original_selection
+
+
+def source_count_from_medians(source_medians: Any) -> int:
+    if not isinstance(source_medians, dict):
+        return 0
+    return len([value for value in source_medians.values() if parse_number(value) is not None])
+
+
+def build_daily_full_row(site_dir: Path, daily: Dict[str, Any]) -> Dict[str, Any]:
+    computed = daily.get("computed", {}) if isinstance(daily.get("computed"), dict) else {}
+    band = computed.get("band", {}) if isinstance(computed.get("band"), dict) else {}
+    source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
+    source_units = computed.get("source_units", {}) if isinstance(computed.get("source_units"), dict) else {}
+    normalized = daily.get("normalized_metrics")
+    if not isinstance(normalized, dict):
+        normalized = build_normalized_market_snapshot(daily)
+    methodology = daily.get("methodology", {}) if isinstance(daily.get("methodology"), dict) else {}
+    selection = daily.get("publication_selection", {}) if isinstance(daily.get("publication_selection"), dict) else {}
+    indicators = daily.get("indicators", {}) if isinstance(daily.get("indicators"), dict) else {}
+    trend_entry = indicators.get("official_commercial_trend_7d", {})
+    official_trend = parse_float(trend_entry.get("value")) if isinstance(trend_entry, dict) else None
+    latest_day = parse_iso_date_text(daily.get("date"))
+    if official_trend is None and latest_day is not None:
+        official_history = reconstruct_benchmark_fix_history(site_dir, "official")
+        official_by_day: Dict[dt.date, float] = {history_day: value for history_day, value in official_history}
+        official_trend = compute_official_trend_from_history_map(
+            official_by_day,
+            latest_day,
+            parse_number(normalized.get("official_commercial_usd_irr")),
+        )
+
+    return {
+        "date": daily.get("date"),
+        "as_of": daily.get("as_of"),
+        "revision": revision_int(daily.get("revision")),
+        "street_usd_irr": normalized.get("street_usd_irr"),
+        "p25": parse_float(band.get("p25")),
+        "p75": parse_float(band.get("p75")),
+        "dispersion": parse_float(computed.get("dispersion")),
+        "status": computed.get("status"),
+        "withheld": computed.get("withheld"),
+        "withhold_reasons": computed.get("withhold_reasons") if isinstance(computed.get("withhold_reasons"), list) else [],
+        "source_count": source_count_from_medians(source_medians),
+        "source_medians": source_medians,
+        "source_units": source_units,
+        "official_commercial_usd_irr": normalized.get("official_commercial_usd_irr"),
+        "regional_transfer_usd_irr": normalized.get("regional_transfer_usd_irr"),
+        "crypto_usdt_irr": normalized.get("crypto_usdt_irr"),
+        "emami_coin_irr": normalized.get("emami_coin_irr"),
+        "gold_implied_usd_irr": normalized.get("gold_implied_usd_irr"),
+        "street_official_gap_pct": normalized.get("street_official_gap_pct"),
+        "street_transfer_gap_pct": normalized.get("street_transfer_gap_pct"),
+        "street_crypto_gap_pct": normalized.get("street_crypto_gap_pct"),
+        "street_gold_gap_pct": normalized.get("street_gold_gap_pct"),
+        "official_commercial_trend_7d": official_trend,
+        "methodology_fingerprint": methodology.get("mapping_fingerprint"),
+        "publication_selection": {
+            "rule": selection.get("rule"),
+            "selected_collected_at": selection.get("selected_collected_at"),
+            "selected_attempt_file": selection.get("selected_attempt_file"),
+            "selection_scope": selection.get("selection_scope"),
+        },
+    }
 
 
 def is_public_series_row(row: Dict[str, Any]) -> bool:
@@ -6232,23 +6409,8 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     write_text(site_dir / "index.html", html)
 
 
-def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, daily: Dict[str, Any]) -> None:
-    daily_out = json.loads(json.dumps(daily))
-    enrich_publication_selection_metadata(site_dir, daily_out)
-    daily_out["normalized_metrics"] = build_normalized_market_snapshot(daily_out, site_dir=site_dir)
-
-    indicators = daily_out.get("indicators", {})
-    if isinstance(indicators, dict):
-        trend_entry = indicators.get("official_commercial_trend_7d", {})
-        if isinstance(trend_entry, dict):
-            trend_entry["value"] = daily_out["normalized_metrics"].get("official_commercial_trend_7d")
-            trend_entry["available"] = trend_entry.get("value") is not None
-    computed_indicators = daily_out.get("computed", {}).get("indicators", {})
-    if isinstance(computed_indicators, dict):
-        trend_entry = computed_indicators.get("official_commercial_trend_7d", {})
-        if isinstance(trend_entry, dict):
-            trend_entry["value"] = daily_out["normalized_metrics"].get("official_commercial_trend_7d")
-            trend_entry["available"] = trend_entry.get("value") is not None
+def publish_daily_fix_page(site_dir: Path, templates_dir: Path, generated_at: str, daily: Dict[str, Any]) -> None:
+    daily_out = daily
 
     day = daily_out["date"]
     c = daily_out.get("computed", {})
@@ -6280,6 +6442,30 @@ def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, da
     )
 
     write_text(site_dir / "fix" / day / "index.html", html)
+
+
+def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, daily: Dict[str, Any]) -> None:
+    daily_out = json.loads(json.dumps(daily))
+    enrich_publication_selection_metadata(site_dir, daily_out)
+    daily_out["normalized_metrics"] = build_normalized_market_snapshot(daily_out, site_dir=site_dir)
+
+    indicators = daily_out.get("indicators", {})
+    if isinstance(indicators, dict):
+        trend_entry = indicators.get("official_commercial_trend_7d", {})
+        if isinstance(trend_entry, dict):
+            trend_entry["value"] = daily_out["normalized_metrics"].get("official_commercial_trend_7d")
+            trend_entry["available"] = trend_entry.get("value") is not None
+    computed_indicators = daily_out.get("computed", {}).get("indicators", {})
+    if isinstance(computed_indicators, dict):
+        trend_entry = computed_indicators.get("official_commercial_trend_7d", {})
+        if isinstance(trend_entry, dict):
+            trend_entry["value"] = daily_out["normalized_metrics"].get("official_commercial_trend_7d")
+            trend_entry["available"] = trend_entry.get("value") is not None
+
+    day = daily_out["date"]
+    existing = load_daily_fix_payload(site_dir, day)
+    ensure_revision_metadata(daily_out, existing=existing)
+    publish_daily_fix_page(site_dir, templates_dir, generated_at, daily_out)
     write_json(site_dir / "fix" / f"{day}.json", daily_out)
 
 
@@ -6303,6 +6489,9 @@ def render_source_table(daily: Dict[str, Any]) -> str:
 
 
 def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
+    if is_intraday_pulse_payload(daily):
+        raise PipelineError("/api/latest.json must be written from an official daily fix, not intraday pulse data")
+
     payload = json.loads(json.dumps(daily))
     prune_unsupported_source_benchmarks(payload)
     enrich_publication_selection_metadata(site_dir, payload)
@@ -6328,6 +6517,7 @@ def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
             trend_entry["value"] = payload["normalized_metrics"].get("official_commercial_trend_7d")
             trend_entry["available"] = trend_entry.get("value") is not None
 
+    ensure_revision_metadata(payload)
     write_json(site_dir / "api" / "latest.json", payload)
 
 
@@ -6335,6 +6525,32 @@ def publish_series(site_dir: Path) -> None:
     rows = load_series_rows(site_dir)
     public_rows = [row for row in rows if is_public_series_row(row)]
     write_json(site_dir / "api" / "series.json", {"rows": public_rows})
+
+
+def publish_daily_full(site_dir: Path) -> None:
+    rows = [build_daily_full_row(site_dir, payload) for payload in load_daily_fix_payloads(site_dir)]
+    write_json(site_dir / "api" / "daily_full.json", {"rows": rows})
+
+
+def publish_revisions(site_dir: Path) -> None:
+    rows: List[Dict[str, Any]] = []
+    for payload in load_daily_fix_payloads(site_dir):
+        rows.append(
+            {
+                "date": payload.get("date"),
+                "as_of": payload.get("as_of"),
+                "revision": revision_int(payload.get("revision")),
+                "revision_reason": payload.get("revision_reason"),
+                "revised_at": payload.get("revised_at"),
+                "original_as_of": payload.get("original_as_of") or payload.get("as_of"),
+                "original_publication_selection": (
+                    payload.get("original_publication_selection")
+                    if payload.get("original_publication_selection") is not None
+                    else payload.get("publication_selection")
+                ),
+            }
+        )
+    write_json(site_dir / "api" / "revisions.json", {"rows": rows})
 
 
 def publish_benchmark_series(site_dir: Path) -> None:
@@ -6372,6 +6588,8 @@ def publish_indicator_series(site_dir: Path) -> None:
 
 def publish_public_series_artifacts(site_dir: Path) -> None:
     publish_series(site_dir)
+    publish_daily_full(site_dir)
+    publish_revisions(site_dir)
     publish_benchmark_series(site_dir)
     publish_indicator_series(site_dir)
 
@@ -6383,8 +6601,24 @@ def publish_intraday_latest(site_dir: Path, day: dt.date) -> None:
         return
 
     latest_attempt = attempts[-1]
+    collected_at = try_parse_datetime(latest_attempt.get("collected_at"))
     computed = latest_attempt.get("computed", {}) if isinstance(latest_attempt.get("computed"), dict) else {}
     computed_benchmarks = computed.get("benchmarks", {}) if isinstance(computed.get("benchmarks"), dict) else {}
+    band = computed.get("band", {}) if isinstance(computed.get("band"), dict) else {}
+    source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
+    source_units = computed.get("source_units", {}) if isinstance(computed.get("source_units"), dict) else {}
+    primary_value = parse_number(computed.get("fix"))
+    valid = (
+        computed.get("status") in {"Green", "Amber", "Red"}
+        and computed.get("withheld") is False
+        and primary_value is not None
+    )
+    related_official = load_latest_official_daily_payload(site_dir)
+    related_computed = (
+        related_official.get("computed", {})
+        if isinstance(related_official, dict) and isinstance(related_official.get("computed"), dict)
+        else {}
+    )
 
     benchmarks_payload: Dict[str, Optional[float]] = {}
     for key in BENCHMARK_LABELS:
@@ -6397,11 +6631,23 @@ def publish_intraday_latest(site_dir: Path, day: dt.date) -> None:
     payload = {
         "date": latest_attempt.get("date"),
         "collected_at": latest_attempt.get("collected_at"),
+        "in_publication_window": in_publication_window(collected_at, day) if collected_at is not None else False,
+        "valid": valid,
+        "primary_open_market_value": primary_value,
+        "p25": parse_float(band.get("p25")),
+        "p75": parse_float(band.get("p75")),
+        "dispersion": parse_float(computed.get("dispersion")),
+        "status": computed.get("status"),
+        "source_count_used": source_count_from_medians(source_medians),
+        "source_medians": source_medians,
+        "source_units": source_units,
+        "related_official_fix_date": related_official.get("date") if isinstance(related_official, dict) else None,
+        "related_official_fix_value": parse_number(related_computed.get("fix")),
         "window_utc": latest_attempt.get("window_utc"),
         "normalized_unit": "rial",
         "benchmarks": benchmarks_payload,
         "computed": {
-            "fix": parse_number(computed.get("fix")),
+            "fix": primary_value,
             "status": computed.get("status"),
             "withheld": computed.get("withheld"),
             "band": computed.get("band"),
@@ -6818,6 +7064,16 @@ def in_publication_window(ts: dt.datetime, day: dt.date) -> bool:
     return is_within_window_minute(ts, start, end)
 
 
+def filter_samples_to_publication_window(
+    samples: Dict[str, List[Sample]],
+    day: dt.date,
+) -> Dict[str, List[Sample]]:
+    return {
+        source: [sample for sample in entries if in_publication_window(sample.sampled_at, day)]
+        for source, entries in samples.items()
+    }
+
+
 def is_daily_valid(daily: Dict[str, Any]) -> bool:
     computed = daily.get("computed", {})
     status = computed.get("status")
@@ -7022,8 +7278,6 @@ def select_daily_from_intraday(
     site_dir: Path,
     day: dt.date,
     source_configs: List[SourceConfig],
-    include_outside_window: bool = False,
-    primary_allow_stale: bool = False,
 ) -> Optional[Dict[str, Any]]:
     attempts = load_intraday_attempts(site_dir, day)
     if not attempts:
@@ -7037,28 +7291,17 @@ def select_daily_from_intraday(
         samples = attempt_to_samples(attempt)
         if not samples:
             continue
-        daily = summarize_day(samples, source_configs, day, primary_allow_stale=primary_allow_stale)
+        daily = summarize_day(samples, source_configs, day)
         valid = is_daily_valid(daily)
         in_window = in_publication_window(collected_at, day)
         all_attempts.append((collected_at, attempt, daily, valid, in_window))
 
-    if include_outside_window and primary_allow_stale:
-        candidates: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool]] = [
-            (collected_at, attempt, daily, valid)
-            for collected_at, attempt, daily, valid, _in_window in all_attempts
-        ]
-        selection_scope = "latest_intraday_refresh"
-    else:
-        candidates = [
-            (collected_at, attempt, daily, valid)
-            for collected_at, attempt, daily, valid, in_window in all_attempts
-            if in_window
-        ]
-        selection_scope = "publication_window"
-
-    if not candidates and include_outside_window:
-        candidates = [(collected_at, attempt, daily, valid) for collected_at, attempt, daily, valid, _ in all_attempts]
-        selection_scope = "latest_intraday_fallback"
+    candidates: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool]] = [
+        (collected_at, attempt, daily, valid)
+        for collected_at, attempt, daily, valid, in_window in all_attempts
+        if in_window
+    ]
+    selection_scope = "publication_window"
 
     if not candidates:
         return None
@@ -7069,40 +7312,22 @@ def select_daily_from_intraday(
 
     if valid_candidates:
         selected = valid_candidates[-1]
-        if selection_scope == "latest_intraday_refresh":
-            selected_reason = "latest valid intraday attempt (current-day refresh)"
-        elif selection_scope == "latest_intraday_fallback":
-            selected_reason = "latest valid intraday attempt (outside-window fallback for current-day refresh)"
-        else:
-            selected_reason = "latest valid intraday attempt in publication window"
+        selected_reason = "latest valid intraday attempt in publication window"
     else:
         selected = latest_attempt
-        if selection_scope == "latest_intraday_refresh":
-            selected_reason = "no valid attempts found; used latest intraday attempt (current-day refresh)"
-        elif selection_scope == "latest_intraday_fallback":
-            selected_reason = "no valid attempts found; used latest intraday attempt (outside-window fallback)"
-        else:
-            selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
+        selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
 
     selected_at, selected_attempt, daily, selected_valid = selected
     latest_at = latest_attempt[0]
     used_fallback = bool(selected_valid and selected_at != latest_at)
     if selected_valid and not used_fallback:
-        if selection_scope == "latest_intraday_refresh":
-            basis_label = "Selected from latest intraday refresh sample"
-        elif selection_scope == "latest_intraday_fallback":
-            basis_label = "Selected from latest intraday attempt (outside publication window)"
-        else:
-            basis_label = "Selected from intraday publication window"
+        basis_label = "Selected from intraday publication window"
     elif selected_valid and used_fallback:
         basis_label = "Fallback to most recent valid intraday sample"
     else:
         basis_label = "No valid intraday sample in publication window (WITHHOLD)"
 
-    if selection_scope == "latest_intraday_refresh":
-        selection_rule = "current-day refresh: latest valid intraday attempt across all available samples"
-    else:
-        selection_rule = "latest valid intraday attempt in publication window, else latest attempt"
+    selection_rule = "latest valid intraday attempt in publication window; fallback stays inside the window"
 
     computed = daily.get("computed", {}) if isinstance(daily.get("computed"), dict) else {}
     source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
@@ -7134,41 +7359,32 @@ def select_daily_from_intraday(
 
 
 def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
-    source_configs = build_source_configs()
-    intraday_selected = select_daily_from_intraday(
-        site_dir,
-        day,
-        source_configs,
-        include_outside_window=True,
-        primary_allow_stale=(day == utc_now().date()),
-    )
-    refreshed: Optional[Dict[str, Any]] = None
-    if intraday_selected is not None and is_daily_valid(intraday_selected):
-        publish_daily_fix(site_dir, templates_dir, generated_at=generated_at, daily=intraday_selected)
-        refreshed = intraday_selected
-    else:
-        refreshed = refresh_existing_day_payload(site_dir, templates_dir, generated_at, day, source_configs)
-
-    latest_path = site_dir / "api" / "latest.json"
-    if refreshed is not None:
-        latest = refreshed
+    existing_for_day = load_daily_fix_payload(site_dir, day)
+    if existing_for_day is not None:
+        publish_daily_fix_page(site_dir, templates_dir, generated_at, existing_for_day)
+        latest = load_latest_official_daily_payload(site_dir) or existing_for_day
         status_title = "OK"
-        if intraday_selected is not None and is_daily_valid(intraday_selected):
+        status_detail = (
+            f"Build-only mode: preserved immutable {iso_date(day)} official fix and regenerated derived outputs."
+        )
+    else:
+        latest_official = load_latest_official_daily_payload(site_dir)
+        if latest_official is not None:
+            latest = latest_official
+            status_title = "OK"
             status_detail = (
-                f"Build-only mode: refreshed {iso_date(day)} from current-day intraday sample selection using current benchmark logic."
+                "Build-only mode: reused latest official daily fix and did not create a new daily reference."
             )
         else:
-            status_detail = (
-                f"Build-only mode: refreshed {iso_date(day)} published artifact using current benchmark logic."
-            )
-    elif latest_path.exists():
-        latest = json.loads(latest_path.read_text(encoding="utf-8"))
-        status_title = "OK"
-        status_detail = "Build-only mode: reused existing published data and did not create a new daily reference."
-    else:
-        latest = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "no existing published data")
-        status_title = "CONFIG NEEDED"
-        status_detail = "No existing published data found in build-only mode."
+            legacy_latest = load_legacy_latest_official_payload(site_dir)
+            if legacy_latest is not None:
+                latest = legacy_latest
+                status_title = "OK"
+                status_detail = "Build-only mode: reused existing official latest data and did not create a new daily reference."
+            else:
+                latest = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "no existing published data")
+                status_title = "CONFIG NEEDED"
+                status_detail = "No existing published data found in build-only mode."
 
     publish_status(
         site_dir,
@@ -7242,25 +7458,19 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
     day_s = iso_date(day)
     source_configs = build_source_configs()
     if immutable_day_exists(site_dir, day_s):
-        refreshed = refresh_existing_day_payload(
-            site_dir,
-            templates_dir,
-            generated_at,
-            day,
-            source_configs,
-            write_day_artifact=False,
-        )
-        if refreshed is not None:
-            latest = refreshed
+        existing = load_daily_fix_payload(site_dir, day)
+        if existing is not None:
+            publish_daily_fix_page(site_dir, templates_dir, generated_at, existing)
+            latest = existing
             status_detail = (
-                f"Reference for {day_s} remains immutable; refreshed latest/status/home views using current logic."
+                f"Reference for {day_s} remains immutable; reused the stored official fix for latest/status/home views."
             )
         else:
-            latest_path = site_dir / "api" / "latest.json"
-            latest = (
-                json.loads(latest_path.read_text(encoding="utf-8"))
-                if latest_path.exists()
-                else build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "no existing published data")
+            latest = load_legacy_latest_official_payload(site_dir) or build_placeholder_payload(
+                day,
+                generated_at,
+                "CONFIG NEEDED",
+                "no existing published data",
             )
             status_detail = f"Reference for {day_s} already exists and was not modified."
         publish_status(
@@ -7291,7 +7501,8 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
             missing=missing,
         )
         placeholder = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "missing secrets")
-        publish_latest(site_dir, placeholder)
+        official_latest = load_latest_official_daily_payload(site_dir)
+        publish_latest(site_dir, official_latest or placeholder)
         publish_public_series_artifacts(site_dir)
         publish_intraday_latest(site_dir, day)
         publish_home(site_dir, templates_dir, generated_at, placeholder)
@@ -7307,6 +7518,21 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
             "WITHHOLD",
             "no intraday samples available in publication window",
         )
+        placeholder["publication_selection"] = {
+            "rule": "latest valid intraday attempt in publication window; fallback stays inside the window",
+            "selection_scope": "publication_window",
+            "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
+            "candidate_count": 0,
+            "valid_candidate_count": 0,
+            "selected_collected_at": None,
+            "latest_candidate_collected_at": None,
+            "selected_attempt_file": None,
+            "selected_valid": False,
+            "used_fallback": False,
+            "basis_label": "No intraday sample in publication window (WITHHOLD)",
+            "selection_reason": "no intraday samples available in publication window",
+            "street_source_count_used": 0,
+        }
         publish_daily_fix(site_dir, templates_dir, generated_at=iso_ts(utc_now()), daily=placeholder)
         publish_latest(site_dir, placeholder)
         publish_public_series_artifacts(site_dir)
@@ -7387,7 +7613,8 @@ def run(args: argparse.Namespace) -> int:
             missing=missing,
         )
         placeholder = build_placeholder_payload(day, generated_at, "CONFIG NEEDED", "missing secrets")
-        publish_latest(site_dir, placeholder)
+        official_latest = load_latest_official_daily_payload(site_dir)
+        publish_latest(site_dir, official_latest or placeholder)
         publish_public_series_artifacts(site_dir)
         publish_intraday_latest(site_dir, day)
         publish_home(site_dir, templates_dir, generated_at, placeholder)
@@ -7399,6 +7626,7 @@ def run(args: argparse.Namespace) -> int:
     day_s = iso_date(day)
 
     if immutable_day_exists(site_dir, day_s):
+        existing = load_daily_fix_payload(site_dir, day)
         publish_status(
             site_dir,
             templates_dir,
@@ -7407,12 +7635,18 @@ def run(args: argparse.Namespace) -> int:
             status_detail=f"Reference for {day_s} already exists and was not modified.",
             missing=None,
         )
-        latest_path = site_dir / "api" / "latest.json"
-        if latest_path.exists():
-            latest = json.loads(latest_path.read_text(encoding="utf-8"))
+        if existing is not None:
+            publish_daily_fix_page(site_dir, templates_dir, generated_at, existing)
+            publish_latest(site_dir, existing)
             publish_public_series_artifacts(site_dir)
             publish_intraday_latest(site_dir, day)
-            publish_home(site_dir, templates_dir, generated_at, latest)
+            publish_home(site_dir, templates_dir, generated_at, existing)
+        else:
+            latest = load_legacy_latest_official_payload(site_dir)
+            if latest is not None:
+                publish_public_series_artifacts(site_dir)
+                publish_intraday_latest(site_dir, day)
+                publish_home(site_dir, templates_dir, generated_at, latest)
         publish_archive(site_dir, templates_dir, generated_at, load_existing_days(site_dir))
         publish_mapping_audit(site_dir)
         return 0
@@ -7428,31 +7662,35 @@ def run(args: argparse.Namespace) -> int:
         skip_waits=args.skip_waits,
         allow_outside_window=args.allow_outside_window,
     )
+    publication_samples = filter_samples_to_publication_window(samples, day)
 
     publish_dt = dt.datetime.combine(day, PUBLISH_AT, tzinfo=UTC)
     should_sleep_until(publish_dt, skip_waits=args.skip_waits)
 
-    daily = summarize_day(samples, source_configs, day)
+    daily = summarize_day(publication_samples, source_configs, day)
     computed = daily.get("computed", {}) if isinstance(daily.get("computed"), dict) else {}
     source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
     street_source_count_used = len([k for k, v in source_medians.items() if parse_number(v) is not None])
     current_fix = parse_number(computed.get("fix"))
     delta_meta = compute_previous_day_delta_metadata(site_dir, day, current_fix)
     latest_sampled_at: Optional[dt.datetime] = None
-    for entries in samples.values():
+    candidate_times: Set[str] = set()
+    for entries in publication_samples.values():
         for sample in entries:
+            candidate_times.add(iso_ts(sample.sampled_at))
             if latest_sampled_at is None or sample.sampled_at > latest_sampled_at:
                 latest_sampled_at = sample.sampled_at
     daily["publication_selection"] = {
-        "rule": "legacy full-mode collection: summarize all configured sample times for the day",
+        "rule": "legacy full-mode collection: summarize configured samples inside publication window only",
+        "selection_scope": "publication_window",
         "sample_times_utc": [t.strftime("%H:%M") for t in sample_times],
         "selected_collected_at": iso_ts(latest_sampled_at) if latest_sampled_at else None,
         "basis_label": "Selected from intraday publication window",
         "used_fallback": False,
         "selected_valid": is_daily_valid(daily),
-        "selection_reason": "legacy mode aggregates all configured collection times",
-        "candidate_count": len(sample_times),
-        "valid_candidate_count": len(sample_times) if is_daily_valid(daily) else 0,
+        "selection_reason": "legacy mode aggregates configured collection times inside the publication window",
+        "candidate_count": len(candidate_times),
+        "valid_candidate_count": len(candidate_times) if is_daily_valid(daily) else 0,
         "street_source_count_used": street_source_count_used,
         "same_as_previous_day": delta_meta.get("same_as_previous_day", False),
         "previous_day_fix": delta_meta.get("previous_day_fix"),
