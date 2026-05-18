@@ -41,6 +41,15 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertNotIn("panel-value-soft", self.template)
         self.assertNotIn("toLocaleString() + ' IRR'", self.template)
 
+    def test_regional_market_cards_use_stable_vertical_rhythm(self) -> None:
+        self.assertIn("dashboard-card regional-market-card", self.template)
+        self.assertIn(".regional-market-card", self.layout)
+        self.assertIn("grid-template-rows: minmax(66px, auto) auto 1fr", self.layout)
+        self.assertIn(".regional-market-card .panel-top", self.layout)
+        self.assertIn("min-height: 66px", self.layout)
+        self.assertIn(".regional-market-card .panel-bottom", self.layout)
+        self.assertIn("margin-top: 12px", self.layout)
+
     def test_cards_render_in_payload_order(self) -> None:
         self.assertIn("holder.innerHTML = cards.map(card => {", self.template)
         self.assertIn("fresh / ${usedSources} used", self.template)
