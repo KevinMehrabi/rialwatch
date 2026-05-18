@@ -20,6 +20,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/@tabler/core@latest/dist/css/tabler.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hammerjs@2.0.8/hammer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.2.0/dist/chartjs-plugin-zoom.min.js"></script>
 <style>
   :root {
     color-scheme: dark;
@@ -611,6 +613,249 @@
     flex: 1 1 auto;
   }
 
+  .history-range-panel {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .history-range-panel[hidden] {
+    display: none;
+  }
+
+  .history-range-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .history-range-summary {
+    color: var(--rw-text-muted);
+    font-size: 0.78rem;
+    line-height: 1.2;
+    min-width: 0;
+  }
+
+  .history-range-reset,
+  .history-range-presets button {
+    border: 1px solid var(--rw-border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--rw-text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1;
+    padding: 6px 9px;
+    white-space: nowrap;
+    transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
+  }
+
+  .history-range-reset:hover,
+  .history-range-reset:focus-visible,
+  .history-range-presets button:hover,
+  .history-range-presets button:focus-visible,
+  .history-range-presets button.is-active {
+    background: rgba(var(--rw-accent-rgb), 0.14);
+    border-color: rgba(var(--rw-accent-rgb), 0.56);
+    color: var(--rw-text-strong);
+  }
+
+  .history-range-brush {
+    position: relative;
+    height: 38px;
+    min-height: 38px;
+  }
+
+  .history-range-brush-track {
+    position: relative;
+    height: 100%;
+    border: 1px solid var(--rw-border);
+    background: var(--rw-surface-2);
+    overflow: hidden;
+    cursor: default;
+    touch-action: none;
+  }
+
+  .history-range-brush-track:focus-visible {
+    outline: 2px solid var(--rw-accent);
+    outline-offset: 2px;
+  }
+
+  .history-range-overview {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .history-range-overview-area {
+    fill: rgba(var(--rw-accent-rgb), 0.16);
+  }
+
+  .history-range-overview-line {
+    fill: none;
+    stroke: rgba(var(--rw-accent-rgb), 0.56);
+    stroke-width: 1.05;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .history-range-dim {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background: rgba(3, 7, 18, 0.52);
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  html[data-theme="light"] .history-range-dim {
+    background: rgba(248, 250, 252, 0.58);
+  }
+
+  .history-range-dim-left {
+    left: 0;
+  }
+
+  .history-range-dim-right {
+    right: 0;
+  }
+
+  .history-range-window {
+    position: absolute;
+    top: 2px;
+    bottom: 2px;
+    min-width: 14px;
+    border: 1px solid rgba(var(--rw-accent-rgb), 0.78);
+    background: rgba(var(--rw-accent-rgb), 0.18);
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--rw-accent-rgb), 0.18),
+      0 0 0 1px rgba(var(--rw-accent-rgb), 0.16);
+    cursor: grab;
+    touch-action: none;
+    z-index: 3;
+  }
+
+  .history-range-window::before,
+  .history-range-window::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(var(--rw-accent-rgb), 0.94);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .history-range-window::before {
+    top: -1px;
+    box-shadow: 0 0 8px rgba(var(--rw-accent-rgb), 0.32);
+  }
+
+  .history-range-window::after {
+    bottom: -1px;
+    opacity: 0.68;
+  }
+
+  .history-range-window:hover {
+    background: rgba(var(--rw-accent-rgb), 0.22);
+  }
+
+  .history-range-window:active,
+  .history-range-window.is-dragging {
+    cursor: grabbing;
+    box-shadow:
+      inset 0 0 0 1px rgba(var(--rw-accent-rgb), 0.28),
+      0 0 0 1px rgba(var(--rw-accent-rgb), 0.36);
+  }
+
+  .history-range-handle {
+    --handle-scale: 1;
+    position: absolute;
+    top: -2px;
+    bottom: -2px;
+    width: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(var(--rw-accent-rgb), 0.58);
+    border-radius: 8px;
+    background: var(--rw-surface-3);
+    box-shadow:
+      0 2px 6px rgba(2, 6, 23, 0.34),
+      inset 0 1px 0 rgba(248, 250, 252, 0.1);
+    cursor: ew-resize;
+    touch-action: none;
+    transform: scale(var(--handle-scale));
+    transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    z-index: 4;
+  }
+
+  .history-range-handle-left {
+    left: 0;
+    transform: translateX(-50%) scale(var(--handle-scale));
+  }
+
+  .history-range-handle-right {
+    right: 0;
+    transform: translateX(50%) scale(var(--handle-scale));
+  }
+
+  .history-range-handle:hover,
+  .history-range-handle.is-active {
+    --handle-scale: 1.04;
+    border-color: rgba(var(--rw-accent-rgb), 0.9);
+    background: var(--rw-surface-2);
+  }
+
+  .history-range-handle-grip {
+    position: relative;
+    width: 8px;
+    height: 14px;
+    pointer-events: none;
+  }
+
+  .history-range-handle-grip::before,
+  .history-range-handle-grip::after {
+    content: "";
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    width: 2px;
+    border-radius: 999px;
+    background: var(--rw-text-strong);
+    opacity: 0.82;
+  }
+
+  .history-range-handle-grip::before {
+    left: 1px;
+  }
+
+  .history-range-handle-grip::after {
+    right: 1px;
+  }
+
+  .history-range-native-inputs {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .history-range-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
   .history-point-pulse {
     position: absolute;
     display: none;
@@ -824,6 +1069,8 @@
     width: 100%;
     height: 100%;
     min-height: 0;
+    cursor: crosshair;
+    touch-action: none;
   }
 
   .recent-table-wrap {
@@ -1175,7 +1422,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-05-15T05:33:42Z">Updated: 2026-05-15T05:33:42Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-05-18T15:51:33Z">Updated: 2026-05-18T15:51:33Z</div>
         </div>
       </div>
     </div>
@@ -1192,13 +1439,13 @@
             <span class="primary-card-heading-separator" aria-hidden="true">-</span>
             <span>Open Market / Street Rate</span>
           </div>
-          <div class="primary-value-row mb-1"><div class="primary-rate-value">1,807,000</div><div class="primary-rate-unit">IRR per USD</div></div>
+          <div class="primary-value-row mb-1"><div class="primary-rate-value">1,797,100</div><div class="primary-rate-unit">IRR per USD</div></div>
           
         </div>
         <div class="primary-metrics-stack">
           <div class="primary-metric-block primary-metric-band">
             <div class="text-secondary">Band (P25-P75)</div>
-            <div>1,804,725 - 1,809,000</div>
+            <div>1,790,650 - 1,801,375</div>
           </div>
           <div class="primary-metric-block primary-metric-publication">
             <div class="text-secondary">Publication</div>
@@ -1206,11 +1453,11 @@
           </div>
           <div class="primary-metric-block primary-metric-prior-day">
             <div class="text-secondary">Prior Day</div>
-            <div>+6,550 <span class="inline-unit-label">IRR per USD</span> (+0.4%)</div>
+            <div>-17,900 <span class="inline-unit-label">IRR per USD</span> (-1.0%)</div>
           </div>
           <div class="primary-metric-block primary-metric-observed">
             <div class="text-secondary">Observed</div>
-            <div>15:10 UTC</div>
+            <div>15:33 UTC</div>
           </div>
         </div>
       </div>
@@ -1223,6 +1470,55 @@
           <canvas id="historyChart"></canvas>
           <div class="history-point-pulse" id="historyChartPulse" aria-hidden="true">
             <span class="history-point-marker"></span>
+          </div>
+        </div>
+        <div class="history-range-panel" id="historyRangePanel" hidden>
+          <div class="history-range-meta">
+            <div class="history-range-summary" id="historyRangeSummary" aria-live="polite">Full history</div>
+            <button type="button" class="history-range-reset" id="historyRangeReset">Reset</button>
+          </div>
+          <div class="history-range-brush" aria-label="Visible date range selector">
+            <div
+              class="history-range-brush-track"
+              id="historyRangeBrushTrack"
+              role="slider"
+              tabindex="0"
+              aria-label="Visible date range"
+              aria-valuemin="0"
+              aria-valuemax="0"
+              aria-valuenow="0">
+              <svg
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                class="history-range-overview"
+                aria-hidden="true">
+                <path id="historyRangeOverviewArea" class="history-range-overview-area"></path>
+                <path id="historyRangeOverviewLine" class="history-range-overview-line"></path>
+              </svg>
+              <div class="history-range-dim history-range-dim-left" id="historyRangeDimLeft" aria-hidden="true"></div>
+              <div class="history-range-dim history-range-dim-right" id="historyRangeDimRight" aria-hidden="true"></div>
+              <div class="history-range-window" id="historyRangeWindow" aria-hidden="true">
+                <span class="history-range-handle history-range-handle-left" id="historyRangeLeftHandle">
+                  <span class="history-range-handle-grip"></span>
+                </span>
+                <span class="history-range-handle history-range-handle-right" id="historyRangeRightHandle">
+                  <span class="history-range-handle-grip"></span>
+                </span>
+              </div>
+            </div>
+            <div class="history-range-native-inputs" aria-hidden="true">
+              <input type="range" id="historyRangeStart" min="0" max="0" value="0" tabindex="-1">
+              <input type="range" id="historyRangeEnd" min="0" max="0" value="0" tabindex="-1">
+            </div>
+          </div>
+          <div class="history-range-presets" aria-label="Timeline range presets">
+            <button type="button" data-history-window="1">1D</button>
+            <button type="button" data-history-window="7">7D</button>
+            <button type="button" data-history-window="14">14D</button>
+            <button type="button" data-history-window="30">30D</button>
+            <button type="button" data-history-window="90">90D</button>
+            <button type="button" data-history-window="365">1Y</button>
+            <button type="button" data-history-window="all">All</button>
           </div>
         </div>
       </div>
@@ -1240,12 +1536,12 @@
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Official Commercial USD/IRR.</div>
         </div>
         <div class="anchored-card-bottom">
-          <div class="indicator-value-main">+22.1%</div>
+          <div class="indicator-value-main">+21.3%</div>
           <div class="indicator-compare small mt-2">
-            <div><span class="text-secondary">Street:</span> 1,807,000 <span class="inline-unit-label">IRR per USD</span></div>
-            <div><span class="text-secondary">Official:</span> 1,479,835 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Street:</span> 1,797,100 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Official:</span> 1,481,795 <span class="inline-unit-label">IRR per USD</span></div>
           </div>
-          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,20.8 19.5,8.4 35.9,11.1 52.4,5.3 68.8,3.0 85.3,40.9 101.8,41.0 118.2,38.6 134.7,36.5 151.2,39.7 167.6,28.3 184.1,32.7 200.5,34.1 217.0,33.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,20.8 19.5,8.4 35.9,11.1 52.4,5.3 68.8,3.0 85.3,40.9 101.8,41.0 118.2,38.6 134.7,36.5 151.2,39.7 167.6,28.3 184.1,32.7 200.5,34.1 217.0,33.0"></polyline></svg></div>
+          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,3.0 19.5,40.9 35.9,41.0 52.4,38.6 68.8,36.5 85.3,39.7 101.8,28.3 118.2,32.7 134.7,34.1 151.2,33.0 167.6,33.4 184.1,34.3 200.5,31.6 217.0,35.5 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,3.0 19.5,40.9 35.9,41.0 52.4,38.6 68.8,36.5 85.3,39.7 101.8,28.3 118.2,32.7 134.7,34.1 151.2,33.0 167.6,33.4 184.1,34.3 200.5,31.6 217.0,35.5"></polyline></svg></div>
           <div class="indicator-note">Premium to official market</div>
         </div>
       </div>
@@ -1258,12 +1554,12 @@
           <div class="text-secondary small mb-2">Percent difference between Street USD/IRR and Regional Transfer USD/IRR.</div>
         </div>
         <div class="anchored-card-bottom">
-          <div class="indicator-value-main">-1.3%</div>
+          <div class="indicator-value-main">-0.9%</div>
           <div class="indicator-compare small mt-2">
-            <div><span class="text-secondary">Street:</span> 1,807,000 <span class="inline-unit-label">IRR per USD</span></div>
-            <div><span class="text-secondary">Transfer:</span> 1,830,300 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Street:</span> 1,797,100 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Transfer:</span> 1,813,200 <span class="inline-unit-label">IRR per USD</span></div>
           </div>
-          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,6.3 38.7,10.5 74.3,13.3 110.0,10.3 145.7,3.0 181.3,13.6 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,6.3 38.7,10.5 74.3,13.3 110.0,10.3 145.7,3.0 181.3,13.6 217.0,41.0"></polyline></svg></div>
+          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,7.1 38.7,12.6 74.3,16.1 110.0,12.3 145.7,3.0 181.3,16.5 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,7.1 38.7,12.6 74.3,16.1 110.0,12.3 145.7,3.0 181.3,16.5 217.0,41.0"></polyline></svg></div>
           <div class="indicator-note">Premium/discount to transfer market</div>
         </div>
       </div>
@@ -1276,12 +1572,12 @@
           <div class="text-secondary small mb-2">Percent difference between crypto USDT-implied USD/IRR and Street USD/IRR.</div>
         </div>
         <div class="anchored-card-bottom">
-          <div class="indicator-value-main">-0.8%</div>
+          <div class="indicator-value-main">-0.5%</div>
           <div class="indicator-compare small mt-2">
-            <div><span class="text-secondary">Street:</span> 1,807,000 <span class="inline-unit-label">IRR per USD</span></div>
-            <div><span class="text-secondary">Crypto:</span> 1,792,895 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Street:</span> 1,797,100 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Crypto:</span> 1,788,750 <span class="inline-unit-label">IRR per USD</span></div>
           </div>
-          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,3.0 33.6,30.1 64.1,34.2 94.7,34.2 125.3,30.2 155.9,30.6 186.4,34.0 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,3.0 33.6,30.1 64.1,34.2 94.7,34.2 125.3,30.2 155.9,30.6 186.4,34.0 217.0,41.0"></polyline></svg></div>
+          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,3.0 33.6,32.2 64.1,36.6 94.7,36.6 125.3,32.3 155.9,32.7 186.4,36.4 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,3.0 33.6,32.2 64.1,36.6 94.7,36.6 125.3,32.3 155.9,32.7 186.4,36.4 217.0,41.0"></polyline></svg></div>
           <div class="indicator-note">Premium/discount to crypto market</div>
         </div>
       </div>
@@ -1294,12 +1590,12 @@
           <div class="text-secondary small mb-2">Percent difference between gold-implied USD/IRR and Street USD/IRR.</div>
         </div>
         <div class="anchored-card-bottom">
-          <div class="indicator-value-main">+54.6%</div>
+          <div class="indicator-value-main">+50.8%</div>
           <div class="indicator-compare small mt-2">
-            <div><span class="text-secondary">Street:</span> 1,807,000 <span class="inline-unit-label">IRR per USD</span></div>
-            <div><span class="text-secondary">Gold-implied:</span> 2,794,326 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Street:</span> 1,797,100 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Gold-implied:</span> 2,709,220 <span class="inline-unit-label">IRR per USD</span></div>
           </div>
-          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,5.1 19.5,3.0 35.9,24.8 52.4,30.2 68.8,41.0 85.3,28.3 101.8,22.9 118.2,26.7 134.7,29.0 151.2,27.2 167.6,29.1 184.1,32.9 200.5,32.6 217.0,31.8 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,5.1 19.5,3.0 35.9,24.8 52.4,30.2 68.8,41.0 85.3,28.3 101.8,22.9 118.2,26.7 134.7,29.0 151.2,27.2 167.6,29.1 184.1,32.9 200.5,32.6 217.0,31.8"></polyline></svg></div>
+          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="gap trend sparkline"><polygon points="3.0,41.0 3.0,32.5 19.5,11.7 35.9,3.0 52.4,9.2 68.8,12.9 85.3,10.0 101.8,13.1 118.2,19.3 134.7,18.8 151.2,17.5 167.6,16.4 184.1,28.4 200.5,33.4 217.0,41.0 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,32.5 19.5,11.7 35.9,3.0 52.4,9.2 68.8,12.9 85.3,10.0 101.8,13.1 118.2,19.3 134.7,18.8 151.2,17.5 167.6,16.4 184.1,28.4 200.5,33.4 217.0,41.0"></polyline></svg></div>
           <div class="indicator-note">Gold-derived FX signal (indicative)</div>
         </div>
       </div>
@@ -1313,14 +1609,14 @@
         </div>
         <div class="anchored-card-bottom">
           <div class="value-row indicator-value-row">
-            <div class="indicator-value-main indicator-value-secondary">+327,165</div>
+            <div class="indicator-value-main indicator-value-secondary">+315,305</div>
             <div class="unit-label">IRR per USD</div>
           </div>
           <div class="indicator-compare small mt-2">
-            <div><span class="text-secondary">Street:</span> 1,807,000 <span class="inline-unit-label">IRR per USD</span></div>
-            <div><span class="text-secondary">Official:</span> 1,479,835 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Street:</span> 1,797,100 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Official:</span> 1,481,795 <span class="inline-unit-label">IRR per USD</span></div>
           </div>
-          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="spread trend sparkline"><polygon points="3.0,41.0 3.0,23.4 19.5,14.2 35.9,12.9 52.4,6.2 68.8,3.0 85.3,41.0 101.8,41.0 118.2,38.5 134.7,36.2 151.2,39.6 167.6,27.6 184.1,32.2 200.5,33.5 217.0,32.3 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,23.4 19.5,14.2 35.9,12.9 52.4,6.2 68.8,3.0 85.3,41.0 101.8,41.0 118.2,38.5 134.7,36.2 151.2,39.6 167.6,27.6 184.1,32.2 200.5,33.5 217.0,32.3"></polyline></svg></div>
+          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="spread trend sparkline"><polygon points="3.0,41.0 3.0,3.0 19.5,41.0 35.9,41.0 52.4,38.5 68.8,36.2 85.3,39.6 101.8,27.6 118.2,32.2 134.7,33.5 151.2,32.3 167.6,32.8 184.1,33.7 200.5,30.8 217.0,34.9 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,3.0 19.5,41.0 35.9,41.0 52.4,38.5 68.8,36.2 85.3,39.6 101.8,27.6 118.2,32.2 134.7,33.5 151.2,32.3 167.6,32.8 184.1,33.7 200.5,30.8 217.0,34.9"></polyline></svg></div>
           <div class="indicator-note">Street minus official (absolute spread)</div>
         </div>
       </div>
@@ -1334,14 +1630,14 @@
         </div>
         <div class="anchored-card-bottom">
           <div class="value-row indicator-value-row">
-            <div class="indicator-value-main indicator-value-secondary">-23,300</div>
+            <div class="indicator-value-main indicator-value-secondary">-16,100</div>
             <div class="unit-label">IRR per USD</div>
           </div>
           <div class="indicator-compare small mt-2">
-            <div><span class="text-secondary">Street:</span> 1,807,000 <span class="inline-unit-label">IRR per USD</span></div>
-            <div><span class="text-secondary">Transfer:</span> 1,830,300 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Street:</span> 1,797,100 <span class="inline-unit-label">IRR per USD</span></div>
+            <div><span class="text-secondary">Transfer:</span> 1,813,200 <span class="inline-unit-label">IRR per USD</span></div>
           </div>
-          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="spread trend sparkline"><polygon points="3.0,41.0 3.0,4.7 19.5,3.0 35.9,16.6 52.4,13.7 68.8,13.0 85.3,41.0 101.8,40.8 118.2,24.9 134.7,35.7 151.2,39.1 167.6,28.9 184.1,35.2 200.5,30.1 217.0,21.6 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,4.7 19.5,3.0 35.9,16.6 52.4,13.7 68.8,13.0 85.3,41.0 101.8,40.8 118.2,24.9 134.7,35.7 151.2,39.1 167.6,28.9 184.1,35.2 200.5,30.1 217.0,21.6"></polyline></svg></div>
+          <div class="indicator-sparkline mt-2"><svg class="indicator-sparkline-svg" viewBox="0 0 220 44" preserveAspectRatio="none" role="img" aria-label="spread trend sparkline"><polygon points="3.0,41.0 3.0,11.5 19.5,41.0 35.9,40.8 52.4,24.0 68.8,35.4 85.3,39.0 101.8,28.3 118.2,34.9 134.7,29.5 151.2,20.5 167.6,32.9 184.1,29.6 200.5,3.0 217.0,5.6 217.0,41.0" fill="rgba(59,130,246,0.18)"></polygon><polyline fill="none" stroke="#60a5fa" stroke-width="2.4" points="3.0,11.5 19.5,41.0 35.9,40.8 52.4,24.0 68.8,35.4 85.3,39.0 101.8,28.3 118.2,34.9 134.7,29.5 151.2,20.5 167.6,32.9 184.1,29.6 200.5,3.0 217.0,5.6"></polyline></svg></div>
           <div class="indicator-note">Street minus transfer (absolute spread)</div>
         </div>
       </div>
@@ -1360,13 +1656,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">1,479,835</div>
+            <div class="panel-value">1,481,795</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 15:10 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,29.0 28.7,24.2 54.3,19.9 80.0,15.7 105.7,11.5 131.3,7.7 157.0,3.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,29.0 28.7,24.2 54.3,19.9 80.0,15.7 105.7,11.5 131.3,7.7 157.0,3.0"></polyline></svg></div>
+          <div class="text-secondary small">Updated 15:33 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,29.0 28.7,23.4 54.3,16.6 80.0,16.6 105.7,16.6 131.3,9.8 157.0,3.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,29.0 28.7,23.4 54.3,16.6 80.0,16.6 105.7,16.6 131.3,9.8 157.0,3.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1378,13 +1674,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">1,830,300</div>
+            <div class="panel-value">1,813,200</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 15:10 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,29.0 28.7,20.9 54.3,27.0 80.0,3.0 105.7,11.0 131.3,14.8 157.0,13.7 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,29.0 28.7,20.9 54.3,27.0 80.0,3.0 105.7,11.0 131.3,14.8 157.0,13.7"></polyline></svg></div>
+          <div class="text-secondary small">Updated 15:33 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,3.0 28.7,12.2 54.3,9.7 80.0,5.1 105.7,12.0 131.3,10.2 157.0,29.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,3.0 28.7,12.2 54.3,9.7 80.0,5.1 105.7,12.0 131.3,10.2 157.0,29.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1402,13 +1698,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">1,792,895</div>
+            <div class="panel-value">1,788,750</div>
             <div class="unit-label">IRR per USD</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 15:10 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,22.6 28.7,23.0 54.3,29.0 80.0,3.0 105.7,7.5 131.3,13.9 157.0,15.6 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,22.6 28.7,23.0 54.3,29.0 80.0,3.0 105.7,7.5 131.3,13.9 157.0,15.6"></polyline></svg></div>
+          <div class="text-secondary small">Updated 15:33 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,3.0 28.7,18.8 54.3,23.0 80.0,13.8 105.7,25.1 131.3,3.4 157.0,29.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,3.0 28.7,18.8 54.3,23.0 80.0,13.8 105.7,25.1 131.3,3.4 157.0,29.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1420,13 +1716,13 @@
         </div>
         <div class="panel-middle">
           <div class="value-row">
-            <div class="panel-value">1,970,000,000</div>
+            <div class="panel-value">1,910,000,000</div>
             <div class="unit-label">IRR per coin</div>
           </div>
         </div>
         <div class="panel-bottom">
-          <div class="text-secondary small">Updated 15:10 UTC</div>
-          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,26.6 28.7,24.3 54.3,29.0 80.0,3.0 105.7,19.5 131.3,21.9 157.0,17.2 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,26.6 28.7,24.3 54.3,29.0 80.0,3.0 105.7,19.5 131.3,21.9 157.0,17.2"></polyline></svg></div>
+          <div class="text-secondary small">Updated 15:33 UTC</div>
+          <div class="panel-sparkline mt-2"><svg class="sparkline-svg" viewBox="0 0 160 32" preserveAspectRatio="none" role="img" aria-label="mini line chart"><polygon points="3.0,29.0 3.0,5.2 28.7,7.3 54.3,3.0 80.0,3.0 105.7,16.0 131.3,13.8 157.0,29.0 157.0,29.0" fill="rgba(59,130,246,0.12)"></polygon><polyline fill="none" stroke="#3b82f6" stroke-width="2.2" points="3.0,5.2 28.7,7.3 54.3,3.0 80.0,3.0 105.7,16.0 131.3,13.8 157.0,29.0"></polyline></svg></div>
         </div>
       </div>
     </div>
@@ -1484,7 +1780,15 @@ let cachedValidRows = [];
 let historyChartResizeFrame = null;
 let historyChartLastViewportMode = null;
 let historyChartWrapObserver = null;
+let historyVisibleRange = null;
+let historyRangeControlsBound = false;
+let historyZoomPluginRegistered = false;
+let historyRangeDragState = null;
+let historyRangeDragFrame = null;
+let historyRangePendingX = null;
+let historyRangeLastApply = 0;
 const historyChartCompactQuery = window.matchMedia('(max-width: 700px)');
+const HISTORY_RANGE_DRAG_THROTTLE_MS = 16;
 const latestPointPulsePlugin = {
   id: 'rwLatestPointPulse',
   afterDraw(chart, _args, pluginOptions) {
@@ -1508,6 +1812,15 @@ const latestPointPulsePlugin = {
     }
 
     const coords = point.getProps(['x', 'y'], false);
+    const area = chart.chartArea;
+    if (
+      area &&
+      (coords.x < area.left || coords.x > area.right || coords.y < area.top || coords.y > area.bottom)
+    ) {
+      pulse.style.display = 'none';
+      return;
+    }
+
     pulse.style.left = `${chart.canvas.offsetLeft + coords.x}px`;
     pulse.style.top = `${chart.canvas.offsetTop + coords.y}px`;
     pulse.style.display = 'block';
@@ -1515,6 +1828,42 @@ const latestPointPulsePlugin = {
   afterDestroy() {
     const pulse = document.getElementById('historyChartPulse');
     if (pulse) pulse.style.display = 'none';
+  }
+};
+
+const historyHoverGuidePlugin = {
+  id: 'rwHistoryHoverGuide',
+  afterDraw(chart) {
+    const active = chart.tooltip && typeof chart.tooltip.getActiveElements === 'function'
+      ? chart.tooltip.getActiveElements()
+      : [];
+    if (!active.length || !active[0].element) return;
+
+    const area = chart.chartArea;
+    const coords = active[0].element.getProps(['x', 'y'], false);
+    if (!area || coords.x < area.left || coords.x > area.right || coords.y < area.top || coords.y > area.bottom) {
+      return;
+    }
+
+    const colors = historyThemeColors();
+    const ctx = chart.ctx;
+    ctx.save();
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = `rgba(${colors.accentRgb}, 0.56)`;
+    ctx.moveTo(coords.x, area.top);
+    ctx.lineTo(coords.x, area.bottom);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.arc(coords.x, coords.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = colors.accent;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.fill();
+    ctx.stroke();
+    ctx.restore();
   }
 };
 
@@ -1534,23 +1883,507 @@ function historyThemeColors() {
   };
 }
 
-function historyChartViewportSettings() {
+function registerHistoryZoomPlugin() {
+  if (historyZoomPluginRegistered) return true;
+  if (!window.Chart || !window.ChartZoom) return false;
+
+  try {
+    const pluginRegistry = Chart.registry && Chart.registry.plugins;
+    if (pluginRegistry && typeof pluginRegistry.get === 'function' && pluginRegistry.get('zoom')) {
+      historyZoomPluginRegistered = true;
+      return true;
+    }
+    Chart.register(window.ChartZoom);
+    historyZoomPluginRegistered = true;
+    return true;
+  } catch (_error) {
+    return false;
+  }
+}
+
+function formatHistoryRate(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed)
+    ? parsed.toLocaleString('en-US', { maximumFractionDigits: 0 })
+    : 'Unavailable';
+}
+
+function formatHistoryDate(dateText, { compact = false } = {}) {
+  const raw = String(dateText || '').trim();
+  if (!raw) return 'Unknown date';
+
+  const parsed = new Date(`${raw}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return raw;
+
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: compact ? undefined : 'numeric',
+    timeZone: 'UTC'
+  });
+  return formatter.format(parsed);
+}
+
+function historyRowForIndex(index) {
+  if (!cachedValidRows.length) return null;
+  const numeric = Number(index);
+  if (!Number.isFinite(numeric)) return null;
+  const bounded = Math.min(cachedValidRows.length - 1, Math.max(0, Math.round(numeric)));
+  return cachedValidRows[bounded] || null;
+}
+
+function clampHistoryValue(value, min, max) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return min;
+  return Math.min(max, Math.max(min, parsed));
+}
+
+function historyMinimumVisibleSpan(rowCount) {
+  return rowCount > 1 ? 1 : 0;
+}
+
+function normalizeHistoryRange(start, end, rowCount) {
+  if (rowCount <= 0) return null;
+
+  const maxIndex = rowCount - 1;
+  const minSpan = historyMinimumVisibleSpan(rowCount);
+  let nextStart = Math.round(Number(start));
+  let nextEnd = Math.round(Number(end));
+
+  if (!Number.isFinite(nextStart)) nextStart = 0;
+  if (!Number.isFinite(nextEnd)) nextEnd = maxIndex;
+  nextStart = Math.min(maxIndex, Math.max(0, nextStart));
+  nextEnd = Math.min(maxIndex, Math.max(0, nextEnd));
+
+  if (nextEnd < nextStart) {
+    const swap = nextStart;
+    nextStart = nextEnd;
+    nextEnd = swap;
+  }
+
+  if (nextEnd - nextStart < minSpan) {
+    if (nextStart + minSpan <= maxIndex) {
+      nextEnd = nextStart + minSpan;
+    } else {
+      nextStart = Math.max(0, nextEnd - minSpan);
+    }
+  }
+
+  return { start: nextStart, end: nextEnd };
+}
+
+function getHistoryVisibleRange() {
+  if (!historyChart || !historyChart.scales || !historyChart.scales.x) {
+    return normalizeHistoryRange(0, cachedValidRows.length - 1, cachedValidRows.length);
+  }
+
+  const scale = historyChart.scales.x;
+  return normalizeHistoryRange(scale.min, scale.max, cachedValidRows.length);
+}
+
+function historyRangeToPercents(range) {
+  if (!range || cachedValidRows.length <= 1) return { startPct: 0, endPct: 100 };
+
+  const maxIndex = cachedValidRows.length - 1;
+  return {
+    startPct: maxIndex > 0 ? (range.start / maxIndex) * 100 : 0,
+    endPct: maxIndex > 0 ? (range.end / maxIndex) * 100 : 100
+  };
+}
+
+function applyHistoryChartRangeFromPercents(startPct, endPct) {
+  if (cachedValidRows.length <= 1) return;
+
+  const maxIndex = cachedValidRows.length - 1;
+  applyHistoryChartRange((startPct / 100) * maxIndex, (endPct / 100) * maxIndex);
+}
+
+function buildHistoryOverviewPath(rows) {
+  if (!rows.length) return { line: '', area: '' };
+  if (rows.length === 1) {
+    return {
+      line: 'M 0 50 L 100 50',
+      area: 'M 0 50 L 100 50 L 100 100 L 0 100 Z'
+    };
+  }
+
+  const values = rows.map(row => row.fixNum).filter(value => Number.isFinite(value));
+  if (!values.length) return { line: '', area: '' };
+
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  const span = Math.max(maxValue - minValue, 1);
+  const points = rows.map((row, index) => {
+    const x = (index / (rows.length - 1)) * 100;
+    const y = 96 - ((row.fixNum - minValue) / span) * 88;
+    return { x, y };
+  });
+  const line = points
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(3)} ${point.y.toFixed(3)}`)
+    .join(' ');
+  return {
+    line,
+    area: `${line} L 100 100 L 0 100 Z`
+  };
+}
+
+function renderHistoryRangeOverview(rows = cachedValidRows) {
+  const line = document.getElementById('historyRangeOverviewLine');
+  const area = document.getElementById('historyRangeOverviewArea');
+  if (!line || !area) return;
+
+  const path = buildHistoryOverviewPath(rows);
+  line.setAttribute('d', path.line);
+  area.setAttribute('d', path.area);
+}
+
+function updateHistoryRangeTrack(range) {
+  const track = document.getElementById('historyRangeBrushTrack');
+  const windowEl = document.getElementById('historyRangeWindow');
+  const leftDim = document.getElementById('historyRangeDimLeft');
+  const rightDim = document.getElementById('historyRangeDimRight');
+  const leftHandle = document.getElementById('historyRangeLeftHandle');
+  const rightHandle = document.getElementById('historyRangeRightHandle');
+  if (!track || !windowEl || !leftDim || !rightDim || !range || cachedValidRows.length <= 1) return;
+
+  const { startPct, endPct } = historyRangeToPercents(range);
+  const widthPct = Math.max(endPct - startPct, 0.8);
+  windowEl.style.left = `${startPct}%`;
+  windowEl.style.width = `${widthPct}%`;
+  leftDim.style.width = `${startPct}%`;
+  rightDim.style.left = `${endPct}%`;
+  track.setAttribute('aria-valuemax', String(cachedValidRows.length - 1));
+  track.setAttribute('aria-valuenow', String(range.start));
+  track.setAttribute('aria-valuetext', historyRangeText(range));
+  if (leftHandle) leftHandle.classList.toggle('is-active', historyRangeDragState && historyRangeDragState.type !== 'right');
+  if (rightHandle) rightHandle.classList.toggle('is-active', historyRangeDragState && historyRangeDragState.type !== 'left');
+  windowEl.classList.toggle('is-dragging', historyRangeDragState && historyRangeDragState.type === 'window');
+}
+
+function updateHistoryPresetState(range) {
+  const buttons = document.querySelectorAll('[data-history-window]');
+  const rowCount = cachedValidRows.length;
+  if (!buttons.length || !range || rowCount <= 1) return;
+
+  const visiblePoints = range.end - range.start + 1;
+  buttons.forEach(button => {
+    const value = button.getAttribute('data-history-window');
+    const isFull = range.start === 0 && range.end === rowCount - 1;
+    const isActive = value === 'all'
+      ? isFull
+      : !isFull && range.end === rowCount - 1 && visiblePoints === Math.min(rowCount, Number(value));
+    button.classList.toggle('is-active', Boolean(isActive));
+  });
+}
+
+function historyRangeText(range) {
+  if (!range) return 'Full history';
+
+  const startRow = cachedValidRows[range.start];
+  const endRow = cachedValidRows[range.end];
+  if (!startRow || !endRow) return 'Full history';
+
+  return `${formatHistoryDate(startRow.date)} - ${formatHistoryDate(endRow.date)}`;
+}
+
+function syncHistoryRangeControls(range = getHistoryVisibleRange()) {
+  const panel = document.getElementById('historyRangePanel');
+  const startInput = document.getElementById('historyRangeStart');
+  const endInput = document.getElementById('historyRangeEnd');
+  const summary = document.getElementById('historyRangeSummary');
+  const rowCount = cachedValidRows.length;
+
+  if (!panel || !startInput || !endInput || !summary) return;
+  if (rowCount <= 1 || !range) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  startInput.min = '0';
+  startInput.max = String(rowCount - 1);
+  endInput.min = '0';
+  endInput.max = String(rowCount - 1);
+  startInput.value = String(range.start);
+  endInput.value = String(range.end);
+
+  const startRow = cachedValidRows[range.start];
+  const endRow = cachedValidRows[range.end];
+  const fullRange = range.start === 0 && range.end === rowCount - 1;
+  const dateText = startRow && endRow ? historyRangeText(range) : 'Full history';
+  summary.textContent = fullRange ? `Full history: ${dateText}` : dateText;
+
+  updateHistoryRangeTrack(range);
+  updateHistoryPresetState(range);
+}
+
+function syncHistoryRangeControlsFromChart() {
+  const range = getHistoryVisibleRange();
+  historyVisibleRange = range;
+  applyHistoryChartViewportSettings(range);
+  syncHistoryRangeControls(range);
+  if (historyChart) {
+    historyChart.update('none');
+  }
+}
+
+function applyHistoryChartRange(start, end) {
+  const range = normalizeHistoryRange(start, end, cachedValidRows.length);
+  if (!range || !historyChart || !historyChart.options || !historyChart.options.scales) return;
+
+  historyVisibleRange = range;
+  historyChart.options.scales.x.min = range.start;
+  historyChart.options.scales.x.max = range.end;
+  applyHistoryChartViewportSettings(range);
+  historyChart.update('none');
+  syncHistoryRangeControls(range);
+}
+
+function resetHistoryRange() {
+  const fullRange = normalizeHistoryRange(0, cachedValidRows.length - 1, cachedValidRows.length);
+  historyVisibleRange = fullRange;
+  if (historyChart && typeof historyChart.resetZoom === 'function') {
+    historyChart.resetZoom('none');
+  }
+
+  if (fullRange) {
+    applyHistoryChartRange(fullRange.start, fullRange.end);
+  }
+}
+
+function applyHistoryRangeDragAtX(clientX) {
+  if (!historyRangeDragState) return;
+
+  const track = document.getElementById('historyRangeBrushTrack');
+  if (!track) return;
+
+  const rect = track.getBoundingClientRect();
+  const deltaPct = rect.width > 0 ? ((clientX - historyRangeDragState.startX) / rect.width) * 100 : 0;
+  const minSpanPct = cachedValidRows.length > 1
+    ? (historyMinimumVisibleSpan(cachedValidRows.length) / (cachedValidRows.length - 1)) * 100
+    : 100;
+  const span = historyRangeDragState.endPct - historyRangeDragState.startPct;
+  let nextStartPct = historyRangeDragState.startPct;
+  let nextEndPct = historyRangeDragState.endPct;
+
+  if (historyRangeDragState.type === 'left') {
+    nextStartPct = clampHistoryValue(historyRangeDragState.startPct + deltaPct, 0, historyRangeDragState.endPct - minSpanPct);
+  } else if (historyRangeDragState.type === 'right') {
+    nextEndPct = clampHistoryValue(historyRangeDragState.endPct + deltaPct, historyRangeDragState.startPct + minSpanPct, 100);
+  } else {
+    nextStartPct = clampHistoryValue(historyRangeDragState.startPct + deltaPct, 0, 100 - span);
+    nextEndPct = nextStartPct + span;
+  }
+
+  applyHistoryChartRangeFromPercents(nextStartPct, nextEndPct);
+}
+
+function requestHistoryRangeDragFrame(event) {
+  if (!historyRangeDragState) return;
+
+  historyRangePendingX = event.clientX;
+  if (historyRangeDragFrame) return;
+
+  historyRangeDragFrame = window.requestAnimationFrame(() => {
+    historyRangeDragFrame = null;
+    if (!Number.isFinite(historyRangePendingX)) return;
+
+    const now = typeof performance !== 'undefined' ? performance.now() : Date.now();
+    if (now - historyRangeLastApply < HISTORY_RANGE_DRAG_THROTTLE_MS) {
+      requestHistoryRangeDragFrame({ clientX: historyRangePendingX });
+      return;
+    }
+
+    historyRangeLastApply = now;
+    const nextX = historyRangePendingX;
+    historyRangePendingX = null;
+    applyHistoryRangeDragAtX(nextX);
+  });
+}
+
+function stopHistoryRangeDrag() {
+  if (historyRangeDragFrame) {
+    window.cancelAnimationFrame(historyRangeDragFrame);
+  }
+  historyRangeDragFrame = null;
+  historyRangePendingX = null;
+  historyRangeDragState = null;
+  updateHistoryRangeTrack(getHistoryVisibleRange());
+  window.removeEventListener('pointermove', requestHistoryRangeDragFrame);
+  window.removeEventListener('pointerup', stopHistoryRangeDrag);
+  window.removeEventListener('pointercancel', stopHistoryRangeDrag);
+}
+
+function startHistoryRangeDrag(type, event, range = getHistoryVisibleRange()) {
+  if (!range || cachedValidRows.length <= 1 || !event) return;
+
+  event.preventDefault();
+  const { startPct, endPct } = historyRangeToPercents(range);
+  historyRangeDragState = {
+    type,
+    startX: event.clientX,
+    startPct,
+    endPct
+  };
+  historyRangeLastApply = 0;
+  updateHistoryRangeTrack(range);
+  window.addEventListener('pointermove', requestHistoryRangeDragFrame);
+  window.addEventListener('pointerup', stopHistoryRangeDrag);
+  window.addEventListener('pointercancel', stopHistoryRangeDrag);
+}
+
+function handleHistoryRangeTrackPointerDown(event) {
+  if (!event || (event.pointerType === 'mouse' && event.button !== 0) || cachedValidRows.length <= 1) return;
+
+  const track = document.getElementById('historyRangeBrushTrack');
+  const range = getHistoryVisibleRange();
+  if (!track || !range) return;
+
+  const rect = track.getBoundingClientRect();
+  const clickPct = rect.width > 0 ? clampHistoryValue(((event.clientX - rect.left) / rect.width) * 100, 0, 100) : 0;
+  const { startPct, endPct } = historyRangeToPercents(range);
+  const span = Math.max(endPct - startPct, 0.8);
+  const nextStartPct = clampHistoryValue(clickPct - span / 2, 0, 100 - span);
+  const nextEndPct = nextStartPct + span;
+  applyHistoryChartRangeFromPercents(nextStartPct, nextEndPct);
+  startHistoryRangeDrag('window', event, getHistoryVisibleRange());
+}
+
+function handleHistoryRangeKeydown(event) {
+  if (!event || cachedValidRows.length <= 1) return;
+
+  const range = getHistoryVisibleRange();
+  if (!range) return;
+
+  const visibleSpan = range.end - range.start;
+  const step = event.shiftKey ? Math.max(3, Math.round(visibleSpan / 3)) : 1;
+  if (event.key === 'ArrowLeft') {
+    event.preventDefault();
+    applyHistoryChartRange(range.start - step, range.end - step);
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault();
+    applyHistoryChartRange(range.start + step, range.end + step);
+  } else if (event.key === 'Home') {
+    event.preventDefault();
+    applyHistoryChartRange(0, visibleSpan);
+  } else if (event.key === 'End') {
+    event.preventDefault();
+    applyHistoryChartRange(cachedValidRows.length - 1 - visibleSpan, cachedValidRows.length - 1);
+  }
+}
+
+function bindHistoryRangeControls() {
+  if (historyRangeControlsBound) return;
+
+  const startInput = document.getElementById('historyRangeStart');
+  const endInput = document.getElementById('historyRangeEnd');
+  const resetButton = document.getElementById('historyRangeReset');
+  const track = document.getElementById('historyRangeBrushTrack');
+  const windowEl = document.getElementById('historyRangeWindow');
+  const leftHandle = document.getElementById('historyRangeLeftHandle');
+  const rightHandle = document.getElementById('historyRangeRightHandle');
+  if (!startInput || !endInput) return;
+
+  historyRangeControlsBound = true;
+  startInput.addEventListener('input', () => {
+    const minSpan = historyMinimumVisibleSpan(cachedValidRows.length);
+    const start = Math.min(Number(startInput.value), Number(endInput.value) - minSpan);
+    applyHistoryChartRange(start, Number(endInput.value));
+  });
+  endInput.addEventListener('input', () => {
+    const minSpan = historyMinimumVisibleSpan(cachedValidRows.length);
+    const end = Math.max(Number(endInput.value), Number(startInput.value) + minSpan);
+    applyHistoryChartRange(Number(startInput.value), end);
+  });
+
+  if (resetButton) {
+    resetButton.addEventListener('click', resetHistoryRange);
+  }
+
+  if (track) {
+    track.addEventListener('pointerdown', handleHistoryRangeTrackPointerDown);
+    track.addEventListener('keydown', handleHistoryRangeKeydown);
+  }
+
+  if (windowEl) {
+    windowEl.addEventListener('pointerdown', (event) => {
+      event.stopPropagation();
+      startHistoryRangeDrag('window', event);
+    });
+  }
+
+  if (leftHandle) {
+    leftHandle.addEventListener('pointerdown', (event) => {
+      event.stopPropagation();
+      startHistoryRangeDrag('left', event);
+    });
+  }
+
+  if (rightHandle) {
+    rightHandle.addEventListener('pointerdown', (event) => {
+      event.stopPropagation();
+      startHistoryRangeDrag('right', event);
+    });
+  }
+
+  document.querySelectorAll('[data-history-window]').forEach(button => {
+    button.addEventListener('click', () => {
+      const value = button.getAttribute('data-history-window');
+      const rowCount = cachedValidRows.length;
+      if (rowCount <= 0) return;
+      if (value === 'all') {
+        applyHistoryChartRange(0, rowCount - 1);
+        return;
+      }
+
+      const windowSize = Number(value);
+      if (!Number.isFinite(windowSize)) return;
+      const end = rowCount - 1;
+      const start = Math.max(0, end - windowSize + 1);
+      applyHistoryChartRange(start, end);
+    });
+  });
+}
+
+function historyChartViewportSettings(rangeOverride = null) {
   const isCompact = historyChartCompactQuery.matches;
+  const range = rangeOverride || getHistoryVisibleRange();
+  const visiblePoints = range
+    ? range.end - range.start + 1
+    : Math.max(cachedValidRows.length, 1);
+  const chartWidth = historyChart && historyChart.canvas && historyChart.canvas.parentElement
+    ? historyChart.canvas.parentElement.getBoundingClientRect().width
+    : 0;
+  const targetSpacing = isCompact ? 54 : 58;
+  const maxTicksFromWidth = chartWidth > 0 ? Math.floor(chartWidth / targetSpacing) : (isCompact ? 6 : 12);
+  const maxTicks = Math.min(
+    isCompact ? 8 : 14,
+    Math.max(isCompact ? 4 : 6, maxTicksFromWidth)
+  );
+  const dailyLimit = isCompact ? 7 : 16;
+  const stepSize = visiblePoints <= dailyLimit
+    ? 1
+    : Math.max(1, Math.ceil((visiblePoints - 1) / Math.max(maxTicks - 1, 1)));
+  const tickLimit = Math.min(visiblePoints, Math.floor((visiblePoints - 1) / stepSize) + 1);
+
   return {
     mode: isCompact ? 'compact' : 'regular',
-    tickLimit: isCompact ? 6 : 10,
+    tickLimit,
+    stepSize,
     tickRotation: isCompact ? 35 : 0
   };
 }
 
-function applyHistoryChartViewportSettings() {
+function applyHistoryChartViewportSettings(rangeOverride = null) {
   if (!historyChart || !historyChart.options || !historyChart.options.scales) return;
 
-  const settings = historyChartViewportSettings();
+  const settings = historyChartViewportSettings(rangeOverride);
   const xTicks = historyChart.options.scales.x && historyChart.options.scales.x.ticks;
   if (!xTicks) return;
 
   xTicks.maxTicksLimit = settings.tickLimit;
+  xTicks.stepSize = settings.stepSize;
+  xTicks.autoSkip = false;
   xTicks.minRotation = settings.tickRotation;
   xTicks.maxRotation = settings.tickRotation;
   historyChartLastViewportMode = settings.mode;
@@ -1640,20 +2473,28 @@ function renderHistoryChart(validRows) {
       note.textContent = 'No valid published historical fixes available yet.';
       holder.appendChild(note);
     }
+    syncHistoryRangeControls(null);
+    renderHistoryRangeOverview([]);
     return;
   }
 
   const colors = historyThemeColors();
-  const viewportSettings = historyChartViewportSettings();
+  const zoomEnabled = registerHistoryZoomPlugin() && validRows.length > 1;
+  const maxIndex = validRows.length - 1;
+  const initialRange = normalizeHistoryRange(
+    historyVisibleRange ? historyVisibleRange.start : 0,
+    historyVisibleRange ? historyVisibleRange.end : maxIndex,
+    validRows.length
+  );
+  const viewportSettings = historyChartViewportSettings(initialRange);
   const ctx = canvas.getContext('2d');
   historyChart = new Chart(ctx, {
     type: 'line',
-    plugins: [latestPointPulsePlugin],
+    plugins: [latestPointPulsePlugin, historyHoverGuidePlugin],
     data: {
-      labels: validRows.map(r => r.date),
       datasets: [{
         label: 'USD/IRR',
-        data: validRows.map(r => r.fixNum),
+        data: validRows.map((r, index) => ({ x: index, y: r.fixNum })),
         borderColor: colors.accent,
         backgroundColor: colors.accentFill,
         pointBackgroundColor: colors.accent,
@@ -1661,6 +2502,7 @@ function renderHistoryChart(validRows) {
         pointBorderWidth: 0,
         pointRadius: 0,
         pointHoverRadius: 0,
+        pointHitRadius: 18,
         tension: 0.2,
         fill: true
       }]
@@ -1668,33 +2510,102 @@ function renderHistoryChart(validRows) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      parsing: false,
+      normalized: true,
+      events: ['mousemove', 'mouseout', 'click', 'touchstart', 'touchmove', 'touchend'],
+      interaction: {
+        mode: 'nearest',
+        axis: 'x',
+        intersect: false
+      },
       plugins: {
         legend: { display: false },
-        rwLatestPointPulse: { enabled: true }
+        tooltip: {
+          enabled: true,
+          displayColors: false,
+          backgroundColor: 'rgba(15, 23, 42, 0.94)',
+          borderColor: `rgba(${colors.accentRgb}, 0.38)`,
+          borderWidth: 1,
+          titleColor: '#ffffff',
+          bodyColor: '#e5edf8',
+          padding: 10,
+          callbacks: {
+            title(items) {
+              const item = Array.isArray(items) && items.length ? items[0] : null;
+              const row = item ? historyRowForIndex(item.parsed.x) : null;
+              return row ? formatHistoryDate(row.date) : '';
+            },
+            label(item) {
+              return `Rate: ${formatHistoryRate(item.parsed.y)} IRR per USD`;
+            }
+          }
+        },
+        rwLatestPointPulse: { enabled: true },
+        zoom: zoomEnabled ? {
+          limits: {
+            x: {
+              min: 0,
+              max: maxIndex,
+              minRange: Math.min(Math.max(historyMinimumVisibleSpan(validRows.length), 1), Math.max(maxIndex, 1))
+            }
+          },
+          pan: {
+            enabled: true,
+            mode: 'x',
+            threshold: 8,
+            onPanComplete: syncHistoryRangeControlsFromChart
+          },
+          zoom: {
+            mode: 'x',
+            wheel: {
+              enabled: true,
+              speed: 0.08
+            },
+            pinch: { enabled: true },
+            onZoomComplete: syncHistoryRangeControlsFromChart
+          }
+        } : {}
       },
       scales: {
         x: {
+          type: 'linear',
+          min: validRows.length > 1 && initialRange ? initialRange.start : -0.5,
+          max: validRows.length > 1 && initialRange ? initialRange.end : 0.5,
           ticks: {
             color: colors.label,
-            autoSkip: true,
+            autoSkip: false,
             maxTicksLimit: viewportSettings.tickLimit,
+            stepSize: viewportSettings.stepSize,
             minRotation: viewportSettings.tickRotation,
             maxRotation: viewportSettings.tickRotation,
+            precision: 0,
             callback(value) {
-              const raw = this.getLabelForValue(value);
-              if (typeof raw !== 'string') return raw;
-              const parts = raw.split('-');
-              if (parts.length === 3) return `${parts[1]}-${parts[2]}`;
-              return raw;
+              if (Math.abs(value - Math.round(value)) > 0.001) return '';
+              const row = historyRowForIndex(value);
+              return row ? formatHistoryDate(row.date, { compact: true }) : '';
+            }
+          },
+          grid: {
+            color: colors.grid,
+            lineWidth: 1.05
+          }
+        },
+        y: {
+          ticks: {
+            color: colors.label,
+            callback(value) {
+              return formatHistoryRate(value);
             }
           },
           grid: { color: colors.grid }
-        },
-        y: { ticks: { color: colors.label }, grid: { color: colors.grid } }
+        }
       }
     }
   });
+  historyVisibleRange = initialRange;
   historyChartLastViewportMode = viewportSettings.mode;
+  renderHistoryRangeOverview(validRows);
+  syncHistoryRangeControls(initialRange);
   scheduleHistoryChartLayoutRefresh();
 }
 
@@ -1877,10 +2788,11 @@ async function loadRegionalMarketCards() {
 loadSeries();
 loadRegionalMarketCards();
 bindHistoryChartResizeHandling();
+bindHistoryRangeControls();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
 
-      <div class="text-secondary site-generated-at">Updated: 2026-05-15T05:33:42Z</div>
+      <div class="text-secondary site-generated-at">Updated: 2026-05-18T15:51:33Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
       <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
