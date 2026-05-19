@@ -730,48 +730,22 @@
     top: 2px;
     bottom: 2px;
     min-width: 14px;
-    border: 1px solid rgba(var(--rw-accent-rgb), 0.78);
-    background: rgba(var(--rw-accent-rgb), 0.18);
-    box-shadow:
-      inset 0 0 0 1px rgba(var(--rw-accent-rgb), 0.18),
-      0 0 0 1px rgba(var(--rw-accent-rgb), 0.16);
+    border: 1px solid rgba(var(--rw-accent-rgb), 0.42);
+    background: rgba(var(--rw-accent-rgb), 0.14);
+    box-shadow: inset 0 0 0 1px rgba(var(--rw-accent-rgb), 0.1);
     cursor: grab;
     touch-action: none;
     z-index: 3;
   }
 
-  .history-range-window::before,
-  .history-range-window::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: rgba(var(--rw-accent-rgb), 0.94);
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .history-range-window::before {
-    top: -1px;
-    box-shadow: 0 0 8px rgba(var(--rw-accent-rgb), 0.32);
-  }
-
-  .history-range-window::after {
-    bottom: -1px;
-    opacity: 0.68;
-  }
-
   .history-range-window:hover {
-    background: rgba(var(--rw-accent-rgb), 0.22);
+    background: rgba(var(--rw-accent-rgb), 0.17);
   }
 
   .history-range-window:active,
   .history-range-window.is-dragging {
     cursor: grabbing;
-    box-shadow:
-      inset 0 0 0 1px rgba(var(--rw-accent-rgb), 0.28),
-      0 0 0 1px rgba(var(--rw-accent-rgb), 0.36);
+    box-shadow: inset 0 0 0 1px rgba(var(--rw-accent-rgb), 0.2);
   }
 
   .history-range-handle {
@@ -1443,7 +1417,7 @@
               </span>
             </button>
           </div>
-          <div class="site-updated" id="site-last-update" data-ts="2026-05-19T08:38:47Z">Updated: 2026-05-19T08:38:47Z</div>
+          <div class="site-updated" id="site-last-update" data-ts="2026-05-19T20:09:05Z">Updated: 2026-05-19T20:09:05Z</div>
         </div>
       </div>
     </div>
@@ -1808,8 +1782,12 @@ let historyRangeDragState = null;
 let historyRangeDragFrame = null;
 let historyRangePendingX = null;
 let historyRangeLastApply = 0;
+let historyRangeAnimationFrame = null;
+let historyRangeAnimationState = null;
 const historyChartCompactQuery = window.matchMedia('(max-width: 700px)');
+const historyReducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const HISTORY_RANGE_DRAG_THROTTLE_MS = 16;
+const HISTORY_RANGE_ANIMATION_MS = 420;
 const latestPointPulsePlugin = {
   id: 'rwLatestPointPulse',
   afterDraw(chart, _args, pluginOptions) {
@@ -2012,11 +1990,11 @@ function historyRangeToPercents(range) {
   };
 }
 
-function applyHistoryChartRangeFromPercents(startPct, endPct) {
+function applyHistoryChartRangeFromPercents(startPct, endPct, options = {}) {
   if (cachedValidRows.length <= 1) return;
 
   const maxIndex = cachedValidRows.length - 1;
-  applyHistoryChartRange((startPct / 100) * maxIndex, (endPct / 100) * maxIndex);
+  applyHistoryChartRange((startPct / 100) * maxIndex, (endPct / 100) * maxIndex, options);
 }
 
 function buildHistoryOverviewPath(rows) {
@@ -2074,8 +2052,9 @@ function updateHistoryRangeTrack(range) {
   leftDim.style.width = `${startPct}%`;
   rightDim.style.left = `${endPct}%`;
   track.setAttribute('aria-valuemax', String(cachedValidRows.length - 1));
-  track.setAttribute('aria-valuenow', String(range.start));
-  track.setAttribute('aria-valuetext', historyRangeText(range));
+  const displayRange = normalizeHistoryRange(range.start, range.end, cachedValidRows.length);
+  track.setAttribute('aria-valuenow', String(displayRange ? displayRange.start : range.start));
+  track.setAttribute('aria-valuetext', historyRangeText(displayRange || range));
   if (leftHandle) leftHandle.classList.toggle('is-active', historyRangeDragState && historyRangeDragState.type !== 'right');
   if (rightHandle) rightHandle.classList.toggle('is-active', historyRangeDragState && historyRangeDragState.type !== 'left');
   windowEl.classList.toggle('is-dragging', historyRangeDragState && historyRangeDragState.type === 'window');
@@ -2120,25 +2099,27 @@ function syncHistoryRangeControls(range = getHistoryVisibleRange()) {
     return;
   }
 
+  const displayRange = normalizeHistoryRange(range.start, range.end, rowCount) || range;
   panel.hidden = false;
   startInput.min = '0';
   startInput.max = String(rowCount - 1);
   endInput.min = '0';
   endInput.max = String(rowCount - 1);
-  startInput.value = String(range.start);
-  endInput.value = String(range.end);
+  startInput.value = String(displayRange.start);
+  endInput.value = String(displayRange.end);
 
-  const startRow = cachedValidRows[range.start];
-  const endRow = cachedValidRows[range.end];
-  const fullRange = range.start === 0 && range.end === rowCount - 1;
-  const dateText = startRow && endRow ? historyRangeText(range) : 'Full history';
+  const startRow = cachedValidRows[displayRange.start];
+  const endRow = cachedValidRows[displayRange.end];
+  const fullRange = displayRange.start === 0 && displayRange.end === rowCount - 1;
+  const dateText = startRow && endRow ? historyRangeText(displayRange) : 'Full history';
   summary.textContent = fullRange ? `Full history: ${dateText}` : dateText;
 
   updateHistoryRangeTrack(range);
-  updateHistoryPresetState(range);
+  updateHistoryPresetState(displayRange);
 }
 
 function syncHistoryRangeControlsFromChart() {
+  cancelHistoryRangeAnimation();
   const range = getHistoryVisibleRange();
   historyVisibleRange = range;
   applyHistoryChartViewportSettings(range);
@@ -2148,27 +2129,135 @@ function syncHistoryRangeControlsFromChart() {
   }
 }
 
-function applyHistoryChartRange(start, end) {
+function easeHistoryRangeMotion(progress) {
+  const bounded = clampHistoryValue(progress, 0, 1);
+  return bounded < 0.5
+    ? 4 * bounded * bounded * bounded
+    : 1 - Math.pow(-2 * bounded + 2, 3) / 2;
+}
+
+function cancelHistoryRangeAnimation() {
+  if (historyRangeAnimationFrame) {
+    window.cancelAnimationFrame(historyRangeAnimationFrame);
+  }
+  historyRangeAnimationFrame = null;
+  historyRangeAnimationState = null;
+}
+
+function getHistoryChartAnimationRange() {
+  if (!historyChart || !historyChart.options || !historyChart.options.scales) {
+    return normalizeHistoryRange(0, cachedValidRows.length - 1, cachedValidRows.length);
+  }
+
+  const maxIndex = Math.max(cachedValidRows.length - 1, 0);
+  const scale = historyChart.scales && historyChart.scales.x ? historyChart.scales.x : {};
+  const xOptions = historyChart.options.scales.x || {};
+  let start = Number.isFinite(Number(scale.min)) ? Number(scale.min) : Number(xOptions.min);
+  let end = Number.isFinite(Number(scale.max)) ? Number(scale.max) : Number(xOptions.max);
+  if (!Number.isFinite(start)) start = 0;
+  if (!Number.isFinite(end)) end = maxIndex;
+
+  start = clampHistoryValue(start, 0, maxIndex);
+  end = clampHistoryValue(end, 0, maxIndex);
+  if (end < start) {
+    const swap = start;
+    start = end;
+    end = swap;
+  }
+
+  const minSpan = historyMinimumVisibleSpan(cachedValidRows.length);
+  if (end - start < minSpan) {
+    if (start + minSpan <= maxIndex) {
+      end = start + minSpan;
+    } else {
+      start = Math.max(0, end - minSpan);
+    }
+  }
+
+  return { start, end };
+}
+
+function setHistoryChartRangeFrame(range, { final = false } = {}) {
+  if (!range || !historyChart || !historyChart.options || !historyChart.options.scales) return;
+
+  const nextRange = final
+    ? normalizeHistoryRange(range.start, range.end, cachedValidRows.length)
+    : range;
+  if (!nextRange) return;
+
+  historyVisibleRange = nextRange;
+  historyChart.options.scales.x.min = nextRange.start;
+  historyChart.options.scales.x.max = nextRange.end;
+  applyHistoryChartViewportSettings(nextRange);
+  historyChart.update('none');
+  syncHistoryRangeControls(nextRange);
+}
+
+function animateHistoryChartRange(targetRange) {
+  if (!targetRange || !historyChart || !historyChart.options || !historyChart.options.scales) return;
+
+  const reducedMotion = historyReducedMotionQuery && historyReducedMotionQuery.matches;
+  if (reducedMotion || typeof window.requestAnimationFrame !== 'function') {
+    cancelHistoryRangeAnimation();
+    setHistoryChartRangeFrame(targetRange, { final: true });
+    return;
+  }
+
+  const startRange = getHistoryChartAnimationRange();
+  if (!startRange) {
+    setHistoryChartRangeFrame(targetRange, { final: true });
+    return;
+  }
+
+  cancelHistoryRangeAnimation();
+  const startedAt = typeof performance !== 'undefined' ? performance.now() : Date.now();
+  historyRangeAnimationState = { startRange, targetRange, startedAt };
+
+  const animateFrame = (now) => {
+    if (!historyRangeAnimationState) return;
+
+    const elapsed = now - historyRangeAnimationState.startedAt;
+    const progress = Math.min(elapsed / HISTORY_RANGE_ANIMATION_MS, 1);
+    const eased = easeHistoryRangeMotion(progress);
+    const currentRange = {
+      start: historyRangeAnimationState.startRange.start
+        + (historyRangeAnimationState.targetRange.start - historyRangeAnimationState.startRange.start) * eased,
+      end: historyRangeAnimationState.startRange.end
+        + (historyRangeAnimationState.targetRange.end - historyRangeAnimationState.startRange.end) * eased
+    };
+
+    setHistoryChartRangeFrame(currentRange, { final: progress >= 1 });
+
+    if (progress < 1) {
+      historyRangeAnimationFrame = window.requestAnimationFrame(animateFrame);
+    } else {
+      historyRangeAnimationFrame = null;
+      historyRangeAnimationState = null;
+    }
+  };
+
+  historyRangeAnimationFrame = window.requestAnimationFrame(animateFrame);
+}
+
+function applyHistoryChartRange(start, end, options = {}) {
   const range = normalizeHistoryRange(start, end, cachedValidRows.length);
   if (!range || !historyChart || !historyChart.options || !historyChart.options.scales) return;
 
-  historyVisibleRange = range;
-  historyChart.options.scales.x.min = range.start;
-  historyChart.options.scales.x.max = range.end;
-  applyHistoryChartViewportSettings(range);
-  historyChart.update('none');
-  syncHistoryRangeControls(range);
+  if (options && options.animate) {
+    animateHistoryChartRange(range);
+    return;
+  }
+
+  cancelHistoryRangeAnimation();
+  setHistoryChartRangeFrame(range, { final: true });
 }
 
 function resetHistoryRange() {
   const fullRange = normalizeHistoryRange(0, cachedValidRows.length - 1, cachedValidRows.length);
   historyVisibleRange = fullRange;
-  if (historyChart && typeof historyChart.resetZoom === 'function') {
-    historyChart.resetZoom('none');
-  }
 
   if (fullRange) {
-    applyHistoryChartRange(fullRange.start, fullRange.end);
+    applyHistoryChartRange(fullRange.start, fullRange.end, { animate: true });
   }
 }
 
@@ -2239,6 +2328,7 @@ function startHistoryRangeDrag(type, event, range = getHistoryVisibleRange()) {
   if (!range || cachedValidRows.length <= 1 || !event) return;
 
   event.preventDefault();
+  cancelHistoryRangeAnimation();
   const { startPct, endPct } = historyRangeToPercents(range);
   historyRangeDragState = {
     type,
@@ -2280,16 +2370,16 @@ function handleHistoryRangeKeydown(event) {
   const step = event.shiftKey ? Math.max(3, Math.round(visibleSpan / 3)) : 1;
   if (event.key === 'ArrowLeft') {
     event.preventDefault();
-    applyHistoryChartRange(range.start - step, range.end - step);
+    applyHistoryChartRange(range.start - step, range.end - step, { animate: true });
   } else if (event.key === 'ArrowRight') {
     event.preventDefault();
-    applyHistoryChartRange(range.start + step, range.end + step);
+    applyHistoryChartRange(range.start + step, range.end + step, { animate: true });
   } else if (event.key === 'Home') {
     event.preventDefault();
-    applyHistoryChartRange(0, visibleSpan);
+    applyHistoryChartRange(0, visibleSpan, { animate: true });
   } else if (event.key === 'End') {
     event.preventDefault();
-    applyHistoryChartRange(cachedValidRows.length - 1 - visibleSpan, cachedValidRows.length - 1);
+    applyHistoryChartRange(cachedValidRows.length - 1 - visibleSpan, cachedValidRows.length - 1, { animate: true });
   }
 }
 
@@ -2353,7 +2443,7 @@ function bindHistoryRangeControls() {
       const rowCount = cachedValidRows.length;
       if (rowCount <= 0) return;
       if (value === 'all') {
-        applyHistoryChartRange(0, rowCount - 1);
+        applyHistoryChartRange(0, rowCount - 1, { animate: true });
         return;
       }
 
@@ -2361,7 +2451,7 @@ function bindHistoryRangeControls() {
       if (!Number.isFinite(windowSize)) return;
       const end = rowCount - 1;
       const start = Math.max(0, end - windowSize + 1);
-      applyHistoryChartRange(start, end);
+      applyHistoryChartRange(start, end, { animate: true });
     });
   });
 }
@@ -2813,7 +2903,7 @@ bindHistoryRangeControls();
 document.addEventListener('rw-theme-change', () => renderHistoryChart(cachedValidRows));
 </script>
 
-      <div class="text-secondary site-generated-at">Updated: 2026-05-19T08:38:47Z</div>
+      <div class="text-secondary site-generated-at">Updated: 2026-05-19T20:09:05Z</div>
       <div class="site-footer-credit">A Kevin Mehrabi Production</div>
       <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
     </div>
