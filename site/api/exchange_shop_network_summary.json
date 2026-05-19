@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-18T19:46:24Z",
+  "generated_at": "2026-05-19T08:29:10Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1797100.0,
-  "total_usable_records": 141,
-  "total_contributing_channels": 14,
+  "total_usable_records": 146,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -39,7 +39,7 @@
     "direct_shop": 67,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 10
+    "settlement_exchange": 15
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 20,
       "contributing_channel_count": 6,
-      "basket_confidence": 94.32,
+      "basket_confidence": 94.16,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.28,
-      "average_freshness": 88.67,
+      "average_quality": 91.56,
+      "average_freshness": 89.33,
       "from_new_p1": true
     },
     {
@@ -210,7 +210,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 74.12,
+      "average_quality": 75.38,
       "average_freshness": 75.5,
       "from_new_p1": false
     },
@@ -232,7 +232,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 7,
-      "average_quality": 82.71,
+      "average_quality": 86.71,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -259,6 +259,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:emeraldxe.com",
       "title": "تبدیل درهم به تومان لحظه‌ای",
       "locality": "UAE",
@@ -270,13 +281,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 94.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:hiemarat.com",
       "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 88.0,
+      "average_quality": 93.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
