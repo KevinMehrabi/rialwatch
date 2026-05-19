@@ -16,11 +16,21 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 UTC = dt.timezone.utc
+try:
+    from scripts import pipeline as daily_pipeline
+except ImportError:  # pragma: no cover - supports direct execution from scripts/
+    import pipeline as daily_pipeline  # type: ignore
 
 NO_INTRADAY_REASONS = {
     "no intraday samples available in publication window",
     "no valid intraday samples in publication window",
 }
+
+
+def in_publication_window(ts: dt.datetime, day: dt.date) -> bool:
+    start = dt.datetime.combine(day, daily_pipeline.WINDOW_START, tzinfo=UTC)
+    end = dt.datetime.combine(day, daily_pipeline.WINDOW_END, tzinfo=UTC)
+    return daily_pipeline.is_within_window_minute(ts, start, end)
 
 def parse_number(value: Any) -> Optional[float]:
     if isinstance(value, bool):
@@ -123,6 +133,27 @@ def collect_intraday_attempts(day_dir: Path) -> List[Dict[str, Any]]:
     return attempts
 
 
+def latest_fix_payload_for_day(site_dir: Path, day: dt.date) -> Optional[Dict[str, Any]]:
+    fix_dir = site_dir / "fix"
+    if not fix_dir.exists():
+        return None
+
+    candidates: List[Tuple[dt.date, Path]] = []
+    for path in fix_dir.glob("*.json"):
+        try:
+            stamp = dt.date.fromisoformat(path.stem)
+        except ValueError:
+            continue
+        if stamp <= day:
+            candidates.append((stamp, path))
+
+    for _stamp, path in sorted(candidates, key=lambda item: item[0], reverse=True):
+        payload = load_json(path)
+        if payload is not None:
+            return payload
+    return None
+
+
 def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[str, Any]]:
     day_s = day.isoformat()
     latest_path = site_dir / "api" / "latest.json"
@@ -136,7 +167,17 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
 
     latest_date = str(latest.get("date") or "")
     context["latest_date"] = latest_date
-    if latest_date != day_s:
+    current_day_fix_exists = (site_dir / "fix" / f"{day_s}.json").exists()
+    official_latest = latest_fix_payload_for_day(site_dir, day)
+    official_latest_date = str((official_latest or {}).get("date") or "")
+    if official_latest_date:
+        context["official_latest_date"] = official_latest_date
+        if latest_date != official_latest_date:
+            failures.append(
+                "latest.json date is "
+                f"{latest_date or 'unknown'}, expected latest official daily fix {official_latest_date}."
+            )
+    elif latest_date != day_s:
         failures.append(f"latest.json date is {latest_date or 'unknown'}, expected current day {day_s}.")
 
     computed = latest.get("computed", {})
@@ -178,6 +219,14 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
     intraday_dir = site_dir / "intraday" / day_s
     attempts = collect_intraday_attempts(intraday_dir)
     intraday_count = len(attempts)
+    in_window_attempts = [
+        attempt
+        for attempt in attempts
+        if attempt["collected_at"] is not None and in_publication_window(attempt["collected_at"], day)
+    ]
+    valid_in_window_attempts = [
+        attempt for attempt in in_window_attempts if (attempt["fix"] is not None) and (attempt["withheld"] is False)
+    ]
     any_valid_attempt = any((attempt["fix"] is not None) and (attempt["withheld"] is False) for attempt in attempts)
     any_open_market_candidate = any(bool(attempt["open_market_available"]) for attempt in attempts)
     any_companion_candidate = {
@@ -189,6 +238,9 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
     context.update(
         {
             "intraday_count": intraday_count,
+            "in_window_intraday_count": len(in_window_attempts),
+            "valid_in_window_candidate_count": len(valid_in_window_attempts),
+            "current_day_fix_exists": current_day_fix_exists,
             "latest_withheld": latest_withheld,
             "latest_fix": latest_fix,
             "withhold_reasons": reasons,
@@ -200,6 +252,13 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
             "any_companion_candidate": any_companion_candidate,
         }
     )
+
+    if latest_date != day_s and not current_day_fix_exists:
+        if valid_in_window_attempts:
+            failures.append(
+                "Current-day official fix is missing, but intraday attempts contain valid in-window benchmark data."
+            )
+        return failures, context
 
     if intraday_count > 0 and no_intraday_reason:
         failures.append(
@@ -254,9 +313,11 @@ def main() -> int:
         f"day={context.get('day')} "
         f"latest_date={context.get('latest_date')} "
         f"intraday_count={context.get('intraday_count')} "
+        f"in_window_intraday_count={context.get('in_window_intraday_count')} "
         f"latest_withheld={context.get('latest_withheld')} "
         f"latest_fix={context.get('latest_fix')} "
-        f"valid_candidate_count={context.get('valid_candidate_count')}"
+        f"valid_candidate_count={context.get('valid_candidate_count')} "
+        f"valid_in_window_candidate_count={context.get('valid_in_window_candidate_count')}"
     )
 
     if failures:

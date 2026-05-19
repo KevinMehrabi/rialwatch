@@ -28,9 +28,14 @@ def base_latest(day: str) -> dict:
     }
 
 
-def intraday_attempt(open_market_value: Optional[float], fix: Optional[float], withheld: bool) -> dict:
+def intraday_attempt(
+    open_market_value: Optional[float],
+    fix: Optional[float],
+    withheld: bool,
+    collected_at: str = "2026-03-24T14:10:00Z",
+) -> dict:
     return {
-        "collected_at": "2026-03-24T14:10:00Z",
+        "collected_at": collected_at,
         "computed": {
             "fix": fix,
             "withheld": withheld,
@@ -128,6 +133,55 @@ class GuardrailCheckTest(unittest.TestCase):
 
             failures, _ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
             self.assertEqual(failures, [])
+
+    def test_passes_when_latest_official_is_previous_day_and_intraday_is_outside_window(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            previous_day_s = "2026-03-23"
+            current_day_s = "2026-03-24"
+            latest = base_latest(previous_day_s)
+            latest["computed"]["fix"] = 1_453_000.0
+            latest["computed"]["withheld"] = False
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(site_dir / "fix" / f"{previous_day_s}.json", latest)
+            write_json(
+                site_dir / "intraday" / current_day_s / "15-07-00.json",
+                intraday_attempt(
+                    open_market_value=1_460_000.0,
+                    fix=1_460_000.0,
+                    withheld=False,
+                    collected_at="2026-03-24T15:07:00Z",
+                ),
+            )
+
+            failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
+            self.assertEqual(failures, [])
+            self.assertEqual(ctx["latest_date"], previous_day_s)
+            self.assertEqual(ctx["valid_in_window_candidate_count"], 0)
+
+    def test_fails_when_current_fix_missing_but_valid_in_window_attempt_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            previous_day_s = "2026-03-23"
+            current_day_s = "2026-03-24"
+            latest = base_latest(previous_day_s)
+            latest["computed"]["fix"] = 1_453_000.0
+            latest["computed"]["withheld"] = False
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(site_dir / "fix" / f"{previous_day_s}.json", latest)
+            write_json(
+                site_dir / "intraday" / current_day_s / "14-10-00.json",
+                intraday_attempt(
+                    open_market_value=1_460_000.0,
+                    fix=1_460_000.0,
+                    withheld=False,
+                    collected_at="2026-03-24T14:10:00Z",
+                ),
+            )
+
+            failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
+            self.assertTrue(any("current-day official fix is missing" in failure.lower() for failure in failures))
+            self.assertEqual(ctx["valid_in_window_candidate_count"], 1)
 
     def test_fails_when_official_is_unavailable_but_intraday_has_official_candidate(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
