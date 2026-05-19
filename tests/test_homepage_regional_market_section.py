@@ -154,8 +154,9 @@ class HomepageRegionalMarketSectionTests(unittest.TestCase):
         self.assertIn(".history-range-overview-line", self.layout)
         self.assertIn("stroke: rgba(var(--rw-accent-rgb), 0.56)", self.layout)
         self.assertIn(".history-range-window", self.layout)
-        self.assertIn(".history-range-window::before", self.layout)
-        self.assertIn(".history-range-window::after", self.layout)
+        self.assertIn("border: 1px solid rgba(var(--rw-accent-rgb), 0.42)", self.layout)
+        self.assertNotIn(".history-range-window::before", self.layout)
+        self.assertNotIn(".history-range-window::after", self.layout)
         self.assertIn(".history-range-handle", self.layout)
         self.assertIn("touch-action: none", self.layout)
 
