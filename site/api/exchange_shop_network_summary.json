@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-19T19:57:22Z",
+  "generated_at": "2026-05-20T08:34:15Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1797100.0,
-  "total_usable_records": 158,
-  "total_contributing_channels": 16,
+  "total_usable_records": 173,
+  "total_contributing_channels": 19,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 70,
+    "direct_shop": 79,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 24
+    "settlement_exchange": 30
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 39,
-      "contributing_channel_count": 8,
-      "basket_confidence": 86.65,
+      "usable_record_count": 56,
+      "contributing_channel_count": 11,
+      "basket_confidence": 81.93,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 91.83,
+      "average_freshness": 90.0,
       "from_new_p1": true
     },
     {
@@ -215,6 +215,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:goldpricetoday.ir",
+      "title": "قیمت درهم امارات به تومان امروز 30 اردیبهشت",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
@@ -243,7 +254,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 7,
-      "average_quality": 82.71,
+      "average_quality": 86.71,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -270,6 +281,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:rfsonshr.com",
+      "title": "UAE Final Settlement Calculator 2025 — Gratuity + Leave + Notice - RFS HR Consultancy",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:cityexchangeuae.com",
       "title": "City Exchange Uae",
       "locality": "UAE",
@@ -288,6 +310,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 94.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
