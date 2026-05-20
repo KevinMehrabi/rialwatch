@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-20T08:34:15Z",
+  "generated_at": "2026-05-20T20:17:13Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1797100.0,
-  "total_usable_records": 173,
+  "total_usable_records": 177,
   "total_contributing_channels": 19,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 79,
+    "direct_shop": 81,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 30
+    "settlement_exchange": 32
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 56,
       "contributing_channel_count": 11,
-      "basket_confidence": 81.93,
+      "basket_confidence": 83.79,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.83,
-      "average_freshness": 90.0,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -215,6 +215,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به دلار آمریکا",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 10,
+      "average_quality": 82.3,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:goldpricetoday.ir",
       "title": "قیمت درهم امارات به تومان امروز 30 اردیبهشت",
       "locality": "UAE",
@@ -248,17 +259,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 86.71,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "iranbroker_net",
       "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
       "locality": "unknown",
@@ -267,6 +267,17 @@
       "usable_record_count": 6,
       "average_quality": 83.0,
       "average_freshness": 62.33,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 74.17,
+      "average_freshness": 81.0,
       "from_new_p1": false
     },
     {
@@ -281,19 +292,8 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:rfsonshr.com",
-      "title": "UAE Final Settlement Calculator 2025 — Gratuity + Leave + Notice - RFS HR Consultancy",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 5,
-      "average_quality": 74.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:cityexchangeuae.com",
-      "title": "City Exchange Uae",
+      "title": "KARAMA – City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
@@ -331,7 +331,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 88.0,
+      "average_quality": 84.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
