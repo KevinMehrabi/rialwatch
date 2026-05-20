@@ -32,6 +32,7 @@ def in_publication_window(ts: dt.datetime, day: dt.date) -> bool:
     end = dt.datetime.combine(day, daily_pipeline.WINDOW_END, tzinfo=UTC)
     return daily_pipeline.is_within_window_minute(ts, start, end)
 
+
 def parse_number(value: Any) -> Optional[float]:
     if isinstance(value, bool):
         return None
@@ -229,10 +230,19 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
     ]
     any_valid_attempt = any((attempt["fix"] is not None) and (attempt["withheld"] is False) for attempt in attempts)
     any_open_market_candidate = any(bool(attempt["open_market_available"]) for attempt in attempts)
+    any_valid_in_window_attempt = any(
+        (attempt["fix"] is not None) and (attempt["withheld"] is False) for attempt in in_window_attempts
+    )
+    any_open_market_in_window_candidate = any(bool(attempt["open_market_available"]) for attempt in in_window_attempts)
     any_companion_candidate = {
         "official": any(bool(attempt["official_available"]) for attempt in attempts),
         "regional_transfer": any(bool(attempt["regional_transfer_available"]) for attempt in attempts),
         "crypto_usdt": any(bool(attempt["crypto_usdt_available"]) for attempt in attempts),
+    }
+    any_companion_in_window_candidate = {
+        "official": any(bool(attempt["official_available"]) for attempt in in_window_attempts),
+        "regional_transfer": any(bool(attempt["regional_transfer_available"]) for attempt in in_window_attempts),
+        "crypto_usdt": any(bool(attempt["crypto_usdt_available"]) for attempt in in_window_attempts),
     }
 
     context.update(
@@ -247,9 +257,12 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
             "valid_candidate_count": valid_candidate_count,
             "any_valid_attempt": any_valid_attempt,
             "any_open_market_candidate": any_open_market_candidate,
+            "any_valid_in_window_attempt": any_valid_in_window_attempt,
+            "any_open_market_in_window_candidate": any_open_market_in_window_candidate,
             "companion_latest_available": companion_latest_available,
             "companion_latest_fix": companion_latest_fix,
             "any_companion_candidate": any_companion_candidate,
+            "any_companion_in_window_candidate": any_companion_in_window_candidate,
         }
     )
 
@@ -260,9 +273,10 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
             )
         return failures, context
 
-    if intraday_count > 0 and no_intraday_reason:
+    if in_window_attempts and no_intraday_reason:
         failures.append(
-            f"WITHHOLD reason says no intraday samples, but {intraday_count} intraday attempt file(s) exist for {day_s}."
+            "WITHHOLD reason says no intraday samples in publication window, "
+            f"but {len(in_window_attempts)} in-window intraday attempt file(s) exist for {day_s}."
         )
 
     if latest_withheld and valid_candidate_count is not None and valid_candidate_count > 0:
@@ -270,9 +284,12 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
             f"publication_selection.valid_candidate_count={valid_candidate_count}, but latest snapshot is still WITHHOLD."
         )
 
-    if latest_withheld and no_valid_sources_reason and (any_valid_attempt or any_open_market_candidate):
+    if latest_withheld and no_valid_sources_reason and (
+        any_valid_in_window_attempt or any_open_market_in_window_candidate
+    ):
         failures.append(
-            "WITHHOLD reason is 'no valid sources available', but intraday attempts contain valid benchmark candidate data."
+            "WITHHOLD reason is 'no valid sources available', "
+            "but in-window intraday attempts contain valid benchmark candidate data."
         )
 
     if not latest_withheld and latest_fix is None:
@@ -284,9 +301,10 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
         "crypto_usdt": "Crypto USDT benchmark",
     }
     for key in companion_keys:
-        if not companion_latest_available.get(key, False) and any_companion_candidate.get(key, False):
+        if not companion_latest_available.get(key, False) and any_companion_in_window_candidate.get(key, False):
             failures.append(
-                f"{friendly_names[key]} is unavailable in latest.json, but intraday attempts contain usable {key} benchmark values."
+                f"{friendly_names[key]} is unavailable in latest.json, "
+                f"but in-window intraday attempts contain usable {key} benchmark values."
             )
 
     return failures, context

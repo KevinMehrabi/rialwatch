@@ -55,8 +55,13 @@ def intraday_attempt(
     }
 
 
-def intraday_attempt_with_official(official_value: Optional[float], fix: Optional[float], withheld: bool) -> dict:
-    payload = intraday_attempt(open_market_value=None, fix=fix, withheld=withheld)
+def intraday_attempt_with_official(
+    official_value: Optional[float],
+    fix: Optional[float],
+    withheld: bool,
+    collected_at: str = "2026-03-24T14:10:00Z",
+) -> dict:
+    payload = intraday_attempt(open_market_value=None, fix=fix, withheld=withheld, collected_at=collected_at)
     payload["computed"]["benchmarks"]["official"] = {
         "available": official_value is not None,
         "value": official_value,
@@ -70,8 +75,9 @@ def intraday_attempt_with_companions(
     crypto_usdt_value: Optional[float],
     fix: Optional[float],
     withheld: bool,
+    collected_at: str = "2026-03-24T14:10:00Z",
 ) -> dict:
-    payload = intraday_attempt(open_market_value=None, fix=fix, withheld=withheld)
+    payload = intraday_attempt(open_market_value=None, fix=fix, withheld=withheld, collected_at=collected_at)
     payload["computed"]["benchmarks"]["official"] = {
         "available": official_value is not None,
         "value": official_value,
@@ -100,6 +106,28 @@ class GuardrailCheckTest(unittest.TestCase):
             failures, _ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
             self.assertTrue(any("no intraday samples" in failure.lower() for failure in failures))
 
+    def test_passes_when_no_intraday_reason_has_only_outside_window_attempts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            day_s = "2026-03-24"
+            latest = base_latest(day_s)
+            latest["computed"]["withhold_reasons"] = ["no intraday samples available in publication window"]
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(
+                site_dir / "intraday" / day_s / "15-07-00.json",
+                intraday_attempt(
+                    open_market_value=1_460_000.0,
+                    fix=1_460_000.0,
+                    withheld=False,
+                    collected_at="2026-03-24T15:07:00Z",
+                ),
+            )
+
+            failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
+            self.assertEqual(failures, [])
+            self.assertEqual(ctx["intraday_count"], 1)
+            self.assertEqual(ctx["in_window_intraday_count"], 0)
+
     def test_fails_when_no_valid_sources_reason_but_intraday_candidate_exists(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             site_dir = Path(temp_dir) / "site"
@@ -114,6 +142,28 @@ class GuardrailCheckTest(unittest.TestCase):
 
             failures, _ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
             self.assertTrue(any("valid benchmark candidate" in failure.lower() for failure in failures))
+
+    def test_passes_when_no_valid_sources_reason_has_only_outside_window_candidate(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            day_s = "2026-03-24"
+            latest = base_latest(day_s)
+            latest["computed"]["withhold_reasons"] = ["no valid sources available"]
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(
+                site_dir / "intraday" / day_s / "15-07-00.json",
+                intraday_attempt(
+                    open_market_value=1_460_000.0,
+                    fix=1_460_000.0,
+                    withheld=False,
+                    collected_at="2026-03-24T15:07:00Z",
+                ),
+            )
+
+            failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
+            self.assertEqual(failures, [])
+            self.assertTrue(ctx["any_valid_attempt"])
+            self.assertFalse(ctx["any_valid_in_window_attempt"])
 
     def test_passes_for_consistent_published_snapshot(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -205,6 +255,36 @@ class GuardrailCheckTest(unittest.TestCase):
 
             failures, _ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
             self.assertTrue(any("official benchmark is unavailable" in failure.lower() for failure in failures))
+
+    def test_passes_when_official_candidate_is_outside_window_only(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            day_s = "2026-03-24"
+            latest = base_latest(day_s)
+            latest["computed"]["fix"] = 1_453_000.0
+            latest["computed"]["withheld"] = False
+            latest["publication_selection"]["valid_candidate_count"] = 1
+            latest["benchmarks"] = {
+                "official": {
+                    "available": False,
+                    "fix": None,
+                }
+            }
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(
+                site_dir / "intraday" / day_s / "15-07-00.json",
+                intraday_attempt_with_official(
+                    official_value=1_325_000.0,
+                    fix=1_453_000.0,
+                    withheld=False,
+                    collected_at="2026-03-24T15:07:00Z",
+                ),
+            )
+
+            failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
+            self.assertEqual(failures, [])
+            self.assertTrue(ctx["any_companion_candidate"]["official"])
+            self.assertFalse(ctx["any_companion_in_window_candidate"]["official"])
 
     def test_fails_when_regional_transfer_is_unavailable_but_intraday_has_candidate(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
