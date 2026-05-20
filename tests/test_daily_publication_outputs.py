@@ -273,6 +273,14 @@ class DailyPublicationOutputTests(unittest.TestCase):
             self.assertEqual(revised["original_as_of"], original["as_of"])
             self.assertEqual(revised["original_publication_selection"], original["publication_selection"])
 
+    def test_daily_reference_workflow_persists_rich_api_exports(self) -> None:
+        workflow = (Path(__file__).resolve().parents[1] / ".github" / "workflows" / "daily-reference.yml").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("site/api/daily_full.json", workflow)
+        self.assertIn("site/api/revisions.json", workflow)
+
 
 if __name__ == "__main__":
     unittest.main()

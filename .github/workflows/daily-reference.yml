@@ -114,7 +114,7 @@ jobs:
         run: |
           data_branch="data/live"
           targets=()
-          for path in site/fix site/api/latest.json site/api/series.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do
+          for path in site/fix site/api/latest.json site/api/series.json site/api/daily_full.json site/api/revisions.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do
             if [ -e "state/$path" ]; then
               targets+=("$path")
             fi

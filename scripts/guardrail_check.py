@@ -21,10 +21,8 @@ try:
 except ImportError:  # pragma: no cover - supports direct execution from scripts/
     import pipeline as daily_pipeline  # type: ignore
 
-NO_INTRADAY_REASONS = {
-    "no intraday samples available in publication window",
-    "no valid intraday samples in publication window",
-}
+NO_INTRADAY_SAMPLES_REASON = "no intraday samples available in publication window"
+NO_VALID_INTRADAY_SAMPLES_REASON = "no valid intraday samples in publication window"
 
 
 def in_publication_window(ts: dt.datetime, day: dt.date) -> bool:
@@ -190,7 +188,8 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
 
     reasons_raw = computed.get("withhold_reasons", [])
     reasons = [str(reason).strip().lower() for reason in reasons_raw if isinstance(reason, str)]
-    no_intraday_reason = any(reason in NO_INTRADAY_REASONS for reason in reasons)
+    no_intraday_reason = any(reason == NO_INTRADAY_SAMPLES_REASON for reason in reasons)
+    no_valid_intraday_reason = any(reason == NO_VALID_INTRADAY_SAMPLES_REASON for reason in reasons)
     no_valid_sources_reason = any("no valid sources available" in reason for reason in reasons)
 
     valid_candidate_count = publication_selection.get("valid_candidate_count")
@@ -277,6 +276,12 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
         failures.append(
             "WITHHOLD reason says no intraday samples in publication window, "
             f"but {len(in_window_attempts)} in-window intraday attempt file(s) exist for {day_s}."
+        )
+
+    if no_valid_intraday_reason and (any_valid_in_window_attempt or any_open_market_in_window_candidate):
+        failures.append(
+            "WITHHOLD reason says no valid intraday samples in publication window, "
+            "but in-window intraday attempts contain valid benchmark candidate data."
         )
 
     if latest_withheld and valid_candidate_count is not None and valid_candidate_count > 0:

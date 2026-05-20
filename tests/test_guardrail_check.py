@@ -143,6 +143,48 @@ class GuardrailCheckTest(unittest.TestCase):
             failures, _ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
             self.assertTrue(any("valid benchmark candidate" in failure.lower() for failure in failures))
 
+    def test_passes_when_no_valid_intraday_reason_has_only_invalid_in_window_attempts(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            day_s = "2026-03-24"
+            latest = base_latest(day_s)
+            latest["computed"]["withhold_reasons"] = ["no valid intraday samples in publication window"]
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(
+                site_dir / "intraday" / day_s / "14-10-00.json",
+                intraday_attempt(
+                    open_market_value=None,
+                    fix=None,
+                    withheld=True,
+                    collected_at="2026-03-24T14:10:00Z",
+                ),
+            )
+
+            failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
+            self.assertEqual(failures, [])
+            self.assertEqual(ctx["in_window_intraday_count"], 1)
+            self.assertFalse(ctx["any_valid_in_window_attempt"])
+
+    def test_fails_when_no_valid_intraday_reason_has_valid_in_window_attempt(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            day_s = "2026-03-24"
+            latest = base_latest(day_s)
+            latest["computed"]["withhold_reasons"] = ["no valid intraday samples in publication window"]
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(
+                site_dir / "intraday" / day_s / "14-10-00.json",
+                intraday_attempt(
+                    open_market_value=1_450_000.0,
+                    fix=1_450_000.0,
+                    withheld=False,
+                    collected_at="2026-03-24T14:10:00Z",
+                ),
+            )
+
+            failures, _ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
+            self.assertTrue(any("no valid intraday samples" in failure.lower() for failure in failures))
+
     def test_passes_when_no_valid_sources_reason_has_only_outside_window_candidate(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             site_dir = Path(temp_dir) / "site"
