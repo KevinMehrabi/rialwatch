@@ -4746,6 +4746,13 @@ def normalize_series_row(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         withheld = withheld.strip().lower() in {"1", "true", "yes"}
     elif not isinstance(withheld, bool):
         withheld = None
+    carried_forward = bool(row.get("carried_forward"))
+    source_date = row.get("source_date")
+    if not isinstance(source_date, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", source_date):
+        source_date = date
+    fill_method = row.get("fill_method")
+    if not isinstance(fill_method, str) or not fill_method.strip():
+        fill_method = "previous_valid_fix" if carried_forward else "observed"
 
     return {
         "date": date,
@@ -4754,6 +4761,9 @@ def normalize_series_row(row: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         "p75": p75,
         "status": str(status) if status is not None else None,
         "withheld": withheld,
+        "carried_forward": carried_forward,
+        "source_date": source_date,
+        "fill_method": fill_method,
     }
 
 
@@ -4774,6 +4784,8 @@ def load_existing_series_rows(site_dir: Path) -> List[Dict[str, Any]]:
     rows: List[Dict[str, Any]] = []
     for raw in items:
         if not isinstance(raw, dict):
+            continue
+        if raw.get("carried_forward") is True:
             continue
         normalized = normalize_series_row(raw)
         if normalized is not None:
@@ -4949,6 +4961,45 @@ def is_public_series_row(row: Dict[str, Any]) -> bool:
         return False
 
     return True
+
+
+def build_continuous_public_series(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    public_by_day: Dict[dt.date, Dict[str, Any]] = {}
+    for row in rows:
+        if not is_public_series_row(row):
+            continue
+        day = parse_iso_date_text(row.get("date"))
+        if day is None:
+            continue
+        public_by_day[day] = row
+
+    if not public_by_day:
+        return []
+
+    start_day = min(public_by_day)
+    end_day = max(public_by_day)
+    output: List[Dict[str, Any]] = []
+    last_actual: Optional[Dict[str, Any]] = None
+    day = start_day
+    while day <= end_day:
+        actual = public_by_day.get(day)
+        if actual is not None:
+            row = json.loads(json.dumps(actual))
+            row["date"] = iso_date(day)
+            row["carried_forward"] = False
+            row["source_date"] = iso_date(day)
+            row["fill_method"] = "observed"
+            output.append(row)
+            last_actual = row
+        elif last_actual is not None:
+            row = json.loads(json.dumps(last_actual))
+            row["date"] = iso_date(day)
+            row["carried_forward"] = True
+            row["source_date"] = str(last_actual.get("source_date") or last_actual.get("date") or "")
+            row["fill_method"] = "previous_valid_fix"
+            output.append(row)
+        day += dt.timedelta(days=1)
+    return output
 
 
 def copy_static_assets(assets_dir: Path, site_dir: Path) -> None:
@@ -6602,7 +6653,7 @@ def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
 
 def publish_series(site_dir: Path) -> None:
     rows = load_series_rows(site_dir)
-    public_rows = [row for row in rows if is_public_series_row(row)]
+    public_rows = build_continuous_public_series(rows)
     write_json(site_dir / "api" / "series.json", {"rows": public_rows})
 
 

@@ -360,6 +360,30 @@ class DailyPublicationOutputTests(unittest.TestCase):
             revisions = json.loads((site_dir / "api" / "revisions.json").read_text(encoding="utf-8"))
             self.assertEqual(revisions["rows"][0]["revision"], 0)
 
+    def test_public_series_is_continuous_with_explicit_carry_forward_rows(self) -> None:
+        first_day = dt.date(2026, 5, 18)
+        third_day = dt.date(2026, 5, 20)
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir = Path(tmp)
+            pipeline.write_json(site_dir / "fix" / "2026-05-18.json", daily_payload(first_day, 1_797_100.0))
+            pipeline.write_json(site_dir / "fix" / "2026-05-20.json", daily_payload(third_day, 1_791_600.0))
+
+            pipeline.publish_series(site_dir)
+
+            series = json.loads((site_dir / "api" / "series.json").read_text(encoding="utf-8"))
+            rows = series["rows"]
+            self.assertEqual([row["date"] for row in rows], ["2026-05-18", "2026-05-19", "2026-05-20"])
+            self.assertFalse(rows[0]["carried_forward"])
+            self.assertEqual(rows[0]["source_date"], "2026-05-18")
+            self.assertEqual(rows[0]["fill_method"], "observed")
+            self.assertEqual(rows[1]["fix"], 1_797_100.0)
+            self.assertEqual(rows[1]["p25"], 1_796_100.0)
+            self.assertTrue(rows[1]["carried_forward"])
+            self.assertEqual(rows[1]["source_date"], "2026-05-18")
+            self.assertEqual(rows[1]["fill_method"], "previous_valid_fix")
+            self.assertFalse(rows[2]["carried_forward"])
+            self.assertEqual(rows[2]["source_date"], "2026-05-20")
+
     def test_republished_daily_fix_increments_revision_and_preserves_original_metadata(self) -> None:
         day = dt.date(2026, 5, 15)
         with tempfile.TemporaryDirectory() as tmp:
