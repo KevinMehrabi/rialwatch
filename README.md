@@ -21,7 +21,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/fix/YYYY-MM-DD.json` daily JSON payload
 - `/api/latest.json` latest official daily fix payload
 - `/api/intraday/latest.json` latest observed intraday pulse payload
-- `/api/series.json` ordered public historical rows, emitted as a continuous calendar-day series; missing days are carried forward from the last valid fix with `carried_forward`, `source_date`, and `fill_method` metadata
+- `/api/series.json` ordered public historical rows (only actual valid daily fixes: numeric, non-withheld, Green/Amber/Red)
 - `/api/daily_full.json` richer historical export generated from `/fix/*.json`
 - `/api/revisions.json` revision metadata generated from `/fix/*.json`
 - `/api/mapping_audit.json` mapping-version audit for historical backfill/rebuild targeting
@@ -51,7 +51,7 @@ Daily JSON (`/fix/YYYY-MM-DD.json`, with the newest official daily fix mirrored 
 - `computed.benchmarks` lightweight summary for homepage/UI compatibility
 - top-level `indicators` and `computed.indicators` for derived percentage signals
 
-Public historical series (`/api/series.json`) remains primary-only and chart-safe: valid daily fixes are emitted on their publication dates, and missing calendar days are carried forward from the last valid fix with explicit provenance metadata so the timeline has no date gaps. `/api/daily_full.json` is the richer historical export with benchmark layers, source medians/units, indicators, revision metadata, and publication-selection metadata from immutable daily fix files. `/api/intraday/latest.json` is separate and may show a newer observed intraday pulse than the official daily fix.
+Public historical series (`/api/series.json`) remains strict and primary-only: it emits actual daily fixes only and does not carry forward missing days. `/api/daily_full.json` is the richer historical export with benchmark layers, source medians/units, indicators, revision metadata, and publication-selection metadata from immutable daily fix files. `/api/intraday/latest.json` is separate and may show a newer observed intraday pulse than the official daily fix.
 
 ## Intraday Collection And Daily Publication
 
@@ -68,6 +68,7 @@ Public historical series (`/api/series.json`) remains primary-only and chart-saf
   - if no in-window attempt is valid, repair from the latest valid same-day intraday read and record `publication_selection.selection_scope` as `same_day_repair`
   - if no valid same-day read exists, publish a WITHHOLD daily snapshot (no fabricated rate)
 - Later outside-window intraday attempts update `/api/intraday/latest.json`; when they are used to repair an empty daily snapshot, `/fix/YYYY-MM-DD.json` revision metadata records the change.
+- Historical missing or WITHHOLD daily files may be backfilled only from captured same-day intraday source-read artifacts; no prior-day carry-forward rows are emitted.
 - Homepage remains daily-only (no live ticker behavior).
 
 ### Supplementary Source Wiring

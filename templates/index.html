@@ -1221,12 +1221,7 @@ function renderHistoryChart(validRows) {
               return row ? formatHistoryDate(row.date) : '';
             },
             label(item) {
-              const row = historyRowForIndex(item.parsed.x);
-              const lines = [`Rate: ${formatHistoryRate(item.parsed.y)} IRR per USD`];
-              if (row && row.carriedForward) {
-                lines.push(`Carried forward from ${formatHistoryDate(row.sourceDate || row.source_date || row.date)}`);
-              }
-              return lines;
+              return `Rate: ${formatHistoryRate(item.parsed.y)} IRR per USD`;
             }
           }
         },
@@ -1333,9 +1328,7 @@ async function loadSeries() {
         ...r,
         status,
         fixNum: toFixNumber(r.fix),
-        withheldBool: toBool(r.withheld),
-        carriedForward: toBool(r.carried_forward) === true,
-        sourceDate: typeof r.source_date === 'string' ? r.source_date : r.date
+        withheldBool: toBool(r.withheld)
       };
     })
     .filter(r => r.fixNum !== null && r.withheldBool === false && marketStatuses.has(r.status));
@@ -1352,13 +1345,13 @@ async function loadSeries() {
       <tr>
         <td>${r.date}</td>
         <td>${r.fixNum}</td>
-        <td>${r.carriedForward ? `Carried forward from ${r.sourceDate}` : 'Published'}</td>
+        <td>Published</td>
       </tr>
     `).join('');
     if (summary) {
       summary.textContent = validRows.length === 1
-        ? '1 calendar day'
-        : `${validRows.length} calendar days`;
+        ? '1 published day'
+        : `${validRows.length} published days`;
     }
   }
 

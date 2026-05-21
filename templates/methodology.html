@@ -129,6 +129,9 @@
       The official daily fix normally prefers observations collected inside that configured publication window. If the window has no valid read but a same-day intraday read is valid, RialWatch may repair the empty daily snapshot from that read and records the selection scope as <code>same_day_repair</code>.
     </p>
     <p class="mb-2">
+      Historical gaps are backfilled only from captured same-day intraday source-read artifacts. The public series does not carry prior fixes forward into missing dates.
+    </p>
+    <p class="mb-2">
       When sufficient valid observations are available, the daily benchmark is calculated from the center of the usable market evidence rather than from a single raw quote. This is intended to reduce the effect of outliers, isolated bad inputs, or temporary distortions.
     </p>
     <p class="mb-2">

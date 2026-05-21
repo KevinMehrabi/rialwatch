@@ -360,29 +360,104 @@ class DailyPublicationOutputTests(unittest.TestCase):
             revisions = json.loads((site_dir / "api" / "revisions.json").read_text(encoding="utf-8"))
             self.assertEqual(revisions["rows"][0]["revision"], 0)
 
-    def test_public_series_is_continuous_with_explicit_carry_forward_rows(self) -> None:
+    def test_build_only_backfills_missing_historical_day_from_captured_intraday_quote(self) -> None:
+        current_day = dt.date(2026, 5, 21)
+        first_day = dt.date(2026, 5, 18)
+        missing_day = dt.date(2026, 5, 19)
+        third_day = dt.date(2026, 5, 20)
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir = Path(tmp)
+            pipeline.write_json(site_dir / "fix" / "2026-05-18.json", daily_payload(first_day, 1_797_100.0))
+            pipeline.write_json(site_dir / "fix" / "2026-05-20.json", daily_payload(third_day, 1_791_600.0))
+            write_attempt(site_dir, missing_day, 15, 7, 1_789_000.0)
+
+            pipeline.run_build_only(site_dir, TEMPLATES_DIR, "2026-05-21T16:00:00Z", current_day)
+
+            repaired = json.loads((site_dir / "fix" / "2026-05-19.json").read_text(encoding="utf-8"))
+            self.assertEqual(repaired["computed"]["fix"], 1_789_000.0)
+            self.assertEqual(repaired["revision"], 0)
+            self.assertEqual(repaired["publication_selection"]["selection_scope"], "historical_intraday_backfill")
+            self.assertEqual(repaired["publication_selection"]["backfill_from_selection_scope"], "same_day_repair")
+            self.assertEqual(repaired["publication_selection"]["selected_collected_at"], "2026-05-19T15:07:00Z")
+
+            series = json.loads((site_dir / "api" / "series.json").read_text(encoding="utf-8"))
+            rows = series["rows"]
+            self.assertEqual([row["date"] for row in rows], ["2026-05-18", "2026-05-19", "2026-05-20"])
+            self.assertEqual(rows[1]["fix"], 1_789_000.0)
+            self.assertFalse(any("carried_forward" in row for row in rows))
+            self.assertFalse(any("source_date" in row for row in rows))
+            self.assertFalse(any("fill_method" in row for row in rows))
+
+    def test_historical_backfill_revises_withheld_fix_with_revision_metadata(self) -> None:
+        current_day = dt.date(2026, 5, 21)
+        missing_day = dt.date(2026, 5, 19)
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir = Path(tmp)
+            withheld = pipeline.build_placeholder_payload(
+                missing_day,
+                "2026-05-19T14:20:00Z",
+                "WITHHOLD",
+                "no valid sources available",
+            )
+            withheld["publication_selection"] = {
+                "rule": "latest valid intraday attempt in publication window; fallback stays inside the window",
+                "selection_scope": "publication_window",
+                "selected_collected_at": None,
+            }
+            pipeline.write_json(site_dir / "fix" / "2026-05-19.json", withheld)
+            write_attempt(site_dir, missing_day, 15, 7, 1_789_000.0)
+
+            repaired_days = pipeline.repair_historical_intraday_backfills(
+                site_dir,
+                TEMPLATES_DIR,
+                "2026-05-21T16:00:00Z",
+                current_day,
+                SOURCE_CONFIGS,
+            )
+
+            self.assertEqual(repaired_days, ["2026-05-19"])
+            repaired = json.loads((site_dir / "fix" / "2026-05-19.json").read_text(encoding="utf-8"))
+            self.assertEqual(repaired["computed"]["fix"], 1_789_000.0)
+            self.assertEqual(repaired["revision"], 1)
+            self.assertEqual(
+                repaired["revision_reason"],
+                "historical intraday backfill from captured same-day source read",
+            )
+            self.assertEqual(repaired["original_as_of"], "2026-05-19T14:20:00Z")
+            self.assertEqual(repaired["original_publication_selection"], withheld["publication_selection"])
+
+    def test_existing_carry_forward_series_rows_are_not_republished(self) -> None:
         first_day = dt.date(2026, 5, 18)
         third_day = dt.date(2026, 5, 20)
         with tempfile.TemporaryDirectory() as tmp:
             site_dir = Path(tmp)
             pipeline.write_json(site_dir / "fix" / "2026-05-18.json", daily_payload(first_day, 1_797_100.0))
             pipeline.write_json(site_dir / "fix" / "2026-05-20.json", daily_payload(third_day, 1_791_600.0))
+            pipeline.write_json(
+                site_dir / "api" / "series.json",
+                {
+                    "rows": [
+                        {
+                            "date": "2026-05-19",
+                            "fix": 1_797_100.0,
+                            "p25": 1_796_100.0,
+                            "p75": 1_798_100.0,
+                            "status": "Green",
+                            "withheld": False,
+                            "carried_forward": True,
+                            "source_date": "2026-05-18",
+                            "fill_method": "previous_valid_fix",
+                        }
+                    ]
+                },
+            )
 
             pipeline.publish_series(site_dir)
 
             series = json.loads((site_dir / "api" / "series.json").read_text(encoding="utf-8"))
             rows = series["rows"]
-            self.assertEqual([row["date"] for row in rows], ["2026-05-18", "2026-05-19", "2026-05-20"])
-            self.assertFalse(rows[0]["carried_forward"])
-            self.assertEqual(rows[0]["source_date"], "2026-05-18")
-            self.assertEqual(rows[0]["fill_method"], "observed")
-            self.assertEqual(rows[1]["fix"], 1_797_100.0)
-            self.assertEqual(rows[1]["p25"], 1_796_100.0)
-            self.assertTrue(rows[1]["carried_forward"])
-            self.assertEqual(rows[1]["source_date"], "2026-05-18")
-            self.assertEqual(rows[1]["fill_method"], "previous_valid_fix")
-            self.assertFalse(rows[2]["carried_forward"])
-            self.assertEqual(rows[2]["source_date"], "2026-05-20")
+            self.assertEqual([row["date"] for row in rows], ["2026-05-18", "2026-05-20"])
+            self.assertFalse(any("carried_forward" in row for row in rows))
 
     def test_republished_daily_fix_increments_revision_and_preserves_original_metadata(self) -> None:
         day = dt.date(2026, 5, 15)
