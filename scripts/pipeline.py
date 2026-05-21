@@ -37,6 +37,7 @@ WINDOW_END = dt.time(14, 15)
 PUBLISH_AT = dt.time(14, 20)
 DEFAULT_INTRADAY_SAMPLE_TIMES = ("13:45", "14:00", "14:15")
 DIAGNOSTICS_SIGNAL_MAX_AGE = dt.timedelta(hours=30)
+INTRADAY_PULSE_MAX_QUOTE_AGE = dt.timedelta(hours=6)
 
 REQUIRED_SECRETS: Tuple[str, ...] = ()
 
@@ -4679,6 +4680,20 @@ def load_latest_official_daily_payload(site_dir: Path) -> Optional[Dict[str, Any
     return json.loads(json.dumps(payloads[-1]))
 
 
+def load_latest_valid_official_daily_payload(site_dir: Path) -> Optional[Dict[str, Any]]:
+    for payload in reversed(load_daily_fix_payloads(site_dir)):
+        computed = payload.get("computed", {}) if isinstance(payload.get("computed"), dict) else {}
+        fix = parse_number(computed.get("fix"))
+        if fix is None:
+            continue
+        if computed.get("withheld") is True:
+            continue
+        if computed.get("status") not in {"Green", "Amber", "Red"}:
+            continue
+        return json.loads(json.dumps(payload))
+    return None
+
+
 def is_intraday_pulse_payload(payload: Any) -> bool:
     if not isinstance(payload, dict):
         return False
@@ -6620,6 +6635,146 @@ def publish_public_series_artifacts(site_dir: Path) -> None:
     publish_indicator_series(site_dir)
 
 
+def intraday_pulse_sample_health(sample: Dict[str, Any]) -> Dict[str, Any]:
+    health = sample.get("health")
+    return health if isinstance(health, dict) else {}
+
+
+def intraday_pulse_sample_value(sample: Dict[str, Any], benchmark_key: str) -> Optional[float]:
+    benchmarks = sample.get("benchmarks")
+    if isinstance(benchmarks, dict):
+        value = parse_number(benchmarks.get(benchmark_key))
+        if value is not None:
+            return value
+    elif benchmark_key == PRIMARY_BENCHMARK:
+        value = parse_number(sample.get("value"))
+        if value is not None:
+            return value
+
+    health = intraday_pulse_sample_health(sample)
+    extracted = health.get("extracted_values")
+    if not isinstance(extracted, dict):
+        return None
+
+    if benchmark_key == PRIMARY_BENCHMARK:
+        for key in (PRIMARY_BENCHMARK, "open_market_sell", "open_market_mid"):
+            value = parse_number(extracted.get(key))
+            if value is not None:
+                return value
+    return parse_number(extracted.get(benchmark_key))
+
+
+def intraday_pulse_quote_time(sample: Dict[str, Any], benchmark_key: str) -> Optional[dt.datetime]:
+    health = intraday_pulse_sample_health(sample)
+    benchmark_quote_times = health.get("benchmark_quote_times")
+    if isinstance(benchmark_quote_times, dict):
+        parsed = try_parse_datetime(benchmark_quote_times.get(benchmark_key))
+        if parsed is not None:
+            return parsed
+    return try_parse_datetime(sample.get("quote_time"))
+
+
+def intraday_pulse_value_is_usable(
+    sample: Dict[str, Any],
+    benchmark_key: str,
+    collected_at: Optional[dt.datetime],
+) -> bool:
+    value = intraday_pulse_sample_value(sample, benchmark_key)
+    if value is None or value <= 0:
+        return False
+
+    health = intraday_pulse_sample_health(sample)
+    fetch_success = sample.get("fetch_success")
+    if fetch_success is None:
+        fetch_success = health.get("fetch_success")
+    if fetch_success is False:
+        return False
+
+    validation = sample.get("validation_result")
+    if not isinstance(validation, dict):
+        validation = health.get("validation_result")
+    if isinstance(validation, dict) and validation.get("ok") is False:
+        return False
+
+    quote_time = intraday_pulse_quote_time(sample, benchmark_key)
+    if collected_at is not None and quote_time is not None:
+        if quote_time > collected_at + dt.timedelta(minutes=10):
+            return False
+        if collected_at - quote_time > INTRADAY_PULSE_MAX_QUOTE_AGE:
+            return False
+    return True
+
+
+def build_intraday_pulse_summary(latest_attempt: Dict[str, Any]) -> Dict[str, Any]:
+    collected_at = try_parse_datetime(latest_attempt.get("collected_at"))
+    sources = latest_attempt.get("sources")
+    if not isinstance(sources, dict):
+        sources = {}
+
+    source_values: Dict[str, float] = {}
+    source_units: Dict[str, str] = {}
+    benchmark_values: Dict[str, List[float]] = {key: [] for key in BENCHMARK_LABELS}
+    for source, source_data in sources.items():
+        if not isinstance(source_data, dict):
+            continue
+        sample = source_data.get("sample")
+        if not isinstance(sample, dict):
+            continue
+        for benchmark_key in BENCHMARK_LABELS:
+            if not intraday_pulse_value_is_usable(sample, benchmark_key, collected_at):
+                continue
+            value = intraday_pulse_sample_value(sample, benchmark_key)
+            if value is None:
+                continue
+            benchmark_values[benchmark_key].append(value)
+            if benchmark_key == PRIMARY_BENCHMARK:
+                source_name = str(source)
+                source_values[source_name] = value
+                source_units[source_name] = str(sample.get("normalized_unit") or sample.get("source_unit") or "rial")
+
+    primary_values = list(source_values.values())
+    if not primary_values:
+        return {
+            "fix": None,
+            "p25": None,
+            "p75": None,
+            "dispersion": None,
+            "status": None,
+            "valid": False,
+            "source_medians": {},
+            "source_units": {},
+            "benchmarks": {key: None for key in BENCHMARK_LABELS},
+        }
+
+    fix_value = median(primary_values)
+    p25 = percentile(primary_values, 0.25)
+    p75 = percentile(primary_values, 0.75)
+    dispersion = (p75 - p25) / fix_value if fix_value else None
+    if dispersion is None or dispersion <= 0.015:
+        status = "Green"
+    elif dispersion <= 0.035:
+        status = "Amber"
+    elif dispersion <= 0.05:
+        status = "Red"
+    else:
+        status = "WITHHOLD"
+
+    return {
+        "fix": fix_value,
+        "p25": p25,
+        "p75": p75,
+        "dispersion": dispersion,
+        "status": status,
+        "valid": status in {"Green", "Amber", "Red"},
+        "source_medians": source_values,
+        "source_units": source_units,
+        "benchmarks": {
+            key: median(values) if values else None
+            for key, values in benchmark_values.items()
+        },
+    }
+
+
 def publish_intraday_latest(site_dir: Path, day: dt.date) -> None:
     attempts = load_intraday_attempts(site_dir, day)
     latest_path = site_dir / "api" / "intraday" / "latest.json"
@@ -6631,15 +6786,49 @@ def publish_intraday_latest(site_dir: Path, day: dt.date) -> None:
     computed = latest_attempt.get("computed", {}) if isinstance(latest_attempt.get("computed"), dict) else {}
     computed_benchmarks = computed.get("benchmarks", {}) if isinstance(computed.get("benchmarks"), dict) else {}
     band = computed.get("band", {}) if isinstance(computed.get("band"), dict) else {}
-    source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
-    source_units = computed.get("source_units", {}) if isinstance(computed.get("source_units"), dict) else {}
-    primary_value = parse_number(computed.get("fix"))
-    valid = (
+    computed_source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
+    computed_source_units = computed.get("source_units", {}) if isinstance(computed.get("source_units"), dict) else {}
+    computed_primary_value = parse_number(computed.get("fix"))
+    computed_valid = (
         computed.get("status") in {"Green", "Amber", "Red"}
         and computed.get("withheld") is False
-        and primary_value is not None
+        and computed_primary_value is not None
     )
-    related_official = load_latest_official_daily_payload(site_dir)
+    pulse_summary = build_intraday_pulse_summary(latest_attempt)
+    pulse_primary_value = parse_number(pulse_summary.get("fix"))
+    pulse_source_medians = (
+        pulse_summary.get("source_medians", {})
+        if isinstance(pulse_summary.get("source_medians"), dict)
+        else {}
+    )
+    pulse_source_units = (
+        pulse_summary.get("source_units", {})
+        if isinstance(pulse_summary.get("source_units"), dict)
+        else {}
+    )
+    pulse_benchmarks = (
+        pulse_summary.get("benchmarks", {})
+        if isinstance(pulse_summary.get("benchmarks"), dict)
+        else {}
+    )
+    primary_value = pulse_primary_value if pulse_primary_value is not None else computed_primary_value
+    source_medians = pulse_source_medians if pulse_source_medians else computed_source_medians
+    source_units = pulse_source_units if pulse_source_units else computed_source_units
+    valid = bool(pulse_summary.get("valid")) if pulse_primary_value is not None else computed_valid
+    p25 = parse_float(pulse_summary.get("p25")) if pulse_primary_value is not None else None
+    if p25 is None:
+        p25 = parse_float(band.get("p25"))
+    p75 = parse_float(pulse_summary.get("p75")) if pulse_primary_value is not None else None
+    if p75 is None:
+        p75 = parse_float(band.get("p75"))
+    dispersion = parse_float(pulse_summary.get("dispersion")) if pulse_primary_value is not None else None
+    if dispersion is None:
+        dispersion = parse_float(computed.get("dispersion"))
+    status = pulse_summary.get("status") if pulse_primary_value is not None else computed.get("status")
+    if status is None:
+        status = computed.get("status")
+    withheld = not valid if pulse_primary_value is not None else computed.get("withheld")
+    related_official = load_latest_valid_official_daily_payload(site_dir)
     related_computed = (
         related_official.get("computed", {})
         if isinstance(related_official, dict) and isinstance(related_official.get("computed"), dict)
@@ -6648,6 +6837,10 @@ def publish_intraday_latest(site_dir: Path, day: dt.date) -> None:
 
     benchmarks_payload: Dict[str, Optional[float]] = {}
     for key in BENCHMARK_LABELS:
+        pulse_value = parse_number(pulse_benchmarks.get(key))
+        if pulse_value is not None:
+            benchmarks_payload[key] = pulse_value
+            continue
         entry = computed_benchmarks.get(key, {})
         if not isinstance(entry, dict):
             benchmarks_payload[key] = None
@@ -6660,10 +6853,10 @@ def publish_intraday_latest(site_dir: Path, day: dt.date) -> None:
         "in_publication_window": in_publication_window(collected_at, day) if collected_at is not None else False,
         "valid": valid,
         "primary_open_market_value": primary_value,
-        "p25": parse_float(band.get("p25")),
-        "p75": parse_float(band.get("p75")),
-        "dispersion": parse_float(computed.get("dispersion")),
-        "status": computed.get("status"),
+        "p25": p25,
+        "p75": p75,
+        "dispersion": dispersion,
+        "status": status,
         "source_count_used": source_count_from_medians(source_medians),
         "source_medians": source_medians,
         "source_units": source_units,
@@ -6674,10 +6867,10 @@ def publish_intraday_latest(site_dir: Path, day: dt.date) -> None:
         "benchmarks": benchmarks_payload,
         "computed": {
             "fix": primary_value,
-            "status": computed.get("status"),
-            "withheld": computed.get("withheld"),
-            "band": computed.get("band"),
-            "dispersion": computed.get("dispersion"),
+            "status": status,
+            "withheld": withheld,
+            "band": {"p25": p25, "p75": p75},
+            "dispersion": dispersion,
         },
     }
     write_json(latest_path, payload)

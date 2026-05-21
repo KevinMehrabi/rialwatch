@@ -205,6 +205,69 @@ class DailyPublicationOutputTests(unittest.TestCase):
             self.assertEqual(intraday_latest["related_official_fix_date"], "2026-05-15")
             self.assertEqual(intraday_latest["related_official_fix_value"], 1_400_000.0)
 
+    def test_intraday_latest_keeps_observed_pulse_when_outside_official_window(self) -> None:
+        day = dt.date(2026, 5, 21)
+        official_day = dt.date(2026, 5, 18)
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir = Path(tmp)
+            pipeline.write_json(site_dir / "fix" / "2026-05-18.json", daily_payload(official_day, 1_797_100.0))
+            today_withhold = pipeline.build_placeholder_payload(
+                day,
+                "2026-05-21T15:32:50Z",
+                "WITHHOLD",
+                "no intraday samples available in publication window",
+            )
+            pipeline.write_json(site_dir / "fix" / "2026-05-21.json", today_withhold)
+            sampled_at = dt.datetime(2026, 5, 21, 14, 28, 37, tzinfo=pipeline.UTC)
+            sample_payload = pipeline.serialize_sample(sample_for(sampled_at, 1_796_000.0))
+            sample_payload["ok"] = False
+            sample_payload["stale"] = True
+            sample_payload["error"] = "sample outside observation window"
+            official_sample_payload = pipeline.serialize_sample(sample_for(sampled_at, 1_481_184.0))
+            official_sample_payload["benchmarks"] = {key: None for key in pipeline.BENCHMARK_LABELS}
+            official_sample_payload["benchmarks"]["official"] = 1_481_184.0
+            payload = {
+                "date": pipeline.iso_date(day),
+                "collected_at": pipeline.iso_ts(sampled_at),
+                "window_utc": {"start": "13:45", "end": "14:15"},
+                "sources": {
+                    "bonbast": {"sample": sample_payload, "health": sample_payload["health"]},
+                    "commercial_aux": {
+                        "sample": official_sample_payload,
+                        "health": official_sample_payload["health"],
+                    },
+                },
+                "computed": {
+                    "fix": None,
+                    "band": {"p25": None, "p75": None},
+                    "dispersion": None,
+                    "status": "WITHHOLD",
+                    "withheld": True,
+                    "withhold_reasons": ["no valid sources available"],
+                    "source_medians": {},
+                    "source_units": {},
+                    "benchmarks": {
+                        key: {"value": None, "available": False, "is_primary": key == "open_market"}
+                        for key in pipeline.BENCHMARK_LABELS
+                    },
+                },
+            }
+            pipeline.write_json(site_dir / "intraday" / "2026-05-21" / "14-28-37.json", payload)
+
+            pipeline.publish_intraday_latest(site_dir, day)
+
+            intraday_latest = json.loads((site_dir / "api" / "intraday" / "latest.json").read_text(encoding="utf-8"))
+            self.assertFalse(intraday_latest["in_publication_window"])
+            self.assertTrue(intraday_latest["valid"])
+            self.assertEqual(intraday_latest["primary_open_market_value"], 1_796_000.0)
+            self.assertEqual(intraday_latest["source_count_used"], 1)
+            self.assertEqual(intraday_latest["source_medians"], {"bonbast": 1_796_000.0})
+            self.assertEqual(intraday_latest["source_units"], {"bonbast": "rial"})
+            self.assertEqual(intraday_latest["computed"]["fix"], 1_796_000.0)
+            self.assertFalse(intraday_latest["computed"]["withheld"])
+            self.assertEqual(intraday_latest["related_official_fix_date"], "2026-05-18")
+            self.assertEqual(intraday_latest["related_official_fix_value"], 1_797_100.0)
+
     def test_publish_latest_rejects_intraday_pulse_payload(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             site_dir = Path(tmp)
