@@ -408,6 +408,16 @@ class DailyPublicationOutputTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             site_dir = Path(tmp)
             pipeline.write_json(site_dir / "fix" / "2026-05-18.json", daily_payload(valid_day, 1_797_100.0))
+            pipeline.write_json(
+                site_dir / "api" / "intraday" / "latest.json",
+                {
+                    "date": "2026-05-21",
+                    "collected_at": "2026-05-21T15:16:50Z",
+                    "in_publication_window": False,
+                    "valid": True,
+                    "primary_open_market_value": 1_791_600.0,
+                },
+            )
             latest = pipeline.build_placeholder_payload(
                 withheld_day,
                 "2026-05-21T15:32:50Z",
@@ -422,6 +432,9 @@ class DailyPublicationOutputTests(unittest.TestCase):
             self.assertIn("Last valid official", html)
             self.assertIn("1,797,100", html)
             self.assertIn("Last valid daily fix: 2026-05-18", html)
+            self.assertIn("Latest intraday pulse", html)
+            self.assertIn("1,791,600", html)
+            self.assertIn("not official daily fix", html)
 
 
 if __name__ == "__main__":

@@ -4694,6 +4694,17 @@ def load_latest_valid_official_daily_payload(site_dir: Path) -> Optional[Dict[st
     return None
 
 
+def load_intraday_latest_payload(site_dir: Path) -> Optional[Dict[str, Any]]:
+    path = site_dir / "api" / "intraday" / "latest.json"
+    if not path.exists():
+        return None
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+    return payload if isinstance(payload, dict) else None
+
+
 def is_intraday_pulse_payload(payload: Any) -> bool:
     if not isinstance(payload, dict):
         return False
@@ -6322,6 +6333,27 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         if normalized_reason:
             withhold_reason_text = normalized_reason
 
+    intraday_pulse_html = ""
+    intraday_latest = load_intraday_latest_payload(site_dir) if withheld else None
+    if isinstance(intraday_latest, dict) and intraday_latest.get("valid") is True:
+        intraday_pulse_value = parse_number(intraday_latest.get("primary_open_market_value"))
+        if intraday_pulse_value is not None:
+            pulse_ts = try_parse_datetime(intraday_latest.get("collected_at"))
+            pulse_time_text = pulse_ts.strftime("%H:%M UTC") if pulse_ts is not None else "latest observation"
+            pulse_scope = (
+                "inside official window"
+                if intraday_latest.get("in_publication_window") is True
+                else "outside official window"
+            )
+            intraday_pulse_html = (
+                '<div class="text-secondary small mt-2">'
+                f'Latest intraday pulse: <span class="fw-semibold">{fmt_rate(intraday_pulse_value)}</span> IRR per USD'
+                "</div>"
+                '<div class="text-secondary small mt-1">'
+                f'Observed {html_lib.escape(pulse_time_text)}; {html_lib.escape(pulse_scope)}; not official daily fix'
+                "</div>"
+            )
+
     if status_upper == "WITHHOLD":
         if fix is None and last_valid_public_fix is not None:
             primary_value_html = (
@@ -6343,11 +6375,11 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
                 '<div class="primary-rate-unit">IRR per USD</div></div>'
             )
             last_valid_note = ""
-        primary_reason_html = (
-            f'<div class="text-warning small mt-1">Reason: {withhold_reason_text}</div>{last_valid_note}'
-            if withhold_reason_text
-            else last_valid_note
-        )
+        primary_reason_html = ""
+        if withhold_reason_text:
+            primary_reason_html += f'<div class="text-warning small mt-1">Reason: {withhold_reason_text}</div>'
+        primary_reason_html += last_valid_note
+        primary_reason_html += intraday_pulse_html
     else:
         primary_value_html = (
             f'<div class="primary-value-row mb-1"><div class="primary-rate-value">{fmt_rate(fix)}</div>'
