@@ -147,7 +147,7 @@ class DailyPublicationOutputTests(unittest.TestCase):
             self.assertTrue(selection["used_fallback"])
             self.assertEqual(selection["valid_candidate_count"], 1)
 
-    def test_outside_window_only_publishes_withhold(self) -> None:
+    def test_outside_window_only_repairs_daily_publication_when_valid(self) -> None:
         day = dt.date(2026, 5, 15)
         with tempfile.TemporaryDirectory() as tmp:
             site_dir = Path(tmp)
@@ -162,11 +162,18 @@ class DailyPublicationOutputTests(unittest.TestCase):
             )
 
             payload = json.loads((site_dir / "fix" / "2026-05-15.json").read_text(encoding="utf-8"))
-            self.assertIsNone(payload["computed"]["fix"])
-            self.assertTrue(payload["computed"]["withheld"])
-            self.assertEqual(payload["computed"]["status"], "WITHHOLD")
+            self.assertEqual(payload["computed"]["fix"], 1_550_000.0)
+            self.assertFalse(payload["computed"]["withheld"])
+            self.assertEqual(payload["computed"]["status"], "Green")
             self.assertEqual(payload["publication_selection"]["candidate_count"], 0)
-            self.assertIsNone(payload["publication_selection"]["selected_collected_at"])
+            self.assertEqual(payload["publication_selection"]["same_day_candidate_count"], 1)
+            self.assertEqual(payload["publication_selection"]["valid_same_day_candidate_count"], 1)
+            self.assertEqual(payload["publication_selection"]["selection_scope"], "same_day_repair")
+            self.assertEqual(payload["publication_selection"]["selected_collected_at"], "2026-05-15T15:07:00Z")
+            self.assertEqual(
+                payload["publication_selection"]["selection_reason"],
+                "no valid publication-window attempt; selected latest valid same-day intraday read",
+            )
             self.assertEqual(payload["revision"], 0)
             self.assertIsNone(payload["revision_reason"])
             self.assertIsNone(payload["revised_at"])
@@ -187,6 +194,40 @@ class DailyPublicationOutputTests(unittest.TestCase):
             self.assertEqual(preserved["computed"]["fix"], original["computed"]["fix"])
             self.assertEqual(preserved["as_of"], original["as_of"])
             self.assertEqual(preserved["publication_selection"], original["publication_selection"])
+
+    def test_build_only_revises_withheld_daily_from_valid_same_day_attempt(self) -> None:
+        day = dt.date(2026, 5, 21)
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir = Path(tmp)
+            withheld = pipeline.build_placeholder_payload(
+                day,
+                "2026-05-21T15:32:50Z",
+                "WITHHOLD",
+                "no intraday samples available in publication window",
+            )
+            withheld["publication_selection"] = {
+                "rule": "latest valid intraday attempt in publication window; fallback stays inside the window",
+                "selection_scope": "publication_window",
+                "selected_collected_at": None,
+            }
+            pipeline.write_json(site_dir / "fix" / "2026-05-21.json", withheld)
+            write_attempt(site_dir, day, 15, 7, 1_550_000.0)
+
+            pipeline.run_build_only(site_dir, TEMPLATES_DIR, "2026-05-21T16:00:00Z", day)
+
+            repaired = json.loads((site_dir / "fix" / "2026-05-21.json").read_text(encoding="utf-8"))
+            latest = json.loads((site_dir / "api" / "latest.json").read_text(encoding="utf-8"))
+            self.assertEqual(repaired["computed"]["fix"], 1_550_000.0)
+            self.assertFalse(repaired["computed"]["withheld"])
+            self.assertEqual(repaired["publication_selection"]["selection_scope"], "same_day_repair")
+            self.assertEqual(repaired["revision"], 1)
+            self.assertEqual(
+                repaired["revision_reason"],
+                "repaired withheld daily fix from valid same-day intraday read",
+            )
+            self.assertEqual(repaired["original_as_of"], "2026-05-21T15:32:50Z")
+            self.assertEqual(repaired["original_publication_selection"], withheld["publication_selection"])
+            self.assertEqual(latest["computed"]["fix"], 1_550_000.0)
 
     def test_latest_official_is_separate_from_intraday_latest(self) -> None:
         day = dt.date(2026, 5, 15)

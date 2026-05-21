@@ -62,11 +62,12 @@ Public historical series (`/api/series.json`) remains strict and primary-only. `
   - `13:45`
   - `14:00`
   - `14:15`
-- Official daily publication runs once at `14:20 UTC` and selects only from intraday attempts collected inside the publication window (`13:45-14:15 UTC`) using this explicit rule:
+- Official daily publication runs once at `14:20 UTC` and normally selects from intraday attempts collected inside the publication window (`13:45-14:15 UTC`) using this explicit rule:
   - choose the latest valid in-window intraday attempt
   - if the latest in-window attempt is invalid, fall back to the most recent valid in-window attempt
-  - if none are valid, publish a WITHHOLD daily snapshot (no fabricated rate)
-- Later outside-window intraday attempts may update `/api/intraday/latest.json`, but they do not replace `/fix/YYYY-MM-DD.json` or `/api/latest.json`.
+  - if no in-window attempt is valid, repair from the latest valid same-day intraday read and record `publication_selection.selection_scope` as `same_day_repair`
+  - if no valid same-day read exists, publish a WITHHOLD daily snapshot (no fabricated rate)
+- Later outside-window intraday attempts update `/api/intraday/latest.json`; when they are used to repair an empty daily snapshot, `/fix/YYYY-MM-DD.json` revision metadata records the change.
 - Homepage remains daily-only (no live ticker behavior).
 
 ### Supplementary Source Wiring

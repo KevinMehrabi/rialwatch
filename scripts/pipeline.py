@@ -6517,7 +6517,13 @@ def publish_daily_fix_page(site_dir: Path, templates_dir: Path, generated_at: st
     write_text(site_dir / "fix" / day / "index.html", html)
 
 
-def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, daily: Dict[str, Any]) -> None:
+def publish_daily_fix(
+    site_dir: Path,
+    templates_dir: Path,
+    generated_at: str,
+    daily: Dict[str, Any],
+    revision_reason: Optional[str] = None,
+) -> None:
     daily_out = json.loads(json.dumps(daily))
     enrich_publication_selection_metadata(site_dir, daily_out)
     daily_out["normalized_metrics"] = build_normalized_market_snapshot(daily_out, site_dir=site_dir)
@@ -6537,7 +6543,7 @@ def publish_daily_fix(site_dir: Path, templates_dir: Path, generated_at: str, da
 
     day = daily_out["date"]
     existing = load_daily_fix_payload(site_dir, day)
-    ensure_revision_metadata(daily_out, existing=existing)
+    ensure_revision_metadata(daily_out, existing=existing, revision_reason=revision_reason)
     publish_daily_fix_page(site_dir, templates_dir, generated_at, daily_out)
     write_json(site_dir / "fix" / f"{day}.json", daily_out)
 
@@ -7371,6 +7377,14 @@ def is_daily_valid(daily: Dict[str, Any]) -> bool:
     )
 
 
+def daily_fix_is_withheld(daily: Optional[Dict[str, Any]]) -> bool:
+    if not isinstance(daily, dict):
+        return False
+    computed = daily.get("computed", {}) if isinstance(daily.get("computed"), dict) else {}
+    fix = parse_number(computed.get("fix"))
+    return computed.get("withheld") is True or computed.get("status") == "WITHHOLD" or fix is None
+
+
 def official_benchmark_available(entry: Any) -> bool:
     if not isinstance(entry, dict):
         return False
@@ -7566,7 +7580,7 @@ def select_daily_from_intraday(
     if not attempts:
         return None
 
-    all_attempts: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool, bool]] = []
+    all_attempts: List[Dict[str, Any]] = []
     for attempt in attempts:
         collected_at = try_parse_datetime(attempt.get("collected_at"))
         if collected_at is None:
@@ -7574,49 +7588,77 @@ def select_daily_from_intraday(
         samples = attempt_to_samples(attempt)
         if not samples:
             continue
-        daily = summarize_day(samples, source_configs, day)
-        valid = is_daily_valid(daily)
         in_window = in_publication_window(collected_at, day)
-        all_attempts.append((collected_at, attempt, daily, valid, in_window))
+        daily = summarize_day(samples, source_configs, day)
+        recovery_daily = daily if in_window else summarize_day(samples, source_configs, day, primary_allow_stale=True)
+        all_attempts.append(
+            {
+                "collected_at": collected_at,
+                "attempt": attempt,
+                "daily": daily,
+                "valid": is_daily_valid(daily),
+                "recovery_daily": recovery_daily,
+                "recovery_valid": is_daily_valid(recovery_daily),
+                "in_window": in_window,
+            }
+        )
 
-    candidates: List[Tuple[dt.datetime, Dict[str, Any], Dict[str, Any], bool]] = [
-        (collected_at, attempt, daily, valid)
-        for collected_at, attempt, daily, valid, in_window in all_attempts
-        if in_window
-    ]
+    candidates: List[Dict[str, Any]] = [item for item in all_attempts if item["in_window"]]
     selection_scope = "publication_window"
 
-    if not candidates:
+    if not all_attempts:
         return None
 
-    candidates.sort(key=lambda item: item[0])
-    latest_attempt = candidates[-1]
-    valid_candidates = [item for item in candidates if item[3]]
+    all_attempts.sort(key=lambda item: item["collected_at"])
+    candidates.sort(key=lambda item: item["collected_at"])
+    latest_attempt = candidates[-1] if candidates else all_attempts[-1]
+    valid_candidates = [item for item in candidates if item["valid"]]
 
     if valid_candidates:
         selected = valid_candidates[-1]
         selected_reason = "latest valid intraday attempt in publication window"
+        daily = selected["daily"]
+        selected_valid = selected["valid"]
     else:
-        selected = latest_attempt
-        selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
+        recovery_candidates = [item for item in all_attempts if item["recovery_valid"]]
+        if recovery_candidates:
+            selected = recovery_candidates[-1]
+            selected_reason = "no valid publication-window attempt; selected latest valid same-day intraday read"
+            selection_scope = "same_day_repair"
+            daily = selected["recovery_daily"]
+            selected_valid = selected["recovery_valid"]
+        elif candidates:
+            selected = latest_attempt
+            selected_reason = "no valid attempts found; used latest intraday attempt in publication window"
+            daily = selected["daily"]
+            selected_valid = selected["valid"]
+        else:
+            return None
 
-    selected_at, selected_attempt, daily, selected_valid = selected
-    latest_at = latest_attempt[0]
-    used_fallback = bool(selected_valid and selected_at != latest_at)
-    if selected_valid and not used_fallback:
+    selected_at = selected["collected_at"]
+    selected_attempt = selected["attempt"]
+    latest_at = latest_attempt["collected_at"]
+    used_fallback = bool(selection_scope != "publication_window" or (selected_valid and selected_at != latest_at))
+    if selected_valid and selection_scope == "same_day_repair":
+        basis_label = "Repaired from latest valid same-day intraday read"
+    elif selected_valid and not used_fallback:
         basis_label = "Selected from intraday publication window"
     elif selected_valid and used_fallback:
         basis_label = "Fallback to most recent valid intraday sample"
     else:
         basis_label = "No valid intraday sample in publication window (WITHHOLD)"
 
-    selection_rule = "latest valid intraday attempt in publication window; fallback stays inside the window"
+    selection_rule = (
+        "prefer latest valid intraday attempt in publication window; "
+        "repair from latest valid same-day intraday read when no window-valid attempt exists"
+    )
 
     computed = daily.get("computed", {}) if isinstance(daily.get("computed"), dict) else {}
     source_medians = computed.get("source_medians", {}) if isinstance(computed.get("source_medians"), dict) else {}
     street_source_count_used = len([k for k, v in source_medians.items() if parse_number(v) is not None])
     current_fix = parse_number(computed.get("fix"))
     delta_meta = compute_previous_day_delta_metadata(site_dir, day, current_fix)
+    valid_same_day_candidates = [item for item in all_attempts if item["recovery_valid"]]
 
     daily["publication_selection"] = {
         "rule": selection_rule,
@@ -7624,6 +7666,8 @@ def select_daily_from_intraday(
         "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
         "candidate_count": len(candidates),
         "valid_candidate_count": len(valid_candidates),
+        "same_day_candidate_count": len(all_attempts),
+        "valid_same_day_candidate_count": len(valid_same_day_candidates),
         "selected_collected_at": iso_ts(selected_at),
         "latest_candidate_collected_at": iso_ts(latest_at),
         "selected_attempt_file": selected_attempt.get("file"),
@@ -7641,15 +7685,56 @@ def select_daily_from_intraday(
     return daily
 
 
+def repair_withheld_daily_from_intraday(
+    site_dir: Path,
+    templates_dir: Path,
+    generated_at: str,
+    day: dt.date,
+    existing: Optional[Dict[str, Any]],
+    source_configs: List[SourceConfig],
+) -> Optional[Dict[str, Any]]:
+    if not daily_fix_is_withheld(existing):
+        return None
+
+    repaired = select_daily_from_intraday(site_dir, day, source_configs)
+    if repaired is None or not is_daily_valid(repaired):
+        return None
+
+    publish_daily_fix(
+        site_dir,
+        templates_dir,
+        generated_at=generated_at,
+        daily=repaired,
+        revision_reason="repaired withheld daily fix from valid same-day intraday read",
+    )
+    return load_daily_fix_payload(site_dir, day) or repaired
+
+
 def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
     existing_for_day = load_daily_fix_payload(site_dir, day)
     if existing_for_day is not None:
-        publish_daily_fix_page(site_dir, templates_dir, generated_at, existing_for_day)
-        latest = load_latest_official_daily_payload(site_dir) or existing_for_day
-        status_title = "OK"
-        status_detail = (
-            f"Build-only mode: preserved immutable {iso_date(day)} official fix and regenerated derived outputs."
+        source_configs = build_source_configs()
+        repaired = repair_withheld_daily_from_intraday(
+            site_dir,
+            templates_dir,
+            generated_at,
+            day,
+            existing_for_day,
+            source_configs,
         )
+        if repaired is not None:
+            latest = load_latest_official_daily_payload(site_dir) or repaired
+            status_title = "OK"
+            status_detail = (
+                f"Build-only mode: revised withheld {iso_date(day)} daily fix from a valid same-day intraday read."
+            )
+        else:
+            publish_daily_fix_page(site_dir, templates_dir, generated_at, existing_for_day)
+            latest = load_latest_official_daily_payload(site_dir) or existing_for_day
+            status_title = "OK"
+            status_detail = (
+                f"Build-only mode: preserved immutable {iso_date(day)} official fix and regenerated derived outputs."
+            )
     else:
         latest_official = load_latest_official_daily_payload(site_dir)
         if latest_official is not None:
@@ -7781,11 +7866,25 @@ def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: P
     if immutable_day_exists(site_dir, day_s):
         existing = load_daily_fix_payload(site_dir, day)
         if existing is not None:
-            publish_daily_fix_page(site_dir, templates_dir, generated_at, existing)
-            latest = existing
-            status_detail = (
-                f"Reference for {day_s} remains immutable; reused the stored official fix for latest/status/home views."
+            repaired = repair_withheld_daily_from_intraday(
+                site_dir,
+                templates_dir,
+                generated_at,
+                day,
+                existing,
+                source_configs,
             )
+            if repaired is not None:
+                latest = repaired
+                status_detail = (
+                    f"Reference for {day_s} was revised from a valid same-day intraday read after an empty withhold."
+                )
+            else:
+                publish_daily_fix_page(site_dir, templates_dir, generated_at, existing)
+                latest = existing
+                status_detail = (
+                    f"Reference for {day_s} remains immutable; reused the stored official fix for latest/status/home views."
+                )
         else:
             latest = load_legacy_latest_official_payload(site_dir) or build_placeholder_payload(
                 day,
@@ -7957,11 +8056,21 @@ def run(args: argparse.Namespace) -> int:
             missing=None,
         )
         if existing is not None:
-            publish_daily_fix_page(site_dir, templates_dir, generated_at, existing)
-            publish_latest(site_dir, existing)
+            repaired = repair_withheld_daily_from_intraday(
+                site_dir,
+                templates_dir,
+                generated_at,
+                day,
+                existing,
+                source_configs,
+            )
+            latest_payload = repaired or existing
+            if repaired is None:
+                publish_daily_fix_page(site_dir, templates_dir, generated_at, existing)
+            publish_latest(site_dir, latest_payload)
             publish_public_series_artifacts(site_dir)
             publish_intraday_latest(site_dir, day)
-            publish_home(site_dir, templates_dir, generated_at, existing)
+            publish_home(site_dir, templates_dir, generated_at, latest_payload)
         else:
             latest = load_legacy_latest_official_payload(site_dir)
             if latest is not None:

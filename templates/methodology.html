@@ -126,7 +126,7 @@
       Within the publication window, RialWatch collects available observations and evaluates them for usability. Readings may be excluded if they are stale, incomplete, clearly inconsistent with the broader market context, or otherwise unsuitable for benchmark publication.
     </p>
     <p class="mb-2">
-      The official daily fix is selected only from observations collected inside that configured publication window. Later intraday observations may be exposed as pulse data, but they do not replace the official daily fix.
+      The official daily fix normally prefers observations collected inside that configured publication window. If the window has no valid read but a same-day intraday read is valid, RialWatch may repair the empty daily snapshot from that read and records the selection scope as <code>same_day_repair</code>.
     </p>
     <p class="mb-2">
       When sufficient valid observations are available, the daily benchmark is calculated from the center of the usable market evidence rather than from a single raw quote. This is intended to reduce the effect of outliers, isolated bad inputs, or temporary distortions.
