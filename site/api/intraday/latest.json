@@ -2,37 +2,47 @@
   "date": "2026-05-21",
   "collected_at": "2026-05-21T15:16:50Z",
   "in_publication_window": false,
-  "valid": false,
-  "primary_open_market_value": null,
-  "p25": null,
-  "p75": null,
-  "dispersion": null,
-  "status": "WITHHOLD",
-  "source_count_used": 0,
-  "source_medians": {},
-  "source_units": {},
+  "valid": true,
+  "primary_open_market_value": 1791600.0,
+  "p25": 1789150.0,
+  "p75": 1793000.0,
+  "dispersion": 0.00214891716901094,
+  "status": "Green",
+  "source_count_used": 4,
+  "source_medians": {
+    "bonbast": 1796000.0,
+    "alanchand_street": 1783000.0,
+    "navasan": 1792000.0,
+    "tgju_street": 1791200.0
+  },
+  "source_units": {
+    "bonbast": "rial",
+    "alanchand_street": "rial",
+    "navasan": "rial",
+    "tgju_street": "rial"
+  },
   "related_official_fix_date": "2026-05-21",
-  "related_official_fix_value": null,
+  "related_official_fix_value": 1791600.0,
   "window_utc": {
     "start": "13:45",
     "end": "14:15"
   },
   "normalized_unit": "rial",
   "benchmarks": {
-    "open_market": null,
+    "open_market": 1791600.0,
     "official": 1481184.0,
     "regional_transfer": 1810600.0,
     "crypto_usdt": 1779555.0,
     "emami_gold_coin": 1920000000.0
   },
   "computed": {
-    "fix": null,
-    "status": "WITHHOLD",
-    "withheld": true,
+    "fix": 1791600.0,
+    "status": "Green",
+    "withheld": false,
     "band": {
-      "p25": null,
-      "p75": null
+      "p25": 1789150.0,
+      "p75": 1793000.0
     },
-    "dispersion": null
+    "dispersion": 0.00214891716901094
   }
 }
