@@ -2,11 +2,10 @@ name: Intraday USD/IRR Collection
 
 on:
   schedule:
-    # Buffered 3-shot cadence around the publication window to absorb workflow startup delay
-    # without over-polling upstream APIs.
-    - cron: "35 13 * * *"
-    - cron: "50 13 * * *"
-    - cron: "5 14 * * *"
+    # Start early, then wait inside the job for in-window collection checkpoints.
+    # GitHub scheduled runs can start tens of minutes late; this gives the job
+    # enough buffer to still collect during the 13:45-14:15 UTC publication window.
+    - cron: "30 12 * * *"
   workflow_dispatch:
 
 permissions:
@@ -60,7 +59,7 @@ jobs:
           NAVASAN_PUBLIC_URL: ${{ vars.NAVASAN_PUBLIC_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
-          python3 scripts/pipeline.py --mode collect-intraday --site-dir state/site --templates-dir templates
+          python3 scripts/pipeline.py --mode collect-intraday --site-dir state/site --templates-dir templates --collect-sample-times --sample-times-utc 13:50,14:05,14:14
 
       - name: Persist intraday snapshots
         run: |

@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from scripts import pipeline
 
@@ -280,6 +281,84 @@ class DailyPublicationOutputTests(unittest.TestCase):
 
         self.assertIn("site/api/daily_full.json", workflow)
         self.assertIn("site/api/revisions.json", workflow)
+
+    def test_intraday_workflow_waits_for_window_checkpoints(self) -> None:
+        workflow = (
+            Path(__file__).resolve().parents[1] / ".github" / "workflows" / "intraday-collection.yml"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn('cron: "30 12 * * *"', workflow)
+        self.assertIn("--collect-sample-times", workflow)
+        self.assertIn("--sample-times-utc 13:50,14:05,14:14", workflow)
+
+    def test_collect_intraday_sample_times_writes_multiple_attempts(self) -> None:
+        day = dt.date(2026, 5, 15)
+        first_sampled_at = utc_ts(day, 13, 50)
+        second_sampled_at = utc_ts(day, 14, 5)
+
+        def fake_collect_one_attempt(
+            source_configs: list[pipeline.SourceConfig],
+            sampled_at: dt.datetime,
+            day: dt.date,
+            allow_outside_window: bool,
+        ) -> dict:
+            value = 1_400_000.0 + sampled_at.minute
+            return {"bonbast": [sample_for(sampled_at, value)]}
+
+        utc_now_values = [
+            utc_ts(day, 12, 30),
+            utc_ts(day, 12, 31),
+            first_sampled_at,
+            utc_ts(day, 13, 51),
+            second_sampled_at,
+        ]
+
+        def fake_utc_now() -> dt.datetime:
+            if utc_now_values:
+                return utc_now_values.pop(0)
+            return second_sampled_at
+
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir = Path(tmp)
+            args = argparse.Namespace(
+                allow_outside_window=False,
+                collect_sample_times=True,
+                sample_times_utc="13:50,14:05",
+                skip_waits=True,
+            )
+
+            with mock.patch("scripts.pipeline.utc_now", side_effect=fake_utc_now):
+                with mock.patch("scripts.pipeline.collect_one_attempt", side_effect=fake_collect_one_attempt):
+                    rc = pipeline.run_collect_intraday(args, site_dir, TEMPLATES_DIR, "2026-05-15T12:30:00Z")
+
+            self.assertEqual(rc, 0)
+            attempts = sorted((site_dir / "intraday" / "2026-05-15").glob("*.json"))
+            self.assertEqual([path.name for path in attempts], ["13-50-00.json", "14-05-00.json"])
+            intraday_latest = json.loads((site_dir / "api" / "intraday" / "latest.json").read_text(encoding="utf-8"))
+            self.assertEqual(intraday_latest["collected_at"], "2026-05-15T14:05:00Z")
+            self.assertTrue(intraday_latest["in_publication_window"])
+            self.assertEqual(intraday_latest["primary_open_market_value"], 1_400_005.0)
+
+    def test_homepage_withhold_shows_last_valid_official_rate(self) -> None:
+        valid_day = dt.date(2026, 5, 18)
+        withheld_day = dt.date(2026, 5, 21)
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir = Path(tmp)
+            pipeline.write_json(site_dir / "fix" / "2026-05-18.json", daily_payload(valid_day, 1_797_100.0))
+            latest = pipeline.build_placeholder_payload(
+                withheld_day,
+                "2026-05-21T15:32:50Z",
+                "WITHHOLD",
+                "no intraday samples available in publication window",
+            )
+
+            pipeline.publish_home(site_dir, TEMPLATES_DIR, "2026-05-21T15:46:00Z", latest)
+
+            html = (site_dir / "index.html").read_text(encoding="utf-8")
+            self.assertIn("WITHHELD TODAY", html)
+            self.assertIn("Last valid official", html)
+            self.assertIn("1,797,100", html)
+            self.assertIn("Last valid daily fix: 2026-05-18", html)
 
 
 if __name__ == "__main__":

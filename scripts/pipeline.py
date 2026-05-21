@@ -5931,6 +5931,18 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
     if withheld:
         published_street_fix = None
 
+    last_valid_public_row: Optional[Dict[str, Any]] = None
+    for row in reversed(load_series_rows(site_dir)):
+        if is_public_series_row(row):
+            last_valid_public_row = row
+            break
+    last_valid_public_fix = (
+        parse_number(last_valid_public_row.get("fix")) if isinstance(last_valid_public_row, dict) else None
+    )
+    last_valid_public_date = (
+        str(last_valid_public_row.get("date")) if isinstance(last_valid_public_row, dict) else None
+    )
+
     street = published_street_fix
     official = benchmark_value_number("official")
     transfer = benchmark_value_number("regional_transfer")
@@ -6296,16 +6308,30 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
             withhold_reason_text = normalized_reason
 
     if status_upper == "WITHHOLD":
-        primary_value_html = (
-            '<div class="text-warning fw-bold mb-1">WITHHELD</div>'
-            '<div class="h5 mb-1">Candidate value</div>'
-            f'<div class="primary-value-row mb-1"><div class="primary-rate-value primary-rate-value-candidate">{fmt_rate(fix)}</div>'
-            '<div class="primary-rate-unit">IRR per USD</div></div>'
-        )
+        if fix is None and last_valid_public_fix is not None:
+            primary_value_html = (
+                '<div class="text-warning fw-bold mb-1">WITHHELD TODAY</div>'
+                '<div class="h5 mb-1">Last valid official</div>'
+                f'<div class="primary-value-row mb-1"><div class="primary-rate-value primary-rate-value-candidate">{fmt_rate(last_valid_public_fix)}</div>'
+                '<div class="primary-rate-unit">IRR per USD</div></div>'
+            )
+            last_valid_note = (
+                f'<div class="text-secondary small mt-1">Last valid daily fix: {html_lib.escape(last_valid_public_date)}</div>'
+                if last_valid_public_date
+                else ""
+            )
+        else:
+            primary_value_html = (
+                '<div class="text-warning fw-bold mb-1">WITHHELD</div>'
+                '<div class="h5 mb-1">Candidate value</div>'
+                f'<div class="primary-value-row mb-1"><div class="primary-rate-value primary-rate-value-candidate">{fmt_rate(fix)}</div>'
+                '<div class="primary-rate-unit">IRR per USD</div></div>'
+            )
+            last_valid_note = ""
         primary_reason_html = (
-            f'<div class="text-warning small mt-1">Reason: {withhold_reason_text}</div>'
+            f'<div class="text-warning small mt-1">Reason: {withhold_reason_text}</div>{last_valid_note}'
             if withhold_reason_text
-            else ""
+            else last_valid_note
         )
     else:
         primary_value_html = (
@@ -6763,6 +6789,38 @@ def collect_one_attempt(
         max_deviation_pct=env_pct("BONBAST_PEER_DEVIATION_PCT", BONBAST_PEER_DEVIATION_PCT_DEFAULT),
     )
     return samples
+
+
+def collect_and_write_intraday_attempt(
+    site_dir: Path,
+    day: dt.date,
+    source_configs: List[SourceConfig],
+    sampled_at: dt.datetime,
+    allow_outside_window: bool,
+) -> Tuple[Path, Dict[str, Any], Dict[str, Any]]:
+    samples = collect_one_attempt(
+        source_configs=source_configs,
+        sampled_at=sampled_at,
+        day=day,
+        allow_outside_window=allow_outside_window,
+    )
+    summary = summarize_day(samples, source_configs, day)
+    attempt_payload = {
+        "date": iso_date(day),
+        "collected_at": iso_ts(sampled_at),
+        "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
+        "sources": {
+            source: {
+                "sample": serialize_sample(entries[0]) if entries else None,
+                "health": (entries[0].health if entries and isinstance(entries[0].health, dict) else {}),
+            }
+            for source, entries in samples.items()
+        },
+        "computed": summary.get("computed", {}),
+    }
+    path = write_intraday_attempt(site_dir, attempt_payload)
+    publish_intraday_latest(site_dir, day)
+    return path, attempt_payload, summary
 
 
 def write_intraday_attempt(site_dir: Path, attempt: Dict[str, Any]) -> Path:
@@ -7419,37 +7477,75 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
         return 0
 
     source_configs = build_source_configs()
-    sampled_at = utc_now()
-    samples = collect_one_attempt(
-        source_configs=source_configs,
-        sampled_at=sampled_at,
-        day=day,
-        allow_outside_window=args.allow_outside_window,
-    )
-    summary = summarize_day(samples, source_configs, day)
-    attempt_payload = {
-        "date": iso_date(day),
-        "collected_at": iso_ts(sampled_at),
-        "window_utc": {"start": WINDOW_START.strftime("%H:%M"), "end": WINDOW_END.strftime("%H:%M")},
-        "sources": {
-            source: {
-                "sample": serialize_sample(entries[0]) if entries else None,
-                "health": (entries[0].health if entries and isinstance(entries[0].health, dict) else {}),
-            }
-            for source, entries in samples.items()
-        },
-        "computed": summary.get("computed", {}),
-    }
-    path = write_intraday_attempt(site_dir, attempt_payload)
-    publish_intraday_latest(site_dir, day)
+    attempt_paths: List[Path] = []
+    latest_attempt_payload: Optional[Dict[str, Any]] = None
+    latest_summary: Optional[Dict[str, Any]] = None
+
+    if args.collect_sample_times:
+        window_end_dt = dt.datetime.combine(day, WINDOW_END, tzinfo=UTC)
+        for sample_time in parse_sample_times(args.sample_times_utc):
+            if not args.allow_outside_window and utc_now() > window_end_dt + dt.timedelta(minutes=5):
+                break
+            target = dt.datetime.combine(day, sample_time, tzinfo=UTC)
+            should_sleep_until(target, skip_waits=args.skip_waits)
+            sampled_at = utc_now()
+            path, attempt_payload, summary = collect_and_write_intraday_attempt(
+                site_dir=site_dir,
+                day=day,
+                source_configs=source_configs,
+                sampled_at=sampled_at,
+                allow_outside_window=args.allow_outside_window,
+            )
+            attempt_paths.append(path)
+            latest_attempt_payload = attempt_payload
+            latest_summary = summary
+    else:
+        sampled_at = utc_now()
+        path, attempt_payload, summary = collect_and_write_intraday_attempt(
+            site_dir=site_dir,
+            day=day,
+            source_configs=source_configs,
+            sampled_at=sampled_at,
+            allow_outside_window=args.allow_outside_window,
+        )
+        attempt_paths.append(path)
+        latest_attempt_payload = attempt_payload
+        latest_summary = summary
+
+    if latest_attempt_payload is None or latest_summary is None:
+        publish_status(
+            site_dir,
+            templates_dir,
+            generated_at,
+            status_title="WITHHOLD",
+            status_detail="No intraday collection attempts were made before the publication window closed.",
+            latest=build_placeholder_payload(
+                day,
+                generated_at,
+                "WITHHOLD",
+                "no intraday samples available in publication window",
+            ),
+        )
+        return 0
+
+    if len(attempt_paths) == 1:
+        status_detail = (
+            f"Stored intraday collection attempt at {latest_attempt_payload['collected_at']} UTC "
+            f"in {attempt_paths[-1].as_posix()}."
+        )
+    else:
+        status_detail = (
+            f"Stored {len(attempt_paths)} intraday collection attempts through "
+            f"{latest_attempt_payload['collected_at']} UTC."
+        )
 
     publish_status(
         site_dir,
         templates_dir,
         generated_at,
         status_title="OK",
-        status_detail=f"Stored intraday collection attempt at {attempt_payload['collected_at']} UTC in {path.as_posix()}.",
-        latest=summary,
+        status_detail=status_detail,
+        latest=latest_summary,
     )
     return 0
 
@@ -7731,6 +7827,11 @@ def parse_args() -> argparse.Namespace:
         "--sample-times-utc",
         default=",".join(DEFAULT_INTRADAY_SAMPLE_TIMES),
         help="Comma-separated UTC HH:MM collection times used in legacy full mode (example: 13:45,14:00,14:15)",
+    )
+    parser.add_argument(
+        "--collect-sample-times",
+        action="store_true",
+        help="In collect-intraday mode, wait for and collect each --sample-times-utc checkpoint",
     )
     parser.add_argument(
         "--skip-waits",

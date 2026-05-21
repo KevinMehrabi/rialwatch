@@ -134,6 +134,12 @@ Collect one intraday attempt immediately:
 python scripts/pipeline.py --mode collect-intraday --site-dir site --templates-dir templates --assets-dir assets
 ```
 
+Collect the production intraday window checkpoints from one early-starting job:
+
+```bash
+python scripts/pipeline.py --mode collect-intraday --site-dir site --templates-dir templates --assets-dir assets --collect-sample-times --sample-times-utc 13:50,14:05,14:14
+```
+
 Publish daily benchmark from collected intraday data:
 
 ```bash
@@ -166,7 +172,8 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
 - Scheduled runs generate one daily reference and write immutable snapshots to:
   - `/site/fix/YYYY-MM-DD.json`
   - `/site/fix/YYYY-MM-DD/index.html`
-- Intraday collection (`collect:`), official publish snapshots (`publish:` at `14:20 UTC`), and Iran discovery outputs (`discover:`) commit to `data/live` instead of `main`.
+- Intraday collection starts early and waits inside the job for `13:50`, `14:05`, and `14:14 UTC` checkpoints, then commits `collect:` snapshots to `data/live`. This absorbs GitHub scheduled-run startup delays while keeping official candidates inside the publication window.
+- Official publish snapshots (`publish:` at `14:20 UTC`) and Iran discovery outputs (`discover:`) also commit to `data/live` instead of `main`.
 - Self-heal schedules (`14:30 UTC`, `15:00 UTC`) rebuild/deploy without pushing snapshot commits.
 - `main` intentionally stays code-only; generated `site/*` and `survey_outputs*` artifacts are ignored on `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
