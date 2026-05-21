@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-20T20:17:13Z",
+  "generated_at": "2026-05-21T08:21:05Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1797100.0,
-  "total_usable_records": 177,
-  "total_contributing_channels": 19,
+  "total_usable_records": 137,
+  "total_contributing_channels": 14,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 81,
+    "direct_shop": 60,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 32
+    "settlement_exchange": 13
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 56,
-      "contributing_channel_count": 11,
-      "basket_confidence": 83.79,
+      "usable_record_count": 16,
+      "contributing_channel_count": 5,
+      "basket_confidence": 92.67,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 91.56,
+      "average_freshness": 89.33,
       "from_new_p1": true
     },
     {
@@ -193,17 +193,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -212,28 +201,6 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 10,
-      "average_quality": 82.3,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:goldpricetoday.ir",
-      "title": "قیمت درهم امارات به تومان امروز 30 اردیبهشت",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -270,17 +237,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.17,
-      "average_freshness": 81.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -292,14 +248,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:cityexchangeuae.com",
-      "title": "KARAMA – City Exchange Uae",
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 3,
-      "average_quality": 81.33,
-      "average_freshness": 92.0,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -310,17 +266,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:exchangerates.org.uk",
-      "title": "AED to IRR",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 94.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
