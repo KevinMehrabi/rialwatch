@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-05-21T05:41:30+00:00",
+  "generated_at": "2026-05-21T09:25:08+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
-        "candidate_hits": 33
+        "candidate_hits": 32
       },
       "site:t.me/s صرافی": {
-        "candidate_hits": 29
+        "candidate_hits": 37
       },
       "site:t.me/s صرافی ایران": {
-        "candidate_hits": 40
+        "candidate_hits": 38
       },
       "site:t.me/s صرافی تهران": {
-        "candidate_hits": 37
+        "candidate_hits": 39
       },
       "صرافی تهران": {
         "candidate_hits": 0
@@ -81,40 +81,40 @@
         "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار صرافی تهران": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s خرید فروش دلار تهران صرافی": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی سبزه میدان": {
-        "candidate_hits": 36
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی فردوسی": {
-        "candidate_hits": 38
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی منوچهری": {
-        "candidate_hits": 35
+        "candidate_hits": 0
       },
       "site:t.me/s تابلوی صرافی دلار": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت لحظه ای دلار صرافی": {
-        "candidate_hits": 37
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ حواله دلار صرافی": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار فردوسی": {
-        "candidate_hits": 36
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار فردوسی": {
-        "candidate_hits": 34
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار سبزه میدان": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار سبزه میدان": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار تهران صرافی": {
         "candidate_hits": 0
@@ -141,30 +141,30 @@
         "candidate_hits": 0
       }
     },
-    "successful_requests": 45,
-    "failed_requests": 47
+    "successful_requests": 20,
+    "failed_requests": 72
   },
-  "existing_registry_handles": 494,
+  "existing_registry_handles": 496,
   "channel_survey_handles": 208,
-  "known_registry_handles": 334,
-  "known_handles_skipped_as_sufficiently_tracked": 420,
+  "known_registry_handles": 336,
+  "known_handles_skipped_as_sufficiently_tracked": 423,
   "durable_source_registry": {
-    "total_sources": 335,
-    "active_sources": 314,
+    "total_sources": 337,
+    "active_sources": 316,
     "sources_by_country": {
       "Afghanistan": 8,
-      "Armenia": 1,
+      "Armenia": 2,
       "Germany": 10,
       "Iran": 200,
-      "Iraq": 8,
+      "Iraq": 9,
       "Turkey": 14,
-      "UAE": 28,
+      "UAE": 29,
       "UK": 27,
-      "unknown": 39
+      "unknown": 38
     },
     "sources_by_kind": {
       "aggregator": 24,
-      "exchange_shop": 160,
+      "exchange_shop": 162,
       "regional_fx_board": 35,
       "regional_market_channel": 84,
       "settlement_channel": 11,
@@ -172,23 +172,21 @@
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 81,
-      "regional_fx_board": 289,
-      "regional_market_signal": 291
+      "regional_fx_board": 292,
+      "regional_market_signal": 292
     },
     "active_iran_sources": 191
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 27,
-  "known_suspect_channels_rescored": 3,
-  "channels_selected_for_scoring": 30,
-  "channels_scored": 30,
-  "new_channels_retained_after_scoring": 3,
+  "new_channels_discovered": 11,
+  "known_suspect_channels_rescored": 2,
+  "channels_selected_for_scoring": 13,
+  "channels_scored": 13,
+  "new_channels_retained_after_scoring": 2,
   "rejection_reasons": {
-    "commentary_heavy": 1,
-    "low_parseability": 1,
-    "missing_shop_identity": 1,
-    "not_inside_iran_or_contactable": 2,
-    "too_few_quote_posts": 25
+    "low_parseability": 2,
+    "not_inside_iran_or_contactable": 1,
+    "too_few_quote_posts": 10
   },
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
