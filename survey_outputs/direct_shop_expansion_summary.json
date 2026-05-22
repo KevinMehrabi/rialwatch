@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-22T05:38:10+00:00",
+  "generated_at": "2026-05-22T09:23:15+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
-        "candidate_hits": 30
+        "candidate_hits": 31
       },
       "site:t.me/s صرافی": {
         "candidate_hits": 37
@@ -12,7 +12,7 @@
         "candidate_hits": 38
       },
       "site:t.me/s صرافی تهران": {
-        "candidate_hits": 38
+        "candidate_hits": 39
       },
       "صرافی تهران": {
         "candidate_hits": 0
@@ -120,10 +120,10 @@
         "candidate_hits": 0
       },
       "site:t.me/s خرید دلار تهران صرافی": {
-        "candidate_hits": 0
+        "candidate_hits": 40
       },
       "site:t.me/s فروش دلار تهران صرافی": {
-        "candidate_hits": 0
+        "candidate_hits": 39
       },
       "site:t.me/s صرافی مشهد دلار": {
         "candidate_hits": 0
@@ -141,52 +141,51 @@
         "candidate_hits": 0
       }
     },
-    "successful_requests": 20,
-    "failed_requests": 72
+    "successful_requests": 27,
+    "failed_requests": 65
   },
-  "existing_registry_handles": 498,
+  "existing_registry_handles": 502,
   "channel_survey_handles": 208,
-  "known_registry_handles": 338,
-  "known_handles_skipped_as_sufficiently_tracked": 424,
+  "known_registry_handles": 342,
+  "known_handles_skipped_as_sufficiently_tracked": 425,
   "durable_source_registry": {
-    "total_sources": 339,
-    "active_sources": 318,
+    "total_sources": 343,
+    "active_sources": 322,
     "sources_by_country": {
       "Afghanistan": 8,
       "Armenia": 2,
       "Germany": 10,
-      "Iran": 201,
+      "Iran": 203,
       "Iraq": 9,
       "Turkey": 14,
-      "UAE": 29,
-      "UK": 27,
+      "UAE": 30,
+      "UK": 28,
       "unknown": 39
     },
     "sources_by_kind": {
-      "aggregator": 24,
-      "exchange_shop": 163,
-      "regional_fx_board": 35,
-      "regional_market_channel": 84,
+      "aggregator": 25,
+      "exchange_shop": 164,
+      "regional_fx_board": 36,
+      "regional_market_channel": 85,
       "settlement_channel": 11,
       "unknown": 22
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 81,
-      "regional_fx_board": 294,
-      "regional_market_signal": 292
+      "regional_fx_board": 298,
+      "regional_market_signal": 293
     },
-    "active_iran_sources": 192
+    "active_iran_sources": 194
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 12,
-  "known_suspect_channels_rescored": 2,
-  "channels_selected_for_scoring": 14,
-  "channels_scored": 14,
-  "new_channels_retained_after_scoring": 2,
+  "new_channels_discovered": 11,
+  "known_suspect_channels_rescored": 1,
+  "channels_selected_for_scoring": 12,
+  "channels_scored": 12,
+  "new_channels_retained_after_scoring": 1,
   "rejection_reasons": {
     "low_parseability": 2,
-    "not_inside_iran_or_contactable": 1,
-    "too_few_quote_posts": 11
+    "too_few_quote_posts": 10
   },
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
