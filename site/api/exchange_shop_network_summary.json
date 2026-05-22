@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-21T20:08:16Z",
+  "generated_at": "2026-05-22T08:27:42Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1791600.0,
-  "total_usable_records": 187,
-  "total_contributing_channels": 19,
+  "total_usable_records": 146,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 94,
+    "direct_shop": 68,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 29
+    "settlement_exchange": 14
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 68,
-      "contributing_channel_count": 11,
-      "basket_confidence": 81.48,
+      "usable_record_count": 23,
+      "contributing_channel_count": 6,
+      "basket_confidence": 93.68,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -182,17 +182,6 @@
       "from_new_p1": true
     },
     {
-      "handle": "uae:realestateclubdubai.com",
-      "title": "Iranian Investors Dubai Property 2026: Banking & Visa",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 18,
-      "average_quality": 78.89,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -204,17 +193,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -223,17 +201,6 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:goldpricetoday.ir",
-      "title": "قیمت درهم امارات به تومان امروز 31 اردیبهشت",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -265,7 +232,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 7,
-      "average_quality": 82.71,
+      "average_quality": 86.71,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -293,23 +260,12 @@
     },
     {
       "handle": "uae:cityexchangeuae.com",
-      "title": "KARAMA – City Exchange Uae",
+      "title": "City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 81.33,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -321,6 +277,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 94.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
