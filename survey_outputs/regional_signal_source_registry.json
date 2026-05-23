@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-23T19:50:32Z",
+  "generated_at": "2026-05-23T20:32:27Z",
   "schema_version": 1,
   "sources": [
     {
@@ -5676,11 +5676,11 @@
       "handle_or_url": "exchangegandi",
       "key": "telegram:exchangegandi",
       "last_board_message_count": 0,
-      "last_buy_sell_pair_count": 0,
+      "last_buy_sell_pair_count": 4,
       "last_parseability_score": 71.0,
       "last_quote_message_count": 4,
-      "last_seen_at": "2026-05-23T19:38:29Z",
-      "last_success_at": "2026-05-23T19:38:29Z",
+      "last_seen_at": "2026-05-23T20:32:27Z",
+      "last_success_at": "2026-05-23T20:32:27Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Dubai",
@@ -5702,7 +5702,7 @@
         "direct_shop_expansion",
         "regional_fx_board"
       ],
-      "source_kind": "regional_fx_board",
+      "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "gandiexchange",
       "top_sample": "Telegram: https://t.me/exchangegandi Instagram: https://www.instagram.com/gandi.exchange"
@@ -8998,8 +8998,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-05-23T19:50:32Z",
-      "last_success_at": "2026-05-23T19:50:32Z",
+      "last_seen_at": "2026-05-23T20:32:27Z",
+      "last_success_at": "2026-05-23T20:32:27Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -13453,6 +13453,37 @@
     },
     {
       "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 20,
+      "best_parseability_score": 100.0,
+      "best_quote_message_count": 20,
+      "best_usable_record_count": 0,
+      "city_guess": "unknown",
+      "country_guess": "unknown",
+      "first_seen_at": "2026-05-23T20:32:27Z",
+      "handle_or_url": "sekkeh_saraf_yaran",
+      "key": "telegram:sekkeh_saraf_yaran",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 20,
+      "last_parseability_score": 100.0,
+      "last_quote_message_count": 20,
+      "last_seen_at": "2026-05-23T20:32:27Z",
+      "last_success_at": "2026-05-23T20:32:27Z",
+      "last_usable_record_count": 0,
+      "origins": [
+        "site:t.me/s صرافی ایران"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/sekkeh_saraf_yaran",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "regional_market_channel",
+      "status": "ok",
+      "title": "صرافی یاران",
+      "top_sample": "نرخ انواع سکه تاریخ: ۱۴۰۵/۰۳/۰۲ زمان: ۱۲:۰۱ پارسیان 100 سوت (SPA) ◽️ خرید: ◽️ فروش: 2,289,000 ◽️ تغییر: 0 پارسیان 200 سوت (SPA) ◽️ خرید: ◽️ فروش: 4,229,000 ◽️ تغییر: 0 پارسیان 300 سوت (SPA) ◽️ خرید: ◽️ فروش: 6,169,000 ◽️ تغییر: 0 پارسیان 400 سوت (SPA) ◽️ خرید:"
+    },
+    {
+      "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
       "best_quote_message_count": 14,
       "best_usable_record_count": 0,
@@ -14868,7 +14899,7 @@
   ],
   "summary": {
     "active_iran_sources": 197,
-    "active_sources": 333,
+    "active_sources": 334,
     "sources_by_country": {
       "Afghanistan": 9,
       "Armenia": 2,
@@ -14878,21 +14909,21 @@
       "Turkey": 14,
       "UAE": 31,
       "UK": 29,
-      "unknown": 42
+      "unknown": 43
     },
     "sources_by_kind": {
       "aggregator": 26,
       "exchange_shop": 170,
-      "regional_fx_board": 35,
-      "regional_market_channel": 89,
+      "regional_fx_board": 34,
+      "regional_market_channel": 91,
       "settlement_channel": 11,
       "unknown": 24
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 85,
+      "direct_shop_expansion": 86,
       "regional_fx_board": 307,
       "regional_market_signal": 296
     },
-    "total_sources": 355
+    "total_sources": 356
   }
 }
