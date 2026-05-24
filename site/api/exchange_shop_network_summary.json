@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-24T08:07:34Z",
+  "generated_at": "2026-05-24T19:51:17Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1781550.0,
-  "total_usable_records": 159,
-  "total_contributing_channels": 16,
+  "benchmark_weighted_rate": 1703000.0,
+  "total_usable_records": 170,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -14,7 +14,7 @@
       "error": null,
       "messages_seen": 20,
       "records_extracted": 18,
-      "usable_records": 16,
+      "usable_records": 17,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 72,
+    "direct_shop": 83,
     "market_channel": 46,
-    "regional_market_channel": 16,
-    "settlement_exchange": 25
+    "regional_market_channel": 17,
+    "settlement_exchange": 24
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 42,
-      "contributing_channel_count": 8,
-      "basket_confidence": 88.04,
+      "usable_record_count": 52,
+      "contributing_channel_count": 9,
+      "basket_confidence": 87.0,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -176,9 +176,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 16,
-      "average_quality": 91.31,
-      "average_freshness": 88.75,
+      "usable_record_count": 17,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -221,7 +221,18 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 10,
-      "average_quality": 85.1,
+      "average_quality": 82.3,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:goldpricetoday.ir",
+      "title": "قیمت درهم امارات به تومان امروز 3 خرداد",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -232,7 +243,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 75.38,
+      "average_quality": 74.12,
       "average_freshness": 75.5,
       "from_new_p1": false
     },
@@ -270,14 +281,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "handle": "uae:cityexchangeuae.com",
+      "title": "KARAMA – City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 70.0,
+      "average_quality": 81.33,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -292,13 +303,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:valuta.exchange",
+      "title": "AED to Iranian Rial Exchange Rate Today",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:hiemarat.com",
       "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 81.0,
+      "average_quality": 73.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
