@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-24T05:38:39+00:00",
+  "generated_at": "2026-05-24T09:08:18+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
-        "candidate_hits": 31
+        "candidate_hits": 30
       },
       "site:t.me/s صرافی": {
         "candidate_hits": 37
@@ -48,13 +48,13 @@
         "candidate_hits": 0
       },
       "sarafi telegram": {
-        "candidate_hits": 0
+        "candidate_hits": 23
       },
       "exchange telegram iran": {
-        "candidate_hits": 0
+        "candidate_hits": 3
       },
       "currency exchange iran telegram": {
-        "candidate_hits": 0
+        "candidate_hits": 3
       },
       "حواله صرافی": {
         "candidate_hits": 0
@@ -63,22 +63,22 @@
         "candidate_hits": 0
       },
       "کانال صرافی تهران": {
-        "candidate_hits": 0
+        "candidate_hits": 3
       },
       "کانال نرخ دلار تهران": {
-        "candidate_hits": 0
+        "candidate_hits": 3
       },
       "کانال قیمت دلار تهران": {
-        "candidate_hits": 0
+        "candidate_hits": 3
       },
       "تلگرام صرافی تهران دلار": {
-        "candidate_hits": 0
+        "candidate_hits": 3
       },
       "تلگرام نرخ دلار صرافی": {
-        "candidate_hits": 0
+        "candidate_hits": 3
       },
       "site:t.me/s صرافی تهران دلار": {
-        "candidate_hits": 0
+        "candidate_hits": 40
       },
       "site:t.me/s نرخ دلار صرافی تهران": {
         "candidate_hits": 0
@@ -87,7 +87,7 @@
         "candidate_hits": 0
       },
       "site:t.me/s صرافی سبزه میدان": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی فردوسی": {
         "candidate_hits": 0
@@ -111,51 +111,51 @@
         "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار سبزه میدان": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار سبزه میدان": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار تهران صرافی": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s خرید دلار تهران صرافی": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s فروش دلار تهران صرافی": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی مشهد دلار": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی اصفهان دلار": {
-        "candidate_hits": 38
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی شیراز دلار": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی تبریز دلار": {
-        "candidate_hits": 38
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی کرج دلار": {
-        "candidate_hits": 36
+        "candidate_hits": 0
       }
     },
-    "successful_requests": 43,
-    "failed_requests": 49
+    "successful_requests": 44,
+    "failed_requests": 48
   },
-  "existing_registry_handles": 514,
+  "existing_registry_handles": 515,
   "channel_survey_handles": 208,
-  "known_registry_handles": 355,
-  "known_handles_skipped_as_sufficiently_tracked": 430,
+  "known_registry_handles": 356,
+  "known_handles_skipped_as_sufficiently_tracked": 431,
   "durable_source_registry": {
-    "total_sources": 356,
-    "active_sources": 334,
+    "total_sources": 357,
+    "active_sources": 335,
     "sources_by_country": {
       "Afghanistan": 9,
       "Armenia": 2,
       "Germany": 10,
-      "Iran": 207,
+      "Iran": 208,
       "Iraq": 11,
       "Turkey": 14,
       "UAE": 31,
@@ -164,33 +164,33 @@
     },
     "sources_by_kind": {
       "aggregator": 26,
-      "exchange_shop": 170,
+      "exchange_shop": 172,
       "regional_fx_board": 34,
-      "regional_market_channel": 91,
+      "regional_market_channel": 90,
       "settlement_channel": 11,
       "unknown": 24
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 86,
-      "regional_fx_board": 307,
+      "regional_fx_board": 308,
       "regional_market_signal": 296
     },
-    "active_iran_sources": 197
+    "active_iran_sources": 198
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 17,
-  "known_suspect_channels_rescored": 3,
-  "channels_selected_for_scoring": 20,
-  "channels_scored": 20,
-  "new_channels_retained_after_scoring": 3,
+  "new_channels_discovered": 13,
+  "known_suspect_channels_rescored": 2,
+  "channels_selected_for_scoring": 15,
+  "channels_scored": 15,
+  "new_channels_retained_after_scoring": 2,
   "rejection_reasons": {
     "low_parseability": 1,
-    "not_inside_iran_or_contactable": 3,
-    "too_few_quote_posts": 16
+    "not_inside_iran_or_contactable": 2,
+    "too_few_quote_posts": 12
   },
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
-  "channels_with_buy_sell_quotes": 2,
+  "channels_with_buy_sell_quotes": 1,
   "total_inside_iran_shop_channels_now_known": 5,
   "estimated_additional_usable_records_if_ingested": 0,
   "target_progress_note": "aiming toward 80-150 usable inside-Iran dealer records"
