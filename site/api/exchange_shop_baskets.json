@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-24T19:51:17Z",
+  "generated_at": "2026-05-25T08:47:02Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1703000.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 17,
+      "outliers_removed": 15,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,44 +53,40 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1683386.74,
-      "median_rate": 1707180.0,
-      "trimmed_mean_rate": 1680817.85,
-      "spread_vs_benchmark_pct": -1.1517,
-      "usable_record_count": 52,
-      "contributing_channel_count": 9,
-      "fresh_contributing_channel_count": 9,
+      "weighted_rate": 1783244.98,
+      "median_rate": 1781162.5,
+      "trimmed_mean_rate": 1781232.97,
+      "spread_vs_benchmark_pct": 4.712,
+      "usable_record_count": 31,
+      "contributing_channel_count": 7,
+      "fresh_contributing_channel_count": 7,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
-        "uae:ciphoenix.com",
-        "uae:cityexchangeuae.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:goldpricetoday.ir",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
-        "uae:iranianuae.ae"
+        "uae:iranianuae.ae",
+        "uae:residency24.com"
       ],
-      "basket_confidence": 87.0,
+      "basket_confidence": 92.61,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.065236,
-      "top_channel_share": 0.253431,
-      "outliers_removed": 2,
+      "dispersion_cv": 0.026846,
+      "top_channel_share": 0.275993,
+      "outliers_removed": 0,
       "source_category_mix": {
-        "direct_shop": 28,
-        "settlement_exchange": 24
+        "direct_shop": 20,
+        "settlement_exchange": 11
       },
       "channels": [
         "uae:arzdigital.com",
-        "uae:ciphoenix.com",
-        "uae:cityexchangeuae.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:goldpricetoday.ir",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
-        "uae:iranianuae.ae"
+        "uae:iranianuae.ae",
+        "uae:residency24.com"
       ]
     },
     {
