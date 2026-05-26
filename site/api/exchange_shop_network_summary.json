@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-26T08:29:27Z",
+  "generated_at": "2026-05-26T20:09:24Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1744200.0,
-  "total_usable_records": 138,
-  "total_contributing_channels": 14,
+  "benchmark_weighted_rate": 1724500.0,
+  "total_usable_records": 144,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 17,
-      "usable_records": 15,
+      "records_extracted": 15,
+      "usable_records": 12,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 67,
+    "direct_shop": 72,
     "market_channel": 46,
-    "regional_market_channel": 15,
-    "settlement_exchange": 10
+    "regional_market_channel": 12,
+    "settlement_exchange": 14
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 21,
-      "contributing_channel_count": 6,
-      "basket_confidence": 94.05,
+      "usable_record_count": 28,
+      "contributing_channel_count": 8,
+      "basket_confidence": 91.43,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -187,9 +187,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 15,
-      "average_quality": 91.33,
-      "average_freshness": 88.8,
+      "usable_record_count": 12,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -237,13 +237,24 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "handle": "uae:distresspropertyfinder.com",
+      "title": "نحوه انتقال پول از ایران به دبی برای خری",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 6,
-      "average_quality": 85.17,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:residency24.com",
+      "title": "بانک‌های ایرانی در دبی ۲۰۲۵",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -256,6 +267,17 @@
       "usable_record_count": 5,
       "average_quality": 78.8,
       "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -276,7 +298,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 81.0,
+      "average_quality": 79.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
