@@ -1,18 +1,18 @@
 {
-  "generated_at": "2026-05-27T05:43:31+00:00",
+  "generated_at": "2026-05-27T09:27:54+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
         "candidate_hits": 30
       },
       "site:t.me/s صرافی": {
-        "candidate_hits": 37
+        "candidate_hits": 38
       },
       "site:t.me/s صرافی ایران": {
         "candidate_hits": 37
       },
       "site:t.me/s صرافی تهران": {
-        "candidate_hits": 39
+        "candidate_hits": 38
       },
       "صرافی تهران": {
         "candidate_hits": 0
@@ -78,7 +78,7 @@
         "candidate_hits": 0
       },
       "site:t.me/s صرافی تهران دلار": {
-        "candidate_hits": 0
+        "candidate_hits": 39
       },
       "site:t.me/s نرخ دلار صرافی تهران": {
         "candidate_hits": 0
@@ -99,7 +99,7 @@
         "candidate_hits": 0
       },
       "site:t.me/s قیمت لحظه ای دلار صرافی": {
-        "candidate_hits": 36
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ حواله دلار صرافی": {
         "candidate_hits": 0
@@ -135,22 +135,22 @@
         "candidate_hits": 0
       },
       "site:t.me/s صرافی تبریز دلار": {
-        "candidate_hits": 0
+        "candidate_hits": 39
       },
       "site:t.me/s صرافی کرج دلار": {
-        "candidate_hits": 37
+        "candidate_hits": 0
       }
     },
-    "successful_requests": 24,
-    "failed_requests": 68
+    "successful_requests": 25,
+    "failed_requests": 67
   },
-  "existing_registry_handles": 532,
+  "existing_registry_handles": 534,
   "channel_survey_handles": 208,
-  "known_registry_handles": 373,
-  "known_handles_skipped_as_sufficiently_tracked": 444,
+  "known_registry_handles": 375,
+  "known_handles_skipped_as_sufficiently_tracked": 446,
   "durable_source_registry": {
-    "total_sources": 374,
-    "active_sources": 350,
+    "total_sources": 376,
+    "active_sources": 352,
     "sources_by_country": {
       "Afghanistan": 11,
       "Armenia": 3,
@@ -158,38 +158,38 @@
       "Iran": 216,
       "Iraq": 11,
       "Turkey": 14,
-      "UAE": 33,
+      "UAE": 35,
       "UK": 31,
       "unknown": 45
     },
     "sources_by_kind": {
       "aggregator": 26,
-      "exchange_shop": 185,
-      "regional_fx_board": 35,
+      "exchange_shop": 187,
+      "regional_fx_board": 36,
       "regional_market_channel": 92,
       "settlement_channel": 11,
-      "unknown": 25
+      "unknown": 24
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 93,
-      "regional_fx_board": 322,
-      "regional_market_signal": 305
+      "regional_fx_board": 324,
+      "regional_market_signal": 306
     },
     "active_iran_sources": 205
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 10,
-  "known_suspect_channels_rescored": 2,
-  "channels_selected_for_scoring": 12,
-  "channels_scored": 12,
-  "new_channels_retained_after_scoring": 2,
+  "new_channels_discovered": 9,
+  "known_suspect_channels_rescored": 1,
+  "channels_selected_for_scoring": 10,
+  "channels_scored": 10,
+  "new_channels_retained_after_scoring": 1,
   "rejection_reasons": {
-    "not_inside_iran_or_contactable": 2,
-    "too_few_quote_posts": 10
+    "not_inside_iran_or_contactable": 1,
+    "too_few_quote_posts": 9
   },
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
-  "channels_with_buy_sell_quotes": 1,
+  "channels_with_buy_sell_quotes": 0,
   "total_inside_iran_shop_channels_now_known": 5,
   "estimated_additional_usable_records_if_ingested": 0,
   "target_progress_note": "aiming toward 80-150 usable inside-Iran dealer records"
