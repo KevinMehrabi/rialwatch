@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-26T20:09:24Z",
+  "generated_at": "2026-05-27T08:32:41Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1724500.0,
-  "total_usable_records": 144,
+  "total_usable_records": 145,
   "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 72,
+    "direct_shop": 74,
     "market_channel": 46,
     "regional_market_channel": 12,
-    "settlement_exchange": 14
+    "settlement_exchange": 13
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 28,
-      "contributing_channel_count": 8,
-      "basket_confidence": 91.43,
+      "usable_record_count": 24,
+      "contributing_channel_count": 6,
+      "basket_confidence": 94.27,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -188,8 +188,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 12,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 90.33,
+      "average_freshness": 86.0,
       "from_new_p1": true
     },
     {
@@ -201,6 +201,17 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 10,
+      "average_quality": 85.1,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -237,28 +248,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:distresspropertyfinder.com",
-      "title": "نحوه انتقال پول از ایران به دبی برای خری",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:residency24.com",
-      "title": "بانک‌های ایرانی در دبی ۲۰۲۵",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -266,6 +255,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 5,
       "average_quality": 78.8,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:distresspropertyfinder.com",
+      "title": "نحوه انتقال پول از ایران به دبی برای خری",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
