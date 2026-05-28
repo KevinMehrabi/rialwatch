@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T09:35:57Z",
+  "generated_at": "2026-05-28T13:36:45Z",
   "schema_version": 1,
   "sources": [
     {
@@ -6475,8 +6475,8 @@
       "last_buy_sell_pair_count": 16,
       "last_parseability_score": 96.0,
       "last_quote_message_count": 16,
-      "last_seen_at": "2026-05-28T09:35:57Z",
-      "last_success_at": "2026-05-28T09:35:57Z",
+      "last_seen_at": "2026-05-28T13:36:45Z",
+      "last_success_at": "2026-05-28T13:36:45Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Dubai",
@@ -6486,6 +6486,7 @@
       ],
       "origins": [
         "previous_candidate_registry",
+        "site:t.me صرافی",
         "site:t.me/s خرید دلار تهران صرافی",
         "site:t.me/s صرافی",
         "site:t.me/s صرافی تهران",
@@ -9945,8 +9946,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-05-28T09:35:57Z",
-      "last_success_at": "2026-05-28T09:35:57Z",
+      "last_seen_at": "2026-05-28T13:36:45Z",
+      "last_success_at": "2026-05-28T13:36:45Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -12056,6 +12057,37 @@
       "status": "ok",
       "title": "قیمت لحظه‌ای نوبیتکس",
       "top_sample": "🔴 بیت‌کوین: ۸۱٬۰۰۵ دلار 🔴 تتر: ۱۷۶٬۰۰۳ تومان 🟢 پکس‌گلد: ۴٬۷۰۰ دلار 🔴 BTC: $81,005 (↓0.63%) 🔴 ETH: $2,321 (↓2.32%) 🟢 PAXG: $4,700 (↑1.40%) 🔴 SHIB: $0.006 (↓1.42%) 🔴 DOGE: $0.111 (↓4.15%) 🟢 ADA: $0.27 (↑0.76%) 🟢 TRX: $0.34 (↑0.19%) 🔴 XRP: $1.41 (↓0.83%) 🟢 SOL: $"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 53.0,
+      "best_quote_message_count": 4,
+      "best_usable_record_count": 4,
+      "city_guess": "unknown",
+      "country_guess": "unknown",
+      "first_seen_at": "2026-05-28T13:36:45Z",
+      "handle_or_url": "nobitwx",
+      "key": "telegram:nobitwx",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 53.0,
+      "last_quote_message_count": 4,
+      "last_seen_at": "2026-05-28T13:36:45Z",
+      "last_success_at": "2026-05-28T13:36:45Z",
+      "last_usable_record_count": 4,
+      "origins": [
+        "site:t.me/s صرافی"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/nobitwx",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "Nobitex - دنیای رمزارز ها",
+      "top_sample": "Channel created"
     },
     {
       "best_board_message_count": 0,
@@ -15951,7 +15983,7 @@
   ],
   "summary": {
     "active_iran_sources": 207,
-    "active_sources": 356,
+    "active_sources": 357,
     "sources_by_country": {
       "Afghanistan": 11,
       "Armenia": 3,
@@ -15961,21 +15993,21 @@
       "Turkey": 15,
       "UAE": 36,
       "UK": 31,
-      "unknown": 46
+      "unknown": 47
     },
     "sources_by_kind": {
       "aggregator": 26,
-      "exchange_shop": 190,
+      "exchange_shop": 191,
       "regional_fx_board": 36,
       "regional_market_channel": 93,
       "settlement_channel": 11,
       "unknown": 25
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 95,
+      "direct_shop_expansion": 96,
       "regional_fx_board": 327,
       "regional_market_signal": 308
     },
-    "total_sources": 381
+    "total_sources": 382
   }
 }
