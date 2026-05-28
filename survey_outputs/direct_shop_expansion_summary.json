@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-28T01:14:25+00:00",
+  "generated_at": "2026-05-28T05:42:20+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
@@ -48,10 +48,10 @@
         "candidate_hits": 0
       },
       "sarafi telegram": {
-        "candidate_hits": 17
+        "candidate_hits": 27
       },
       "exchange telegram iran": {
-        "candidate_hits": 3
+        "candidate_hits": 0
       },
       "currency exchange iran telegram": {
         "candidate_hits": 3
@@ -72,7 +72,7 @@
         "candidate_hits": 3
       },
       "تلگرام صرافی تهران دلار": {
-        "candidate_hits": 7
+        "candidate_hits": 3
       },
       "تلگرام نرخ دلار صرافی": {
         "candidate_hits": 3
@@ -81,34 +81,34 @@
         "candidate_hits": 40
       },
       "site:t.me/s نرخ دلار صرافی تهران": {
-        "candidate_hits": 39
+        "candidate_hits": 38
       },
       "site:t.me/s خرید فروش دلار تهران صرافی": {
         "candidate_hits": 40
       },
       "site:t.me/s صرافی سبزه میدان": {
-        "candidate_hits": 38
+        "candidate_hits": 39
       },
       "site:t.me/s صرافی فردوسی": {
         "candidate_hits": 39
       },
       "site:t.me/s صرافی منوچهری": {
-        "candidate_hits": 35
+        "candidate_hits": 0
       },
       "site:t.me/s تابلوی صرافی دلار": {
-        "candidate_hits": 38
+        "candidate_hits": 39
       },
       "site:t.me/s قیمت لحظه ای دلار صرافی": {
-        "candidate_hits": 37
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ حواله دلار صرافی": {
-        "candidate_hits": 41
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار فردوسی": {
-        "candidate_hits": 36
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار فردوسی": {
-        "candidate_hits": 37
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار سبزه میدان": {
         "candidate_hits": 0
@@ -141,15 +141,15 @@
         "candidate_hits": 37
       }
     },
-    "successful_requests": 64,
-    "failed_requests": 28
+    "successful_requests": 56,
+    "failed_requests": 36
   },
   "existing_registry_handles": 538,
   "channel_survey_handles": 208,
   "known_registry_handles": 379,
   "known_handles_skipped_as_sufficiently_tracked": 448,
   "durable_source_registry": {
-    "total_sources": 380,
+    "total_sources": 381,
     "active_sources": 356,
     "sources_by_country": {
       "Afghanistan": 11,
@@ -158,40 +158,39 @@
       "Iran": 218,
       "Iraq": 11,
       "Turkey": 15,
-      "UAE": 35,
+      "UAE": 36,
       "UK": 31,
       "unknown": 46
     },
     "sources_by_kind": {
       "aggregator": 26,
-      "exchange_shop": 188,
+      "exchange_shop": 189,
       "regional_fx_board": 36,
       "regional_market_channel": 94,
       "settlement_channel": 11,
       "unknown": 25
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 94,
+      "direct_shop_expansion": 95,
       "regional_fx_board": 327,
       "regional_market_signal": 308
     },
     "active_iran_sources": 207
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 25,
-  "known_suspect_channels_rescored": 4,
-  "channels_selected_for_scoring": 29,
-  "channels_scored": 29,
-  "new_channels_retained_after_scoring": 4,
+  "new_channels_discovered": 18,
+  "known_suspect_channels_rescored": 1,
+  "channels_selected_for_scoring": 19,
+  "channels_scored": 19,
+  "new_channels_retained_after_scoring": 2,
   "rejection_reasons": {
     "commentary_heavy": 1,
-    "missing_shop_identity": 1,
-    "not_inside_iran_or_contactable": 3,
-    "too_few_quote_posts": 24
+    "not_inside_iran_or_contactable": 1,
+    "too_few_quote_posts": 16
   },
-  "likely_direct_shop_channels": 0,
+  "likely_direct_shop_channels": 1,
   "inside_iran_likely_direct_shop_channels": 0,
-  "channels_with_buy_sell_quotes": 3,
+  "channels_with_buy_sell_quotes": 1,
   "total_inside_iran_shop_channels_now_known": 5,
   "estimated_additional_usable_records_if_ingested": 0,
   "target_progress_note": "aiming toward 80-150 usable inside-Iran dealer records"
