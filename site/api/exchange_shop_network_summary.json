@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-28T08:29:03Z",
+  "generated_at": "2026-05-28T20:12:02Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1727500.0,
-  "total_usable_records": 135,
-  "total_contributing_channels": 17,
+  "benchmark_weighted_rate": 1742000.0,
+  "total_usable_records": 157,
+  "total_contributing_channels": 19,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 67,
+    "direct_shop": 78,
     "market_channel": 46,
     "regional_market_channel": 12,
-    "settlement_exchange": 10
+    "settlement_exchange": 21
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 14,
-      "contributing_channel_count": 6,
-      "basket_confidence": 96.52,
+      "usable_record_count": 46,
+      "contributing_channel_count": 11,
+      "basket_confidence": 85.5,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -182,14 +182,25 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "istanbulexchange_com",
       "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 12,
-      "average_quality": 86.75,
-      "average_freshness": 75.17,
+      "average_quality": 84.0,
+      "average_freshness": 66.0,
       "from_new_p1": true
     },
     {
@@ -201,6 +212,17 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:goldpricetoday.ir",
+      "title": "قیمت درهم امارات به تومان امروز 7 خرداد",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -216,12 +238,12 @@
     },
     {
       "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به تومان",
+      "title": "تبدیل درهم امارات به دلار آمریکا",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 7,
-      "average_quality": 86.71,
+      "average_quality": 82.71,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -248,14 +270,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "handle": "uae:cityexchangeuae.com",
+      "title": "City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 70.0,
+      "average_quality": 81.33,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -292,13 +314,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:agbi.com",
+      "title": "UAE moots currency swap with US if Iran impact worsens",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 89.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:hiemarat.com",
       "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 88.0,
+      "average_quality": 84.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -310,17 +343,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sarafyhafez.com",
-      "title": "انتقال پول به دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 80.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
