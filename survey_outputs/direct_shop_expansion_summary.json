@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-29T17:26:42+00:00",
+  "generated_at": "2026-05-29T21:01:56+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
-        "candidate_hits": 31
+        "candidate_hits": 32
       },
       "site:t.me/s صرافی": {
         "candidate_hits": 37
@@ -48,7 +48,7 @@
         "candidate_hits": 0
       },
       "sarafi telegram": {
-        "candidate_hits": 20
+        "candidate_hits": 0
       },
       "exchange telegram iran": {
         "candidate_hits": 0
@@ -69,16 +69,16 @@
         "candidate_hits": 0
       },
       "کانال قیمت دلار تهران": {
-        "candidate_hits": 3
+        "candidate_hits": 0
       },
       "تلگرام صرافی تهران دلار": {
-        "candidate_hits": 3
+        "candidate_hits": 0
       },
       "تلگرام نرخ دلار صرافی": {
-        "candidate_hits": 6
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی تهران دلار": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار صرافی تهران": {
         "candidate_hits": 39
@@ -87,16 +87,16 @@
         "candidate_hits": 40
       },
       "site:t.me/s صرافی سبزه میدان": {
-        "candidate_hits": 38
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی فردوسی": {
         "candidate_hits": 0
       },
       "site:t.me/s صرافی منوچهری": {
-        "candidate_hits": 35
+        "candidate_hits": 0
       },
       "site:t.me/s تابلوی صرافی دلار": {
-        "candidate_hits": 0
+        "candidate_hits": 38
       },
       "site:t.me/s قیمت لحظه ای دلار صرافی": {
         "candidate_hits": 0
@@ -114,10 +114,10 @@
         "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار سبزه میدان": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار تهران صرافی": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s خرید دلار تهران صرافی": {
         "candidate_hits": 40
@@ -129,7 +129,7 @@
         "candidate_hits": 0
       },
       "site:t.me/s صرافی اصفهان دلار": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی شیراز دلار": {
         "candidate_hits": 0
@@ -141,8 +141,8 @@
         "candidate_hits": 0
       }
     },
-    "successful_requests": 44,
-    "failed_requests": 48
+    "successful_requests": 24,
+    "failed_requests": 68
   },
   "existing_registry_handles": 549,
   "channel_survey_handles": 208,
@@ -154,19 +154,19 @@
     "sources_by_country": {
       "Afghanistan": 11,
       "Armenia": 3,
-      "Germany": 10,
+      "Germany": 11,
       "Iran": 222,
       "Iraq": 11,
       "Turkey": 15,
       "UAE": 36,
       "UK": 32,
-      "unknown": 51
+      "unknown": 50
     },
     "sources_by_kind": {
       "aggregator": 27,
       "exchange_shop": 193,
-      "regional_fx_board": 39,
-      "regional_market_channel": 96,
+      "regional_fx_board": 38,
+      "regional_market_channel": 97,
       "settlement_channel": 11,
       "unknown": 25
     },
@@ -178,19 +178,18 @@
     "active_iran_sources": 211
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 23,
-  "known_suspect_channels_rescored": 5,
-  "channels_selected_for_scoring": 28,
-  "channels_scored": 28,
-  "new_channels_retained_after_scoring": 5,
+  "new_channels_discovered": 9,
+  "known_suspect_channels_rescored": 3,
+  "channels_selected_for_scoring": 12,
+  "channels_scored": 12,
+  "new_channels_retained_after_scoring": 3,
   "rejection_reasons": {
-    "missing_shop_identity": 1,
-    "not_inside_iran_or_contactable": 4,
-    "too_few_quote_posts": 23
+    "not_inside_iran_or_contactable": 3,
+    "too_few_quote_posts": 9
   },
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
-  "channels_with_buy_sell_quotes": 3,
+  "channels_with_buy_sell_quotes": 1,
   "total_inside_iran_shop_channels_now_known": 5,
   "estimated_additional_usable_records_if_ingested": 0,
   "target_progress_note": "aiming toward 80-150 usable inside-Iran dealer records"
