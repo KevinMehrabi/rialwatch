@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-29T08:28:48Z",
+  "generated_at": "2026-05-29T19:55:18Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1742000.0,
-  "total_usable_records": 143,
-  "total_contributing_channels": 18,
+  "benchmark_weighted_rate": 1730000.0,
+  "total_usable_records": 137,
+  "total_contributing_channels": 17,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 76,
+    "direct_shop": 71,
     "market_channel": 46,
     "regional_market_channel": 12,
-    "settlement_exchange": 9
+    "settlement_exchange": 8
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 30,
-      "contributing_channel_count": 10,
-      "basket_confidence": 86.14,
+      "usable_record_count": 20,
+      "contributing_channel_count": 6,
+      "basket_confidence": 92.96,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -188,8 +188,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 12,
-      "average_quality": 83.33,
-      "average_freshness": 64.25,
+      "average_quality": 76.0,
+      "average_freshness": 45.0,
       "from_new_p1": true
     },
     {
@@ -201,17 +201,6 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:goldpricetoday.ir",
-      "title": "قیمت درهم امارات به تومان امروز 8 خرداد",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -232,7 +221,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 7,
-      "average_quality": 86.71,
+      "average_quality": 82.71,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -248,6 +237,28 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:ezdex.net",
+      "title": "قیمت درهم امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 78.8,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:cityexchangeuae.com",
+      "title": "KARAMA – City Exchange Uae",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 81.33,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:distresspropertyfinder.com",
       "title": "نحوه انتقال پول از ایران به دبی برای خری",
       "locality": "UAE",
@@ -256,28 +267,6 @@
       "usable_record_count": 3,
       "average_quality": 74.0,
       "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranbroker.net",
-      "title": "قیمت درهم امارات امروز",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -314,17 +303,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:hiemarat.com",
-      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 84.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:iranianuae.ae",
       "title": "Iranianuae",
       "locality": "UAE",
@@ -332,6 +310,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sarafyhafez.com",
+      "title": "انتقال پول به دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 72.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
