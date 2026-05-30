@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-29T19:55:18Z",
+  "generated_at": "2026-05-30T08:05:48Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1730000.0,
-  "total_usable_records": 137,
-  "total_contributing_channels": 17,
+  "total_usable_records": 134,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,7 +13,7 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 15,
+      "records_extracted": 16,
       "usable_records": 12,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 71,
+    "direct_shop": 70,
     "market_channel": 46,
     "regional_market_channel": 12,
-    "settlement_exchange": 8
+    "settlement_exchange": 6
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 20,
+      "usable_record_count": 15,
       "contributing_channel_count": 6,
-      "basket_confidence": 92.96,
+      "basket_confidence": 95.93,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -215,17 +215,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 82.71,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "iranbroker_net",
       "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
       "locality": "unknown",
@@ -234,6 +223,17 @@
       "usable_record_count": 6,
       "average_quality": 83.0,
       "average_freshness": 62.33,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 85.17,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -281,17 +281,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:exchangerates.org.uk",
-      "title": "AED to IRR",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 94.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
@@ -303,6 +292,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:hiemarat.com",
+      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 81.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:iranianuae.ae",
       "title": "Iranianuae",
       "locality": "UAE",
@@ -310,17 +310,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sarafyhafez.com",
-      "title": "انتقال پول به دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 72.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
