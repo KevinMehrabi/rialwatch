@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-05-30T08:05:48Z",
+  "generated_at": "2026-05-30T19:30:46Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1730000.0,
-  "total_usable_records": 134,
-  "total_contributing_channels": 16,
+  "benchmark_weighted_rate": 1704000.0,
+  "total_usable_records": 162,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 16,
-      "usable_records": 12,
+      "records_extracted": 18,
+      "usable_records": 14,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 70,
+    "direct_shop": 83,
     "market_channel": 46,
-    "regional_market_channel": 12,
-    "settlement_exchange": 6
+    "regional_market_channel": 14,
+    "settlement_exchange": 19
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 15,
-      "contributing_channel_count": 6,
-      "basket_confidence": 95.93,
+      "usable_record_count": 47,
+      "contributing_channel_count": 10,
+      "basket_confidence": 89.18,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -187,10 +187,21 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 12,
-      "average_quality": 76.0,
-      "average_freshness": 45.0,
+      "usable_record_count": 14,
+      "average_quality": 87.07,
+      "average_freshness": 76.57,
       "from_new_p1": true
+    },
+    {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
     },
     {
       "handle": "navasanchannel",
@@ -201,6 +212,28 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به دلار آمریکا",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 10,
+      "average_quality": 82.3,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:goldpricetoday.ir",
+      "title": "قیمت درهم امارات به تومان امروز 9 خرداد",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -226,17 +259,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل دلار آمریکا به درهم امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 85.17,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -244,17 +266,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 5,
       "average_quality": 78.8,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:cityexchangeuae.com",
-      "title": "KARAMA – City Exchange Uae",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 81.33,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -267,6 +278,17 @@
       "usable_record_count": 3,
       "average_quality": 74.0,
       "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -287,7 +309,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -298,7 +320,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 81.0,
+      "average_quality": 73.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
