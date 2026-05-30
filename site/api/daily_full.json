@@ -3223,6 +3223,46 @@
         "selected_attempt_file": "intraday/2026-05-29/14-14-00.json",
         "selection_scope": "publication_window"
       }
+    },
+    {
+      "date": "2026-05-30",
+      "as_of": "2026-05-30T14:49:26Z",
+      "revision": 0,
+      "street_usd_irr": 1704000.0,
+      "p25": 1702000.0,
+      "p75": 1707050.0,
+      "dispersion": 0.0029636150234741785,
+      "status": "Green",
+      "withheld": false,
+      "withhold_reasons": [],
+      "source_count": 3,
+      "source_medians": {
+        "alanchand_street": 1704000.0,
+        "navasan": 1700000.0,
+        "tgju_street": 1710100.0
+      },
+      "source_units": {
+        "alanchand_street": "rial",
+        "navasan": "mixed",
+        "tgju_street": "rial"
+      },
+      "official_commercial_usd_irr": 1473005.0,
+      "regional_transfer_usd_irr": 1731600.0,
+      "crypto_usdt_irr": 1704500.0,
+      "emami_coin_irr": 1800000000.0,
+      "gold_implied_usd_irr": 2553191.489361702,
+      "street_official_gap_pct": 15.681888384628701,
+      "street_transfer_gap_pct": -1.593901593901594,
+      "street_crypto_gap_pct": 0.029342723004694836,
+      "street_gold_gap_pct": 49.83518130056937,
+      "official_commercial_trend_7d": -0.6257252340988207,
+      "methodology_fingerprint": "d4621c83d176",
+      "publication_selection": {
+        "rule": "prefer latest valid intraday attempt in publication window; repair from latest valid same-day intraday read when no window-valid attempt exists",
+        "selected_collected_at": "2026-05-30T14:14:00Z",
+        "selected_attempt_file": "intraday/2026-05-30/14-14-00.json",
+        "selection_scope": "publication_window"
+      }
     }
   ]
 }
