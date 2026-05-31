@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-05-31T08:26:51Z",
+  "generated_at": "2026-05-31T19:23:30Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1704000.0,
-  "total_usable_records": 141,
+  "benchmark_weighted_rate": 1703000.0,
+  "total_usable_records": 158,
   "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 18,
-      "usable_records": 14,
+      "records_extracted": 20,
+      "usable_records": 16,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 73,
+    "direct_shop": 75,
     "market_channel": 46,
-    "regional_market_channel": 14,
-    "settlement_exchange": 8
+    "regional_market_channel": 16,
+    "settlement_exchange": 21
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 22,
+      "usable_record_count": 43,
       "contributing_channel_count": 8,
-      "basket_confidence": 92.09,
+      "basket_confidence": 88.91,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,6 +171,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 16,
+      "average_quality": 90.31,
+      "average_freshness": 85.75,
+      "from_new_p1": true
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -182,15 +193,15 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 88.14,
-      "average_freshness": 79.64,
-      "from_new_p1": true
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
     },
     {
       "handle": "navasanchannel",
@@ -204,13 +215,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:realestateclubdubai.com",
-      "title": "Iranian Investors Dubai Property 2026: Banking & Visa",
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به دلار آمریکا",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 83.12,
+      "usable_record_count": 10,
+      "average_quality": 82.3,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -226,13 +237,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
+      "handle": "uae:iranianuae.ae",
+      "title": "دلار از ۱۶۵ هزار تومان و درهم از ۴۵ هزار تومان عبور کرد! — ایرانیان امارات",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 7,
-      "average_quality": 86.71,
+      "average_quality": 78.14,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -259,13 +270,24 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "handle": "uae:dxboffplan.com",
+      "title": "چنج پول در دبی 2026",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:emeraldxe.com",
+      "title": "تبدیل درهم به تومان لحظه‌ای",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 75.33,
+      "usable_record_count": 2,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -276,7 +298,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -288,28 +310,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 73.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranianuae.ae",
-      "title": "Iranianuae",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 82.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:t.me",
-      "title": "سقف انتقال پول به ایران از خارج + بررسی کارمزد صرافی‌ها",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 94.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
