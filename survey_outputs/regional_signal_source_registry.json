@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T09:20:16Z",
+  "generated_at": "2026-05-31T12:47:01Z",
   "schema_version": 1,
   "sources": [
     {
@@ -10321,6 +10321,43 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 14.0,
+      "best_quote_message_count": 0,
+      "best_usable_record_count": 0,
+      "city_guess": "Tehran",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-05-31T12:47:01Z",
+      "handle_or_url": "irenexchange",
+      "key": "telegram:irenexchange",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 14.0,
+      "last_quote_message_count": 0,
+      "last_seen_at": "2026-05-31T12:47:01Z",
+      "last_usable_record_count": 0,
+      "locality_hints": [
+        "Iran",
+        "Tehran"
+      ],
+      "origins": [
+        "site:t.me/s صرافی تهران"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/irenexchange",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "صرافی ایرن",
+      "top_sample": "@irenexchange"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
       "best_parseability_score": 65.0,
       "best_quote_message_count": 20,
       "best_usable_record_count": 0,
@@ -10333,8 +10370,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-05-31T09:20:16Z",
-      "last_success_at": "2026-05-31T09:20:16Z",
+      "last_seen_at": "2026-05-31T12:47:01Z",
+      "last_success_at": "2026-05-31T12:47:01Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -13885,8 +13922,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 56.0,
       "last_quote_message_count": 5,
-      "last_seen_at": "2026-05-31T09:20:16Z",
-      "last_success_at": "2026-05-31T09:20:16Z",
+      "last_seen_at": "2026-05-31T12:47:01Z",
+      "last_success_at": "2026-05-31T12:47:01Z",
       "last_usable_record_count": 0,
       "origins": [
         "site:t.me صرافی",
@@ -16476,7 +16513,7 @@
       "Afghanistan": 11,
       "Armenia": 4,
       "Germany": 11,
-      "Iran": 224,
+      "Iran": 225,
       "Iraq": 11,
       "Turkey": 15,
       "UAE": 36,
@@ -16485,17 +16522,17 @@
     },
     "sources_by_kind": {
       "aggregator": 26,
-      "exchange_shop": 195,
+      "exchange_shop": 196,
       "regional_fx_board": 39,
       "regional_market_channel": 98,
       "settlement_channel": 11,
       "unknown": 25
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 100,
+      "direct_shop_expansion": 101,
       "regional_fx_board": 336,
       "regional_market_signal": 311
     },
-    "total_sources": 394
+    "total_sources": 395
   }
 }
