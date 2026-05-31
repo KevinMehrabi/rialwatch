@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-05-31T05:46:46+00:00",
+  "generated_at": "2026-05-31T09:20:16+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
@@ -12,7 +12,7 @@
         "candidate_hits": 38
       },
       "site:t.me/s صرافی تهران": {
-        "candidate_hits": 39
+        "candidate_hits": 37
       },
       "صرافی تهران": {
         "candidate_hits": 0
@@ -51,10 +51,10 @@
         "candidate_hits": 0
       },
       "exchange telegram iran": {
-        "candidate_hits": 3
+        "candidate_hits": 0
       },
       "currency exchange iran telegram": {
-        "candidate_hits": 3
+        "candidate_hits": 0
       },
       "حواله صرافی": {
         "candidate_hits": 0
@@ -63,7 +63,7 @@
         "candidate_hits": 0
       },
       "کانال صرافی تهران": {
-        "candidate_hits": 3
+        "candidate_hits": 0
       },
       "کانال نرخ دلار تهران": {
         "candidate_hits": 0
@@ -90,7 +90,7 @@
         "candidate_hits": 0
       },
       "site:t.me/s صرافی فردوسی": {
-        "candidate_hits": 38
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی منوچهری": {
         "candidate_hits": 0
@@ -117,16 +117,16 @@
         "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار تهران صرافی": {
-        "candidate_hits": 0
+        "candidate_hits": 37
       },
       "site:t.me/s خرید دلار تهران صرافی": {
-        "candidate_hits": 0
+        "candidate_hits": 40
       },
       "site:t.me/s فروش دلار تهران صرافی": {
-        "candidate_hits": 0
+        "candidate_hits": 40
       },
       "site:t.me/s صرافی مشهد دلار": {
-        "candidate_hits": 0
+        "candidate_hits": 40
       },
       "site:t.me/s صرافی اصفهان دلار": {
         "candidate_hits": 39
@@ -138,24 +138,24 @@
         "candidate_hits": 0
       },
       "site:t.me/s صرافی کرج دلار": {
-        "candidate_hits": 0
+        "candidate_hits": 36
       }
     },
-    "successful_requests": 34,
-    "failed_requests": 58
+    "successful_requests": 36,
+    "failed_requests": 56
   },
-  "existing_registry_handles": 551,
+  "existing_registry_handles": 552,
   "channel_survey_handles": 208,
-  "known_registry_handles": 392,
+  "known_registry_handles": 393,
   "known_handles_skipped_as_sufficiently_tracked": 455,
   "durable_source_registry": {
-    "total_sources": 393,
-    "active_sources": 367,
+    "total_sources": 394,
+    "active_sources": 368,
     "sources_by_country": {
       "Afghanistan": 11,
       "Armenia": 4,
       "Germany": 11,
-      "Iran": 223,
+      "Iran": 224,
       "Iraq": 11,
       "Turkey": 15,
       "UAE": 36,
@@ -165,32 +165,32 @@
     "sources_by_kind": {
       "aggregator": 26,
       "exchange_shop": 195,
-      "regional_fx_board": 38,
+      "regional_fx_board": 39,
       "regional_market_channel": 98,
       "settlement_channel": 11,
       "unknown": 25
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 100,
-      "regional_fx_board": 335,
+      "regional_fx_board": 336,
       "regional_market_signal": 311
     },
-    "active_iran_sources": 212
+    "active_iran_sources": 213
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 10,
-  "known_suspect_channels_rescored": 5,
-  "channels_selected_for_scoring": 15,
-  "channels_scored": 15,
-  "new_channels_retained_after_scoring": 4,
+  "new_channels_discovered": 13,
+  "known_suspect_channels_rescored": 4,
+  "channels_selected_for_scoring": 17,
+  "channels_scored": 17,
+  "new_channels_retained_after_scoring": 3,
   "rejection_reasons": {
-    "commentary_heavy": 1,
-    "not_inside_iran_or_contactable": 4,
-    "too_few_quote_posts": 10
+    "low_parseability": 1,
+    "not_inside_iran_or_contactable": 3,
+    "too_few_quote_posts": 13
   },
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
-  "channels_with_buy_sell_quotes": 2,
+  "channels_with_buy_sell_quotes": 1,
   "total_inside_iran_shop_channels_now_known": 5,
   "estimated_additional_usable_records_if_ingested": 0,
   "target_progress_note": "aiming toward 80-150 usable inside-Iran dealer records"
