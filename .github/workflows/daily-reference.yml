@@ -109,8 +109,8 @@ jobs:
         run: |
           python3 scripts/guardrail_check.py --site-dir state/site
 
-      - name: Persist daily snapshots (publish window only)
-        if: github.event_name == 'schedule' && github.event.schedule == '20 14 * * *'
+      - name: Persist daily snapshots
+        if: github.event_name == 'schedule'
         run: |
           data_branch="data/live"
           targets=()

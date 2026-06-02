@@ -106,6 +106,19 @@ class GuardrailCheckTest(unittest.TestCase):
             failures, _ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
             self.assertTrue(any("no intraday samples" in failure.lower() for failure in failures))
 
+    def test_fails_when_current_withhold_has_no_intraday_artifacts_at_all(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            day_s = "2026-03-24"
+            latest = base_latest(day_s)
+            latest["computed"]["withhold_reasons"] = ["no intraday samples available in publication window"]
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(site_dir / "fix" / f"{day_s}.json", latest)
+
+            failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
+            self.assertEqual(ctx["intraday_count"], 0)
+            self.assertTrue(any("no same-day intraday artifacts exist" in failure.lower() for failure in failures))
+
     def test_passes_when_no_intraday_reason_has_only_outside_window_attempts(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             site_dir = Path(temp_dir) / "site"

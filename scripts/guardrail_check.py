@@ -272,6 +272,12 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
             )
         return failures, context
 
+    if latest_date == day_s and latest_withheld and no_intraday_reason and intraday_count == 0:
+        failures.append(
+            "Current-day snapshot is WITHHOLD because no intraday samples were found, "
+            "and no same-day intraday artifacts exist. Run auto-heal collection before publishing a blank day."
+        )
+
     if in_window_attempts and no_intraday_reason:
         failures.append(
             "WITHHOLD reason says no intraday samples in publication window, "

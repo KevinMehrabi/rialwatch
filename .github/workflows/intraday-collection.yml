@@ -6,6 +6,10 @@ on:
     # GitHub scheduled runs can start tens of minutes late; this gives the job
     # enough buffer to still collect during the 13:45-14:15 UTC publication window.
     - cron: "30 12 * * *"
+    # Backup triggers reduce the chance that one delayed GitHub cron leaves the
+    # daily publisher with zero same-day intraday artifacts.
+    - cron: "0 13 * * *"
+    - cron: "30 13 * * *"
   workflow_dispatch:
 
 permissions:
