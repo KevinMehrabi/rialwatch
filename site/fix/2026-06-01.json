@@ -1,127 +1,93 @@
 {
   "date": "2026-06-01",
-  "as_of": "2026-06-01T16:20:14Z",
-  "methodology": {
-    "mapping_fingerprint": "d4621c83d176",
-    "canonical_source_symbols": {
-      "navasan": {
-        "open_market": [
-          "usd_sell",
-          "usd"
-        ],
-        "regional_transfer": [
-          "usd_shakhs",
-          "usd_sherkat"
-        ],
-        "crypto_usdt": [
-          "usdt",
-          "usd_usdt"
-        ],
-        "emami_gold_coin": [
-          "sekkeh"
-        ]
+  "as_of": "2026-06-01T23:59:59Z",
+  "window_utc": {
+    "start": "13:45",
+    "end": "14:15",
+    "sample_count_per_source": 1
+  },
+  "sources": {
+    "tgju_street": {
+      "samples": [
+        {
+          "health": {
+            "fetch_success": true,
+            "validation_result": {
+              "ok": true,
+              "mode": "external_historical_source_backfill"
+            },
+            "source": "TGJU price_dollar_rl summary table",
+            "request_url": "https://api.tgju.org/v1/market/indicator/summary-table-data/price_dollar_rl",
+            "historical_row": {
+              "date": "2026/06/01",
+              "jalali_date": "1405/03/11",
+              "open_or_average": "1,715,150",
+              "low": "1,714,800",
+              "high": "1,770,200",
+              "close": "1,761,800",
+              "change": "+56,950",
+              "change_pct": "+3.34%"
+            },
+            "historical_value_field_used": "close",
+            "source_note": "External same-day TGJU daily-history row; not a captured RialWatch intraday attempt."
+          },
+          "sampled_at": "2026-06-01T23:59:59Z",
+          "value": 1761800.0,
+          "benchmarks": {
+            "open_market": 1761800.0,
+            "official": null,
+            "regional_transfer": null,
+            "crypto_usdt": null,
+            "emami_gold_coin": null
+          },
+          "quote_time": "2026-06-01T23:59:59Z",
+          "ok": true,
+          "stale": false,
+          "error": null,
+          "fetch_success": true,
+          "validation_result": {
+            "ok": true,
+            "mode": "external_historical_source_backfill"
+          },
+          "failure_reason": null,
+          "source_unit": "rial",
+          "normalized_unit": "rial"
+        }
+      ],
+      "median": 1761800.0,
+      "benchmark_medians": {
+        "open_market": 1761800.0
       },
-      "tgju_street": {
-        "open_market": [
-          "price_dollar_rl"
-        ]
-      },
-      "commercial_aux_c": {
-        "official": [
-          "ice_transfer_usd_sell",
-          "ice_currency_usd_sell",
-          "ice_average_usd_sell",
-          "ice_commodity_transfer_usd_sell"
-        ]
-      },
-      "commercial_aux_b": {
-        "official": [
-          "ice_transfer_usd_sell",
-          "ice_currency_usd_sell",
-          "ice_average_usd_sell",
-          "ice_commodity_transfer_usd_sell"
-        ]
-      },
-      "commercial_aux_a": {
-        "official": [
-          "ice_transfer_usd_sell",
-          "ice_currency_usd_sell",
-          "ice_average_usd_sell",
-          "ice_commodity_transfer_usd_sell"
-        ]
-      },
-      "commercial_aux": {
-        "official": [
-          "ice_transfer_usd_sell",
-          "ice_currency_usd_sell",
-          "ice_average_usd_sell",
-          "ice_commodity_transfer_usd_sell"
-        ]
-      },
-      "commercial_profile_transfer": {
-        "official": [
-          "ice_transfer_usd_sell",
-          "ice_currency_usd_sell",
-          "ice_average_usd_sell",
-          "ice_commodity_transfer_usd_sell",
-          "mex_usd_sell"
-        ]
-      },
-      "commercial_profile_sana": {
-        "official": [
-          "mex_usd_sell",
-          "sana_sell_usd",
-          "ice_currency_usd_sell",
-          "ice_transfer_usd_sell"
-        ]
-      },
-      "alanchand": {
-        "regional_transfer": [
-          "usd-hav",
-          "usd_hav"
-        ],
-        "crypto_usdt": [
-          "usdt"
-        ],
-        "emami_gold_coin": [
-          "sekkeh"
-        ]
-      },
-      "bonbast": {
-        "crypto_usdt": [
-          "usdt",
-          "tether"
-        ],
-        "emami_gold_coin": [
-          "sekkeh"
-        ]
-      }
-    },
-    "navasan_benchmark_units": {
-      "open_market": "toman",
-      "regional_transfer": "toman",
-      "crypto_usdt": "toman",
-      "emami_gold_coin": "toman"
+      "note": null
     }
   },
   "benchmarks": {
     "open_market": {
       "label": "Open Market / Street Rate",
       "benchmark": "open_market",
-      "fix": null,
+      "fix": 1761800.0,
       "band": {
-        "p25": null,
-        "p75": null
+        "p25": 1761800.0,
+        "p75": 1761800.0
       },
-      "dispersion": null,
-      "status": "WITHHOLD",
-      "withheld": true,
-      "withhold_reasons": [
-        "no intraday samples available in publication window"
-      ],
-      "source_medians": {},
+      "dispersion": 0.0,
+      "status": "Green",
+      "withheld": false,
+      "withhold_reasons": [],
+      "source_medians": {
+        "tgju_street": 1761800.0
+      },
+      "source_units": {
+        "tgju_street": "rial"
+      },
+      "source_update_counts": {},
       "source_notes": {},
-      "available": false
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
+      "available": true
     },
     "official": {
       "label": "Official Commercial USD Rate",
@@ -135,10 +101,19 @@
       "status": "WITHHOLD",
       "withheld": true,
       "withhold_reasons": [
-        "no intraday samples available in publication window"
+        "no valid sources available"
       ],
       "source_medians": {},
-      "source_notes": {},
+      "source_units": {},
+      "source_update_counts": {},
+      "source_notes": {
+        "tgju_street": "source family not used for this benchmark"
+      },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     },
     "regional_transfer": {
@@ -153,10 +128,19 @@
       "status": "WITHHOLD",
       "withheld": true,
       "withhold_reasons": [
-        "no intraday samples available in publication window"
+        "no valid sources available"
       ],
       "source_medians": {},
-      "source_notes": {},
+      "source_units": {},
+      "source_update_counts": {},
+      "source_notes": {
+        "tgju_street": "source family not used for this benchmark"
+      },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     },
     "crypto_usdt": {
@@ -171,10 +155,19 @@
       "status": "WITHHOLD",
       "withheld": true,
       "withhold_reasons": [
-        "no intraday samples available in publication window"
+        "no valid sources available"
       ],
       "source_medians": {},
-      "source_notes": {},
+      "source_units": {},
+      "source_update_counts": {},
+      "source_notes": {
+        "tgju_street": "source family not used for this benchmark"
+      },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     },
     "emami_gold_coin": {
@@ -189,10 +182,19 @@
       "status": "WITHHOLD",
       "withheld": true,
       "withhold_reasons": [
-        "no intraday samples available in publication window"
+        "no valid sources available"
       ],
       "source_medians": {},
-      "source_notes": {},
+      "source_units": {},
+      "source_update_counts": {},
+      "source_notes": {
+        "tgju_street": "source family not used for this benchmark"
+      },
+      "selected_sources": null,
+      "selected_quote_time": null,
+      "selection_method": null,
+      "using_stale_fallback": false,
+      "stale_fallback_sources": [],
       "available": false
     }
   },
@@ -229,23 +231,29 @@
     }
   },
   "computed": {
-    "fix": null,
+    "fix": 1761800.0,
     "band": {
-      "p25": null,
-      "p75": null
+      "p25": 1761800.0,
+      "p75": 1761800.0
     },
-    "dispersion": null,
-    "status": "WITHHOLD",
-    "withheld": true,
-    "withhold_reasons": [
-      "no intraday samples available in publication window"
-    ],
-    "source_medians": {},
+    "dispersion": 0.0,
+    "status": "Green",
+    "withheld": false,
+    "withhold_reasons": [],
+    "source_medians": {
+      "tgju_street": 1761800.0
+    },
+    "source_units": {
+      "tgju_street": "rial"
+    },
+    "source_unit": "rial",
+    "normalized_unit": "rial",
+    "validation_warnings": [],
     "benchmarks": {
       "open_market": {
         "label": "Open Market / Street Rate",
-        "value": null,
-        "available": false,
+        "value": 1761800.0,
+        "available": true,
         "is_primary": true
       },
       "official": {
@@ -307,7 +315,7 @@
     }
   },
   "normalized_metrics": {
-    "street_usd_irr": null,
+    "street_usd_irr": 1761800.0,
     "official_commercial_usd_irr": null,
     "regional_transfer_usd_irr": null,
     "crypto_usdt_irr": null,
@@ -319,35 +327,140 @@
     "gold_implied_usd_irr": null,
     "gold_usd_per_oz": 3000.0,
     "official_commercial_trend_7d": null,
-    "street_confidence_status": "WITHHOLD",
-    "source_unit": "unknown",
+    "street_confidence_status": "Green",
+    "source_unit": "rial",
     "normalized_unit": "rial"
   },
+  "methodology": {
+    "mapping_fingerprint": "d4621c83d176",
+    "canonical_source_symbols": {
+      "navasan": {
+        "open_market": [
+          "usd_sell",
+          "usd"
+        ],
+        "regional_transfer": [
+          "usd_shakhs",
+          "usd_sherkat"
+        ],
+        "crypto_usdt": [
+          "usdt",
+          "usd_usdt"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      },
+      "tgju_street": {
+        "open_market": [
+          "price_dollar_rl"
+        ]
+      },
+      "commercial_aux_c": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
+      "commercial_aux_b": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
+      "commercial_aux": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
+      "commercial_aux_a": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell"
+        ]
+      },
+      "commercial_profile_sana": {
+        "official": [
+          "mex_usd_sell",
+          "sana_sell_usd",
+          "ice_currency_usd_sell",
+          "ice_transfer_usd_sell"
+        ]
+      },
+      "commercial_profile_transfer": {
+        "official": [
+          "ice_transfer_usd_sell",
+          "ice_currency_usd_sell",
+          "ice_average_usd_sell",
+          "ice_commodity_transfer_usd_sell",
+          "mex_usd_sell"
+        ]
+      },
+      "alanchand": {
+        "regional_transfer": [
+          "usd-hav",
+          "usd_hav"
+        ],
+        "crypto_usdt": [
+          "usdt"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      },
+      "bonbast": {
+        "crypto_usdt": [
+          "usdt",
+          "tether"
+        ],
+        "emami_gold_coin": [
+          "sekkeh"
+        ]
+      }
+    },
+    "navasan_benchmark_units": {
+      "open_market": "toman",
+      "regional_transfer": "toman",
+      "crypto_usdt": "toman",
+      "emami_gold_coin": "toman"
+    }
+  },
   "publication_selection": {
-    "rule": "latest valid intraday attempt in publication window; fallback stays inside the window",
-    "selection_scope": "publication_window",
+    "rule": "historical backfill: reconstruct missing daily fix from external same-day source history; no carry-forward",
+    "selection_scope": "external_historical_source_backfill",
     "window_utc": {
       "start": "13:45",
       "end": "14:15"
     },
-    "candidate_count": 0,
-    "valid_candidate_count": 0,
-    "selected_collected_at": null,
-    "latest_candidate_collected_at": null,
+    "candidate_count": 1,
+    "valid_candidate_count": 1,
+    "same_day_candidate_count": 1,
+    "valid_same_day_candidate_count": 1,
+    "selected_collected_at": "2026-06-01T23:59:59Z",
+    "latest_candidate_collected_at": "2026-06-01T23:59:59Z",
     "selected_attempt_file": null,
-    "selected_valid": false,
-    "used_fallback": false,
-    "basis_label": "No intraday sample in publication window (WITHHOLD)",
-    "selection_reason": "no intraday samples available in publication window",
-    "street_source_count_used": 0,
+    "selected_valid": true,
+    "used_fallback": true,
+    "basis_label": "Reconstructed from TGJU same-day daily-history close",
+    "selection_reason": "missing captured intraday artifacts; used TGJU price_dollar_rl same-day historical close",
+    "street_source_count_used": 1,
     "same_as_previous_day": false,
-    "previous_day_fix": null,
-    "delta_vs_previous_day": null,
-    "delta_pct_vs_previous_day": null
+    "previous_day_fix": 1703000.0,
+    "delta_vs_previous_day": 58800.0,
+    "delta_pct_vs_previous_day": 3.452730475631239
   },
-  "revision": 0,
-  "revision_reason": null,
-  "revised_at": null,
+  "revision": 1,
+  "revision_reason": "historical external source backfill from TGJU same-day daily history",
+  "revised_at": "2026-06-02T16:53:59Z",
   "original_as_of": "2026-06-01T16:20:14Z",
   "original_publication_selection": {
     "rule": "latest valid intraday attempt in publication window; fallback stays inside the window",
