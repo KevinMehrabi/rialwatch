@@ -4995,6 +4995,75 @@ def publish_governance(site_dir: Path, templates_dir: Path, generated_at: str) -
     write_text(site_dir / "governance" / "index.html", html)
 
 
+def open_market_value_from_latest(latest: Optional[Dict[str, Any]]) -> Optional[float]:
+    if not isinstance(latest, dict):
+        return None
+    paths = (
+        ("computed", "benchmarks", PRIMARY_BENCHMARK, "value"),
+        ("benchmarks", PRIMARY_BENCHMARK, "fix"),
+        ("computed", "fix"),
+    )
+    for path in paths:
+        current: Any = latest
+        for key in path:
+            if not isinstance(current, dict):
+                current = None
+                break
+            current = current.get(key)
+        parsed = parse_number(current)
+        if parsed is not None and parsed > 0:
+            return parsed
+    return None
+
+
+def refresh_regional_market_signal_cards(site_dir: Path, latest: Optional[Dict[str, Any]]) -> None:
+    benchmark_value = open_market_value_from_latest(latest)
+    if benchmark_value is None:
+        latest_path = site_dir / "api" / "latest.json"
+        if latest_path.exists():
+            try:
+                benchmark_value = open_market_value_from_latest(json.loads(latest_path.read_text(encoding="utf-8")))
+            except (OSError, json.JSONDecodeError):
+                benchmark_value = None
+    if benchmark_value is None:
+        return
+
+    api_dir = site_dir / "api"
+    regional_path = api_dir / "regional_fx_board_basket_review.json"
+    enriched_path = api_dir / "exchange_shop_baskets_enriched.json"
+    legacy_path = api_dir / "exchange_shop_baskets_card.json"
+    if not any(path.exists() for path in (regional_path, enriched_path, legacy_path)):
+        return
+
+    registry_path = site_dir.parent / "survey_outputs" / "regional_signal_source_registry.json"
+    out_path = api_dir / "regional_market_signals_card.json"
+    history_path = api_dir / "regional_market_signals_history.json"
+    timeseries_path = api_dir / "regional_market_signals_timeseries.json"
+    try:
+        try:
+            from scripts import regional_market_signals_card as regional_cards
+        except ImportError:
+            import regional_market_signals_card as regional_cards  # type: ignore
+
+        payload = regional_cards.build_regional_market_cards_payload(
+            regional_cards.read_json(regional_path),
+            regional_cards.read_json(enriched_path),
+            regional_cards.read_json(legacy_path),
+            regional_cards.read_json(registry_path),
+            benchmark_value=benchmark_value,
+        )
+        regional_cards.write_json(out_path, payload)
+        history_payload = regional_cards.build_regional_history_payload(
+            payload,
+            regional_cards.read_json(history_path),
+            regional_cards.DEFAULT_HISTORY_DAYS,
+        )
+        regional_cards.write_json(history_path, history_payload)
+        regional_cards.write_json(timeseries_path, regional_cards.build_regional_timeseries_payload(history_payload))
+    except Exception as exc:
+        print(f"WARNING: could not refresh regional market signal spreads: {exc}")
+
+
 def publish_status(
     site_dir: Path,
     templates_dir: Path,
@@ -5004,6 +5073,8 @@ def publish_status(
     missing: Optional[List[str]] = None,
     latest: Optional[Dict[str, Any]] = None,
 ) -> None:
+    refresh_regional_market_signal_cards(site_dir, latest)
+
     def humanize_withhold_reason(reason: Any) -> Optional[str]:
         if not isinstance(reason, str):
             return None

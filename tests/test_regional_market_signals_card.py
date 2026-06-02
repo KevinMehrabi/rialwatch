@@ -560,6 +560,40 @@ class RegionalMarketSignalsCardTests(unittest.TestCase):
         self.assertEqual(by_locality["Iran"]["weighted_rate"], 1_450_000.0)
         self.assertEqual(by_locality["Iran"]["date"], "2026-03-31")
 
+    def test_build_payload_recomputes_spread_against_current_benchmark(self) -> None:
+        regional_payload = {
+            "generated_at": "2026-05-30T08:13:16Z",
+            "localities": [
+                {
+                    "locality_name": "Iran",
+                    "signal_type_used": "regional_fx_board",
+                    "weighted_rate": 1_691_314.87,
+                    "median_rate": 1_717_643.33,
+                    "spread_vs_benchmark_pct": -2.2361,
+                    "usable_record_count": 20,
+                    "contributing_source_count": 4,
+                    "fresh_contributing_source_count": 2,
+                    "basket_confidence": 80.0,
+                    "freshness_status": "fresh",
+                    "dispersion_level": "low",
+                    "recommended_display_state": "publish",
+                    "suppression_reason": "",
+                }
+            ],
+        }
+
+        payload = cards.build_regional_market_cards_payload(
+            regional_payload,
+            {"baskets": []},
+            {"cards": []},
+            benchmark_value=1_704_000.0,
+        )
+        iran = {row["basket_name"]: row for row in payload["cards"]}["Iran"]
+
+        self.assertAlmostEqual(iran["spread_vs_benchmark_pct"], -0.7444, places=3)
+        self.assertEqual(iran["spread_text"], "-0.74%")
+        self.assertEqual(iran["alignment_label"], "Aligned")
+
     def test_build_regional_timeseries_payload_produces_daily_points(self) -> None:
         history_payload = {
             "generated_at": "2026-03-31T10:00:00Z",

@@ -640,6 +640,134 @@ def load_existing_registry(path: Path) -> Tuple[Set[str], int]:
     return handles, inside_shop_count
 
 
+def merge_candidate(target: Dict[str, Candidate], candidate: Candidate) -> None:
+    existing = target.get(candidate.handle)
+    if existing is None:
+        target[candidate.handle] = candidate
+        return
+    existing.query_hits.update(candidate.query_hits)
+    existing.raw_urls.update(candidate.raw_urls)
+    if not existing.public_url and candidate.public_url:
+        existing.public_url = candidate.public_url
+
+
+def candidate_from_handle(handle: str, public_url: str = "", origin: str = "known_rescore") -> Optional[Candidate]:
+    normalized = normalize_channel_url(public_url or handle)
+    if normalized:
+        norm_handle, norm_url = normalized
+    else:
+        norm_handle = re.sub(r"[^a-z0-9_]", "", str(handle or "").strip().lower())
+        if not HANDLE_RE.match(norm_handle) or norm_handle in EXCLUDED_HANDLES:
+            return None
+        norm_url = f"https://t.me/s/{norm_handle}"
+    return Candidate(handle=norm_handle, public_url=norm_url, query_hits={origin}, raw_urls={public_url or handle})
+
+
+def candidate_from_csv_row(row: Dict[str, str], origin: str) -> Optional[Candidate]:
+    handle = str(row.get("handle") or row.get("handle_or_url") or "").strip()
+    public_url = str(row.get("public_url") or "").strip()
+    if not handle and not public_url:
+        return None
+    return candidate_from_handle(handle or public_url, public_url=public_url, origin=origin)
+
+
+def load_csv_candidates(path: Path, origin: str) -> Dict[str, Candidate]:
+    out: Dict[str, Candidate] = {}
+    if not path.exists():
+        return out
+    with path.open(encoding="utf-8", newline="") as fp:
+        for row in csv.DictReader(fp):
+            candidate = candidate_from_csv_row(row, origin)
+            if candidate is not None:
+                merge_candidate(out, candidate)
+    return out
+
+
+def row_country_or_city_hints(row: Dict[str, object]) -> Set[str]:
+    hints: Set[str] = set()
+    for field in ("country_guess", "city_guess"):
+        value = str(row.get(field) or "").strip()
+        if value:
+            hints.add(value)
+    for field in ("country_hints", "locality_hints"):
+        value = row.get(field)
+        if isinstance(value, list):
+            hints.update(str(item).strip() for item in value if str(item or "").strip())
+        elif isinstance(value, str):
+            hints.update(part.strip() for part in re.split(r"[|,]", value) if part.strip())
+    return hints
+
+
+def should_rescore_registry_source(row: Dict[str, object]) -> bool:
+    source_kind = str(row.get("source_kind") or "").strip()
+    best_usable = parse_int(row.get("best_usable_record_count"))
+    if source_kind == "exchange_shop" or best_usable > 0:
+        return False
+    hints = row_country_or_city_hints(row)
+    if not hints:
+        return True
+    if "Iran" in hints or "unknown" in hints:
+        return True
+    return bool(hints.intersection(INSIDE_IRAN_CITIES))
+
+
+def registry_rescore_candidates(payload: Dict[str, object]) -> Dict[str, Candidate]:
+    out: Dict[str, Candidate] = {}
+    for row in registry_sources(payload, platform="telegram", active_only=False):
+        if not should_rescore_registry_source(row):
+            continue
+        handle = str(row.get("handle_or_url") or "").strip()
+        public_url = str(row.get("public_url") or "").strip()
+        candidate = candidate_from_handle(handle, public_url=public_url, origin="source_registry_rescore")
+        if candidate is not None:
+            merge_candidate(out, candidate)
+    return out
+
+
+def channel_survey_rescore_candidates(path: Path) -> Dict[str, Candidate]:
+    out: Dict[str, Candidate] = {}
+    if not path.exists():
+        return out
+    with path.open(encoding="utf-8", newline="") as fp:
+        for row in csv.DictReader(fp):
+            hints = row_country_or_city_hints(row)  # type: ignore[arg-type]
+            title_handle_text = " ".join(str(row.get(field, "")) for field in ("title", "handle", "handle_or_url")).lower()
+            looks_iran_relevant = (
+                not hints
+                or "Iran" in hints
+                or "unknown" in hints
+                or bool(hints.intersection(INSIDE_IRAN_CITIES))
+                or any(token.lower() in title_handle_text for token in ("صرافی", "sarafi", "exchange", "tehran", "mashhad"))
+            )
+            if not looks_iran_relevant:
+                continue
+            candidate = candidate_from_csv_row(row, "channel_survey_rescore")
+            if candidate is not None:
+                merge_candidate(out, candidate)
+    return out
+
+
+def known_rescore_candidates(
+    survey_dir: Path,
+    existing_csv: Path,
+    source_registry: Dict[str, object],
+    sufficiently_tracked_handles: Set[str],
+) -> List[Candidate]:
+    merged: Dict[str, Candidate] = {}
+    sources = (
+        load_csv_candidates(survey_dir / "direct_shop_expansion_scored_candidates.csv", "previous_scored_rescore"),
+        load_csv_candidates(survey_dir / "direct_shop_expansion_candidates.csv", "previous_candidate_rescore"),
+        channel_survey_rescore_candidates(existing_csv),
+        registry_rescore_candidates(source_registry),
+    )
+    for mapping in sources:
+        for candidate in mapping.values():
+            if candidate.handle in sufficiently_tracked_handles:
+                continue
+            merge_candidate(merged, candidate)
+    return sorted(merged.values(), key=lambda c: (len(c.query_hits), c.handle), reverse=True)
+
+
 def registry_handles(payload: Dict[str, object]) -> Set[str]:
     handles: Set[str] = set()
     for row in registry_sources(payload, platform="telegram", active_only=False):
@@ -823,6 +951,7 @@ def main() -> int:
     parser.add_argument("--survey-dir", default="survey_outputs", help="Survey output directory")
     parser.add_argument("--pages-per-query", type=int, default=1, help="Search pages per query")
     parser.add_argument("--max-crawl", type=int, default=220, help="Max new channels to crawl")
+    parser.add_argument("--rescore-known-limit", type=int, default=80, help="Max previously seen but unproven channels to rescore")
     parser.add_argument("--timeout", type=int, default=18, help="HTTP timeout")
     parser.add_argument("--sleep", type=float, default=0.45, help="Sleep between requests")
     args = parser.parse_args()
@@ -841,8 +970,8 @@ def main() -> int:
     source_registry = load_source_registry(registry_path)
     known_registry_handles = registry_handles(source_registry)
     all_known_handles = set(existing_handles) | known_registry_handles
-    skip_handles = set(existing_handles)
-    skip_handles.update(registry_skip_handles(source_registry))
+    sufficiently_tracked_handles = registry_skip_handles(source_registry)
+    skip_handles = set(existing_handles) | sufficiently_tracked_handles
 
     print("[1/4] Running discovery expansion...")
     discovered, search_debug = run_discovery(
@@ -858,17 +987,33 @@ def main() -> int:
     new_candidates.sort(key=lambda c: (len(c.query_hits), c.handle), reverse=True)
     if args.max_crawl > 0:
         new_candidates = new_candidates[: args.max_crawl]
-    new_candidate_count = sum(1 for candidate in new_candidates if candidate.handle not in all_known_handles)
-    known_suspect_count = len(new_candidates) - new_candidate_count
+    rescore_candidates: List[Candidate] = []
+    if args.rescore_known_limit > 0:
+        discovered_handles = {candidate.handle for candidate in new_candidates}
+        rescore_candidates = [
+            candidate
+            for candidate in known_rescore_candidates(
+                survey_dir=survey_dir,
+                existing_csv=existing_csv,
+                source_registry=source_registry,
+                sufficiently_tracked_handles=sufficiently_tracked_handles,
+            )
+            if candidate.handle not in discovered_handles
+        ][: args.rescore_known_limit]
+
+    selected_candidates = new_candidates + rescore_candidates
+    new_candidate_count = sum(1 for candidate in selected_candidates if candidate.handle not in all_known_handles)
+    known_suspect_count = len(selected_candidates) - new_candidate_count
 
     print(f"Discovered candidate handles selected for scoring: {len(new_candidates)}")
+    print(f"Previously seen unproven handles selected for rescoring: {len(rescore_candidates)}")
 
     print("[2/4] Crawling and scoring candidate channels...")
     scored: List[ChannelScore] = []
-    for idx, cand in enumerate(new_candidates, start=1):
+    for idx, cand in enumerate(selected_candidates, start=1):
         scored.append(score_channel(cand, timeout=args.timeout))
         if idx % 20 == 0:
-            print(f"  Scored {idx}/{len(new_candidates)}")
+            print(f"  Scored {idx}/{len(selected_candidates)}")
         if args.sleep > 0:
             time.sleep(args.sleep + random.random() * args.sleep * 0.4)
 
@@ -905,12 +1050,13 @@ def main() -> int:
         "existing_registry_handles": len(all_known_handles),
         "channel_survey_handles": len(existing_handles),
         "known_registry_handles": len(known_registry_handles),
-        "known_handles_skipped_as_sufficiently_tracked": len(skip_handles),
+        "known_handles_skipped_as_sufficiently_tracked": len(sufficiently_tracked_handles),
         "durable_source_registry": source_registry.get("summary", {}),
         "existing_inside_iran_likely_shop_channels": existing_inside_shop_count,
         "new_channels_discovered": new_candidate_count,
         "known_suspect_channels_rescored": known_suspect_count,
-        "channels_selected_for_scoring": len(new_candidates),
+        "previously_seen_unproven_channels_selected_for_rescoring": len(rescore_candidates),
+        "channels_selected_for_scoring": len(selected_candidates),
         "channels_scored": len(scored),
         "new_channels_retained_after_scoring": len(filtered),
         "rejection_reasons": rejection_reasons(scored),

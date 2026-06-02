@@ -297,6 +297,16 @@ def format_spread(value: Any) -> str:
     return f"{spread:+.2f}%"
 
 
+def recompute_spread(candidate: Dict[str, Any], benchmark_value: Optional[float]) -> Dict[str, Any]:
+    benchmark = to_float(benchmark_value)
+    rate = to_float(candidate.get("weighted_rate"))
+    if benchmark is None or benchmark <= 0 or rate is None:
+        return candidate
+    updated = dict(candidate)
+    updated["spread_vs_benchmark_pct"] = ((rate - benchmark) / benchmark) * 100.0
+    return updated
+
+
 def alignment_label_from_spread(value: Any) -> str:
     spread = to_float(value)
     if spread is None:
@@ -646,6 +656,7 @@ def build_regional_market_cards_payload(
     enriched_payload: Dict[str, Any],
     legacy_payload: Dict[str, Any],
     registry_payload: Optional[Dict[str, Any]] = None,
+    benchmark_value: Optional[float] = None,
 ) -> Dict[str, Any]:
     per_locality: Dict[str, List[Dict[str, Any]]] = {}
     generated_at = resolve_generated_at((regional_payload, enriched_payload, legacy_payload))
@@ -690,6 +701,7 @@ def build_regional_market_cards_payload(
         else:
             best = max(candidates, key=candidate_sort_key)
         best = apply_registry_fresh_fallback(best, locality, registry_fresh_ids)
+        best = recompute_spread(best, benchmark_value)
         cards.append(finalize_card(best, remembered_counts.get(locality)))
 
     publish_count = len([card for card in cards if card.get("display_state") == "publish"])
@@ -924,6 +936,12 @@ def parse_args() -> argparse.Namespace:
         help="Output path for regional signal timeseries artifact.",
     )
     parser.add_argument(
+        "--benchmark-json",
+        type=Path,
+        default=None,
+        help="Optional latest/benchmark JSON used to recompute spread-vs-benchmark fields.",
+    )
+    parser.add_argument(
         "--history-days",
         type=int,
         default=DEFAULT_HISTORY_DAYS,
@@ -932,14 +950,41 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def benchmark_value_from_payload(payload: Dict[str, Any]) -> Optional[float]:
+    paths = (
+        ("computed", "benchmarks", "open_market", "value"),
+        ("computed", "fix"),
+        ("benchmark_rate",),
+        ("weighted_rate",),
+    )
+    for path in paths:
+        current: Any = payload
+        for key in path:
+            if not isinstance(current, dict):
+                current = None
+                break
+            current = current.get(key)
+        parsed = to_float(current)
+        if parsed is not None and parsed > 0:
+            return parsed
+    return None
+
+
 def main() -> None:
     args = parse_args()
     regional_payload = read_json(args.regional)
     enriched_payload = read_json(args.enriched)
     legacy_payload = read_json(args.legacy)
     registry_payload = read_json(args.registry)
+    benchmark_value = benchmark_value_from_payload(read_json(args.benchmark_json)) if args.benchmark_json else None
 
-    payload = build_regional_market_cards_payload(regional_payload, enriched_payload, legacy_payload, registry_payload)
+    payload = build_regional_market_cards_payload(
+        regional_payload,
+        enriched_payload,
+        legacy_payload,
+        registry_payload,
+        benchmark_value=benchmark_value,
+    )
     write_json(args.out, payload)
     existing_history = read_json(args.history_out)
     history_payload = build_regional_history_payload(payload, existing_history, args.history_days)
