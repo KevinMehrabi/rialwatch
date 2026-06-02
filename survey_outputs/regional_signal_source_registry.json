@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-02T20:35:03Z",
+  "generated_at": "2026-06-02T21:22:37Z",
   "schema_version": 1,
   "sources": [
     {
@@ -2942,6 +2942,7 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 64.0,
       "best_quote_message_count": 16,
       "best_usable_record_count": 0,
       "city_guess": "unknown",
@@ -2954,27 +2955,32 @@
       "key": "telegram:denar_online",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 64.0,
       "last_quote_message_count": 16,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iraq"
       ],
       "origins": [
         "afghanistan_seed",
+        "channel_survey_rescore",
         "previous_candidate_registry",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/denar_online",
       "signal_families": [
+        "direct_shop_expansion",
         "regional_fx_board",
         "regional_market_signal"
       ],
       "source_kind": "regional_market_channel",
       "status": "ok",
-      "title": "ارز ساحلی بوکان"
+      "title": "ارز ساحلی بوکان",
+      "top_sample": "قیمت لحظه ای دلار 💸 🇺🇸 171500 __ #خرده #ارز_بوکان @denar_online"
     },
     {
       "best_board_message_count": 0,
@@ -3031,17 +3037,18 @@
       "handle_or_url": "dhsusdt",
       "key": "telegram:dhsusdt",
       "last_board_message_count": 0,
-      "last_buy_sell_pair_count": 0,
+      "last_buy_sell_pair_count": 6,
       "last_parseability_score": 86.0,
       "last_quote_message_count": 6,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
         "channel_survey_rescore",
         "previous_candidate_rescore",
         "previous_scored_rescore",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/dhsusdt",
@@ -3335,6 +3342,7 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 65.0,
       "best_quote_message_count": 9,
       "best_usable_record_count": 0,
       "city_guess": "unknown",
@@ -3348,30 +3356,35 @@
       "key": "telegram:dollar_sulaymaniyah",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 65.0,
       "last_quote_message_count": 9,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Herat",
         "Sulaymaniyah"
       ],
       "origins": [
+        "channel_survey_rescore",
         "existing_registry",
         "persian",
         "previous_candidate_registry",
         "source_registry",
+        "source_registry_rescore",
         "support"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/dollar_sulaymaniyah",
       "signal_families": [
+        "direct_shop_expansion",
         "regional_fx_board",
         "regional_market_signal"
       ],
       "source_kind": "regional_market_channel",
       "status": "ok",
-      "title": "قیمت لحظه ای دلار سلیمانیه"
+      "title": "قیمت لحظه ای دلار سلیمانیه",
+      "top_sample": "سلێمانی شەمە 💰 173,500 خــرید 🔵"
     },
     {
       "best_board_message_count": 15,
@@ -5503,8 +5516,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
         "site:t.me/s صرافی ایران",
@@ -6521,14 +6534,15 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
         "channel_survey_rescore",
         "previous_candidate_rescore",
         "previous_scored_rescore",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/qemat_abshoda",
@@ -6540,6 +6554,44 @@
       "status": "ok",
       "title": "\" قیمت لحظه ای ابشده \"",
       "top_sample": "💰 #آبشده_غیررسمی 78,870,000 فروش ♦️ ✨ #طلا_گرمی 18,207,212"
+    },
+    {
+      "best_board_message_count": 0,
+      "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 65.0,
+      "best_quote_message_count": 12,
+      "best_usable_record_count": 12,
+      "city_guess": "Tehran",
+      "country_guess": "Iran",
+      "country_hints": [
+        "Iran"
+      ],
+      "first_seen_at": "2026-06-02T21:22:37Z",
+      "handle_or_url": "qheimat_arz",
+      "key": "telegram:qheimat_arz",
+      "last_board_message_count": 0,
+      "last_buy_sell_pair_count": 0,
+      "last_parseability_score": 65.0,
+      "last_quote_message_count": 12,
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
+      "last_usable_record_count": 12,
+      "locality_hints": [
+        "Iran",
+        "Tehran"
+      ],
+      "origins": [
+        "site:t.me/s صرافی تهران"
+      ],
+      "platform": "telegram",
+      "public_url": "https://t.me/s/qheimat_arz",
+      "signal_families": [
+        "direct_shop_expansion"
+      ],
+      "source_kind": "exchange_shop",
+      "status": "ok",
+      "title": "قیمت نرخ ارز دلار سکه طلا ابشده سبزه میدان یورو تتر ابشده سبزه میدان پله اهنی هرات تهران صرافی حواله بانک",
+      "top_sample": "چارت ابشده جهانی تایم روزانه ابشده بازار به سقف دو هفته پیش ۳۳ میلیون رسید ولی دلار به سقف ۹۶۰۰۰ نرسید و باعث شد فعلا ابشده جهانی به سقف قبلی ۳۴ میلیون تومان نرسه. مقاومت ۳۳ میلیون و ۳۴ میلیون حمایت فعلی ۳۲۵۰۰ و ۳۱۷۰۰ و ۳۱ میلیون"
     },
     {
       "best_board_message_count": 9,
@@ -6775,8 +6827,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 56.0,
       "last_quote_message_count": 5,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
         "site:t.me صرافی",
@@ -6953,16 +7005,17 @@
       "handle_or_url": "sarafialaddin",
       "key": "telegram:sarafialaddin",
       "last_board_message_count": 0,
-      "last_buy_sell_pair_count": 0,
+      "last_buy_sell_pair_count": 10,
       "last_parseability_score": 100.0,
       "last_quote_message_count": 14,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
         "previous_scored_rescore",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/sarafialaddin",
@@ -7340,8 +7393,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 11,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Sulaymaniyah"
@@ -7352,7 +7405,8 @@
         "previous_candidate_registry",
         "previous_candidate_rescore",
         "previous_scored_rescore",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/selidol",
@@ -7368,9 +7422,10 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 18.0,
       "best_quote_message_count": 2,
       "best_usable_record_count": 0,
-      "city_guess": "unknown",
+      "city_guess": "Tehran",
       "country_guess": "Iran",
       "country_hints": [
         "Iran"
@@ -7380,8 +7435,9 @@
       "key": "telegram:sepehrexchange1",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
-      "last_quote_message_count": 2,
-      "last_seen_at": "2026-06-02T20:35:03Z",
+      "last_parseability_score": 18.0,
+      "last_quote_message_count": 0,
+      "last_seen_at": "2026-06-02T21:22:37Z",
       "last_success_at": "2026-06-02T20:35:03Z",
       "last_usable_record_count": 0,
       "locality_hints": [
@@ -7396,17 +7452,20 @@
         "iran_seed",
         "persian",
         "previous_candidate_registry",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/sepehrexchange1",
       "signal_families": [
+        "direct_shop_expansion",
         "regional_fx_board",
         "regional_market_signal"
       ],
-      "source_kind": "settlement_channel",
+      "source_kind": "exchange_shop",
       "status": "ok",
-      "title": "حواله فوری یوآن CNY 🇨🇳 RMB"
+      "title": "حواله فوری یوآن CNY 🇨🇳 RMB",
+      "top_sample": "حواله فوری یوآن CNY 🇨🇳 RMB ❌ مرکز تخصصی واریز یوآن به کلیه حساب های چین. ✅ واریز یوآن به حساب های شخصی ✅ واریز یوآن به حساب شرکت ✅ واریز یوآن به Alipay ✅ واریز یوآن به Wechat ✅ تحویل یوآن نقدی Cash گوانگژو و شانگهای ✅ واریز شهریه به حساب دانشگاه‌های چین https:"
     },
     {
       "best_board_message_count": 0,
@@ -7423,13 +7482,14 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
         "previous_scored_rescore",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/softsazir",
@@ -7440,7 +7500,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "سافت ساز",
-      "top_sample": "🔥 دانلود پروژه بیمارستان متروکه ماژولار برای آنریل انجین ✍️ این پروژه محیط شبیه‌ساز بیمارستان متروکه و آخرالزمانی است که شامل 278 مش منحصربه‌فرد باکیفیت بالا می‌شود. تمام اَست‌های (Assets) نمایش داده شده در تصاویر دمو در این پکیج قرار دارند مدل‌ها دارای سطح جز"
+      "top_sample": "⭐️ ⭐️ ⭐️ ⭐️ آموزش تکسچرینگ موجودات انسان‌ نما ✍️ این دوره از Nastasia Bois ، هنرمند ارشد تکسچر با بیش از 12 سال سابقه فعالیت در حوزه انیمیشن، تبلیغات و جلوه‌های ویژه سینمایی، به آموزش کامل فرآیند تکسچرینگ موجودات انسان‌نما برای پروژه‌های حرفه‌ای می‌پردازد. در"
     },
     {
       "best_board_message_count": 0,
@@ -7531,13 +7591,14 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 13,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
         "previous_scored_rescore",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/talar_arzi",
@@ -7565,12 +7626,15 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 46.0,
       "last_quote_message_count": 5,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
+        "previous_candidate_rescore",
+        "previous_scored_rescore",
         "site:t.me/s قیمت دلار فردوسی",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/thepersianfund",
@@ -7853,8 +7917,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-06-02T20:35:03Z",
-      "last_success_at": "2026-06-02T20:35:03Z",
+      "last_seen_at": "2026-06-02T21:22:37Z",
+      "last_success_at": "2026-06-02T21:22:37Z",
       "last_usable_record_count": 0,
       "origins": [
         "channel_survey_rescore",
@@ -7862,7 +7926,8 @@
         "previous_candidate_registry",
         "previous_candidate_rescore",
         "previous_scored_rescore",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/zarscan",
@@ -7874,7 +7939,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "زر اسکن | قیمت لحظه ای طلا و دلار",
-      "top_sample": "طلای ۱۸: ۱۸,۲۲۵,۲۰۰ تومان طلای ۱۸ (غیر رسمی): ۱۸,۶۰۴,۸۰۱ تومان طلای ۱۸ (بر اساس انس): ۱۸,۸۹۴,۸۵۵ تومان سکه امامی: ۱۸۳,۴۸۰,۰۰۰ تومان سکه بهار آزادی: ۱۸۰,۰۱۰,۰۰۰ تومان نیم سکه: ۹۴,۰۰۰,۰۰۰ تومان ربع سکه: ۵۳,۰۰۰,۰۰۰ تومان دلار بازار آزاد: ۱۷۴,۵۲۰ تومان انس طلا: ۴۴"
+      "top_sample": "طلای ۱۸: ۱۸,۲۲۵,۲۰۰ تومان طلای ۱۸ (غیر رسمی): ۱۸,۵۳۷,۴۰۱ تومان طلای ۱۸ (بر اساس انس): ۱۸,۸۸۲,۲۳۰ تومان سکه امامی: ۱۸۳,۴۸۰,۰۰۰ تومان سکه بهار آزادی: ۱۸۰,۰۱۰,۰۰۰ تومان نیم سکه: ۹۴,۰۰۰,۰۰۰ تومان ربع سکه: ۵۳,۰۰۰,۰۰۰ تومان دلار بازار آزاد: ۱۷۴,۵۲۰ تومان انس طلا: ۴۴"
     },
     {
       "best_board_message_count": 0,
@@ -7939,13 +8004,13 @@
     }
   ],
   "summary": {
-    "active_iran_sources": 91,
-    "active_sources": 190,
+    "active_iran_sources": 92,
+    "active_sources": 191,
     "sources_by_country": {
       "Afghanistan": 8,
       "Armenia": 1,
       "Germany": 8,
-      "Iran": 95,
+      "Iran": 96,
       "Iraq": 5,
       "Qatar": 1,
       "Turkey": 7,
@@ -7955,17 +8020,17 @@
     },
     "sources_by_kind": {
       "aggregator": 14,
-      "exchange_shop": 79,
+      "exchange_shop": 81,
       "regional_fx_board": 18,
       "regional_market_channel": 67,
-      "settlement_channel": 9,
+      "settlement_channel": 8,
       "unknown": 12
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 42,
+      "direct_shop_expansion": 46,
       "regional_fx_board": 149,
       "regional_market_signal": 188
     },
-    "total_sources": 199
+    "total_sources": 200
   }
 }
