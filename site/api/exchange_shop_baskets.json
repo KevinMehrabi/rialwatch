@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-02T20:27:49Z",
+  "generated_at": "2026-06-03T08:51:47Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1744500.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 15,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,48 +53,47 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1724582.92,
-      "median_rate": 1745392.35,
-      "trimmed_mean_rate": 1722573.13,
-      "spread_vs_benchmark_pct": -1.1417,
-      "usable_record_count": 73,
-      "contributing_channel_count": 12,
+      "weighted_rate": 1759669.04,
+      "median_rate": 1745172.0,
+      "trimmed_mean_rate": 1761348.15,
+      "spread_vs_benchmark_pct": 0.8695,
+      "usable_record_count": 38,
+      "contributing_channel_count": 11,
       "fresh_contributing_channel_count": 10,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
-        "uae:dxboffplan.com",
-        "uae:emeraldxe.com",
-        "uae:ezdex.net",
-        "uae:goldpricetoday.ir",
-        "uae:hiemarat.com",
-        "uae:ir-europe.com",
-        "uae:iranianuae.ae",
-        "uae:sarafyhafez.com",
-        "uae:t.me"
-      ],
-      "basket_confidence": 89.39,
-      "publishable": true,
-      "suppression_reason": "",
-      "dispersion_cv": 0.056138,
-      "top_channel_share": 0.347975,
-      "outliers_removed": 8,
-      "source_category_mix": {
-        "direct_shop": 49,
-        "settlement_exchange": 24
-      },
-      "channels": [
-        "uae:arzdigital.com",
+        "uae:bayut.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:goldpricetoday.ir",
+        "uae:hiemarat.com",
+        "uae:ir-europe.com",
+        "uae:iranianuae.ae",
+        "uae:sarafyhafez.com"
+      ],
+      "basket_confidence": 90.59,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.038284,
+      "top_channel_share": 0.346291,
+      "outliers_removed": 15,
+      "source_category_mix": {
+        "direct_shop": 21,
+        "settlement_exchange": 17
+      },
+      "channels": [
+        "uae:arzdigital.com",
+        "uae:bayut.com",
+        "uae:ciphoenix.com",
+        "uae:dxboffplan.com",
+        "uae:emeraldxe.com",
+        "uae:ezdex.net",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
         "uae:iranianuae.ae",
         "uae:sahlpardakht.com",
-        "uae:sarafyhafez.com",
-        "uae:t.me"
+        "uae:sarafyhafez.com"
       ]
     },
     {
