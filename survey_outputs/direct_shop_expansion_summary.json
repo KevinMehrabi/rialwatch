@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-03T05:58:49+00:00",
+  "generated_at": "2026-06-03T09:56:35+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
@@ -9,7 +9,7 @@
         "candidate_hits": 36
       },
       "site:t.me/s صرافی ایران": {
-        "candidate_hits": 38
+        "candidate_hits": 37
       },
       "site:t.me/s صرافی تهران": {
         "candidate_hits": 37
@@ -48,13 +48,13 @@
         "candidate_hits": 0
       },
       "sarafi telegram": {
-        "candidate_hits": 0
+        "candidate_hits": 25
       },
       "exchange telegram iran": {
-        "candidate_hits": 3
+        "candidate_hits": 9
       },
       "currency exchange iran telegram": {
-        "candidate_hits": 3
+        "candidate_hits": 0
       },
       "حواله صرافی": {
         "candidate_hits": 0
@@ -69,7 +69,7 @@
         "candidate_hits": 3
       },
       "کانال قیمت دلار تهران": {
-        "candidate_hits": 6
+        "candidate_hits": 3
       },
       "تلگرام صرافی تهران دلار": {
         "candidate_hits": 3
@@ -78,7 +78,7 @@
         "candidate_hits": 3
       },
       "site:t.me/s صرافی تهران دلار": {
-        "candidate_hits": 39
+        "candidate_hits": 40
       },
       "site:t.me/s نرخ دلار صرافی تهران": {
         "candidate_hits": 39
@@ -87,25 +87,25 @@
         "candidate_hits": 39
       },
       "site:t.me/s صرافی سبزه میدان": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی فردوسی": {
-        "candidate_hits": 38
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی منوچهری": {
-        "candidate_hits": 37
+        "candidate_hits": 0
       },
       "site:t.me/s تابلوی صرافی دلار": {
-        "candidate_hits": 38
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت لحظه ای دلار صرافی": {
-        "candidate_hits": 36
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ حواله دلار صرافی": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار فردوسی": {
-        "candidate_hits": 35
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار فردوسی": {
         "candidate_hits": 0
@@ -132,7 +132,7 @@
         "candidate_hits": 0
       },
       "site:t.me/s صرافی شیراز دلار": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی تبریز دلار": {
         "candidate_hits": 0
@@ -141,61 +141,61 @@
         "candidate_hits": 0
       }
     },
-    "successful_requests": 62,
-    "failed_requests": 30
+    "successful_requests": 49,
+    "failed_requests": 43
   },
-  "existing_registry_handles": 382,
+  "existing_registry_handles": 390,
   "channel_survey_handles": 208,
-  "known_registry_handles": 217,
-  "known_handles_skipped_as_sufficiently_tracked": 156,
+  "known_registry_handles": 226,
+  "known_handles_skipped_as_sufficiently_tracked": 164,
   "durable_source_registry": {
-    "total_sources": 220,
-    "active_sources": 208,
+    "total_sources": 231,
+    "active_sources": 217,
     "sources_by_country": {
       "Afghanistan": 8,
       "Armenia": 1,
       "Germany": 8,
-      "Iran": 107,
+      "Iran": 117,
       "Iraq": 5,
       "Qatar": 1,
-      "Turkey": 8,
+      "Turkey": 10,
       "UAE": 19,
-      "UK": 19,
-      "unknown": 44
+      "UK": 20,
+      "unknown": 42
     },
     "sources_by_kind": {
       "aggregator": 14,
-      "exchange_shop": 100,
-      "regional_fx_board": 18,
+      "exchange_shop": 108,
+      "regional_fx_board": 20,
       "regional_market_channel": 68,
       "settlement_channel": 8,
-      "unknown": 12
+      "unknown": 13
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 66,
-      "regional_fx_board": 149,
-      "regional_market_signal": 188
+      "direct_shop_expansion": 70,
+      "regional_fx_board": 170,
+      "regional_market_signal": 213
     },
-    "active_iran_sources": 100
+    "active_iran_sources": 110
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 34,
+  "new_channels_discovered": 26,
   "known_suspect_channels_rescored": 78,
   "previously_seen_unproven_channels_selected_for_rescoring": 80,
-  "channels_selected_for_scoring": 112,
-  "channels_scored": 112,
-  "new_channels_retained_after_scoring": 14,
+  "channels_selected_for_scoring": 104,
+  "channels_scored": 104,
+  "new_channels_retained_after_scoring": 17,
   "rejection_reasons": {
-    "commentary_heavy": 3,
-    "low_parseability": 2,
-    "missing_shop_identity": 7,
+    "commentary_heavy": 1,
+    "low_parseability": 1,
+    "missing_shop_identity": 8,
     "not_inside_iran_or_contactable": 5,
-    "too_few_quote_posts": 93
+    "too_few_quote_posts": 85
   },
-  "likely_direct_shop_channels": 2,
-  "inside_iran_likely_direct_shop_channels": 0,
-  "channels_with_buy_sell_quotes": 5,
-  "total_inside_iran_shop_channels_now_known": 5,
+  "likely_direct_shop_channels": 4,
+  "inside_iran_likely_direct_shop_channels": 1,
+  "channels_with_buy_sell_quotes": 3,
+  "total_inside_iran_shop_channels_now_known": 6,
   "estimated_additional_usable_records_if_ingested": 0,
   "target_progress_note": "aiming toward 80-150 usable inside-Iran dealer records"
 }
