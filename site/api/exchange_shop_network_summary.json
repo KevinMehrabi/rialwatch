@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-03T20:30:47Z",
+  "generated_at": "2026-06-04T08:31:55Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1743500.0,
-  "total_usable_records": 185,
-  "total_contributing_channels": 22,
+  "total_usable_records": 138,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 91,
+    "direct_shop": 69,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 30
+    "settlement_exchange": 5
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 49,
-      "contributing_channel_count": 12,
-      "basket_confidence": 88.29,
+      "usable_record_count": 15,
+      "contributing_channel_count": 7,
+      "basket_confidence": 96.7,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -182,17 +182,6 @@
       "from_new_p1": true
     },
     {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 18,
-      "average_quality": 80.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -215,17 +204,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:goldpricetoday.ir",
-      "title": "قیمت درهم امارات به تومان امروز 13 خرداد",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -243,29 +221,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 7,
-      "average_quality": 82.71,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:bayut.com",
-      "title": "Lower Early Settlement Fee for UAE Mortgages by Central Bank - MyBayut",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 75.57,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranianuae.ae",
-      "title": "دلار از ۱۶۵ هزار تومان و درهم از ۴۵ هزار تومان عبور کرد! — ایرانیان امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 78.14,
+      "average_quality": 86.71,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -292,28 +248,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:compareremittancerates.com",
-      "title": "Send Money from United Arab Emirates",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:dxboffplan.com",
       "title": "چنج پول در دبی 2026",
       "locality": "UAE",
@@ -336,17 +270,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:exchangerates.org.uk",
-      "title": "AED to IRR",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 94.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
@@ -365,6 +288,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 88.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranianuae.ae",
+      "title": "Iranianuae",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 82.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
