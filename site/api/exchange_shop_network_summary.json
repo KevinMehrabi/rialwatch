@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-06T08:01:03Z",
+  "generated_at": "2026-06-06T19:44:04Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1741000.0,
-  "total_usable_records": 132,
-  "total_contributing_channels": 15,
+  "benchmark_weighted_rate": 1752100.0,
+  "total_usable_records": 223,
+  "total_contributing_channels": 25,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 16,
-      "usable_records": 13,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 69,
+    "direct_shop": 117,
     "market_channel": 46,
-    "regional_market_channel": 13,
-    "settlement_exchange": 4
+    "regional_market_channel": 18,
+    "settlement_exchange": 42
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 15,
-      "contributing_channel_count": 7,
-      "basket_confidence": 96.78,
+      "usable_record_count": 68,
+      "contributing_channel_count": 13,
+      "basket_confidence": 92.1,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -138,6 +138,17 @@
   ],
   "channels": [
     {
+      "handle": "uae:t.me",
+      "title": "سقف انتقال پول به ایران از خارج + بررسی کارمزد صرافی‌ها",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 21,
+      "average_quality": 91.62,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "irancrypto",
       "title": "IranCrypto",
       "locality": "unknown",
@@ -171,6 +182,39 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:valuta.exchange",
+      "title": "USD to Iranian Rial Exchange Rate Today",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 19,
+      "average_quality": 75.84,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.28,
+      "average_freshness": 88.67,
+      "from_new_p1": true
+    },
+    {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 18,
+      "average_quality": 75.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -182,17 +226,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 13,
-      "average_quality": 84.23,
-      "average_freshness": 66.77,
-      "from_new_p1": true
-    },
-    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -201,6 +234,17 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranianuae.ae",
+      "title": "دلار از ۱۶۵ هزار تومان و درهم از ۴۵ هزار تومان عبور کرد! — ایرانیان امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 81.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -215,17 +259,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 86.71,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "iranbroker_net",
       "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
       "locality": "unknown",
@@ -237,6 +270,39 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 81.17,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:realestateclubdubai.com",
+      "title": "Iranian Investors Dubai Property 2026: Banking & Visa",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 82.67,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 73.0,
+      "average_freshness": 81.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -244,6 +310,28 @@
       "source_priority": "uae_review",
       "usable_record_count": 5,
       "average_quality": 78.8,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:cityexchangeuae.com",
+      "title": "KARAMA – City Exchange Uae",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 81.33,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:compareremittancerates.com",
+      "title": "Send Money from United Arab Emirates",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -270,13 +358,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 94.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -286,19 +374,41 @@
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 1,
+      "usable_record_count": 2,
       "average_quality": 81.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:iranianuae.ae",
-      "title": "Iranianuae",
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:agbi.com",
+      "title": "UAE moots currency swap with US if Iran impact worsens",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 82.0,
+      "average_quality": 89.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:revisiontown.com",
+      "title": "Final Settlement Calculator UAE 2026",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
