@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-06T19:44:04Z",
+  "generated_at": "2026-06-07T08:35:05Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1752100.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 15,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,52 +53,38 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1766518.64,
-      "median_rate": 1760010.0,
-      "trimmed_mean_rate": 1764412.98,
-      "spread_vs_benchmark_pct": 0.8229,
-      "usable_record_count": 68,
-      "contributing_channel_count": 13,
-      "fresh_contributing_channel_count": 13,
+      "weighted_rate": 1753341.35,
+      "median_rate": 1756005.88,
+      "trimmed_mean_rate": 1754176.14,
+      "spread_vs_benchmark_pct": 0.0708,
+      "usable_record_count": 16,
+      "contributing_channel_count": 6,
+      "fresh_contributing_channel_count": 6,
       "fresh_contributing_channels": [
-        "uae:agbi.com",
         "uae:arzdigital.com",
-        "uae:ciphoenix.com",
-        "uae:cityexchangeuae.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:hiemarat.com",
         "uae:ir-europe.com",
-        "uae:iranianuae.ae",
-        "uae:realestateclubdubai.com",
-        "uae:sahlpardakht.com",
-        "uae:t.me"
+        "uae:iranianuae.ae"
       ],
-      "basket_confidence": 92.1,
+      "basket_confidence": 96.09,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.034322,
-      "top_channel_share": 0.367549,
-      "outliers_removed": 38,
+      "dispersion_cv": 0.016903,
+      "top_channel_share": 0.3373,
+      "outliers_removed": 10,
       "source_category_mix": {
-        "direct_shop": 45,
-        "settlement_exchange": 23
+        "direct_shop": 14,
+        "settlement_exchange": 2
       },
       "channels": [
-        "uae:agbi.com",
         "uae:arzdigital.com",
-        "uae:ciphoenix.com",
-        "uae:cityexchangeuae.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:hiemarat.com",
         "uae:ir-europe.com",
-        "uae:iranianuae.ae",
-        "uae:realestateclubdubai.com",
-        "uae:sahlpardakht.com",
-        "uae:t.me"
+        "uae:iranianuae.ae"
       ]
     },
     {
