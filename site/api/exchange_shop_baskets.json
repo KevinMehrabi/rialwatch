@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-07T19:40:08Z",
+  "generated_at": "2026-06-08T08:51:23Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1778600.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 17,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,43 +53,39 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1785004.91,
-      "median_rate": 1791650.0,
-      "trimmed_mean_rate": 1790662.88,
-      "spread_vs_benchmark_pct": 0.3601,
-      "usable_record_count": 68,
-      "contributing_channel_count": 10,
-      "fresh_contributing_channel_count": 9,
+      "weighted_rate": 1781318.68,
+      "median_rate": 1786000.0,
+      "trimmed_mean_rate": 1779376.31,
+      "spread_vs_benchmark_pct": 0.1529,
+      "usable_record_count": 48,
+      "contributing_channel_count": 8,
+      "fresh_contributing_channel_count": 7,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
-        "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:hiemarat.com",
+        "uae:ir-europe.com",
         "uae:iranianuae.ae",
-        "uae:realestateclubdubai.com",
         "uae:t.me"
       ],
-      "basket_confidence": 94.23,
+      "basket_confidence": 95.47,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.023706,
-      "top_channel_share": 0.347557,
-      "outliers_removed": 19,
+      "dispersion_cv": 0.019117,
+      "top_channel_share": 0.469638,
+      "outliers_removed": 15,
       "source_category_mix": {
-        "direct_shop": 51,
-        "settlement_exchange": 17
+        "direct_shop": 39,
+        "settlement_exchange": 9
       },
       "channels": [
         "uae:arzdigital.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
-        "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:hiemarat.com",
+        "uae:ir-europe.com",
         "uae:iranianuae.ae",
-        "uae:realestateclubdubai.com",
         "uae:sahlpardakht.com",
         "uae:t.me"
       ]
