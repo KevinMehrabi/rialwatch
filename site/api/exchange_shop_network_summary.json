@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-08T08:51:23Z",
+  "generated_at": "2026-06-08T20:12:48Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1778600.0,
-  "total_usable_records": 179,
-  "total_contributing_channels": 18,
+  "benchmark_weighted_rate": 1774525.0,
+  "total_usable_records": 205,
+  "total_contributing_channels": 20,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 17,
+      "records_extracted": 20,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 95,
+    "direct_shop": 118,
     "market_channel": 46,
-    "regional_market_channel": 17,
-    "settlement_exchange": 21
+    "regional_market_channel": 18,
+    "settlement_exchange": 23
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 48,
-      "contributing_channel_count": 8,
-      "basket_confidence": 95.47,
+      "usable_record_count": 69,
+      "contributing_channel_count": 10,
+      "basket_confidence": 94.77,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -138,6 +138,17 @@
   ],
   "channels": [
     {
+      "handle": "uae:realestateclubdubai.com",
+      "title": "Iranian Investors Dubai Property 2026: Banking & Visa",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 22,
+      "average_quality": 81.55,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "irancrypto",
       "title": "IranCrypto",
       "locality": "unknown",
@@ -182,26 +193,26 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "uae:ciphoenix.com",
       "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 18,
-      "average_quality": 80.0,
+      "average_quality": 78.67,
       "average_freshness": 92.0,
       "from_new_p1": false
-    },
-    {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 17,
-      "average_quality": 92.18,
-      "average_freshness": 90.82,
-      "from_new_p1": true
     },
     {
       "handle": "irancurrency",
@@ -226,6 +237,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 81.22,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -234,17 +256,6 @@
       "usable_record_count": 7,
       "average_quality": 82.86,
       "average_freshness": 58.57,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 86.71,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -271,7 +282,7 @@
     },
     {
       "handle": "uae:cityexchangeuae.com",
-      "title": "KARAMA – City Exchange Uae",
+      "title": "City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
@@ -281,21 +292,21 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:dxboffplan.com",
       "title": "چنج پول در دبی 2026",
       "locality": "UAE",
       "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:emeraldxe.com",
+      "title": "تبدیل درهم به تومان لحظه‌ای",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
@@ -314,13 +325,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:hiemarat.com",
+      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 81.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
