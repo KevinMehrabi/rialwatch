@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-08T20:12:48Z",
+  "generated_at": "2026-06-09T08:25:44Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1774525.0,
-  "total_usable_records": 205,
-  "total_contributing_channels": 20,
+  "total_usable_records": 185,
+  "total_contributing_channels": 21,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 118,
+    "direct_shop": 96,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 23
+    "settlement_exchange": 25
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 69,
+      "usable_record_count": 50,
       "contributing_channel_count": 10,
-      "basket_confidence": 94.77,
+      "basket_confidence": 96.02,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -138,17 +138,6 @@
   ],
   "channels": [
     {
-      "handle": "uae:realestateclubdubai.com",
-      "title": "Iranian Investors Dubai Property 2026: Banking & Visa",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 22,
-      "average_quality": 81.55,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "irancrypto",
       "title": "IranCrypto",
       "locality": "unknown",
@@ -199,8 +188,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 91.56,
+      "average_freshness": 89.33,
       "from_new_p1": true
     },
     {
@@ -237,17 +226,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل دلار آمریکا به درهم امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 9,
-      "average_quality": 81.22,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -270,6 +248,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 85.17,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -282,12 +271,34 @@
     },
     {
       "handle": "uae:cityexchangeuae.com",
-      "title": "City Exchange Uae",
+      "title": "KARAMA – City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 81.33,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:compareremittancerates.com",
+      "title": "Send Money from United Arab Emirates",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
