@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-12T08:47:44Z",
+  "generated_at": "2026-06-12T19:57:58Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1802500.0,
-  "total_usable_records": 180,
-  "total_contributing_channels": 18,
+  "benchmark_weighted_rate": 1810000.0,
+  "total_usable_records": 184,
+  "total_contributing_channels": 21,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,7 +36,7 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 93,
+    "direct_shop": 97,
     "market_channel": 46,
     "regional_market_channel": 18,
     "settlement_exchange": 23
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 49,
-      "contributing_channel_count": 8,
-      "basket_confidence": 94.74,
+      "usable_record_count": 54,
+      "contributing_channel_count": 11,
+      "basket_confidence": 93.4,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,7 +177,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 20,
-      "average_quality": 85.0,
+      "average_quality": 82.75,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -188,8 +188,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 87.0,
+      "average_freshness": 76.0,
       "from_new_p1": true
     },
     {
@@ -210,7 +210,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 76.0,
+      "average_quality": 75.43,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -232,7 +232,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 10,
-      "average_quality": 85.1,
+      "average_quality": 82.3,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -270,6 +270,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranianuae.ae",
+      "title": "Iranianuae",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 76.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:cityexchangeuae.com",
       "title": "City Exchange Uae",
       "locality": "UAE",
@@ -277,28 +288,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 81.33,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranianuae.ae",
-      "title": "Iranianuae",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 76.67,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -314,6 +303,28 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 94.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 79.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
@@ -325,13 +336,35 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:idigov.com",
+      "title": "Dubai Property ROI Calculator — Yield, Appreciation & IRR",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 96.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 78.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:sarafyhafez.com",
       "title": "صرافی دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 76.0,
+      "average_quality": 72.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
