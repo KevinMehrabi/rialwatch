@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-06-13T16:48:27+00:00",
+  "generated_at": "2026-06-13T20:45:56+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
-        "candidate_hits": 32
+        "candidate_hits": 35
       },
       "site:t.me/s صرافی": {
-        "candidate_hits": 36
+        "candidate_hits": 35
       },
       "site:t.me/s صرافی ایران": {
         "candidate_hits": 38
@@ -48,10 +48,10 @@
         "candidate_hits": 0
       },
       "sarafi telegram": {
-        "candidate_hits": 0
+        "candidate_hits": 23
       },
       "exchange telegram iran": {
-        "candidate_hits": 0
+        "candidate_hits": 6
       },
       "currency exchange iran telegram": {
         "candidate_hits": 0
@@ -69,10 +69,10 @@
         "candidate_hits": 0
       },
       "کانال قیمت دلار تهران": {
-        "candidate_hits": 0
+        "candidate_hits": 7
       },
       "تلگرام صرافی تهران دلار": {
-        "candidate_hits": 0
+        "candidate_hits": 6
       },
       "تلگرام نرخ دلار صرافی": {
         "candidate_hits": 0
@@ -84,10 +84,10 @@
         "candidate_hits": 0
       },
       "site:t.me/s خرید فروش دلار تهران صرافی": {
-        "candidate_hits": 0
+        "candidate_hits": 38
       },
       "site:t.me/s صرافی سبزه میدان": {
-        "candidate_hits": 0
+        "candidate_hits": 39
       },
       "site:t.me/s صرافی فردوسی": {
         "candidate_hits": 0
@@ -105,7 +105,7 @@
         "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار فردوسی": {
-        "candidate_hits": 0
+        "candidate_hits": 34
       },
       "site:t.me/s قیمت دلار فردوسی": {
         "candidate_hits": 0
@@ -114,40 +114,40 @@
         "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار سبزه میدان": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت دلار تهران صرافی": {
         "candidate_hits": 0
       },
       "site:t.me/s خرید دلار تهران صرافی": {
-        "candidate_hits": 38
+        "candidate_hits": 39
       },
       "site:t.me/s فروش دلار تهران صرافی": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی مشهد دلار": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی اصفهان دلار": {
-        "candidate_hits": 38
+        "candidate_hits": 37
       },
       "site:t.me/s صرافی شیراز دلار": {
-        "candidate_hits": 40
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی تبریز دلار": {
-        "candidate_hits": 39
+        "candidate_hits": 0
       },
       "site:t.me/s صرافی کرج دلار": {
-        "candidate_hits": 38
+        "candidate_hits": 0
       }
     },
-    "successful_requests": 36,
-    "failed_requests": 56
+    "successful_requests": 44,
+    "failed_requests": 48
   },
   "existing_registry_handles": 488,
   "channel_survey_handles": 208,
   "known_registry_handles": 328,
-  "known_handles_skipped_as_sufficiently_tracked": 229,
+  "known_handles_skipped_as_sufficiently_tracked": 230,
   "durable_source_registry": {
     "total_sources": 329,
     "active_sources": 306,
@@ -164,9 +164,9 @@
       "unknown": 56
     },
     "sources_by_kind": {
-      "aggregator": 29,
+      "aggregator": 28,
       "exchange_shop": 159,
-      "regional_fx_board": 24,
+      "regional_fx_board": 25,
       "regional_market_channel": 90,
       "settlement_channel": 8,
       "unknown": 19
@@ -174,22 +174,22 @@
     "sources_by_signal_family": {
       "direct_shop_expansion": 104,
       "regional_fx_board": 242,
-      "regional_market_signal": 258
+      "regional_market_signal": 259
     },
     "active_iran_sources": 160
   },
   "existing_inside_iran_likely_shop_channels": 5,
-  "new_channels_discovered": 17,
+  "new_channels_discovered": 18,
   "known_suspect_channels_rescored": 82,
   "previously_seen_unproven_channels_selected_for_rescoring": 80,
-  "channels_selected_for_scoring": 99,
-  "channels_scored": 99,
+  "channels_selected_for_scoring": 100,
+  "channels_scored": 100,
   "new_channels_retained_after_scoring": 22,
   "rejection_reasons": {
-    "commentary_heavy": 2,
+    "commentary_heavy": 1,
     "missing_shop_identity": 17,
     "not_inside_iran_or_contactable": 5,
-    "too_few_quote_posts": 75
+    "too_few_quote_posts": 77
   },
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
