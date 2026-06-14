@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-13T19:26:57Z",
+  "generated_at": "2026-06-14T08:46:23Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1726975.0,
-  "total_usable_records": 144,
-  "total_contributing_channels": 15,
+  "total_usable_records": 191,
+  "total_contributing_channels": 20,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 20,
-      "usable_records": 18,
+      "records_extracted": 18,
+      "usable_records": 16,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 73,
+    "direct_shop": 102,
     "market_channel": 46,
-    "regional_market_channel": 18,
-    "settlement_exchange": 7
+    "regional_market_channel": 16,
+    "settlement_exchange": 27
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 16,
-      "contributing_channel_count": 5,
-      "basket_confidence": 97.68,
+      "usable_record_count": 52,
+      "contributing_channel_count": 9,
+      "basket_confidence": 93.31,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -138,6 +138,17 @@
   ],
   "channels": [
     {
+      "handle": "uae:t.me",
+      "title": "قیمت لحظه ای درهم امارات به تومان",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 21,
+      "average_quality": 74.86,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "irancrypto",
       "title": "IranCrypto",
       "locality": "unknown",
@@ -176,9 +187,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.56,
-      "average_freshness": 89.33,
+      "usable_record_count": 16,
+      "average_quality": 91.94,
+      "average_freshness": 90.25,
       "from_new_p1": true
     },
     {
@@ -190,6 +201,28 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 76.57,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "USD to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 12,
+      "average_quality": 83.08,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -210,7 +243,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 10,
-      "average_quality": 82.3,
+      "average_quality": 85.1,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -249,7 +282,7 @@
     },
     {
       "handle": "uae:cityexchangeuae.com",
-      "title": "KARAMA – City Exchange Uae",
+      "title": "City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
@@ -287,7 +320,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 81.0,
+      "average_quality": 83.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -299,6 +332,28 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 79.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:dxboffplan.com",
+      "title": "چنج پول در دبی 2026",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:thedailyguardian.com",
+      "title": "UAE denies reports of USD 3 billion transfer to Iran, calls claims \"false and unfounded\"",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 87.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
