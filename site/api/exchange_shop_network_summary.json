@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-15T20:33:57Z",
+  "generated_at": "2026-06-16T09:03:39Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1620000.0,
-  "total_usable_records": 190,
-  "total_contributing_channels": 25,
+  "total_usable_records": 141,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 2,
   "added_p1_candidates": [
     {
@@ -14,7 +14,7 @@
       "error": null,
       "messages_seen": 20,
       "records_extracted": 19,
-      "usable_records": 18,
+      "usable_records": 17,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 101,
+    "direct_shop": 69,
     "market_channel": 46,
-    "regional_market_channel": 18,
-    "settlement_exchange": 25
+    "regional_market_channel": 17,
+    "settlement_exchange": 9
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": true,
-      "usable_record_count": 38,
+      "usable_record_count": 37,
       "contributing_channel_count": 2,
-      "basket_confidence": 76.92,
+      "basket_confidence": 77.46,
       "suppression_reason": "",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 51,
-      "contributing_channel_count": 10,
-      "basket_confidence": 93.63,
+      "usable_record_count": 17,
+      "contributing_channel_count": 7,
+      "basket_confidence": 95.16,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,25 +171,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:t.me",
-      "title": "تبدیل درهم به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 20,
-      "average_quality": 92.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "istanbulexchange_com",
       "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "usable_record_count": 17,
+      "average_quality": 92.47,
+      "average_freshness": 91.53,
       "from_new_p1": true
     },
     {
@@ -204,17 +193,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 77.14,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -226,17 +204,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 10,
-      "average_quality": 82.3,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -245,6 +212,17 @@
       "usable_record_count": 7,
       "average_quality": 82.86,
       "average_freshness": 58.57,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به دلار آمریکا",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 7,
+      "average_quality": 86.71,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -270,46 +248,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:realestateclubdubai.com",
-      "title": "Iranian Investors Dubai Property 2026: Banking & Visa",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
-      "average_quality": 87.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:cityexchangeuae.com",
-      "title": "City Exchange Uae",
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 3,
-      "average_quality": 81.33,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:aed.exchangeconversions.com",
-      "title": "AED to IRR Charts (today, 6 months, 1 year, 5 years)",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 93.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:dxboffplan.com",
-      "title": "چنج پول در دبی 2026",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
+      "average_quality": 73.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -325,24 +270,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:exchangerates.org.uk",
-      "title": "AED to IRR",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 94.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:hiemarat.com",
       "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 81.0,
+      "average_quality": 83.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -353,18 +287,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:idigov.com",
-      "title": "Dubai Property ROI Calculator — Yield, Appreciation & IRR",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 96.0,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -386,8 +309,19 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 69.0,
+      "average_quality": 71.0,
       "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sarafyhafez.com",
+      "title": "صرافی دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 80.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -398,17 +332,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 79.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:yekrial.com",
-      "title": "قیمت درهم امارات در دبی - صرافی های ایرانی در دبی",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 85.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
