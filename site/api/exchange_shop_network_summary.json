@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-18T08:55:09Z",
+  "generated_at": "2026-06-18T20:00:36Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1592400.0,
-  "total_usable_records": 178,
-  "total_contributing_channels": 22,
+  "benchmark_weighted_rate": 1570000.0,
+  "total_usable_records": 175,
+  "total_contributing_channels": 21,
   "publishable_basket_count": 2,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 17,
-      "usable_records": 15,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 94,
+    "direct_shop": 85,
     "market_channel": 46,
-    "regional_market_channel": 15,
-    "settlement_exchange": 23
+    "regional_market_channel": 18,
+    "settlement_exchange": 26
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": true,
-      "usable_record_count": 35,
+      "usable_record_count": 38,
       "contributing_channel_count": 2,
-      "basket_confidence": 79.05,
+      "basket_confidence": 79.09,
       "suppression_reason": "",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 36,
+      "usable_record_count": 32,
       "contributing_channel_count": 8,
-      "basket_confidence": 97.46,
+      "basket_confidence": 97.06,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -176,10 +176,21 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 17,
-      "average_quality": 92.24,
+      "usable_record_count": 19,
+      "average_quality": 92.16,
       "average_freshness": 92.0,
       "from_new_p1": false
+    },
+    {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
+      "from_new_p1": true
     },
     {
       "handle": "irancurrency",
@@ -193,24 +204,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 15,
-      "average_quality": 92.33,
-      "average_freshness": 91.2,
-      "from_new_p1": true
-    },
-    {
       "handle": "uae:ciphoenix.com",
       "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 76.57,
+      "average_quality": 76.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -223,17 +223,6 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 11,
-      "average_quality": 83.91,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -259,6 +248,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 73.0,
+      "average_freshness": 81.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -281,17 +281,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:emeraldxe.com",
       "title": "تبدیل درهم به تومان لحظه‌ای",
       "locality": "UAE",
@@ -303,24 +292,35 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:exchangerates.org.uk",
-      "title": "AED to IRR",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 94.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sarafyhafez.com",
+      "title": "صرافی دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 78.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:economictimes.indiatimes.com",
+      "title": "UAE denies reports of $3 billion transfer to Iran, calls claims \"false and unfounded\" - The Economic Times",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 94.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -331,7 +331,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 88.0,
+      "average_quality": 84.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -358,24 +358,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:iranintl.com",
-      "title": "Rapid deterioration of Iran-UAE ties threatens a critical trade lifeline",
+      "handle": "uae:revisiontown.com",
+      "title": "Final Settlement Calculator UAE 2026",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 69.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sarafyhafez.com",
-      "title": "صرافی دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 76.0,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
