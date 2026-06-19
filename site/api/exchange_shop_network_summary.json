@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-18T20:00:36Z",
+  "generated_at": "2026-06-19T09:02:29Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1570000.0,
-  "total_usable_records": 175,
-  "total_contributing_channels": 21,
+  "total_usable_records": 187,
+  "total_contributing_channels": 25,
   "publishable_basket_count": 2,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 85,
+    "direct_shop": 100,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 26
+    "settlement_exchange": 23
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 32,
-      "contributing_channel_count": 8,
-      "basket_confidence": 97.06,
+      "usable_record_count": 51,
+      "contributing_channel_count": 12,
+      "basket_confidence": 92.15,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -226,6 +226,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به دلار آمریکا",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 10,
+      "average_quality": 85.1,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -248,17 +259,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 73.0,
-      "average_freshness": 81.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -266,6 +266,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 5,
       "average_quality": 78.8,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:cityexchangeuae.com",
+      "title": "KARAMA – City Exchange Uae",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 81.33,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -292,13 +303,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 94.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -314,14 +336,25 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:economictimes.indiatimes.com",
-      "title": "UAE denies reports of $3 billion transfer to Iran, calls claims \"false and unfounded\" - The Economic Times",
+      "handle": "uae:valuta.exchange",
+      "title": "AED to Iranian Rial Exchange Rate Today",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:amanatxe.com",
+      "title": "انتقال پول به دبی با صرافی ایرانی دبی حواله درهم - صرافی امانت",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 94.0,
-      "average_freshness": 92.0,
+      "average_quality": 70.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -358,13 +391,24 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:revisiontown.com",
-      "title": "Final Settlement Calculator UAE 2026",
+      "handle": "uae:thearabianpost.com",
+      "title": "UAE rejects Iran funds transfer claims — Arabian Post",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:yahoo.com",
+      "title": "Exclusive-UAE to unlock billions of dollars for Iran, sources say",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 79.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
