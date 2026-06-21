@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-20T19:32:26Z",
+  "generated_at": "2026-06-21T08:46:11Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1618250.0,
-  "total_usable_records": 187,
+  "total_usable_records": 195,
   "total_contributing_channels": 21,
   "publishable_basket_count": 2,
   "added_p1_candidates": [
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 18,
+      "records_extracted": 17,
+      "usable_records": 15,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 111,
+    "direct_shop": 108,
     "market_channel": 46,
-    "regional_market_channel": 18,
-    "settlement_exchange": 12
+    "regional_market_channel": 15,
+    "settlement_exchange": 26
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": true,
-      "usable_record_count": 38,
+      "usable_record_count": 35,
       "contributing_channel_count": 2,
-      "basket_confidence": 77.01,
+      "basket_confidence": 77.7,
       "suppression_reason": "",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 55,
+      "usable_record_count": 53,
       "contributing_channel_count": 8,
-      "basket_confidence": 97.25,
+      "basket_confidence": 97.71,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -143,8 +143,8 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 36,
-      "average_quality": 92.03,
+      "usable_record_count": 35,
+      "average_quality": 91.23,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -182,17 +182,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.56,
-      "average_freshness": 89.33,
-      "from_new_p1": true
-    },
-    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -201,6 +190,28 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
+      "from_new_p1": false
+    },
+    {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 15,
+      "average_quality": 92.67,
+      "average_freshness": 92.0,
+      "from_new_p1": true
+    },
+    {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 76.57,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -216,12 +227,12 @@
     },
     {
       "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به تومان",
+      "title": "تبدیل درهم امارات به دلار آمریکا",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 10,
-      "average_quality": 82.3,
+      "usable_record_count": 8,
+      "average_quality": 82.38,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -281,6 +292,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:emeraldxe.com",
       "title": "تبدیل درهم به تومان لحظه‌ای",
       "locality": "UAE",
@@ -303,24 +325,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:hiemarat.com",
-      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 81.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -336,24 +347,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:idigov.com",
-      "title": "Dubai Property ROI Calculator — Yield, Appreciation & IRR",
+      "handle": "uae:revisiontown.com",
+      "title": "Final Settlement Calculator UAE 2026",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 96.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:yahoo.com",
-      "title": "Exclusive-UAE to unlock billions of dollars for Iran, sources say",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 79.0,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
