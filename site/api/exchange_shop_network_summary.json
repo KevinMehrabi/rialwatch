@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-22T09:12:46Z",
+  "generated_at": "2026-06-22T20:20:47Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1593000.0,
-  "total_usable_records": 191,
-  "total_contributing_channels": 22,
+  "benchmark_weighted_rate": 1585000.0,
+  "total_usable_records": 201,
+  "total_contributing_channels": 23,
   "publishable_basket_count": 2,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 17,
-      "usable_records": 16,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 102,
+    "direct_shop": 108,
     "market_channel": 46,
-    "regional_market_channel": 16,
-    "settlement_exchange": 27
+    "regional_market_channel": 18,
+    "settlement_exchange": 29
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": true,
-      "usable_record_count": 36,
+      "usable_record_count": 38,
       "contributing_channel_count": 2,
-      "basket_confidence": 78.13,
+      "basket_confidence": 77.51,
       "suppression_reason": "",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 49,
+      "usable_record_count": 55,
       "contributing_channel_count": 9,
-      "basket_confidence": 96.61,
+      "basket_confidence": 96.26,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,13 +171,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:iranbroker.com",
-      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "handle": "uae:t.me",
+      "title": "حواله درهم امارات ؛ روش‌های انتقال پول بین ایران و دبی با صرافی حامی پرداخت",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 17,
-      "average_quality": 77.47,
+      "usable_record_count": 20,
+      "average_quality": 92.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -187,10 +187,21 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 16,
-      "average_quality": 93.5,
-      "average_freshness": 94.0,
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
+    },
+    {
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 17,
+      "average_quality": 76.94,
+      "average_freshness": 92.0,
+      "from_new_p1": false
     },
     {
       "handle": "irancurrency",
@@ -210,18 +221,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 76.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:t.me",
-      "title": "قیمت درهم امارات امروز",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 89.57,
+      "average_quality": 75.43,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -248,17 +248,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 83.57,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "iranbroker_net",
       "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
       "locality": "unknown",
@@ -267,6 +256,17 @@
       "usable_record_count": 6,
       "average_quality": 83.0,
       "average_freshness": 62.33,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 79.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -287,7 +287,18 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
-      "average_quality": 81.25,
+      "average_quality": 79.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:bayut.com",
+      "title": "Money Transfer Services in Dubai: Western Union, Paypal & More - MyBayut",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -342,7 +353,18 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:yahoo.com",
+      "title": "Exclusive-UAE to unlock billions of dollars for Iran, sources say",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 82.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -354,17 +376,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:yahoo.com",
-      "title": "Exclusive-UAE to unlock billions of dollars for Iran, sources say",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 79.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
