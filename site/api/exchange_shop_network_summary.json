@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-22T20:20:47Z",
+  "generated_at": "2026-06-23T08:27:39Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1585000.0,
-  "total_usable_records": 201,
-  "total_contributing_channels": 23,
+  "total_usable_records": 174,
+  "total_contributing_channels": 21,
   "publishable_basket_count": 2,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 18,
+      "records_extracted": 17,
+      "usable_records": 15,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,9 +36,9 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 108,
+    "direct_shop": 84,
     "market_channel": 46,
-    "regional_market_channel": 18,
+    "regional_market_channel": 15,
     "settlement_exchange": 29
   },
   "locality_internal_status": {
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": true,
-      "usable_record_count": 38,
+      "usable_record_count": 35,
       "contributing_channel_count": 2,
-      "basket_confidence": 77.51,
+      "basket_confidence": 77.91,
       "suppression_reason": "",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 55,
-      "contributing_channel_count": 9,
-      "basket_confidence": 96.26,
+      "usable_record_count": 50,
+      "contributing_channel_count": 13,
+      "basket_confidence": 86.8,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,35 +171,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:t.me",
-      "title": "حواله درهم امارات ؛ روش‌های انتقال پول بین ایران و دبی با صرافی حامی پرداخت",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 20,
-      "average_quality": 92.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
-      "from_new_p1": true
-    },
-    {
       "handle": "uae:iranbroker.com",
       "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 17,
-      "average_quality": 76.94,
+      "average_quality": 77.47,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -213,6 +191,17 @@
       "average_quality": 81.07,
       "average_freshness": 79.47,
       "from_new_p1": false
+    },
+    {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 15,
+      "average_quality": 91.67,
+      "average_freshness": 89.6,
+      "from_new_p1": true
     },
     {
       "handle": "uae:ciphoenix.com",
@@ -260,12 +249,12 @@
     },
     {
       "handle": "uae:arzdigital.com",
-      "title": "تبدیل دلار آمریکا به درهم امارات",
+      "title": "تبدیل درهم امارات به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 5,
-      "average_quality": 79.0,
+      "average_quality": 83.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -277,28 +266,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 5,
       "average_quality": 78.8,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:hiemarat.com",
-      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
-      "average_quality": 79.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:bayut.com",
-      "title": "Money Transfer Services in Dubai: Western Union, Paypal & More - MyBayut",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -322,6 +289,17 @@
       "usable_record_count": 3,
       "average_quality": 74.0,
       "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -380,13 +358,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:yekrial.com",
-      "title": "قیمت درهم امارات در دبی - صرافی های ایرانی در دبی",
+      "handle": "uae:revisiontown.com",
+      "title": "Final Settlement Calculator UAE 2026",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 85.0,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
