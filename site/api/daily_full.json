@@ -4285,6 +4285,44 @@
         "selected_attempt_file": "intraday/2026-06-24/14-15-45.json",
         "selection_scope": "publication_window"
       }
+    },
+    {
+      "date": "2026-06-25",
+      "as_of": "2026-06-25T15:20:20Z",
+      "revision": 0,
+      "street_usd_irr": 1662250.0,
+      "p25": 1658375.0,
+      "p75": 1666125.0,
+      "dispersion": 0.0046623552413896825,
+      "status": "Green",
+      "withheld": false,
+      "withhold_reasons": [],
+      "source_count": 2,
+      "source_medians": {
+        "bonbast": 1654500.0,
+        "navasan": 1670000.0
+      },
+      "source_units": {
+        "bonbast": "toman",
+        "navasan": "mixed"
+      },
+      "official_commercial_usd_irr": 1461385.0,
+      "regional_transfer_usd_irr": 1711300.0,
+      "crypto_usdt_irr": 1676500.0,
+      "emami_coin_irr": 1630000000.0,
+      "gold_implied_usd_irr": 2312056.7375886524,
+      "street_official_gap_pct": 13.744837944826314,
+      "street_transfer_gap_pct": -2.8662420382165608,
+      "street_crypto_gap_pct": 0.8572717701910062,
+      "street_gold_gap_pct": 39.09199805015205,
+      "official_commercial_trend_7d": 0.37329578625639614,
+      "methodology_fingerprint": "d4621c83d176",
+      "publication_selection": {
+        "rule": "prefer latest valid intraday attempt in publication window; repair from latest valid same-day intraday read when no window-valid attempt exists",
+        "selected_collected_at": "2026-06-25T14:15:28Z",
+        "selected_attempt_file": "intraday/2026-06-25/14-15-28.json",
+        "selection_scope": "publication_window"
+      }
     }
   ]
 }
