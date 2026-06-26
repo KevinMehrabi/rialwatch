@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-25T19:49:43Z",
+  "generated_at": "2026-06-26T08:25:52Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1662250.0,
-  "total_usable_records": 153,
-  "total_contributing_channels": 17,
+  "total_usable_records": 176,
+  "total_contributing_channels": 20,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 77,
+    "direct_shop": 106,
     "market_channel": 46,
     "regional_market_channel": 13,
-    "settlement_exchange": 17
+    "settlement_exchange": 11
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 30,
-      "contributing_channel_count": 7,
-      "basket_confidence": 93.1,
+      "usable_record_count": 52,
+      "contributing_channel_count": 8,
+      "basket_confidence": 96.91,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,6 +171,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:t.me",
+      "title": "قیمت درهم امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 17,
+      "average_quality": 83.76,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -182,13 +193,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 74.43,
+      "usable_record_count": 15,
+      "average_quality": 76.07,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -199,8 +210,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 13,
-      "average_quality": 89.77,
-      "average_freshness": 84.31,
+      "average_quality": 89.46,
+      "average_freshness": 83.38,
       "from_new_p1": true
     },
     {
@@ -220,8 +231,8 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 79.88,
+      "usable_record_count": 10,
+      "average_quality": 81.3,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -265,7 +276,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
-      "average_quality": 79.0,
+      "average_quality": 79.25,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -303,6 +314,28 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 79.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 94.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:iranianuae.ae",
       "title": "Iranianuae",
       "locality": "UAE",
@@ -314,13 +347,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:yahoo.com",
-      "title": "Exclusive-UAE to unlock billions of dollars for Iran, sources say",
+      "handle": "uae:sarafyhafez.com",
+      "title": "صرافی دبی",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 80.0,
+      "average_quality": 70.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
