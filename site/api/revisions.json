@@ -3351,6 +3351,38 @@
         "delta_vs_previous_day": 16500.0,
         "delta_pct_vs_previous_day": 1.0025824092359108
       }
+    },
+    {
+      "date": "2026-06-26",
+      "as_of": "2026-06-26T15:14:07Z",
+      "revision": 0,
+      "revision_reason": null,
+      "revised_at": null,
+      "original_as_of": "2026-06-26T15:14:07Z",
+      "original_publication_selection": {
+        "rule": "prefer latest valid intraday attempt in publication window; repair from latest valid same-day intraday read when no window-valid attempt exists",
+        "selection_scope": "publication_window",
+        "window_utc": {
+          "start": "13:45",
+          "end": "14:15"
+        },
+        "candidate_count": 4,
+        "valid_candidate_count": 3,
+        "same_day_candidate_count": 6,
+        "valid_same_day_candidate_count": 5,
+        "selected_collected_at": "2026-06-26T14:15:25Z",
+        "latest_candidate_collected_at": "2026-06-26T14:15:25Z",
+        "selected_attempt_file": "intraday/2026-06-26/14-15-25.json",
+        "selected_valid": true,
+        "used_fallback": false,
+        "basis_label": "Selected from intraday publication window",
+        "selection_reason": "latest valid intraday attempt in publication window",
+        "street_source_count_used": 2,
+        "same_as_previous_day": true,
+        "previous_day_fix": 1662250.0,
+        "delta_vs_previous_day": 0.0,
+        "delta_pct_vs_previous_day": 0.0
+      }
     }
   ]
 }
