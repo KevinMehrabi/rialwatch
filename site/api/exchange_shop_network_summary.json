@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-27T08:11:10Z",
+  "generated_at": "2026-06-27T19:26:08Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1662250.0,
-  "total_usable_records": 170,
-  "total_contributing_channels": 19,
+  "benchmark_weighted_rate": 1667000.0,
+  "total_usable_records": 180,
+  "total_contributing_channels": 20,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 14,
-      "usable_records": 11,
+      "records_extracted": 16,
+      "usable_records": 13,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 90,
+    "direct_shop": 100,
     "market_channel": 46,
-    "regional_market_channel": 11,
-    "settlement_exchange": 23
+    "regional_market_channel": 13,
+    "settlement_exchange": 21
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 47,
+      "usable_record_count": 53,
       "contributing_channel_count": 10,
-      "basket_confidence": 93.24,
+      "basket_confidence": 94.7,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -182,24 +182,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 73.43,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:iranbroker.com",
       "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 15,
-      "average_quality": 76.07,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 74.43,
+      "average_quality": 75.57,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -209,10 +209,21 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 11,
-      "average_quality": 87.27,
-      "average_freshness": 76.36,
+      "usable_record_count": 13,
+      "average_quality": 90.85,
+      "average_freshness": 87.23,
       "from_new_p1": true
+    },
+    {
+      "handle": "uae:t.me",
+      "title": "قیمت درهم امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 12,
+      "average_quality": 87.83,
+      "average_freshness": 92.0,
+      "from_new_p1": false
     },
     {
       "handle": "navasanchannel",
@@ -232,7 +243,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 82.38,
+      "average_quality": 79.88,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -270,19 +281,8 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:hiemarat.com",
-      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
-      "average_quality": 79.25,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:cityexchangeuae.com",
-      "title": "City Exchange Uae",
+      "title": "KARAMA – City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
@@ -303,14 +303,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "handle": "uae:borodubai.com",
+      "title": "نمودار نرخ لحظه ای درهم امارات",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 73.0,
-      "average_freshness": 70.0,
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -325,13 +325,24 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 94.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 81.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
