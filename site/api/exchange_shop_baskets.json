@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-06-26T19:40:34Z",
+  "generated_at": "2026-06-27T08:11:10Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1662250.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 13,
+      "outliers_removed": 11,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,15 +53,16 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1656121.07,
-      "median_rate": 1661913.59,
-      "trimmed_mean_rate": 1654784.22,
-      "spread_vs_benchmark_pct": -0.3687,
-      "usable_record_count": 36,
-      "contributing_channel_count": 9,
-      "fresh_contributing_channel_count": 8,
+      "weighted_rate": 1677635.34,
+      "median_rate": 1663680.0,
+      "trimmed_mean_rate": 1676771.02,
+      "spread_vs_benchmark_pct": 0.9256,
+      "usable_record_count": 47,
+      "contributing_channel_count": 10,
+      "fresh_contributing_channel_count": 9,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
+        "uae:ciphoenix.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
@@ -70,18 +71,19 @@
         "uae:iranbroker.com",
         "uae:iranianuae.ae"
       ],
-      "basket_confidence": 95.54,
+      "basket_confidence": 93.24,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.017473,
-      "top_channel_share": 0.330694,
-      "outliers_removed": 22,
+      "dispersion_cv": 0.028452,
+      "top_channel_share": 0.317405,
+      "outliers_removed": 13,
       "source_category_mix": {
-        "direct_shop": 30,
-        "settlement_exchange": 6
+        "direct_shop": 34,
+        "settlement_exchange": 13
       },
       "channels": [
         "uae:arzdigital.com",
+        "uae:ciphoenix.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",

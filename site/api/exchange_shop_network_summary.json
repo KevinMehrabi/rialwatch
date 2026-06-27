@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-26T19:40:34Z",
+  "generated_at": "2026-06-27T08:11:10Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1662250.0,
   "total_usable_records": 170,
-  "total_contributing_channels": 21,
+  "total_contributing_channels": 19,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 16,
-      "usable_records": 13,
+      "records_extracted": 14,
+      "usable_records": 11,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 93,
+    "direct_shop": 90,
     "market_channel": 46,
-    "regional_market_channel": 13,
-    "settlement_exchange": 18
+    "regional_market_channel": 11,
+    "settlement_exchange": 23
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 36,
-      "contributing_channel_count": 9,
-      "basket_confidence": 95.54,
+      "usable_record_count": 47,
+      "contributing_channel_count": 10,
+      "basket_confidence": 93.24,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -187,8 +187,19 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
+      "usable_record_count": 15,
+      "average_quality": 76.07,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 75.57,
+      "average_quality": 74.43,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -198,9 +209,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 13,
-      "average_quality": 86.08,
-      "average_freshness": 72.92,
+      "usable_record_count": 11,
+      "average_quality": 87.27,
+      "average_freshness": 76.36,
       "from_new_p1": true
     },
     {
@@ -215,24 +226,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:exchangerates.org.uk",
-      "title": "USD to IRR",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 11,
-      "average_quality": 82.27,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:arzdigital.com",
       "title": "تبدیل درهم امارات به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 79.88,
+      "average_quality": 82.38,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -276,7 +276,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
-      "average_quality": 79.0,
+      "average_quality": 79.25,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -331,7 +331,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -343,28 +343,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:revisiontown.com",
-      "title": "Final Settlement Calculator UAE 2026",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sarafyhafez.com",
-      "title": "صرافی دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 70.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
