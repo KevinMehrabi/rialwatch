@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-28T08:23:05Z",
+  "generated_at": "2026-06-28T19:23:29Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1667000.0,
-  "total_usable_records": 173,
-  "total_contributing_channels": 20,
+  "benchmark_weighted_rate": 1720000.0,
+  "total_usable_records": 156,
+  "total_contributing_channels": 19,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 89,
+    "direct_shop": 76,
     "market_channel": 46,
     "regional_market_channel": 13,
-    "settlement_exchange": 25
+    "settlement_exchange": 21
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 49,
-      "contributing_channel_count": 10,
-      "basket_confidence": 92.99,
+      "usable_record_count": 27,
+      "contributing_channel_count": 8,
+      "basket_confidence": 95.98,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -182,17 +182,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:iranbroker.com",
-      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 15,
-      "average_quality": 76.07,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ciphoenix.com",
       "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
       "locality": "UAE",
@@ -227,12 +216,12 @@
     },
     {
       "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به تومان",
+      "title": "تبدیل دلار آمریکا به درهم امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 82.38,
+      "average_quality": 79.88,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -276,13 +265,13 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
-      "average_quality": 81.25,
+      "average_quality": 79.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
       "handle": "uae:cityexchangeuae.com",
-      "title": "KARAMA – City Exchange Uae",
+      "title": "City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
@@ -292,21 +281,21 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:dxboffplan.com",
-      "title": "چنج پول در دبی 2026",
+      "handle": "uae:borodubai.com",
+      "title": "نمودار نرخ لحظه ای درهم امارات",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 3,
+      "usable_record_count": 2,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:borodubai.com",
-      "title": "نمودار نرخ لحظه ای درهم امارات",
+      "handle": "uae:dxboffplan.com",
+      "title": "چنج پول در دبی 2026",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
@@ -336,17 +325,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 79.5,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:iranianuae.ae",
       "title": "Iranianuae",
       "locality": "UAE",
@@ -354,6 +332,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:yekrial.com",
+      "title": "قیمت درهم امارات در دبی - صرافی های ایرانی در دبی",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 85.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
