@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-06-27T19:26:05Z",
-  "new_board_channels_discovered": 186,
+  "generated_at": "2026-06-28T08:23:03Z",
+  "new_board_channels_discovered": 196,
   "channels_with_dubai_quotes": [
     "aghadolar",
     "aksoygold",
@@ -11,12 +11,13 @@
     "cny_alipay",
     "donyajewellery",
     "dornareport",
+    "esfahanahan_export",
     "exchangeratescountries",
     "fardaei_tehran",
-    "gold_mesghal",
     "iranian_uae",
     "lubrinol",
     "moneytransfersarafi",
+    "navasan_public_currency_board",
     "navasanchannel",
     "nerkh_uk",
     "nerkhsarafionline",
@@ -38,18 +39,20 @@
     "gold_mesghal",
     "haratdollar",
     "herat_tomen",
+    "navasanchannel",
     "tomandollar110",
     "turan_ex"
   ],
   "channels_with_sulaymaniyah_quotes": [
     "aghadolar",
-    "arz_tala_online",
     "bonbast_tehran_harat",
     "borsakurdstan",
     "dollariraqi",
+    "esfahanahan_export",
     "exchangeratescountries",
     "iranianerbil2",
     "moneytransfersarafi",
+    "navasan_public_currency_board",
     "nerkh_uk",
     "nerkhsarafionline",
     "sarafionline7groupuk",
@@ -70,10 +73,8 @@
     "bistifx",
     "bonbast_tehran_harat",
     "boonbas",
-    "cny_alipay",
     "do_l4",
     "dolareseleimani",
-    "dolarmashad",
     "dolarrates",
     "dolarsaghez",
     "dollar_tehran3bze",
@@ -89,6 +90,7 @@
     "irancurrency",
     "iranianerbil2",
     "mellalex",
+    "navasan_public_currency_board",
     "pargarexchangegroup",
     "sabzemaidan",
     "tahran_sabza",
@@ -97,6 +99,7 @@
   "channels_with_turkey_quotes": [
     "aghadolar",
     "aghayebazar_official",
+    "alanchandcom",
     "ankaraexchange",
     "arianarates",
     "arz_tala_online",
@@ -109,9 +112,10 @@
     "dolarrates",
     "donyajewellery",
     "eligashtco",
+    "esfahanahan_export",
     "exchangeratescountries",
-    "gold_mesghal",
     "moneytransfersarafi",
+    "navasan_public_currency_board",
     "navasanchannel",
     "nerkh_uk",
     "nerkhsarafionline",
@@ -122,6 +126,7 @@
   "channels_with_uk_quotes": [
     "abanpardakht",
     "aghayebazar_official",
+    "alanchandcom",
     "arz_tala_online",
     "arzchande",
     "arzmash",
@@ -130,10 +135,12 @@
     "danielexchange",
     "donyajewellery",
     "emroz_chand",
+    "esfahanahan_export",
     "exchangeratescountries",
     "groupsarafilondonuk",
     "hmbcexchangebureau",
     "moneytransfersarafi",
+    "navasan_public_currency_board",
     "navasanchannel",
     "nerkh_uk",
     "nerkhsarafionline",
@@ -152,13 +159,16 @@
     "hamburg_euro",
     "helfenads",
     "hmtransfer",
-    "koln_euro"
+    "koln_euro",
+    "navasan_public_currency_board"
   ],
   "channels_with_qatar_quotes": [
     "aghadolar",
     "donyajewellery",
+    "esfahanahan_export",
     "exchangeratescountries",
     "moneytransfersarafi",
+    "navasan_public_currency_board",
     "nerkh_uk",
     "nerkhsarafionline",
     "sarafionline7groupuk",
@@ -170,8 +180,10 @@
     "amd_official_channel",
     "amdfarsi",
     "donyajewellery",
+    "esfahanahan_export",
     "exchangeratescountries",
     "moneytransfersarafi",
+    "navasan_public_currency_board",
     "nerkh_uk",
     "nerkhsarafionline",
     "sarafionline7groupuk",
@@ -195,38 +207,38 @@
   "qatar_display_state": "publish",
   "armenia_display_state": "publish",
   "source_registry": {
-    "total_sources": 383,
-    "active_sources": 355,
+    "total_sources": 386,
+    "active_sources": 358,
     "sources_by_country": {
       "Afghanistan": 10,
       "Armenia": 4,
       "Germany": 12,
-      "Iran": 201,
+      "Iran": 202,
       "Iraq": 10,
       "Qatar": 1,
       "Turkey": 12,
-      "UAE": 31,
+      "UAE": 32,
       "UK": 36,
-      "unknown": 66
+      "unknown": 67
     },
     "sources_by_kind": {
       "aggregator": 36,
-      "exchange_shop": 189,
-      "regional_fx_board": 42,
-      "regional_market_channel": 88,
+      "exchange_shop": 192,
+      "regional_fx_board": 39,
+      "regional_market_channel": 91,
       "settlement_channel": 8,
       "unknown": 20
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 127,
-      "regional_fx_board": 279,
-      "regional_market_signal": 273
+      "direct_shop_expansion": 128,
+      "regional_fx_board": 281,
+      "regional_market_signal": 274
     },
-    "active_iran_sources": 190
+    "active_iran_sources": 191
   },
   "search_debug": {
-    "successful_search_requests": 132,
-    "failed_search_requests": 494,
+    "successful_search_requests": 120,
+    "failed_search_requests": 506,
     "query_stats": {
       "site:t.me دلار دبی": {
         "group": "persian",
@@ -386,11 +398,11 @@
       },
       "site:t.me/s دلار قم": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me نرخ دلار قم": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me/s نرخ دلار قم": {
         "group": "persian",
@@ -454,7 +466,7 @@
       },
       "site:t.me سلیمانیه دلار": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me/s سلیمانیه دلار": {
         "group": "persian",
@@ -466,7 +478,7 @@
       },
       "site:t.me بازار ارز سلیمانیه": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me دلار اربیل": {
         "group": "persian",
@@ -494,7 +506,7 @@
       },
       "site:t.me نرخ دلار بغداد": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 12
       },
       "site:t.me بازار ارز بغداد": {
         "group": "persian",
@@ -518,7 +530,7 @@
       },
       "site:t.me دلار استانبول": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s دلار استانبول": {
         "group": "persian",
@@ -550,11 +562,11 @@
       },
       "site:t.me دلار آنکارا": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me/s دلار آنکارا": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me دلار ازمیر": {
         "group": "persian",
@@ -586,7 +598,7 @@
       },
       "site:t.me/s دلار هامبورگ": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me نرخ دلار هامبورگ": {
         "group": "persian",
@@ -602,7 +614,7 @@
       },
       "site:t.me/s دلار برلین": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me نرخ دلار آلمان": {
         "group": "persian",
@@ -614,7 +626,7 @@
       },
       "site:t.me صرافی فرانکفورت": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 12
       },
       "site:t.me/s صرافی فرانکفورت": {
         "group": "persian",
@@ -654,7 +666,7 @@
       },
       "site:t.me حواله بانکی آلمان": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s حواله بانکی آلمان": {
         "group": "persian",
@@ -690,7 +702,7 @@
       },
       "site:t.me/s دوسلدورف یورو": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 9
       },
       "site:t.me دلار لندن": {
         "group": "persian",
@@ -714,7 +726,7 @@
       },
       "site:t.me/s بازار ارز لندن": {
         "group": "persian",
-        "candidate_hits": 12
+        "candidate_hits": 0
       },
       "site:t.me دلار انگلیس": {
         "group": "persian",
@@ -754,7 +766,7 @@
       },
       "site:t.me/s نرخ پوند انگلیس": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me صرافی لندن پوند": {
         "group": "persian",
@@ -778,7 +790,7 @@
       },
       "site:t.me/s حواله انگلستان": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me ریال قطر تومان": {
         "group": "persian",
@@ -794,7 +806,7 @@
       },
       "site:t.me/s نرخ ریال قطر": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me حواله قطر": {
         "group": "persian",
@@ -814,7 +826,7 @@
       },
       "site:t.me درام ارمنستان تومان": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s درام ارمنستان تومان": {
         "group": "persian",
@@ -842,7 +854,7 @@
       },
       "site:t.me/s ایروان دلار تومان": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me دلار تهران": {
         "group": "persian",
@@ -854,11 +866,11 @@
       },
       "site:t.me نرخ دلار تهران": {
         "group": "persian",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me بازار ارز تهران": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me نرخ دلار لحظه ای": {
         "group": "persian",
@@ -866,7 +878,7 @@
       },
       "site:t.me قیمت دلار امروز": {
         "group": "persian",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me تابلو دلار": {
         "group": "persian",
@@ -922,7 +934,7 @@
       },
       "tehran dollar telegram iran": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 2
       },
       "mashhad dollar telegram iran": {
         "group": "support",
@@ -934,7 +946,7 @@
       },
       "shiraz dollar telegram iran": {
         "group": "support",
-        "candidate_hits": 2
+        "candidate_hits": 0
       },
       "tabriz dollar telegram iran": {
         "group": "support",
@@ -958,7 +970,7 @@
       },
       "herat kabul dollar telegram": {
         "group": "support",
-        "candidate_hits": 2
+        "candidate_hits": 0
       },
       "mazar dollar telegram": {
         "group": "support",
@@ -966,7 +978,7 @@
       },
       "jalalabad dollar telegram": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 7
       },
       "afghan exchange telegram iran": {
         "group": "support",
@@ -998,11 +1010,11 @@
       },
       "ankara dollar telegram iran": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 2
       },
       "izmir dollar telegram iran": {
         "group": "support",
-        "candidate_hits": 2
+        "candidate_hits": 0
       },
       "kapali carsi dollar telegram": {
         "group": "support",
@@ -1042,7 +1054,7 @@
       },
       "germany remittance euro telegram": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 1
       },
       "iranian germany euro bazaar telegram": {
         "group": "support",
@@ -1050,7 +1062,7 @@
       },
       "frankfurt euro telegram iranian": {
         "group": "support",
-        "candidate_hits": 4
+        "candidate_hits": 0
       },
       "hamburg euro telegram iranian": {
         "group": "support",
@@ -1086,7 +1098,7 @@
       },
       "manchester exchange telegram iran": {
         "group": "support",
-        "candidate_hits": 4
+        "candidate_hits": 0
       },
       "birmingham exchange telegram iran": {
         "group": "support",
@@ -1098,7 +1110,7 @@
       },
       "iran uk remittance telegram": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 4
       },
       "persian london exchange telegram": {
         "group": "support",
@@ -1114,7 +1126,7 @@
       },
       "qatar rial toman telegram": {
         "group": "support",
-        "candidate_hits": 2
+        "candidate_hits": 0
       },
       "qar toman iran telegram": {
         "group": "support",
@@ -1126,15 +1138,15 @@
       },
       "doha exchange iran telegram": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 2
       },
       "armenian dram toman telegram": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 1
       },
       "amd toman iran telegram": {
         "group": "support",
-        "candidate_hits": 2
+        "candidate_hits": 0
       },
       "armenia remittance iran telegram": {
         "group": "support",
@@ -1146,11 +1158,11 @@
       },
       "tehran herat dubai telegram": {
         "group": "support",
-        "candidate_hits": 0
+        "candidate_hits": 5
       },
       "iran fx board telegram": {
         "group": "support",
-        "candidate_hits": 2
+        "candidate_hits": 0
       },
       "site:t.me istanbul döviz": {
         "group": "turkish",
@@ -1218,39 +1230,39 @@
       },
       "site:t.me eurobazaar": {
         "group": "german",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s eurobazaar": {
         "group": "german",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me euro_bazaar": {
         "group": "german",
-        "candidate_hits": 9
+        "candidate_hits": 0
       },
       "site:t.me/s euro_bazaar": {
         "group": "german",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me berlinereuro": {
         "group": "german",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me/s berlinereuro": {
         "group": "german",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me helfenassist": {
         "group": "german",
-        "candidate_hits": 9
+        "candidate_hits": 0
       },
       "site:t.me/s helfenassist": {
         "group": "german",
-        "candidate_hits": 16
+        "candidate_hits": 0
       },
       "site:t.me nord_deutschland یورو": {
         "group": "german",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me/s nord_deutschland یورو": {
         "group": "german",
@@ -1266,7 +1278,7 @@
       },
       "site:t.me frankfurt_euro": {
         "group": "german",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s frankfurt_euro": {
         "group": "german",
@@ -1274,7 +1286,7 @@
       },
       "site:t.me hamburg_euro": {
         "group": "german",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me/s hamburg_euro": {
         "group": "german",
@@ -1290,7 +1302,7 @@
       },
       "site:t.me munich_euro": {
         "group": "german",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s munich_euro": {
         "group": "german",
@@ -1326,11 +1338,11 @@
       },
       "site:t.me/s pound london": {
         "group": "uk",
-        "candidate_hits": 10
+        "candidate_hits": 0
       },
       "site:t.me poundbazar": {
         "group": "uk",
-        "candidate_hits": 0
+        "candidate_hits": 11
       },
       "site:t.me/s poundbazar": {
         "group": "uk",
@@ -1362,7 +1374,7 @@
       },
       "site:t.me royal_rate ریال قطر": {
         "group": "qatar",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s royal_rate ریال قطر": {
         "group": "qatar",
@@ -1370,7 +1382,7 @@
       },
       "site:t.me arka_gold ریال قطر": {
         "group": "qatar",
-        "candidate_hits": 12
+        "candidate_hits": 0
       },
       "site:t.me/s arka_gold ریال قطر": {
         "group": "qatar",
@@ -1394,7 +1406,7 @@
       },
       "site:t.me/s QAR ریال قطر": {
         "group": "qatar",
-        "candidate_hits": 4
+        "candidate_hits": 0
       },
       "site:t.me/s قیمت ریال قطر": {
         "group": "qatar",
@@ -1402,11 +1414,11 @@
       },
       "site:t.me/s قیمت لحظه ای ریال قطر": {
         "group": "qatar",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me/s ارزهای آزاد ریال قطر": {
         "group": "qatar",
-        "candidate_hits": 0
+        "candidate_hits": 12
       },
       "site:t.me/s قیمت ارزهای آزاد قطر": {
         "group": "qatar",
@@ -1422,7 +1434,7 @@
       },
       "site:t.me/s arka_gold درام ارمنستان": {
         "group": "armenia",
-        "candidate_hits": 0
+        "candidate_hits": 10
       },
       "site:t.me ir_dolar درام ارمنستان": {
         "group": "armenia",
@@ -1442,7 +1454,7 @@
       },
       "site:t.me exchangeratescountries درام ارمنستان": {
         "group": "armenia",
-        "candidate_hits": 8
+        "candidate_hits": 0
       },
       "site:t.me/s exchangeratescountries درام ارمنستان": {
         "group": "armenia",
@@ -1450,7 +1462,7 @@
       },
       "site:t.me kabul dollar": {
         "group": "afghan",
-        "candidate_hits": 12
+        "candidate_hits": 0
       },
       "site:t.me/s kabul dollar": {
         "group": "afghan",
