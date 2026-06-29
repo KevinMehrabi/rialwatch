@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-06-28T19:23:29Z",
+  "generated_at": "2026-06-29T08:52:21Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1720000.0,
-  "total_usable_records": 156,
+  "total_usable_records": 154,
   "total_contributing_channels": 19,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 16,
-      "usable_records": 13,
+      "records_extracted": 17,
+      "usable_records": 14,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 76,
+    "direct_shop": 85,
     "market_channel": 46,
-    "regional_market_channel": 13,
-    "settlement_exchange": 21
+    "regional_market_channel": 14,
+    "settlement_exchange": 9
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 27,
-      "contributing_channel_count": 8,
-      "basket_confidence": 95.98,
+      "usable_record_count": 33,
+      "contributing_channel_count": 7,
+      "basket_confidence": 96.2,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -182,13 +182,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 73.43,
+      "usable_record_count": 15,
+      "average_quality": 76.07,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -198,9 +198,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 13,
-      "average_quality": 91.08,
-      "average_freshness": 88.0,
+      "usable_record_count": 14,
+      "average_quality": 91.79,
+      "average_freshness": 89.71,
       "from_new_p1": true
     },
     {
@@ -212,17 +212,6 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل دلار آمریکا به درهم امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 79.88,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -248,6 +237,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به دلار آمریکا",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 83.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -265,29 +265,18 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
-      "average_quality": 79.0,
+      "average_quality": 81.25,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
       "handle": "uae:cityexchangeuae.com",
-      "title": "City Exchange Uae",
+      "title": "KARAMA – City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 81.33,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:borodubai.com",
-      "title": "نمودار نرخ لحظه ای درهم امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -325,6 +314,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:cryptobriefing.com",
+      "title": "United Arab Emirates reportedly agrees to release $10B to Iran to halt attacks",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 88.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:iranianuae.ae",
       "title": "Iranianuae",
       "locality": "UAE",
@@ -336,13 +336,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:yekrial.com",
-      "title": "قیمت درهم امارات در دبی - صرافی های ایرانی در دبی",
+      "handle": "uae:revisiontown.com",
+      "title": "Final Settlement Calculator UAE 2026",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 85.0,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
