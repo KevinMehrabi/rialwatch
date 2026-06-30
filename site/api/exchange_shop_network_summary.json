@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-06-29T19:51:46Z",
+  "generated_at": "2026-06-30T08:29:15Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1705500.0,
-  "total_usable_records": 177,
-  "total_contributing_channels": 22,
+  "total_usable_records": 174,
+  "total_contributing_channels": 24,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 18,
+      "records_extracted": 17,
+      "usable_records": 15,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 101,
+    "direct_shop": 89,
     "market_channel": 46,
-    "regional_market_channel": 18,
-    "settlement_exchange": 12
+    "regional_market_channel": 15,
+    "settlement_exchange": 24
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 48,
-      "contributing_channel_count": 9,
-      "basket_confidence": 96.65,
+      "usable_record_count": 40,
+      "contributing_channel_count": 10,
+      "basket_confidence": 95.03,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,17 +171,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
-      "from_new_p1": true
-    },
-    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -193,24 +182,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 15,
+      "average_quality": 91.67,
+      "average_freshness": 89.6,
+      "from_new_p1": true
+    },
+    {
       "handle": "uae:iranbroker.com",
       "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 75.57,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:t.me",
-      "title": "قیمت درهم امارات امروز",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 12,
-      "average_quality": 90.83,
+      "usable_record_count": 15,
+      "average_quality": 76.07,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -226,17 +215,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 79.88,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -245,6 +223,28 @@
       "usable_record_count": 7,
       "average_quality": 82.86,
       "average_freshness": 58.57,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 7,
+      "average_quality": 86.71,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:rokna.net",
+      "title": "مرگ مرموز صراف معروف ایرانی در دبی + عکس یوسف آدم‌پیرا",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 7,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -276,7 +276,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
-      "average_quality": 79.0,
+      "average_quality": 81.25,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -299,6 +299,28 @@
       "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 76.67,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sahlpardakht.com",
+      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 73.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:borodubai.com",
+      "title": "نمودار نرخ لحظه ای درهم امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -375,7 +397,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 72.0,
+      "average_quality": 80.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
