@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-01T19:46:38Z",
+  "generated_at": "2026-07-02T08:14:23Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1736000.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 15,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,43 +53,49 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1740028.71,
-      "median_rate": 1742500.0,
-      "trimmed_mean_rate": 1740777.75,
-      "spread_vs_benchmark_pct": 0.2321,
-      "usable_record_count": 41,
-      "contributing_channel_count": 9,
-      "fresh_contributing_channel_count": 8,
+      "weighted_rate": 1722561.6,
+      "median_rate": 1747999.82,
+      "trimmed_mean_rate": 1729914.45,
+      "spread_vs_benchmark_pct": -0.7741,
+      "usable_record_count": 64,
+      "contributing_channel_count": 12,
+      "fresh_contributing_channel_count": 11,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
-        "uae:ciphoenix.com",
-        "uae:dxboffplan.com",
-        "uae:emeraldxe.com",
-        "uae:ezdex.net",
-        "uae:ir-europe.com",
-        "uae:iranbroker.com",
-        "uae:iranianuae.ae"
-      ],
-      "basket_confidence": 95.71,
-      "publishable": true,
-      "suppression_reason": "",
-      "dispersion_cv": 0.012763,
-      "top_channel_share": 0.345306,
-      "outliers_removed": 22,
-      "source_category_mix": {
-        "direct_shop": 32,
-        "settlement_exchange": 9
-      },
-      "channels": [
-        "uae:arzdigital.com",
-        "uae:ciphoenix.com",
+        "uae:borodubai.com",
+        "uae:cityexchangeuae.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
         "uae:ir-europe.com",
         "uae:iranbroker.com",
         "uae:iranianuae.ae",
-        "uae:sahlpardakht.com"
+        "uae:realestateclubdubai.com",
+        "uae:sarafyhafez.com"
+      ],
+      "basket_confidence": 86.69,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.084698,
+      "top_channel_share": 0.385023,
+      "outliers_removed": 10,
+      "source_category_mix": {
+        "direct_shop": 47,
+        "settlement_exchange": 17
+      },
+      "channels": [
+        "uae:arzdigital.com",
+        "uae:borodubai.com",
+        "uae:cityexchangeuae.com",
+        "uae:dxboffplan.com",
+        "uae:emeraldxe.com",
+        "uae:ezdex.net",
+        "uae:ir-europe.com",
+        "uae:iranbroker.com",
+        "uae:iranianuae.ae",
+        "uae:iranintl.com",
+        "uae:realestateclubdubai.com",
+        "uae:sarafyhafez.com"
       ]
     },
     {
