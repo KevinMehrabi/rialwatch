@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-02T08:14:23Z",
+  "generated_at": "2026-07-02T20:30:49Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1736000.0,
-  "total_usable_records": 188,
-  "total_contributing_channels": 21,
+  "benchmark_weighted_rate": 1753000.0,
+  "total_usable_records": 193,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 17,
-      "usable_records": 15,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 101,
+    "direct_shop": 108,
     "market_channel": 46,
-    "regional_market_channel": 15,
-    "settlement_exchange": 26
+    "regional_market_channel": 18,
+    "settlement_exchange": 21
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 64,
-      "contributing_channel_count": 12,
-      "basket_confidence": 86.69,
+      "usable_record_count": 62,
+      "contributing_channel_count": 9,
+      "basket_confidence": 89.39,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -182,6 +182,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -193,24 +204,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 15,
-      "average_quality": 91.33,
-      "average_freshness": 88.8,
-      "from_new_p1": true
-    },
-    {
       "handle": "uae:iranbroker.com",
       "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 15,
-      "average_quality": 76.07,
+      "usable_record_count": 14,
+      "average_quality": 75.57,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -223,6 +223,17 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 79.88,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -248,17 +259,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 5,
-      "average_quality": 81.6,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -270,6 +270,28 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranianuae.ae",
+      "title": "Iranianuae",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 75.6,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 79.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:cityexchangeuae.com",
       "title": "City Exchange Uae",
       "locality": "UAE",
@@ -277,28 +299,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 81.33,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranianuae.ae",
-      "title": "Iranianuae",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 76.67,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:borodubai.com",
-      "title": "نمودار نرخ لحظه ای درهم امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -332,39 +332,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 94.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 79.5,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranintl.com",
-      "title": "UAE paid Iran $3B, agreed to release $10B more to halt attacks - Reuters",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 69.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sarafyhafez.com",
-      "title": "صرافی دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 72.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
