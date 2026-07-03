@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-07-03T10:12:26Z",
+  "generated_at": "2026-07-03T20:32:57Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1753000.0,
-  "total_usable_records": 183,
+  "benchmark_weighted_rate": 1754500.0,
+  "total_usable_records": 189,
   "total_contributing_channels": 23,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 89,
+    "direct_shop": 102,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 30
+    "settlement_exchange": 23
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 48,
-      "contributing_channel_count": 10,
-      "basket_confidence": 95.08,
+      "usable_record_count": 59,
+      "contributing_channel_count": 11,
+      "basket_confidence": 95.68,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,20 +177,9 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 90.33,
-      "average_freshness": 86.0,
+      "average_quality": 87.0,
+      "average_freshness": 76.0,
       "from_new_p1": true
-    },
-    {
-      "handle": "uae:iranbroker.com",
-      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 16,
-      "average_quality": 76.19,
-      "average_freshness": 92.0,
-      "from_new_p1": false
     },
     {
       "handle": "irancurrency",
@@ -204,13 +193,24 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "handle": "uae:t.me",
+      "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 15,
+      "average_quality": 86.4,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 73.43,
+      "average_quality": 75.57,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -227,12 +227,23 @@
     },
     {
       "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار آمریکا",
+      "title": "تبدیل درهم امارات به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 82.5,
+      "average_quality": 79.88,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:rokna.net",
+      "title": "مرگ مرموز صراف معروف ایرانی در دبی + عکس یوسف آدم‌پیرا",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -276,7 +287,18 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
-      "average_quality": 79.25,
+      "average_quality": 79.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:borodubai.com",
+      "title": "نمودار نرخ لحظه ای درهم امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 75.33,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -299,17 +321,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 73.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:borodubai.com",
-      "title": "نمودار نرخ لحظه ای درهم امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -336,24 +347,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:exchangerates.org.uk",
-      "title": "AED to IRR",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 94.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -386,7 +386,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 76.0,
+      "average_quality": 72.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
