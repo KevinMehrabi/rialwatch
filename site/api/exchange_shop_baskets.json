@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-07-04T09:36:33Z",
+  "generated_at": "2026-07-04T20:14:08Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1754500.0,
+  "benchmark_weighted_rate": 1744000.0,
   "baskets": [
     {
       "basket_name": "Iran",
       "weighted_rate": 1659046.87,
       "median_rate": 1661875.0,
       "trimmed_mean_rate": 1660553.57,
-      "spread_vs_benchmark_pct": -5.4405,
+      "spread_vs_benchmark_pct": -4.8712,
       "usable_record_count": 16,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -31,7 +31,7 @@
       "weighted_rate": 1448844.6,
       "median_rate": 1457050.0,
       "trimmed_mean_rate": 1450015.62,
-      "spread_vs_benchmark_pct": -17.4212,
+      "spread_vs_benchmark_pct": -16.924,
       "usable_record_count": 20,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 1,
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 15,
+      "outliers_removed": 18,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,15 +53,16 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1752928.23,
-      "median_rate": 1749000.0,
-      "trimmed_mean_rate": 1751505.4,
-      "spread_vs_benchmark_pct": -0.0896,
-      "usable_record_count": 39,
-      "contributing_channel_count": 9,
-      "fresh_contributing_channel_count": 9,
+      "weighted_rate": 1739025.55,
+      "median_rate": 1737670.0,
+      "trimmed_mean_rate": 1744012.66,
+      "spread_vs_benchmark_pct": -0.2852,
+      "usable_record_count": 47,
+      "contributing_channel_count": 12,
+      "fresh_contributing_channel_count": 12,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
+        "uae:borodubai.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
@@ -69,20 +70,23 @@
         "uae:ir-europe.com",
         "uae:iranbroker.com",
         "uae:iranianuae.ae",
-        "uae:realestateclubdubai.com"
+        "uae:mortgagecompare.ae",
+        "uae:realestateclubdubai.com",
+        "uae:sahlpardakht.com"
       ],
-      "basket_confidence": 95.72,
+      "basket_confidence": 92.99,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.01703,
-      "top_channel_share": 0.373498,
-      "outliers_removed": 11,
+      "dispersion_cv": 0.034922,
+      "top_channel_share": 0.272506,
+      "outliers_removed": 18,
       "source_category_mix": {
-        "direct_shop": 33,
-        "settlement_exchange": 6
+        "direct_shop": 37,
+        "settlement_exchange": 10
       },
       "channels": [
         "uae:arzdigital.com",
+        "uae:borodubai.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
@@ -90,7 +94,9 @@
         "uae:ir-europe.com",
         "uae:iranbroker.com",
         "uae:iranianuae.ae",
-        "uae:realestateclubdubai.com"
+        "uae:mortgagecompare.ae",
+        "uae:realestateclubdubai.com",
+        "uae:sahlpardakht.com"
       ]
     },
     {
@@ -124,7 +130,7 @@
       "weighted_rate": 1887207.7,
       "median_rate": 1915000.0,
       "trimmed_mean_rate": 1898333.33,
-      "spread_vs_benchmark_pct": 7.5638,
+      "spread_vs_benchmark_pct": 8.2115,
       "usable_record_count": 6,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -186,7 +192,7 @@
       "weighted_rate": 1598492.49,
       "median_rate": 1596515.0,
       "trimmed_mean_rate": 1597487.07,
-      "spread_vs_benchmark_pct": -8.8919,
+      "spread_vs_benchmark_pct": -8.3433,
       "usable_record_count": 35,
       "contributing_channel_count": 2,
       "fresh_contributing_channel_count": 2,
