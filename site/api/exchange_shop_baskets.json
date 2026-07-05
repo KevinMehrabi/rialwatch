@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T20:14:08Z",
+  "generated_at": "2026-07-05T09:55:03Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1744000.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 14,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,48 +53,41 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1739025.55,
-      "median_rate": 1737670.0,
-      "trimmed_mean_rate": 1744012.66,
-      "spread_vs_benchmark_pct": -0.2852,
-      "usable_record_count": 47,
-      "contributing_channel_count": 12,
-      "fresh_contributing_channel_count": 12,
+      "weighted_rate": 1746877.45,
+      "median_rate": 1748500.0,
+      "trimmed_mean_rate": 1751112.05,
+      "spread_vs_benchmark_pct": 0.165,
+      "usable_record_count": 27,
+      "contributing_channel_count": 9,
+      "fresh_contributing_channel_count": 8,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
-        "uae:borodubai.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
-        "uae:iranbroker.com",
         "uae:iranianuae.ae",
-        "uae:mortgagecompare.ae",
-        "uae:realestateclubdubai.com",
-        "uae:sahlpardakht.com"
+        "uae:realestateclubdubai.com"
       ],
-      "basket_confidence": 92.99,
+      "basket_confidence": 93.89,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.034922,
-      "top_channel_share": 0.272506,
-      "outliers_removed": 18,
+      "dispersion_cv": 0.023937,
+      "top_channel_share": 0.323318,
+      "outliers_removed": 8,
       "source_category_mix": {
-        "direct_shop": 37,
-        "settlement_exchange": 10
+        "direct_shop": 20,
+        "settlement_exchange": 7
       },
       "channels": [
         "uae:arzdigital.com",
-        "uae:borodubai.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
-        "uae:iranbroker.com",
         "uae:iranianuae.ae",
-        "uae:mortgagecompare.ae",
         "uae:realestateclubdubai.com",
         "uae:sahlpardakht.com"
       ]
