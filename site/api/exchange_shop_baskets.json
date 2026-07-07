@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-06T21:30:56Z",
+  "generated_at": "2026-07-07T10:36:59Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1755750.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 13,
+      "outliers_removed": 14,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,43 +53,41 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1749401.73,
-      "median_rate": 1743600.0,
-      "trimmed_mean_rate": 1749773.93,
-      "spread_vs_benchmark_pct": -0.3616,
-      "usable_record_count": 37,
-      "contributing_channel_count": 9,
-      "fresh_contributing_channel_count": 8,
+      "weighted_rate": 1746363.89,
+      "median_rate": 1748119.27,
+      "trimmed_mean_rate": 1745380.44,
+      "spread_vs_benchmark_pct": -0.5346,
+      "usable_record_count": 40,
+      "contributing_channel_count": 8,
+      "fresh_contributing_channel_count": 7,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:hiemarat.com",
         "uae:ir-europe.com",
         "uae:iranbroker.com",
         "uae:iranianuae.ae"
       ],
-      "basket_confidence": 96.29,
+      "basket_confidence": 95.94,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.013557,
-      "top_channel_share": 0.372811,
-      "outliers_removed": 10,
+      "dispersion_cv": 0.009091,
+      "top_channel_share": 0.389383,
+      "outliers_removed": 16,
       "source_category_mix": {
-        "direct_shop": 32,
-        "settlement_exchange": 5
+        "direct_shop": 31,
+        "settlement_exchange": 9
       },
       "channels": [
         "uae:arzdigital.com",
+        "uae:ciphoenix.com",
         "uae:dxboffplan.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:hiemarat.com",
         "uae:ir-europe.com",
         "uae:iranbroker.com",
-        "uae:iranianuae.ae",
-        "uae:sahlpardakht.com"
+        "uae:iranianuae.ae"
       ]
     },
     {
