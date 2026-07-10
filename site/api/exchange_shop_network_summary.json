@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-09T20:49:30Z",
+  "generated_at": "2026-07-10T10:28:29Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1810250.0,
-  "total_usable_records": 191,
-  "total_contributing_channels": 21,
+  "total_usable_records": 199,
+  "total_contributing_channels": 22,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 101,
+    "direct_shop": 110,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 26
+    "settlement_exchange": 25
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 41,
+      "usable_record_count": 48,
       "contributing_channel_count": 10,
-      "basket_confidence": 94.27,
+      "basket_confidence": 94.66,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -144,7 +144,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 31,
-      "average_quality": 78.81,
+      "average_quality": 77.52,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -188,8 +188,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 90.11,
+      "average_freshness": 85.33,
       "from_new_p1": true
     },
     {
@@ -209,8 +209,8 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 75.57,
+      "usable_record_count": 15,
+      "average_quality": 76.07,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -223,6 +223,17 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 8,
+      "average_quality": 84.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -270,17 +281,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:hiemarat.com",
-      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
-      "average_quality": 79.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:cityexchangeuae.com",
       "title": "KARAMA – City Exchange Uae",
       "locality": "UAE",
@@ -288,6 +288,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 81.33,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 90.67,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -320,7 +331,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
