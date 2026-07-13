@@ -1,45 +1,36 @@
 {
-  "generated_at": "2026-07-13T10:23:08Z",
+  "generated_at": "2026-07-13T20:41:06Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1790175.0,
-  "total_usable_records": 155,
-  "total_contributing_channels": 19,
+  "benchmark_weighted_rate": 1809925.0,
+  "total_usable_records": 151,
+  "total_contributing_channels": 22,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
       "handle": "istanbulexchange_com",
       "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
       "public_url": "https://t.me/s/istanbulexchange_com",
-      "status_code": 200,
-      "error": null,
-      "messages_seen": 20,
-      "records_extracted": 17,
-      "usable_records": 15,
-      "dedup_stats": {
-        "exact_duplicates_removed": 0,
-        "near_duplicates_removed": 0
-      }
+      "status_code": null,
+      "error": "network_error:[Errno -2] Name or service not known",
+      "messages_seen": 0,
+      "records_extracted": 0,
+      "usable_records": 0
     },
     {
       "handle": "emiratesiranexchange",
       "title": "emiratesiranexchange",
       "public_url": "https://t.me/s/emiratesiranexchange",
-      "status_code": 200,
-      "error": null,
-      "messages_seen": 20,
-      "records_extracted": 10,
-      "usable_records": 0,
-      "dedup_stats": {
-        "exact_duplicates_removed": 0,
-        "near_duplicates_removed": 0
-      }
+      "status_code": null,
+      "error": "network_error:[Errno -2] Name or service not known",
+      "messages_seen": 0,
+      "records_extracted": 0,
+      "usable_records": 0
     }
   ],
   "source_category_mix": {
-    "direct_shop": 75,
+    "direct_shop": 90,
     "market_channel": 46,
-    "regional_market_channel": 15,
-    "settlement_exchange": 19
+    "settlement_exchange": 15
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +57,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 31,
+      "usable_record_count": 40,
       "contributing_channel_count": 9,
-      "basket_confidence": 91.63,
+      "basket_confidence": 96.3,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -182,24 +173,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 15,
-      "average_quality": 94.33,
-      "average_freshness": 96.0,
-      "from_new_p1": true
-    },
-    {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 76.57,
+      "average_quality": 75.57,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -221,7 +201,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 8,
-      "average_quality": 84.0,
+      "average_quality": 79.88,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -259,8 +239,30 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:hiemarat.com",
+      "title": "های امارت| صرافی ایرانی در دبی, نرخ لحظه ای درهم، طلا و نقره",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 79.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:tabdeal.org",
+      "title": "قیمت درهم امارات ∣ تبدیل ارز درهم امارات به ریال + نمودار و نرخ لحظه‌ای",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 79.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:cityexchangeuae.com",
-      "title": "City Exchange Uae",
+      "title": "KARAMA – City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
@@ -292,13 +294,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:exchangerates.org.uk",
+      "title": "AED to IRR",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 94.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -325,13 +338,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:revisiontown.com",
+      "title": "Final Settlement Calculator UAE 2026",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:sarafyhafez.com",
       "title": "صرافی دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 80.0,
+      "average_quality": 76.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
