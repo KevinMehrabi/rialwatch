@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-14T20:19:33Z",
+  "generated_at": "2026-07-15T09:26:26Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1839900.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 15,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,41 +53,44 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1834489.72,
-      "median_rate": 1833018.2,
-      "trimmed_mean_rate": 1833944.92,
-      "spread_vs_benchmark_pct": -0.2941,
-      "usable_record_count": 26,
-      "contributing_channel_count": 8,
-      "fresh_contributing_channel_count": 8,
+      "weighted_rate": 1852833.43,
+      "median_rate": 1854979.75,
+      "trimmed_mean_rate": 1855452.72,
+      "spread_vs_benchmark_pct": 0.7029,
+      "usable_record_count": 40,
+      "contributing_channel_count": 10,
+      "fresh_contributing_channel_count": 9,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:hiemarat.com",
         "uae:ir-europe.com",
+        "uae:iranbroker.com",
         "uae:iranianuae.ae",
         "uae:tabdeal.org",
+        "uae:uaemoneywise.com",
         "uae:yekrial.com"
       ],
-      "basket_confidence": 95.68,
+      "basket_confidence": 95.1,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.004951,
-      "top_channel_share": 0.279134,
-      "outliers_removed": 11,
+      "dispersion_cv": 0.012867,
+      "top_channel_share": 0.314988,
+      "outliers_removed": 16,
       "source_category_mix": {
-        "direct_shop": 18,
-        "settlement_exchange": 8
+        "direct_shop": 29,
+        "settlement_exchange": 11
       },
       "channels": [
         "uae:arzdigital.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
-        "uae:hiemarat.com",
         "uae:ir-europe.com",
+        "uae:iranbroker.com",
         "uae:iranianuae.ae",
+        "uae:sahlpardakht.com",
         "uae:tabdeal.org",
+        "uae:uaemoneywise.com",
         "uae:yekrial.com"
       ]
     },
