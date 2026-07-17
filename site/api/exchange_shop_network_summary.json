@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-16T20:13:04Z",
+  "generated_at": "2026-07-17T09:08:22Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1879750.0,
-  "total_usable_records": 168,
-  "total_contributing_channels": 20,
+  "total_usable_records": 180,
+  "total_contributing_channels": 21,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -14,7 +14,7 @@
       "error": null,
       "messages_seen": 20,
       "records_extracted": 19,
-      "usable_records": 18,
+      "usable_records": 17,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 93,
+    "direct_shop": 105,
     "market_channel": 46,
-    "regional_market_channel": 18,
-    "settlement_exchange": 11
+    "regional_market_channel": 17,
+    "settlement_exchange": 12
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 41,
-      "contributing_channel_count": 9,
-      "basket_confidence": 97.69,
+      "usable_record_count": 57,
+      "contributing_channel_count": 10,
+      "basket_confidence": 96.67,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -187,7 +187,7 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
+      "usable_record_count": 17,
       "average_quality": 91.0,
       "average_freshness": 88.0,
       "from_new_p1": true
@@ -204,6 +204,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 15,
+      "average_quality": 76.07,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -212,17 +223,6 @@
       "usable_record_count": 11,
       "average_quality": 79.73,
       "average_freshness": 95.64,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 79.88,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -248,6 +248,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "تبدیل درهم امارات به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 83.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
@@ -266,6 +277,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 4,
       "average_quality": 76.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:cityexchangeuae.com",
+      "title": "KARAMA – City Exchange Uae",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 81.33,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -309,19 +331,8 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 71.0,
-      "average_freshness": 81.0,
       "from_new_p1": false
     },
     {
