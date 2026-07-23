@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-22T21:00:05Z",
+  "generated_at": "2026-07-23T09:43:27Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1921225.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 15,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,42 +53,46 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1921156.24,
-      "median_rate": 1925700.0,
-      "trimmed_mean_rate": 1921098.23,
-      "spread_vs_benchmark_pct": -0.0036,
-      "usable_record_count": 59,
-      "contributing_channel_count": 8,
-      "fresh_contributing_channel_count": 8,
+      "weighted_rate": 1925762.98,
+      "median_rate": 1926090.0,
+      "trimmed_mean_rate": 1925017.14,
+      "spread_vs_benchmark_pct": 0.2362,
+      "usable_record_count": 62,
+      "contributing_channel_count": 10,
+      "fresh_contributing_channel_count": 10,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
+        "uae:cityexchangeuae.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
         "uae:iranbroker.com",
         "uae:iranianuae.ae",
         "uae:iranrebate.com",
         "uae:t.me",
-        "uae:tabdeal.org"
+        "uae:tabdeal.org",
+        "uae:yekrial.com"
       ],
-      "basket_confidence": 97.65,
+      "basket_confidence": 97.27,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.008425,
-      "top_channel_share": 0.400062,
-      "outliers_removed": 16,
+      "dispersion_cv": 0.0103,
+      "top_channel_share": 0.375746,
+      "outliers_removed": 12,
       "source_category_mix": {
-        "direct_shop": 55,
-        "settlement_exchange": 4
+        "direct_shop": 57,
+        "settlement_exchange": 5
       },
       "channels": [
         "uae:arzdigital.com",
+        "uae:cityexchangeuae.com",
         "uae:emeraldxe.com",
         "uae:ezdex.net",
         "uae:iranbroker.com",
         "uae:iranianuae.ae",
         "uae:iranrebate.com",
         "uae:t.me",
-        "uae:tabdeal.org"
+        "uae:tabdeal.org",
+        "uae:yekrial.com"
       ]
     },
     {
