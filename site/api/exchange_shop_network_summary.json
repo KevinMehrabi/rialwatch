@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-23T20:33:17Z",
+  "generated_at": "2026-07-24T09:36:05Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1933750.0,
-  "total_usable_records": 183,
-  "total_contributing_channels": 19,
+  "total_usable_records": 190,
+  "total_contributing_channels": 22,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 109,
+    "direct_shop": 113,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 10
+    "settlement_exchange": 13
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 53,
-      "contributing_channel_count": 8,
-      "basket_confidence": 97.4,
+      "usable_record_count": 60,
+      "contributing_channel_count": 11,
+      "basket_confidence": 96.88,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -204,24 +204,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 15,
+      "average_quality": 76.33,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:arzdigital.com",
       "title": "تبدیل درهم امارات به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 13,
-      "average_quality": 77.62,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranbroker.com",
-      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 12,
-      "average_quality": 75.33,
+      "average_quality": 80.15,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -314,6 +314,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:iranrebate.com",
       "title": "قیمت درهم امارات امروز به تومان",
       "locality": "UAE",
@@ -343,6 +354,28 @@
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 82.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sarafyhafez.com",
+      "title": "صرافی دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 76.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:yekrial.com",
+      "title": "قیمت درهم امارات در دبی - صرافی های ایرانی در دبی",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 85.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
