@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-24T20:59:35Z",
+  "generated_at": "2026-07-25T09:23:26Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1936500.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 16,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,13 +53,13 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1932659.94,
-      "median_rate": 1927002.95,
-      "trimmed_mean_rate": 1930844.5,
-      "spread_vs_benchmark_pct": -0.1983,
-      "usable_record_count": 56,
-      "contributing_channel_count": 10,
-      "fresh_contributing_channel_count": 10,
+      "weighted_rate": 1916866.6,
+      "median_rate": 1913739.75,
+      "trimmed_mean_rate": 1916622.91,
+      "spread_vs_benchmark_pct": -1.0139,
+      "usable_record_count": 60,
+      "contributing_channel_count": 11,
+      "fresh_contributing_channel_count": 11,
       "fresh_contributing_channels": [
         "uae:arzdigital.com",
         "uae:cityexchangeuae.com",
@@ -69,18 +69,19 @@
         "uae:ir-europe.com",
         "uae:iranbroker.com",
         "uae:iranianuae.ae",
+        "uae:sarafyhafez.com",
         "uae:t.me",
         "uae:tabdeal.org"
       ],
-      "basket_confidence": 97.08,
+      "basket_confidence": 96.39,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.010031,
-      "top_channel_share": 0.418609,
-      "outliers_removed": 18,
+      "dispersion_cv": 0.015156,
+      "top_channel_share": 0.389865,
+      "outliers_removed": 13,
       "source_category_mix": {
-        "direct_shop": 50,
-        "settlement_exchange": 6
+        "direct_shop": 53,
+        "settlement_exchange": 7
       },
       "channels": [
         "uae:arzdigital.com",
@@ -91,6 +92,7 @@
         "uae:ir-europe.com",
         "uae:iranbroker.com",
         "uae:iranianuae.ae",
+        "uae:sarafyhafez.com",
         "uae:t.me",
         "uae:tabdeal.org"
       ]

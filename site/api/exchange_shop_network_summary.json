@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-24T20:59:35Z",
+  "generated_at": "2026-07-25T09:23:26Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1936500.0,
-  "total_usable_records": 191,
-  "total_contributing_channels": 23,
+  "total_usable_records": 188,
+  "total_contributing_channels": 22,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 18,
+      "records_extracted": 17,
+      "usable_records": 16,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -38,8 +38,8 @@
   "source_category_mix": {
     "direct_shop": 112,
     "market_channel": 46,
-    "regional_market_channel": 18,
-    "settlement_exchange": 15
+    "regional_market_channel": 16,
+    "settlement_exchange": 14
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 56,
-      "contributing_channel_count": 10,
-      "basket_confidence": 97.08,
+      "usable_record_count": 60,
+      "contributing_channel_count": 11,
+      "basket_confidence": 96.39,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -187,9 +187,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 87.0,
-      "average_freshness": 76.0,
+      "usable_record_count": 16,
+      "average_quality": 92.06,
+      "average_freshness": 89.5,
       "from_new_p1": true
     },
     {
@@ -210,7 +210,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 13,
-      "average_quality": 77.62,
+      "average_quality": 79.15,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -221,7 +221,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 12,
-      "average_quality": 75.33,
+      "average_quality": 76.58,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -282,7 +282,7 @@
     },
     {
       "handle": "uae:cityexchangeuae.com",
-      "title": "KARAMA – City Exchange Uae",
+      "title": "City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
@@ -331,7 +331,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -369,24 +369,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:sahlpardakht.com",
-      "title": "انتقال پول از دبی امارات به ایران با کمترین کارمزد در 1404 - سهل پرداخت",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 71.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:sarafyhafez.com",
       "title": "صرافی دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 72.0,
+      "average_quality": 80.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
