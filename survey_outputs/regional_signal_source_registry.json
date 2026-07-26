@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-26T20:21:24Z",
+  "generated_at": "2026-07-26T21:19:34Z",
   "schema_version": 1,
   "sources": [
     {
@@ -3653,6 +3653,7 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 19.0,
       "best_quote_message_count": 1,
       "best_usable_record_count": 0,
       "city_guess": "Tehran",
@@ -3665,24 +3666,30 @@
       "key": "telegram:bintjbeilnews",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
-      "last_quote_message_count": 1,
-      "last_seen_at": "2026-07-20T20:56:33Z",
+      "last_parseability_score": 19.0,
+      "last_quote_message_count": 0,
+      "last_seen_at": "2026-07-26T21:19:34Z",
       "last_success_at": "2026-07-20T20:56:33Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Tehran"
       ],
       "origins": [
-        "existing_registry"
+        "channel_survey_rescore",
+        "existing_registry",
+        "previous_scored_rescore",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/bintjbeilnews",
       "signal_families": [
+        "direct_shop_expansion",
         "regional_market_signal"
       ],
-      "source_kind": "unknown",
+      "source_kind": "exchange_shop",
       "status": "ok",
-      "title": "bintjbeil.org - موقع بنت جبيل"
+      "title": "bintjbeil.org - موقع بنت جبيل",
+      "top_sample": "🚨 شبكة CNN: 18 عسكريًا أميركيًا قُتلوا و624 آخرون أُصيبوا منذ أن شنت الولايات المتحدة حربها ضد إيران في 28 شباط. ────────────── CNN: 18 US military personnel have been killed and 624 others injured since the United States launched its war against Iran on Febru"
     },
     {
       "best_board_message_count": 2,
@@ -5222,11 +5229,11 @@
       "handle_or_url": "coinofsalari",
       "key": "telegram:coinofsalari",
       "last_board_message_count": 0,
-      "last_buy_sell_pair_count": 0,
+      "last_buy_sell_pair_count": 6,
       "last_parseability_score": 91.0,
-      "last_quote_message_count": 8,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_quote_message_count": 6,
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -5972,11 +5979,11 @@
       "handle_or_url": "dhsusdt",
       "key": "telegram:dhsusdt",
       "last_board_message_count": 0,
-      "last_buy_sell_pair_count": 0,
+      "last_buy_sell_pair_count": 6,
       "last_parseability_score": 86.0,
       "last_quote_message_count": 6,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "channel_survey_rescore",
@@ -6573,10 +6580,10 @@
       "key": "telegram:dollar_sulaymaniyah",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
-      "last_parseability_score": 63.0,
-      "last_quote_message_count": 8,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_parseability_score": 59.0,
+      "last_quote_message_count": 7,
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -6605,7 +6612,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت لحظه ای دلار سلیمانیه",
-      "top_sample": "سلێمانی فردایی 🤝 186,500 معامله ✅"
+      "top_sample": "سلێمانی فردایی 💰 186,800 فروش 🔴"
     },
     {
       "best_board_message_count": 20,
@@ -7276,8 +7283,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 18,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -8059,8 +8066,8 @@
       "last_buy_sell_pair_count": 12,
       "last_parseability_score": 98.0,
       "last_quote_message_count": 12,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "site:t.me/s صرافی تهران"
@@ -8903,8 +8910,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 58.0,
       "last_quote_message_count": 13,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -9478,8 +9485,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 17,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -9999,11 +10006,11 @@
       "handle_or_url": "iranex_cc",
       "key": "telegram:iranex_cc",
       "last_board_message_count": 0,
-      "last_buy_sell_pair_count": 0,
+      "last_buy_sell_pair_count": 17,
       "last_parseability_score": 100.0,
       "last_quote_message_count": 17,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -10319,8 +10326,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_registry",
@@ -10546,8 +10553,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 63.0,
       "last_quote_message_count": 8,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -10919,8 +10926,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 10,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -11041,8 +11048,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -11515,8 +11522,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 14,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -11549,8 +11556,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 52.0,
       "last_quote_message_count": 6,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -11834,9 +11841,9 @@
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
-      "last_quote_message_count": 20,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_quote_message_count": 18,
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -11855,7 +11862,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت لحظه ای دلار تهران",
-      "top_sample": "دلار فردایی تهران ⏳ 186,300 خــرید 🔵"
+      "top_sample": "دلار فردایی تهران ⏳ 186,500 مـعامله شد ✅"
     },
     {
       "best_board_message_count": 0,
@@ -11952,8 +11959,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -12016,8 +12023,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "channel_survey_rescore",
@@ -12279,8 +12286,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 64.0,
       "last_quote_message_count": 15,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -12406,8 +12413,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 57.0,
       "last_quote_message_count": 5,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -12484,8 +12491,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 12,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "London"
@@ -13075,8 +13082,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 63.0,
       "last_quote_message_count": 8,
-      "last_seen_at": "2026-07-26T20:21:24Z",
-      "last_success_at": "2026-07-26T20:21:24Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Sulaymaniyah"
@@ -13460,8 +13467,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 13,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -13485,7 +13492,7 @@
       "best_buy_sell_pair_count": 0,
       "best_parseability_score": 65.0,
       "best_quote_message_count": 20,
-      "best_usable_record_count": 0,
+      "best_usable_record_count": 17,
       "city_guess": "Tehran",
       "country_guess": "Iran",
       "country_hints": [
@@ -13497,10 +13504,10 @@
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
-      "last_quote_message_count": 20,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
-      "last_usable_record_count": 0,
+      "last_quote_message_count": 17,
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
+      "last_usable_record_count": 17,
       "locality_hints": [
         "Iran",
         "Tehran"
@@ -13515,10 +13522,10 @@
       "signal_families": [
         "direct_shop_expansion"
       ],
-      "source_kind": "regional_market_channel",
+      "source_kind": "exchange_shop",
       "status": "ok",
       "title": "تهران لحظه ای",
-      "top_sample": "دلار فردایی تهران ⏳ 186,300 خــرید 🔵"
+      "top_sample": "دلار فردایی تهران ⏳ 186,500 خــرید 🔵"
     },
     {
       "best_board_message_count": 0,
@@ -13535,8 +13542,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-07-26T17:22:51Z",
-      "last_success_at": "2026-07-26T17:22:51Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -13551,7 +13558,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت خرید تتر | تتر روم",
-      "top_sample": "💵 قیمت تتر: 187750 تومان ⏰ تاریخ: 1405/5/04 11:00 📊 روند: افزایشی 🔼 بالاترین قیمت: 187888 تومان 🔽 کمترین قیمت: 187444 تومان 💶 دلار سبزه فردایی: 189,200 تومان تتر روم - لحظه‌ای،سریع،دقیق 🆔 t.me/TetherRoom"
+      "top_sample": "💵 قیمت تتر: 187300 تومان ⏰ تاریخ: 1405/5/04 14:30 📊 روند: کاهشی 🔼 بالاترین قیمت: 187392 تومان 🔽 کمترین قیمت: 187091 تومان 💶 دلار سبزه فردایی: 187,400 تومان تتر روم - لحظه‌ای،سریع،دقیق 🆔 t.me/TetherRoom"
     },
     {
       "best_board_message_count": 15,
@@ -13899,8 +13906,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-07-26T20:14:06Z",
-      "last_success_at": "2026-07-26T20:14:06Z",
+      "last_seen_at": "2026-07-26T21:19:34Z",
+      "last_success_at": "2026-07-26T21:19:34Z",
       "last_usable_record_count": 0,
       "origins": [
         "channel_survey_rescore",
@@ -13920,7 +13927,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "زر اسکن | قیمت لحظه ای طلا و دلار",
-      "top_sample": "طلای ۱۸: ۱۷,۸۷۸,۹۰۰ تومان طلای ۱۸ (غیر رسمی): ۱۷,۹۴۹,۸۷۰ تومان طلای ۱۸ (بر اساس انس): ۱۸,۲۲۶,۶۷۵ تومان سکه امامی: ۱۸۱,۴۹۰,۰۰۰ تومان سکه بهار آزادی: ۱۷۶,۱۰۰,۰۰۰ تومان نیم سکه: ۹۳,۵۰۰,۰۰۰ تومان ربع سکه: ۵۲,۵۰۰,۰۰۰ تومان دلار بازار آزاد: ۱۸۶,۵۰۰ تومان انس طلا: ۴۰"
+      "top_sample": "طلای ۱۸: ۱۷,۸۷۸,۹۰۰ تومان طلای ۱۸ (غیر رسمی): ۱۸,۰۷۱,۷۵۹ تومان طلای ۱۸ (بر اساس انس): ۱۸,۲۲۶,۶۷۵ تومان سکه امامی: ۱۸۱,۴۹۰,۰۰۰ تومان سکه بهار آزادی: ۱۷۶,۱۰۰,۰۰۰ تومان نیم سکه: ۹۳,۵۰۰,۰۰۰ تومان ربع سکه: ۵۲,۵۰۰,۰۰۰ تومان دلار بازار آزاد: ۱۸۶,۵۰۰ تومان انس طلا: ۴۰"
     },
     {
       "best_board_message_count": 0,
@@ -13970,14 +13977,14 @@
     },
     "sources_by_kind": {
       "aggregator": 27,
-      "exchange_shop": 160,
+      "exchange_shop": 162,
       "regional_fx_board": 31,
-      "regional_market_channel": 99,
+      "regional_market_channel": 98,
       "settlement_channel": 8,
-      "unknown": 19
+      "unknown": 18
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 92,
+      "direct_shop_expansion": 93,
       "regional_fx_board": 265,
       "regional_market_signal": 243
     },
