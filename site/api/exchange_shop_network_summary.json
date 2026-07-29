@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-07-29T09:58:08Z",
+  "generated_at": "2026-07-29T20:05:29Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1902850.0,
-  "total_usable_records": 159,
-  "total_contributing_channels": 17,
+  "benchmark_weighted_rate": 1936225.0,
+  "total_usable_records": 132,
+  "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 17,
-      "usable_records": 14,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 76,
+    "direct_shop": 61,
     "market_channel": 46,
-    "regional_market_channel": 14,
-    "settlement_exchange": 23
+    "regional_market_channel": 18,
+    "settlement_exchange": 7
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 28,
-      "contributing_channel_count": 8,
-      "basket_confidence": 94.35,
+      "usable_record_count": 14,
+      "contributing_channel_count": 5,
+      "basket_confidence": 94.57,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,6 +171,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -179,39 +190,6 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
-      "from_new_p1": false
-    },
-    {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 14,
-      "average_quality": 93.86,
-      "average_freshness": 94.86,
-      "from_new_p1": true
-    },
-    {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان - بازرگانی سی آی فونیکس|ciphoenix.com",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 73.43,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:dollarchi.com",
-      "title": "قیمت لحظه ای درهم امارات امروز + نمودار و حباب (حواله و اسکناس)",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 13,
-      "average_quality": 75.08,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -265,18 +243,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 5,
-      "average_quality": 83.4,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:cityexchangeuae.com",
-      "title": "City Exchange Uae",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 81.33,
+      "average_quality": 81.4,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -298,18 +265,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:dxboffplan.com",
-      "title": "چنج پول در دبی 2026",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 74.0,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
