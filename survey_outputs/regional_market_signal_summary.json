@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-05T09:32:22Z",
-  "new_regional_signal_sources_discovered": 191,
-  "existing_registry_signal_sources_used": 26,
+  "generated_at": "2026-08-05T20:24:46Z",
+  "new_regional_signal_sources_discovered": 187,
+  "existing_registry_signal_sources_used": 29,
   "which_locality_baskets_gained_usable_data": [
     "Iraq",
     "Afghanistan",
@@ -16,7 +16,7 @@
     "UAE": false,
     "Iraq": true,
     "Afghanistan": true,
-    "UK": false,
+    "UK": true,
     "Germany": true,
     "Qatar": false,
     "Armenia": false
@@ -30,12 +30,12 @@
     "Afghanistan": [
       "bonbast_tehran_harat",
       "doolarharat",
-      "haratdollar"
+      "akhbrdolar1"
     ],
     "Germany": [
       "hmtransfer",
-      "berlin_pay",
-      "frankfurt_euro"
+      "eurobazaar",
+      "berlin_pay"
     ]
   },
   "source_registry": {
@@ -55,8 +55,8 @@
     "sources_by_kind": {
       "aggregator": 28,
       "exchange_shop": 202,
-      "regional_fx_board": 33,
-      "regional_market_channel": 105,
+      "regional_fx_board": 34,
+      "regional_market_channel": 104,
       "settlement_channel": 8,
       "unknown": 18
     },

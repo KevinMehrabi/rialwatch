@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-05T09:27:02Z",
+  "generated_at": "2026-08-05T20:18:44Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1887000.0,
-  "total_usable_records": 126,
-  "total_contributing_channels": 12,
+  "benchmark_weighted_rate": 1877250.0,
+  "total_usable_records": 132,
+  "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 17,
-      "usable_records": 14,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -38,8 +38,8 @@
   "source_category_mix": {
     "direct_shop": 61,
     "market_channel": 46,
-    "regional_market_channel": 14,
-    "settlement_exchange": 5
+    "regional_market_channel": 18,
+    "settlement_exchange": 7
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 13,
-      "contributing_channel_count": 4,
-      "basket_confidence": 95.1,
+      "usable_record_count": 14,
+      "contributing_channel_count": 5,
+      "basket_confidence": 94.61,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,6 +171,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -180,17 +191,6 @@
       "average_quality": 81.07,
       "average_freshness": 79.47,
       "from_new_p1": false
-    },
-    {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 14,
-      "average_quality": 91.5,
-      "average_freshness": 88.86,
-      "from_new_p1": true
     },
     {
       "handle": "navasanchannel",
@@ -243,7 +243,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 5,
-      "average_quality": 83.4,
+      "average_quality": 81.4,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -255,6 +255,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
