@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-08-06T09:32:06Z",
+  "generated_at": "2026-08-07T00:31:43Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1877250.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 15,
+      "outliers_removed": 18,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,35 +53,31 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1879478.19,
-      "median_rate": 1877000.0,
-      "trimmed_mean_rate": 1879882.96,
-      "spread_vs_benchmark_pct": 0.1187,
-      "usable_record_count": 14,
-      "contributing_channel_count": 5,
-      "fresh_contributing_channel_count": 5,
+      "weighted_rate": 1881177.64,
+      "median_rate": 1887848.62,
+      "trimmed_mean_rate": 1882776.62,
+      "spread_vs_benchmark_pct": 0.2092,
+      "usable_record_count": 8,
+      "contributing_channel_count": 3,
+      "fresh_contributing_channel_count": 3,
       "fresh_contributing_channels": [
         "uae:emeraldxe.com",
-        "uae:ezdex.net",
         "uae:hiemarat.com",
-        "uae:ir-europe.com",
         "uae:iranianuae.ae"
       ],
-      "basket_confidence": 94.48,
+      "basket_confidence": 82.66,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.006615,
-      "top_channel_share": 0.371901,
-      "outliers_removed": 1,
+      "dispersion_cv": 0.006149,
+      "top_channel_share": 0.645407,
+      "outliers_removed": 0,
       "source_category_mix": {
-        "direct_shop": 8,
-        "settlement_exchange": 6
+        "direct_shop": 3,
+        "settlement_exchange": 5
       },
       "channels": [
         "uae:emeraldxe.com",
-        "uae:ezdex.net",
         "uae:hiemarat.com",
-        "uae:ir-europe.com",
         "uae:iranianuae.ae"
       ]
     },
