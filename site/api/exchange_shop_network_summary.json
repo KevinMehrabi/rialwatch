@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-07T00:31:43Z",
+  "generated_at": "2026-08-07T08:05:59Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1877250.0,
-  "total_usable_records": 125,
-  "total_contributing_channels": 11,
+  "total_usable_records": 127,
+  "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -39,7 +39,7 @@
     "direct_shop": 56,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 5
+    "settlement_exchange": 7
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 8,
-      "contributing_channel_count": 3,
-      "basket_confidence": 82.66,
+      "usable_record_count": 9,
+      "contributing_channel_count": 4,
+      "basket_confidence": 89.24,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -244,6 +244,17 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
