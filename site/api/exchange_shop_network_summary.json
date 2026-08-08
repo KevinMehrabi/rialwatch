@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-08T07:39:13Z",
+  "generated_at": "2026-08-08T19:20:54Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1869250.0,
-  "total_usable_records": 125,
+  "benchmark_weighted_rate": 1861975.0,
+  "total_usable_records": 132,
   "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 18,
-      "usable_records": 16,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,9 +36,9 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 56,
+    "direct_shop": 61,
     "market_channel": 46,
-    "regional_market_channel": 16,
+    "regional_market_channel": 18,
     "settlement_exchange": 7
   },
   "locality_internal_status": {
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 9,
+      "usable_record_count": 15,
       "contributing_channel_count": 4,
-      "basket_confidence": 89.28,
+      "basket_confidence": 94.08,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -176,9 +176,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 16,
-      "average_quality": 87.0,
-      "average_freshness": 76.0,
+      "usable_record_count": 18,
+      "average_quality": 91.56,
+      "average_freshness": 89.33,
       "from_new_p1": true
     },
     {
@@ -226,13 +226,35 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:ezdex.net",
+      "title": "قیمت درهم امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 78.8,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:hiemarat.com",
       "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 5,
-      "average_quality": 83.4,
+      "average_quality": 81.4,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranianuae.ae",
+      "title": "Iranianuae",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 76.67,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -244,28 +266,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 79.5,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranianuae.ae",
-      "title": "Iranianuae",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 82.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
