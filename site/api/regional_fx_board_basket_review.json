@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-08-07T19:39:47Z",
+  "generated_at": "2026-08-08T07:39:10Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1869250.0,
   "localities": [
     {
       "locality_name": "Iran",
       "signal_type_used": "regional_market_channel",
-      "usable_record_count": 373,
-      "contributing_source_count": 34,
+      "usable_record_count": 358,
+      "contributing_source_count": 33,
       "contributing_sources": [
         "aghadolar",
         "ahanborhanii",
@@ -19,7 +19,6 @@
         "bistifx",
         "bonbast_tehran_harat",
         "boonbas",
-        "canadalivetv",
         "dirhamdubai",
         "do_l4",
         "dolareseleimani",
@@ -44,7 +43,7 @@
         "tahran_sabza",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 14,
+      "fresh_contributing_source_count": 12,
       "fresh_contributing_sources": [
         "arzdolar",
         "bistifx",
@@ -55,25 +54,23 @@
         "dollarferdowsi",
         "doolarharat",
         "fardaei_tehran",
-        "gold_mesghal",
-        "navasan_public_currency_board",
-        "navasanchannel",
+        "irancurrency",
         "sabzemaidan",
         "tahran_sabza"
       ],
       "median_rate": 1875000.0,
-      "weighted_rate": 1833069.83,
-      "spread_vs_benchmark_pct": -1.9355,
+      "weighted_rate": 1838170.14,
+      "spread_vs_benchmark_pct": -1.6627,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.79,
+      "basket_confidence": 77.65,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Afghanistan",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 74,
+      "usable_record_count": 78,
       "contributing_source_count": 11,
       "contributing_sources": [
         "aghadolar",
@@ -98,19 +95,19 @@
         "herat_tomen",
         "tomandollar110"
       ],
-      "median_rate": 1854000.0,
-      "weighted_rate": 1843182.3,
-      "spread_vs_benchmark_pct": -1.3946,
+      "median_rate": 1871000.0,
+      "weighted_rate": 1853565.42,
+      "spread_vs_benchmark_pct": -0.8391,
       "freshness_status": "fresh",
       "dispersion_level": "medium",
-      "basket_confidence": 84.88,
+      "basket_confidence": 84.75,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Iraq",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 135,
+      "usable_record_count": 133,
       "contributing_source_count": 12,
       "contributing_sources": [
         "aghadolar",
@@ -126,7 +123,7 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 12,
+      "fresh_contributing_source_count": 11,
       "fresh_contributing_sources": [
         "aghadolar",
         "bonbast_tehran_harat",
@@ -134,7 +131,6 @@
         "dollariraqi",
         "exchangeratescountries",
         "moneytransfersarafi",
-        "navasan_public_currency_board",
         "nerkh_uk",
         "nerkhsarafionline",
         "sarafionline7groupuk",
@@ -142,18 +138,18 @@
         "tomandollar110"
       ],
       "median_rate": 1526000.0,
-      "weighted_rate": 1647380.97,
-      "spread_vs_benchmark_pct": -11.8694,
+      "weighted_rate": 1652409.93,
+      "spread_vs_benchmark_pct": -11.6004,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 81.36,
+      "basket_confidence": 81.18,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "UAE",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 146,
+      "usable_record_count": 142,
       "contributing_source_count": 22,
       "contributing_sources": [
         "aghadolar",
@@ -179,7 +175,7 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 14,
+      "fresh_contributing_source_count": 13,
       "fresh_contributing_sources": [
         "aghadolar",
         "aksoygold",
@@ -189,7 +185,6 @@
         "hiemarat",
         "moneytransfersarafi",
         "navasan_public_currency_board",
-        "navasanchannel",
         "nerkh_uk",
         "nerkhsarafionline",
         "sarafionline7groupuk",
@@ -197,25 +192,25 @@
         "tomandollar110"
       ],
       "median_rate": 1891704.75,
-      "weighted_rate": 1868941.04,
-      "spread_vs_benchmark_pct": -0.0165,
+      "weighted_rate": 1867460.55,
+      "spread_vs_benchmark_pct": -0.0957,
       "freshness_status": "fresh",
       "dispersion_level": "medium",
-      "basket_confidence": 84.01,
+      "basket_confidence": 83.81,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Turkey",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 161,
+      "usable_record_count": 159,
       "contributing_source_count": 23,
       "contributing_sources": [
         "aghadolar",
         "aksoygold",
+        "alanchandcom",
         "ankaraexchange",
         "arianarates",
-        "arz_tala_online",
         "arzchande",
         "arzws",
         "avedoviz",
@@ -239,35 +234,36 @@
       "fresh_contributing_sources": [
         "aghadolar",
         "aksoygold",
-        "arz_tala_online",
+        "alanchandcom",
+        "bazar360",
         "bonbast_tehran_harat",
+        "dolarrates",
         "exchangeratescountries",
         "moneytransfersarafi",
-        "navasan_public_currency_board",
-        "navasanchannel",
         "nerkh_uk",
         "nerkhsarafionline",
         "sarafionline7groupuk",
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "median_rate": 1777833.0,
-      "weighted_rate": 1697750.91,
-      "spread_vs_benchmark_pct": -9.1748,
+      "median_rate": 1780092.0,
+      "weighted_rate": 1695503.88,
+      "spread_vs_benchmark_pct": -9.295,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.65,
+      "basket_confidence": 77.48,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "UK",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 199,
-      "contributing_source_count": 22,
+      "usable_record_count": 200,
+      "contributing_source_count": 23,
       "contributing_sources": [
         "abanpardakht",
         "aghadolar",
+        "alanchandcom",
         "arz_tala_online",
         "arzmash",
         "bazar360",
@@ -289,18 +285,17 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 17,
+      "fresh_contributing_source_count": 16,
       "fresh_contributing_sources": [
-        "abanpardakht",
         "aghadolar",
+        "alanchandcom",
         "arz_tala_online",
+        "bazar360",
         "daviditsupportuklondon",
         "exchangeratescountries",
         "groupsarafilondonuk",
         "hmbcexchangebureau",
         "moneytransfersarafi",
-        "navasan_public_currency_board",
-        "navasanchannel",
         "nerkh_uk",
         "nerkhsarafionline",
         "sarafibartarlondon",
@@ -310,18 +305,18 @@
         "tomandollar110"
       ],
       "median_rate": 1907692.31,
-      "weighted_rate": 1803963.5,
-      "spread_vs_benchmark_pct": -3.4927,
+      "weighted_rate": 1806465.06,
+      "spread_vs_benchmark_pct": -3.3588,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 78.82,
+      "basket_confidence": 78.89,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Germany",
       "signal_type_used": "regional_market_channel",
-      "usable_record_count": 57,
+      "usable_record_count": 55,
       "contributing_source_count": 9,
       "contributing_sources": [
         "berlin_pay",
@@ -338,14 +333,14 @@
       "fresh_contributing_sources": [
         "eurobazaar",
         "hmtransfer",
-        "navasan_public_currency_board"
+        "koln_euro"
       ],
       "median_rate": 1596491.23,
-      "weighted_rate": 1613258.09,
-      "spread_vs_benchmark_pct": -13.6949,
+      "weighted_rate": 1602282.16,
+      "spread_vs_benchmark_pct": -14.2821,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 78.95,
+      "basket_confidence": 78.61,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -367,12 +362,11 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 9,
+      "fresh_contributing_source_count": 8,
       "fresh_contributing_sources": [
         "aghadolar",
         "exchangeratescountries",
         "moneytransfersarafi",
-        "navasan_public_currency_board",
         "nerkh_uk",
         "nerkhsarafionline",
         "sarafionline7groupuk",
@@ -380,11 +374,11 @@
         "tomandollar110"
       ],
       "median_rate": 1893164.0,
-      "weighted_rate": 1880395.56,
-      "spread_vs_benchmark_pct": 0.5963,
+      "weighted_rate": 1880561.44,
+      "spread_vs_benchmark_pct": 0.6051,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.38,
+      "basket_confidence": 77.33,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -407,12 +401,11 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 9,
+      "fresh_contributing_source_count": 8,
       "fresh_contributing_sources": [
         "aghadolar",
         "exchangeratescountries",
         "moneytransfersarafi",
-        "navasan_public_currency_board",
         "nerkh_uk",
         "nerkhsarafionline",
         "sarafionline7groupuk",
@@ -420,11 +413,11 @@
         "tomandollar110"
       ],
       "median_rate": 2152800.0,
-      "weighted_rate": 2107775.66,
-      "spread_vs_benchmark_pct": 12.7605,
+      "weighted_rate": 2108995.94,
+      "spread_vs_benchmark_pct": 12.8258,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.34,
+      "basket_confidence": 77.3,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     }
