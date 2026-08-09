@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-08T19:20:54Z",
+  "generated_at": "2026-08-09T07:42:41Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1861975.0,
-  "total_usable_records": 132,
+  "total_usable_records": 130,
   "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 18,
+      "records_extracted": 18,
+      "usable_records": 16,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -38,7 +38,7 @@
   "source_category_mix": {
     "direct_shop": 61,
     "market_channel": 46,
-    "regional_market_channel": 18,
+    "regional_market_channel": 16,
     "settlement_exchange": 7
   },
   "locality_internal_status": {
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 15,
       "contributing_channel_count": 4,
-      "basket_confidence": 94.08,
+      "basket_confidence": 94.12,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -176,9 +176,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.56,
-      "average_freshness": 89.33,
+      "usable_record_count": 16,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -243,7 +243,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 5,
-      "average_quality": 81.4,
+      "average_quality": 83.4,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
