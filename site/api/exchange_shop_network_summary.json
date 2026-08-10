@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-09T19:20:47Z",
+  "generated_at": "2026-08-10T08:21:20Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1857000.0,
-  "total_usable_records": 133,
+  "total_usable_records": 130,
   "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 18,
+      "records_extracted": 17,
+      "usable_records": 15,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 62,
+    "direct_shop": 63,
     "market_channel": 46,
-    "regional_market_channel": 18,
-    "settlement_exchange": 7
+    "regional_market_channel": 15,
+    "settlement_exchange": 6
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 16,
       "contributing_channel_count": 4,
-      "basket_confidence": 94.35,
+      "basket_confidence": 94.91,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -171,17 +171,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.56,
-      "average_freshness": 89.33,
-      "from_new_p1": true
-    },
-    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -191,6 +180,17 @@
       "average_quality": 81.07,
       "average_freshness": 79.47,
       "from_new_p1": false
+    },
+    {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 15,
+      "average_quality": 91.67,
+      "average_freshness": 89.6,
+      "from_new_p1": true
     },
     {
       "handle": "navasanchannel",
@@ -243,7 +243,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 5,
-      "average_quality": 81.4,
+      "average_quality": 83.4,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
