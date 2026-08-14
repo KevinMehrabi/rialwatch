@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-13T19:43:35Z",
+  "generated_at": "2026-08-14T08:06:49Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1870000.0,
-  "total_usable_records": 127,
-  "total_contributing_channels": 13,
+  "total_usable_records": 125,
+  "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -39,7 +39,7 @@
     "direct_shop": 61,
     "market_channel": 46,
     "regional_market_channel": 13,
-    "settlement_exchange": 7
+    "settlement_exchange": 5
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 14,
-      "contributing_channel_count": 5,
-      "basket_confidence": 94.68,
+      "usable_record_count": 13,
+      "contributing_channel_count": 4,
+      "basket_confidence": 95.08,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -188,8 +188,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 13,
-      "average_quality": 89.77,
-      "average_freshness": 84.31,
+      "average_quality": 89.46,
+      "average_freshness": 83.38,
       "from_new_p1": true
     },
     {
@@ -243,7 +243,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 5,
-      "average_quality": 81.4,
+      "average_quality": 83.4,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -255,17 +255,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },

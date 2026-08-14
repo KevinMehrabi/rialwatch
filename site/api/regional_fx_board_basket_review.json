@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-08-13T19:43:33Z",
+  "generated_at": "2026-08-14T08:06:46Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1870000.0,
   "localities": [
     {
       "locality_name": "Iran",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 376,
-      "contributing_source_count": 35,
+      "usable_record_count": 387,
+      "contributing_source_count": 36,
       "contributing_sources": [
         "aghadolar",
         "ahanborhanii",
@@ -40,12 +40,13 @@
         "irancurrency",
         "mellalex",
         "navasan_public_currency_board",
+        "navasanchannel",
         "pargarexchangegroup",
         "sabzemaidan",
         "tahran_sabza",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 17,
+      "fresh_contributing_source_count": 18,
       "fresh_contributing_sources": [
         "aghadolar",
         "arzdolar",
@@ -61,16 +62,17 @@
         "hiemarat",
         "ir_dolar",
         "navasan_public_currency_board",
+        "navasanchannel",
         "sabzemaidan",
         "tahran_sabza",
         "tomandollar110"
       ],
-      "median_rate": 1867000.0,
-      "weighted_rate": 1842911.49,
-      "spread_vs_benchmark_pct": -1.4486,
+      "median_rate": 1866000.0,
+      "weighted_rate": 1805260.53,
+      "spread_vs_benchmark_pct": -3.462,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.28,
+      "basket_confidence": 77.25,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -102,11 +104,11 @@
         "tomandollar110"
       ],
       "median_rate": 1863000.0,
-      "weighted_rate": 1852639.51,
-      "spread_vs_benchmark_pct": -0.9284,
+      "weighted_rate": 1852484.72,
+      "spread_vs_benchmark_pct": -0.9366,
       "freshness_status": "fresh",
       "dispersion_level": "medium",
-      "basket_confidence": 84.73,
+      "basket_confidence": 84.43,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -147,19 +149,19 @@
         "tomandollar110"
       ],
       "median_rate": 1532000.0,
-      "weighted_rate": 1634448.98,
-      "spread_vs_benchmark_pct": -12.5963,
+      "weighted_rate": 1631858.02,
+      "spread_vs_benchmark_pct": -12.7349,
       "freshness_status": "fresh",
       "dispersion_level": "medium",
-      "basket_confidence": 87.6,
+      "basket_confidence": 87.48,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "UAE",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 147,
-      "contributing_source_count": 23,
+      "usable_record_count": 133,
+      "contributing_source_count": 24,
       "contributing_sources": [
         "aghadolar",
         "aksoygold",
@@ -173,6 +175,7 @@
         "fardaei_tehran",
         "hiemarat",
         "iranianerbil2",
+        "lubrinol",
         "moneytransfersarafi",
         "navasan_public_currency_board",
         "navasanchannel",
@@ -203,19 +206,19 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "median_rate": 1875141.77,
-      "weighted_rate": 1859742.57,
-      "spread_vs_benchmark_pct": -0.5485,
+      "median_rate": 1873709.5,
+      "weighted_rate": 1852695.79,
+      "spread_vs_benchmark_pct": -0.9254,
       "freshness_status": "fresh",
       "dispersion_level": "medium",
-      "basket_confidence": 84.4,
+      "basket_confidence": 83.79,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Turkey",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 165,
+      "usable_record_count": 162,
       "contributing_source_count": 23,
       "contributing_sources": [
         "aghadolar",
@@ -260,18 +263,18 @@
         "tomandollar110"
       ],
       "median_rate": 1766538.0,
-      "weighted_rate": 1690137.1,
-      "spread_vs_benchmark_pct": -9.6183,
+      "weighted_rate": 1684171.4,
+      "spread_vs_benchmark_pct": -9.9374,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.71,
+      "basket_confidence": 77.35,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "UK",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 233,
+      "usable_record_count": 231,
       "contributing_source_count": 23,
       "contributing_sources": [
         "abanpardakht",
@@ -319,18 +322,18 @@
         "sarafionlineuk"
       ],
       "median_rate": 1880320.0,
-      "weighted_rate": 1777558.89,
-      "spread_vs_benchmark_pct": -4.9434,
+      "weighted_rate": 1781863.91,
+      "spread_vs_benchmark_pct": -4.7132,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 79.64,
+      "basket_confidence": 79.69,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Germany",
-      "signal_type_used": "regional_fx_board",
-      "usable_record_count": 57,
+      "signal_type_used": "regional_market_channel",
+      "usable_record_count": 63,
       "contributing_source_count": 10,
       "contributing_sources": [
         "berlin_pay",
@@ -351,11 +354,11 @@
         "navasan_public_currency_board"
       ],
       "median_rate": 1578947.37,
-      "weighted_rate": 1623366.44,
-      "spread_vs_benchmark_pct": -13.189,
+      "weighted_rate": 1674736.21,
+      "spread_vs_benchmark_pct": -10.4419,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 78.31,
+      "basket_confidence": 78.92,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -393,25 +396,24 @@
         "tomandollar110"
       ],
       "median_rate": 1811264.0,
-      "weighted_rate": 1825357.18,
-      "spread_vs_benchmark_pct": -2.3873,
+      "weighted_rate": 1824329.89,
+      "spread_vs_benchmark_pct": -2.4423,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.22,
+      "basket_confidence": 77.3,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Armenia",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 44,
-      "contributing_source_count": 14,
+      "usable_record_count": 43,
+      "contributing_source_count": 13,
       "contributing_sources": [
         "aghadolar",
         "amd_official_channel",
         "amdfarsi",
         "arz_tala_online",
-        "candlesinthenight",
         "donyajewellery",
         "exchangeratescountries",
         "moneytransfersarafi",
@@ -422,11 +424,10 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 11,
+      "fresh_contributing_source_count": 10,
       "fresh_contributing_sources": [
         "aghadolar",
         "arz_tala_online",
-        "candlesinthenight",
         "exchangeratescountries",
         "moneytransfersarafi",
         "navasan_public_currency_board",
@@ -437,11 +438,11 @@
         "tomandollar110"
       ],
       "median_rate": 2000700.0,
-      "weighted_rate": 2039268.6,
-      "spread_vs_benchmark_pct": 9.0518,
+      "weighted_rate": 2021011.21,
+      "spread_vs_benchmark_pct": 8.0755,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 77.28,
+      "basket_confidence": 77.39,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     }
