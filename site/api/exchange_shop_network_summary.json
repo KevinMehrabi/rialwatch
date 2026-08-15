@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-14T19:38:53Z",
+  "generated_at": "2026-08-15T07:15:05Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1875000.0,
-  "total_usable_records": 127,
-  "total_contributing_channels": 13,
+  "total_usable_records": 129,
+  "total_contributing_channels": 14,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 16,
-      "usable_records": 13,
+      "records_extracted": 15,
+      "usable_records": 12,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 61,
+    "direct_shop": 62,
     "market_channel": 46,
-    "regional_market_channel": 13,
-    "settlement_exchange": 7
+    "regional_market_channel": 12,
+    "settlement_exchange": 9
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 14,
-      "contributing_channel_count": 5,
-      "basket_confidence": 94.65,
+      "usable_record_count": 17,
+      "contributing_channel_count": 6,
+      "basket_confidence": 93.97,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -187,9 +187,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 13,
-      "average_quality": 86.08,
-      "average_freshness": 72.92,
+      "usable_record_count": 12,
+      "average_quality": 86.25,
+      "average_freshness": 73.5,
       "from_new_p1": true
     },
     {
@@ -243,7 +243,18 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 5,
-      "average_quality": 81.4,
+      "average_quality": 83.4,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:rialxe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 97.33,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
