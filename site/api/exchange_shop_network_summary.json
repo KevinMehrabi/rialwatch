@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-19T19:12:22Z",
+  "generated_at": "2026-08-20T07:32:04Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 1897000.0,
-  "total_usable_records": 140,
+  "total_usable_records": 138,
   "total_contributing_channels": 14,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 18,
+      "records_extracted": 18,
+      "usable_records": 16,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -38,7 +38,7 @@
   "source_category_mix": {
     "direct_shop": 66,
     "market_channel": 46,
-    "regional_market_channel": 18,
+    "regional_market_channel": 16,
     "settlement_exchange": 10
   },
   "locality_internal_status": {
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 17,
       "contributing_channel_count": 6,
-      "basket_confidence": 94.19,
+      "basket_confidence": 94.17,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -176,9 +176,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.83,
-      "average_freshness": 90.0,
+      "usable_record_count": 16,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -210,7 +210,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 9,
-      "average_quality": 78.11,
+      "average_quality": 79.22,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -276,7 +276,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
