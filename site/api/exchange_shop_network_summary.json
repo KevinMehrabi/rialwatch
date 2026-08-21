@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-08-21T07:30:41Z",
+  "generated_at": "2026-08-21T19:15:25Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1901000.0,
+  "benchmark_weighted_rate": 1900000.0,
   "total_usable_records": 140,
-  "total_contributing_channels": 14,
+  "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 66,
+    "direct_shop": 68,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 10
+    "settlement_exchange": 8
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 17,
-      "contributing_channel_count": 6,
-      "basket_confidence": 94.14,
+      "usable_record_count": 18,
+      "contributing_channel_count": 5,
+      "basket_confidence": 94.9,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 87.0,
+      "average_freshness": 76.0,
       "from_new_p1": true
     },
     {
@@ -210,7 +210,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 9,
-      "average_quality": 79.22,
+      "average_quality": 78.11,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -253,8 +253,8 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 97.33,
+      "usable_record_count": 5,
+      "average_quality": 88.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -270,24 +270,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 79.5,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:iranianuae.ae",
       "title": "Iranianuae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 87.5,
+      "average_quality": 86.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
