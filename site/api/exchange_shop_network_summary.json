@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-08-23T07:18:38Z",
+  "generated_at": "2026-08-23T19:16:15Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 1928500.0,
-  "total_usable_records": 140,
+  "benchmark_weighted_rate": 2001025.0,
+  "total_usable_records": 139,
   "total_contributing_channels": 14,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 18,
-      "usable_records": 16,
+      "records_extracted": 20,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 68,
+    "direct_shop": 66,
     "market_channel": 46,
-    "regional_market_channel": 16,
-    "settlement_exchange": 10
+    "regional_market_channel": 18,
+    "settlement_exchange": 9
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 18,
+      "usable_record_count": 17,
       "contributing_channel_count": 6,
-      "basket_confidence": 93.94,
+      "basket_confidence": 94.06,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -176,9 +176,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 16,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "usable_record_count": 18,
+      "average_quality": 91.83,
+      "average_freshness": 90.0,
       "from_new_p1": true
     },
     {
@@ -210,7 +210,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 9,
-      "average_quality": 79.22,
+      "average_quality": 78.11,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -253,8 +253,8 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 5,
-      "average_quality": 88.0,
+      "usable_record_count": 3,
+      "average_quality": 97.33,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -276,7 +276,7 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 79.5,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -284,10 +284,10 @@
       "handle": "uae:iranianuae.ae",
       "title": "Iranianuae",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 87.5,
+      "usable_record_count": 1,
+      "average_quality": 82.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
