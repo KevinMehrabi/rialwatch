@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-08-23T19:31:45Z",
-  "new_regional_signal_sources_discovered": 192,
+  "generated_at": "2026-08-24T07:53:09Z",
+  "new_regional_signal_sources_discovered": 196,
   "existing_registry_signal_sources_used": 25,
   "which_locality_baskets_gained_usable_data": [
     "Iraq",
     "Afghanistan",
-    "Germany",
-    "Qatar"
+    "Germany"
   ],
   "which_baskets_remain_empty": [
     "UAE",
+    "Qatar",
     "Armenia"
   ],
   "can_render_meaningful_cards": {
@@ -34,9 +34,6 @@
       "hmtransfer",
       "eurobazaar",
       "berlin_pay"
-    ],
-    "Qatar": [
-      "irancurrency"
     ]
   },
   "source_registry": {
@@ -55,16 +52,16 @@
     },
     "sources_by_kind": {
       "aggregator": 26,
-      "exchange_shop": 209,
+      "exchange_shop": 210,
       "regional_fx_board": 33,
-      "regional_market_channel": 101,
+      "regional_market_channel": 100,
       "settlement_channel": 8,
       "unknown": 18
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 131,
       "regional_fx_board": 282,
-      "regional_market_signal": 256
+      "regional_market_signal": 257
     },
     "active_iran_sources": 207
   },
