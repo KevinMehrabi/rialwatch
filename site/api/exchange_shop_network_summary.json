@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-04T11:44:04Z",
+  "generated_at": "2026-09-04T21:05:15Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2213500.0,
-  "total_usable_records": 131,
-  "total_contributing_channels": 12,
+  "benchmark_weighted_rate": 2214000.0,
+  "total_usable_records": 134,
+  "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 61,
+    "direct_shop": 63,
     "market_channel": 46,
     "regional_market_channel": 18,
-    "settlement_exchange": 6
+    "settlement_exchange": 7
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 10,
-      "contributing_channel_count": 4,
-      "basket_confidence": 93.82,
+      "usable_record_count": 12,
+      "contributing_channel_count": 5,
+      "basket_confidence": 94.6,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 89.89,
-      "average_freshness": 84.67,
+      "average_quality": 87.0,
+      "average_freshness": 76.0,
       "from_new_p1": true
     },
     {
@@ -240,9 +240,9 @@
       "handle": "uae:ezdex.net",
       "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 4,
+      "usable_record_count": 5,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -265,7 +265,18 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.5,
+      "average_quality": 79.5,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:rialxe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
