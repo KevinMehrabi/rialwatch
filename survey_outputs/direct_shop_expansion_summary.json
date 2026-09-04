@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-04T04:31:02+00:00",
+  "generated_at": "2026-09-04T12:44:17+00:00",
   "search_debug": {
     "query_stats": {
       "site:t.me صرافی": {
@@ -165,13 +165,13 @@
     "sources_by_kind": {
       "aggregator": 25,
       "exchange_shop": 214,
-      "regional_fx_board": 32,
-      "regional_market_channel": 99,
+      "regional_fx_board": 31,
+      "regional_market_channel": 100,
       "settlement_channel": 8,
       "unknown": 18
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 131,
+      "direct_shop_expansion": 132,
       "regional_fx_board": 283,
       "regional_market_signal": 258
     },
@@ -183,17 +183,16 @@
   "previously_seen_unproven_channels_selected_for_rescoring": 80,
   "channels_selected_for_scoring": 80,
   "channels_scored": 80,
-  "new_channels_retained_after_scoring": 25,
+  "new_channels_retained_after_scoring": 26,
   "rejection_reasons": {
     "commentary_heavy": 1,
-    "low_parseability": 1,
-    "missing_shop_identity": 20,
+    "missing_shop_identity": 21,
     "not_inside_iran_or_contactable": 5,
     "too_few_quote_posts": 53
   },
   "likely_direct_shop_channels": 0,
   "inside_iran_likely_direct_shop_channels": 0,
-  "channels_with_buy_sell_quotes": 6,
+  "channels_with_buy_sell_quotes": 5,
   "total_inside_iran_shop_channels_now_known": 5,
   "estimated_additional_usable_records_if_ingested": 0,
   "target_progress_note": "aiming toward 80-150 usable inside-Iran dealer records"
