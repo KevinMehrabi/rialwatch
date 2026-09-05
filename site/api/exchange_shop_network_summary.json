@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-05T10:59:03Z",
+  "generated_at": "2026-09-05T20:46:23Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2214000.0,
-  "total_usable_records": 130,
-  "total_contributing_channels": 12,
+  "benchmark_weighted_rate": 2281500.0,
+  "total_usable_records": 122,
+  "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,8 +36,8 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 61,
-    "market_channel": 46,
+    "direct_shop": 63,
+    "market_channel": 36,
     "regional_market_channel": 18,
     "settlement_exchange": 5
   },
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 9,
-      "contributing_channel_count": 3,
-      "basket_confidence": 87.36,
+      "usable_record_count": 11,
+      "contributing_channel_count": 4,
+      "basket_confidence": 95.21,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -190,17 +190,6 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
-      "from_new_p1": false
-    },
-    {
-      "handle": "navasanchannel",
-      "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
-      "locality": "unknown",
-      "source_category": "market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 11,
-      "average_quality": 79.73,
-      "average_freshness": 95.64,
       "from_new_p1": false
     },
     {
@@ -259,13 +248,35 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:rialxe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "navasanchannel",
+      "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
+      "locality": "unknown",
+      "source_category": "market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 1,
+      "average_quality": 72.0,
+      "average_freshness": 88.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 77.0,
+      "average_quality": 82.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
