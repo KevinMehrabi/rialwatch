@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T21:16:52Z",
+  "generated_at": "2026-09-12T11:15:34Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2368000.0,
   "total_usable_records": 125,
@@ -14,7 +14,7 @@
       "error": null,
       "messages_seen": 20,
       "records_extracted": 20,
-      "usable_records": 18,
+      "usable_records": 19,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 58,
+    "direct_shop": 61,
     "market_channel": 36,
-    "regional_market_channel": 18,
-    "settlement_exchange": 13
+    "regional_market_channel": 19,
+    "settlement_exchange": 9
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 13,
       "contributing_channel_count": 4,
-      "basket_confidence": 92.39,
+      "basket_confidence": 93.05,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -176,9 +176,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 87.0,
-      "average_freshness": 76.0,
+      "usable_record_count": 19,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
     },
     {
@@ -190,17 +190,6 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله به امارات، حواله درهم امارات، حواله دلار دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 9,
-      "average_quality": 74.89,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -231,7 +220,29 @@
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله به امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
       "usable_record_count": 5,
+      "average_quality": 75.6,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ezdex.net",
+      "title": "قیمت درهم امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -241,17 +252,6 @@
       "title": "تبدیل درهم به تومان لحظه‌ای",
       "locality": "UAE",
       "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:rialxe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
