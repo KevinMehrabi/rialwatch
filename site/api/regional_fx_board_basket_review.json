@@ -1,12 +1,12 @@
 {
-  "generated_at": "2026-09-14T13:21:44Z",
+  "generated_at": "2026-09-14T22:05:31Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2289500.0,
+  "benchmark_weighted_rate": 2308500.0,
   "localities": [
     {
       "locality_name": "Iran",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 386,
+      "usable_record_count": 376,
       "contributing_source_count": 35,
       "contributing_sources": [
         "aghadolar",
@@ -70,19 +70,19 @@
         "tahran_sabza",
         "tomandollar110"
       ],
-      "median_rate": 2335000.0,
-      "weighted_rate": 2307167.48,
-      "spread_vs_benchmark_pct": 0.7717,
+      "median_rate": 2304000.0,
+      "weighted_rate": 2292988.09,
+      "spread_vs_benchmark_pct": -0.6719,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 78.25,
+      "basket_confidence": 78.09,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Afghanistan",
-      "signal_type_used": "regional_fx_board",
-      "usable_record_count": 88,
+      "signal_type_used": "regional_market_channel",
+      "usable_record_count": 78,
       "contributing_source_count": 12,
       "contributing_sources": [
         "aghadolar",
@@ -110,19 +110,19 @@
         "tomandollar110",
         "turan_ex"
       ],
-      "median_rate": 2310000.0,
-      "weighted_rate": 2296933.48,
-      "spread_vs_benchmark_pct": 0.3247,
+      "median_rate": 2278000.0,
+      "weighted_rate": 2271386.77,
+      "spread_vs_benchmark_pct": -1.6077,
       "freshness_status": "fresh",
-      "dispersion_level": "medium",
-      "basket_confidence": 84.74,
+      "dispersion_level": "high",
+      "basket_confidence": 79.0,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Iraq",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 68,
+      "usable_record_count": 74,
       "contributing_source_count": 14,
       "contributing_sources": [
         "aghadolar",
@@ -152,20 +152,20 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "median_rate": 2057355.0,
-      "weighted_rate": 2043902.46,
-      "spread_vs_benchmark_pct": -10.7271,
+      "median_rate": 2001025.0,
+      "weighted_rate": 1973775.94,
+      "spread_vs_benchmark_pct": -14.4996,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 79.31,
+      "basket_confidence": 79.54,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "UAE",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 160,
-      "contributing_source_count": 27,
+      "usable_record_count": 156,
+      "contributing_source_count": 28,
       "contributing_sources": [
         "aghadolar",
         "aksoygold",
@@ -180,7 +180,8 @@
         "dubai",
         "eghtesadtejarat",
         "exchangeratescountries",
-        "hiemarat",
+        "fardaei_tehran",
+        "iranian_uae",
         "iranianerbil2",
         "lubrinol",
         "moneytransfersarafi",
@@ -195,7 +196,7 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 13,
+      "fresh_contributing_source_count": 14,
       "fresh_contributing_sources": [
         "aghadolar",
         "aksoygold",
@@ -203,7 +204,8 @@
         "arzcredit",
         "bazar360",
         "eghtesadtejarat",
-        "hiemarat",
+        "fardaei_tehran",
+        "iranian_uae",
         "navasan_public_currency_board",
         "navasanchannel",
         "roya_mah_e_sefid",
@@ -211,19 +213,19 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "median_rate": 2339511.04,
-      "weighted_rate": 2279905.44,
-      "spread_vs_benchmark_pct": -0.4191,
+      "median_rate": 2325280.1,
+      "weighted_rate": 2266830.8,
+      "spread_vs_benchmark_pct": -1.805,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 78.56,
+      "basket_confidence": 78.5,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Turkey",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 96,
+      "usable_record_count": 97,
       "contributing_source_count": 18,
       "contributing_sources": [
         "aghadolar",
@@ -259,19 +261,19 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "median_rate": 2216079.0,
-      "weighted_rate": 2236276.26,
-      "spread_vs_benchmark_pct": -2.3247,
+      "median_rate": 2202525.0,
+      "weighted_rate": 2227458.03,
+      "spread_vs_benchmark_pct": -3.5106,
       "freshness_status": "fresh",
       "dispersion_level": "medium",
-      "basket_confidence": 85.72,
+      "basket_confidence": 85.61,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "UK",
       "signal_type_used": "regional_fx_board",
-      "usable_record_count": 229,
+      "usable_record_count": 224,
       "contributing_source_count": 20,
       "contributing_sources": [
         "abanpardakht",
@@ -295,10 +297,9 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "fresh_contributing_source_count": 16,
+      "fresh_contributing_source_count": 14,
       "fresh_contributing_sources": [
         "abanpardakht",
-        "aghadolar",
         "bazar360",
         "daviditsupportuklondon",
         "exchangeratescountries",
@@ -311,22 +312,21 @@
         "sarafibartarlondon",
         "sarafijavan",
         "sarafionline7groupuk",
-        "sarafionlineuk",
-        "tomandollar110"
+        "sarafionlineuk"
       ],
-      "median_rate": 2346153.85,
-      "weighted_rate": 2186043.05,
-      "spread_vs_benchmark_pct": -4.5188,
+      "median_rate": 2322692.31,
+      "weighted_rate": 2172279.06,
+      "spread_vs_benchmark_pct": -5.9008,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 79.81,
+      "basket_confidence": 79.8,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
     {
       "locality_name": "Germany",
-      "signal_type_used": "regional_market_channel",
-      "usable_record_count": 52,
+      "signal_type_used": "regional_fx_board",
+      "usable_record_count": 51,
       "contributing_source_count": 7,
       "contributing_sources": [
         "berlin_pay",
@@ -343,12 +343,12 @@
         "hmtransfer",
         "navasan_public_currency_board"
       ],
-      "median_rate": 2127192.98,
-      "weighted_rate": 2020399.54,
-      "spread_vs_benchmark_pct": -11.7537,
+      "median_rate": 2105263.16,
+      "weighted_rate": 2019166.55,
+      "spread_vs_benchmark_pct": -12.5334,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 80.25,
+      "basket_confidence": 79.81,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -381,12 +381,12 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "median_rate": 2305212.0,
-      "weighted_rate": 2314740.71,
-      "spread_vs_benchmark_pct": 1.1025,
+      "median_rate": 2304120.0,
+      "weighted_rate": 2312114.61,
+      "spread_vs_benchmark_pct": 0.1566,
       "freshness_status": "fresh",
       "dispersion_level": "low",
-      "basket_confidence": 89.38,
+      "basket_confidence": 89.18,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     },
@@ -419,12 +419,12 @@
         "sarafionlineuk",
         "tomandollar110"
       ],
-      "median_rate": 2499900.0,
-      "weighted_rate": 2475542.28,
-      "spread_vs_benchmark_pct": 8.1259,
+      "median_rate": 2488200.0,
+      "weighted_rate": 2471545.75,
+      "spread_vs_benchmark_pct": 7.0628,
       "freshness_status": "fresh",
       "dispersion_level": "high",
-      "basket_confidence": 76.87,
+      "basket_confidence": 76.69,
       "recommended_display_state": "publish",
       "suppression_reason": ""
     }
