@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-18T11:46:36Z",
+  "generated_at": "2026-09-18T21:15:24Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2284000.0,
-  "total_usable_records": 131,
+  "benchmark_weighted_rate": 2274000.0,
+  "total_usable_records": 141,
   "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -37,7 +37,7 @@
   ],
   "source_category_mix": {
     "direct_shop": 63,
-    "market_channel": 36,
+    "market_channel": 46,
     "regional_market_channel": 19,
     "settlement_exchange": 13
   },
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 16,
       "contributing_channel_count": 4,
-      "basket_confidence": 93.77,
+      "basket_confidence": 93.88,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 19,
-      "average_quality": 89.74,
-      "average_freshness": 84.21,
+      "average_quality": 87.0,
+      "average_freshness": 76.0,
       "from_new_p1": true
     },
     {
@@ -193,13 +193,24 @@
       "from_new_p1": false
     },
     {
+      "handle": "navasanchannel",
+      "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
+      "locality": "unknown",
+      "source_category": "market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 11,
+      "average_quality": 79.73,
+      "average_freshness": 95.64,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله درهم دبی امارات",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 9,
-      "average_quality": 74.33,
+      "average_quality": 74.89,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -256,17 +267,6 @@
       "usable_record_count": 2,
       "average_quality": 74.0,
       "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "navasanchannel",
-      "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
-      "locality": "unknown",
-      "source_category": "market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 1,
-      "average_quality": 72.0,
-      "average_freshness": 88.0,
       "from_new_p1": false
     }
   ]
