@@ -1,46 +1,48 @@
 {
-  "date": "2026-09-18",
-  "collected_at": "2026-09-18T17:43:40Z",
+  "date": "2026-09-19",
+  "collected_at": "2026-09-19T17:19:28Z",
   "in_publication_window": false,
   "valid": true,
-  "primary_open_market_value": 2274000.0,
-  "p25": 2270500.0,
-  "p75": 2280500.0,
-  "dispersion": 0.0043975373790677225,
+  "primary_open_market_value": 2305500.0,
+  "p25": 2303687.5,
+  "p75": 2308000.0,
+  "dispersion": 0.001870527000650618,
   "status": "Green",
-  "source_count_used": 3,
+  "source_count_used": 4,
   "source_medians": {
-    "bonbast": 2287000.0,
-    "alanchand_street": 2274000.0,
-    "navasan": 2267000.0
+    "bonbast": 2307000.0,
+    "alanchand_street": 2311000.0,
+    "navasan": 2304000.0,
+    "tgju_street": 2302750.0
   },
   "source_units": {
     "bonbast": "rial",
     "alanchand_street": "rial",
-    "navasan": "rial"
+    "navasan": "rial",
+    "tgju_street": "rial"
   },
-  "related_official_fix_date": "2026-09-18",
-  "related_official_fix_value": 2274000.0,
+  "related_official_fix_date": "2026-09-19",
+  "related_official_fix_value": 2305500.0,
   "window_utc": {
     "start": "13:45",
     "end": "14:15"
   },
   "normalized_unit": "rial",
   "benchmarks": {
-    "open_market": 2274000.0,
-    "official": 1658791.0,
-    "regional_transfer": 2296000.0,
-    "crypto_usdt": 2273830.0,
-    "emami_gold_coin": 2320000000.0
+    "open_market": 2305500.0,
+    "official": 1663768.0,
+    "regional_transfer": 2332850.0,
+    "crypto_usdt": 2295100.0,
+    "emami_gold_coin": 2375000000.0
   },
   "computed": {
-    "fix": 2274000.0,
+    "fix": 2305500.0,
     "status": "Green",
     "withheld": false,
     "band": {
-      "p25": 2270500.0,
-      "p75": 2280500.0
+      "p25": 2303687.5,
+      "p75": 2308000.0
     },
-    "dispersion": 0.0043975373790677225
+    "dispersion": 0.001870527000650618
   }
 }
