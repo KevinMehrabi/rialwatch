@@ -1,20 +1,24 @@
 {
-  "generated_at": "2026-09-19T21:02:18Z",
+  "generated_at": "2026-09-20T11:51:35Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2305500.0,
-  "total_usable_records": 113,
-  "total_contributing_channels": 11,
+  "total_usable_records": 132,
+  "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
       "handle": "istanbulexchange_com",
       "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
       "public_url": "https://t.me/s/istanbulexchange_com",
-      "status_code": null,
-      "error": "network_error:[Errno 104] Connection reset by peer",
-      "messages_seen": 0,
-      "records_extracted": 0,
-      "usable_records": 0
+      "status_code": 200,
+      "error": null,
+      "messages_seen": 20,
+      "records_extracted": 20,
+      "usable_records": 19,
+      "dedup_stats": {
+        "exact_duplicates_removed": 0,
+        "near_duplicates_removed": 0
+      }
     },
     {
       "handle": "emiratesiranexchange",
@@ -34,6 +38,7 @@
   "source_category_mix": {
     "direct_shop": 64,
     "market_channel": 36,
+    "regional_market_channel": 19,
     "settlement_exchange": 13
   },
   "locality_internal_status": {
@@ -63,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 17,
       "contributing_channel_count": 4,
-      "basket_confidence": 94.21,
+      "basket_confidence": 94.18,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -166,6 +171,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 19,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -189,7 +205,7 @@
     },
     {
       "handle": "uae:ezdex.net",
-      "title": "قیمت درهم امارات امروز شنبه 28 شهریور 1405| نرخ خرید و فروش درهم به تومان",
+      "title": "قیمت درهم امارات امروز یکشنبه 29 شهریور 1405| نرخ خرید و فروش درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
