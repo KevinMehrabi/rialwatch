@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-21T22:16:04Z",
+  "generated_at": "2026-09-22T12:06:57Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2310000.0,
-  "total_usable_records": 131,
+  "total_usable_records": 132,
   "total_contributing_channels": 11,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,7 +36,7 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 64,
+    "direct_shop": 65,
     "market_channel": 36,
     "regional_market_channel": 19,
     "settlement_exchange": 12
@@ -68,7 +68,7 @@
       "publishable": true,
       "usable_record_count": 15,
       "contributing_channel_count": 3,
-      "basket_confidence": 90.18,
+      "basket_confidence": 90.33,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 19,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
     },
     {
@@ -199,13 +199,13 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 9,
-      "average_quality": 74.89,
+      "average_quality": 74.33,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
       "handle": "uae:ezdex.net",
-      "title": "قیمت درهم امارات امروز دوشنبه 30 شهریور 1405| نرخ خرید و فروش درهم به تومان",
+      "title": "قیمت درهم امارات امروز سه‌شنبه 31 شهریور 1405| نرخ خرید و فروش درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -226,6 +226,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:hiemarat.com",
+      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 7,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "iranbroker_net",
       "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
       "locality": "unknown",
@@ -234,17 +245,6 @@
       "usable_record_count": 6,
       "average_quality": 83.0,
       "average_freshness": 62.33,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
