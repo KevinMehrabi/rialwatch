@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-25T21:52:16Z",
+  "generated_at": "2026-09-26T11:49:58Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2336000.0,
-  "total_usable_records": 131,
-  "total_contributing_channels": 11,
+  "total_usable_records": 133,
+  "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 64,
+    "direct_shop": 65,
     "market_channel": 36,
     "regional_market_channel": 19,
-    "settlement_exchange": 12
+    "settlement_exchange": 13
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 15,
-      "contributing_channel_count": 3,
-      "basket_confidence": 90.31,
+      "usable_record_count": 17,
+      "contributing_channel_count": 4,
+      "basket_confidence": 94.2,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 19,
-      "average_quality": 87.0,
-      "average_freshness": 76.0,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
     },
     {
@@ -199,13 +199,13 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 9,
-      "average_quality": 74.89,
+      "average_quality": 74.33,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
       "handle": "uae:ezdex.net",
-      "title": "قیمت درهم امارات امروز جمعه 3 مهر 1405| نرخ خرید و فروش درهم به تومان",
+      "title": "قیمت درهم امارات امروز شنبه 4 مهر 1405| نرخ خرید و فروش درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -243,6 +243,17 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 6,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:emeraldxe.com",
+      "title": "تبدیل درهم به تومان لحظه‌ای",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
