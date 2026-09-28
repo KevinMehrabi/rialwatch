@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-09-27T21:37:08Z",
+  "generated_at": "2026-09-28T14:30:08Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2358500.0,
-  "total_usable_records": 132,
+  "total_usable_records": 129,
   "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -39,7 +39,7 @@
     "direct_shop": 65,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 13
+    "settlement_exchange": 10
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 17,
+      "usable_record_count": 19,
       "contributing_channel_count": 4,
-      "basket_confidence": 94.22,
+      "basket_confidence": 94.68,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
     },
     {
@@ -193,19 +193,8 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 9,
-      "average_quality": 74.89,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:ezdex.net",
-      "title": "قیمت درهم امارات امروز یکشنبه 5 مهر 1405| نرخ خرید و فروش درهم به تومان",
+      "title": "قیمت درهم امارات امروز دوشنبه 6 مهر 1405| نرخ خرید و فروش درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -239,6 +228,17 @@
     {
       "handle": "uae:hiemarat.com",
       "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
