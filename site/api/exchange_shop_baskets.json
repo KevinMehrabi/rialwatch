@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-02T13:10:44Z",
+  "generated_at": "2026-10-02T22:33:53Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2589500.0,
+  "benchmark_weighted_rate": 2632000.0,
   "baskets": [
     {
       "basket_name": "Iran",
       "weighted_rate": 1659046.87,
       "median_rate": 1661875.0,
       "trimmed_mean_rate": 1660553.57,
-      "spread_vs_benchmark_pct": -35.9318,
+      "spread_vs_benchmark_pct": -36.9663,
       "usable_record_count": 16,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -28,20 +28,20 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 1448844.6,
-      "median_rate": 1457050.0,
-      "trimmed_mean_rate": 1450015.62,
-      "spread_vs_benchmark_pct": -44.0493,
+      "weighted_rate": 1462945.22,
+      "median_rate": 1463500.0,
+      "trimmed_mean_rate": 1463278.12,
+      "spread_vs_benchmark_pct": -44.417,
       "usable_record_count": 20,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 1,
       "fresh_contributing_channels": [
         "istanbulim_com"
       ],
-      "basket_confidence": 78.85,
+      "basket_confidence": 79.72,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.010739,
+      "dispersion_cv": 0.003459,
       "top_channel_share": 1.0,
       "outliers_removed": 18,
       "source_category_mix": {
@@ -53,30 +53,30 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 2590307.33,
-      "median_rate": 2589993.9,
-      "trimmed_mean_rate": 2590230.57,
-      "spread_vs_benchmark_pct": 0.0312,
-      "usable_record_count": 9,
+      "weighted_rate": 1988662.82,
+      "median_rate": 1836250.0,
+      "trimmed_mean_rate": 1954586.11,
+      "spread_vs_benchmark_pct": -24.4429,
+      "usable_record_count": 11,
       "contributing_channel_count": 2,
       "fresh_contributing_channel_count": 2,
       "fresh_contributing_channels": [
-        "uae:ezdex.net",
-        "uae:hiemarat.com"
+        "uae:hiemarat.com",
+        "uae:ir-europe.com"
       ],
-      "basket_confidence": 83.97,
-      "publishable": false,
-      "suppression_reason": "concentrated_single_source",
-      "dispersion_cv": 0.0017,
-      "top_channel_share": 0.89695,
-      "outliers_removed": 8,
+      "basket_confidence": 65.72,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.135958,
+      "top_channel_share": 0.52854,
+      "outliers_removed": 0,
       "source_category_mix": {
-        "direct_shop": 8,
-        "settlement_exchange": 1
+        "direct_shop": 4,
+        "settlement_exchange": 7
       },
       "channels": [
-        "uae:ezdex.net",
-        "uae:hiemarat.com"
+        "uae:hiemarat.com",
+        "uae:ir-europe.com"
       ]
     },
     {
@@ -110,7 +110,7 @@
       "weighted_rate": 1887207.7,
       "median_rate": 1915000.0,
       "trimmed_mean_rate": 1898333.33,
-      "spread_vs_benchmark_pct": -27.1208,
+      "spread_vs_benchmark_pct": -28.2976,
       "usable_record_count": 6,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -172,7 +172,7 @@
       "weighted_rate": 1598492.49,
       "median_rate": 1596515.0,
       "trimmed_mean_rate": 1597487.07,
-      "spread_vs_benchmark_pct": -38.2702,
+      "spread_vs_benchmark_pct": -39.267,
       "usable_record_count": 35,
       "contributing_channel_count": 2,
       "fresh_contributing_channel_count": 2,
@@ -185,7 +185,7 @@
       "suppression_reason": "",
       "dispersion_cv": 0.00631,
       "top_channel_share": 0.515379,
-      "outliers_removed": 7,
+      "outliers_removed": 6,
       "source_category_mix": {
         "market_channel": 35
       },
