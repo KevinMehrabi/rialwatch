@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-01T22:56:40Z",
+  "generated_at": "2026-10-02T13:10:44Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2589500.0,
-  "total_usable_records": 126,
+  "total_usable_records": 124,
   "total_contributing_channels": 11,
-  "publishable_basket_count": 1,
+  "publishable_basket_count": 0,
   "added_p1_candidates": [
     {
       "handle": "istanbulexchange_com",
@@ -39,7 +39,7 @@
     "direct_shop": 65,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 7
+    "settlement_exchange": 5
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -65,11 +65,11 @@
     },
     {
       "basket_name": "UAE",
-      "publishable": true,
-      "usable_record_count": 13,
-      "contributing_channel_count": 3,
-      "basket_confidence": 91.37,
-      "suppression_reason": "",
+      "publishable": false,
+      "usable_record_count": 9,
+      "contributing_channel_count": 2,
+      "basket_confidence": 83.97,
+      "suppression_reason": "concentrated_single_source",
       "internal_status": "active"
     },
     {
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 88.11,
+      "average_freshness": 79.33,
       "from_new_p1": true
     },
     {
@@ -194,7 +194,7 @@
     },
     {
       "handle": "uae:ezdex.net",
-      "title": "قیمت درهم امارات امروز پنج‌شنبه 9 مهر 1405| نرخ خرید و فروش درهم به تومان",
+      "title": "قیمت درهم امارات امروز جمعه 10 مهر 1405| نرخ خرید و فروش درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -226,23 +226,23 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:hiemarat.com",
       "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 5,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
