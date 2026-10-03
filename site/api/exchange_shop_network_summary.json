@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-03T12:03:57Z",
+  "generated_at": "2026-10-03T21:47:34Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2632000.0,
-  "total_usable_records": 114,
-  "total_contributing_channels": 10,
+  "benchmark_weighted_rate": 2689000.0,
+  "total_usable_records": 100,
+  "total_contributing_channels": 9,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 20,
-      "usable_records": 19,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,9 +36,9 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 55,
+    "direct_shop": 42,
     "market_channel": 36,
-    "regional_market_channel": 19,
+    "regional_market_channel": 18,
     "settlement_exchange": 4
   },
   "locality_internal_status": {
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 20,
+      "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 79.72,
+      "basket_confidence": 70.62,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 7,
+      "usable_record_count": 6,
       "contributing_channel_count": 2,
-      "basket_confidence": 59.78,
+      "basket_confidence": 60.92,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -149,17 +149,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulim_com",
-      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "locality": "Turkey",
-      "source_category": "direct_shop",
-      "source_priority": "P1",
-      "usable_record_count": 20,
-      "average_quality": 90.8,
-      "average_freshness": 81.4,
-      "from_new_p1": false
-    },
-    {
       "handle": "mazanehnet",
       "title": "مظنه ارز در بازار تهران",
       "locality": "Iran",
@@ -176,9 +165,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 19,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -193,6 +182,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulim_com",
+      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
+      "locality": "Turkey",
+      "source_category": "direct_shop",
+      "source_priority": "P1",
+      "usable_record_count": 11,
+      "average_quality": 89.0,
+      "average_freshness": 76.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -204,14 +204,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "iranbroker_net",
-      "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
-      "locality": "unknown",
+      "handle": "uae:hiemarat.com",
+      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "locality": "UAE",
       "source_category": "direct_shop",
-      "source_priority": "P1",
-      "usable_record_count": 5,
-      "average_quality": 82.0,
-      "average_freshness": 59.6,
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -221,17 +221,6 @@
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
