@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-03T21:47:34Z",
+  "generated_at": "2026-10-04T12:53:39Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2689000.0,
-  "total_usable_records": 100,
+  "total_usable_records": 101,
   "total_contributing_channels": 9,
-  "publishable_basket_count": 1,
+  "publishable_basket_count": 0,
   "added_p1_candidates": [
     {
       "handle": "istanbulexchange_com",
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 19,
-      "usable_records": 18,
+      "records_extracted": 20,
+      "usable_records": 19,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -38,7 +38,7 @@
   "source_category_mix": {
     "direct_shop": 42,
     "market_channel": 36,
-    "regional_market_channel": 18,
+    "regional_market_channel": 19,
     "settlement_exchange": 4
   },
   "locality_internal_status": {
@@ -57,19 +57,19 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 18,
+      "usable_record_count": 19,
       "contributing_channel_count": 1,
-      "basket_confidence": 70.62,
+      "basket_confidence": 71.45,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
-      "publishable": true,
-      "usable_record_count": 6,
+      "publishable": false,
+      "usable_record_count": 5,
       "contributing_channel_count": 2,
-      "basket_confidence": 60.92,
-      "suppression_reason": "",
+      "basket_confidence": 60.44,
+      "suppression_reason": "concentrated_single_source",
       "internal_status": "active"
     },
     {
@@ -165,9 +165,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "usable_record_count": 19,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
     },
     {
