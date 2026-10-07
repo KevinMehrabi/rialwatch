@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-07T13:59:48Z",
-  "new_regional_signal_sources_discovered": 184,
-  "existing_registry_signal_sources_used": 29,
+  "generated_at": "2026-10-07T23:26:08Z",
+  "new_regional_signal_sources_discovered": 183,
+  "existing_registry_signal_sources_used": 31,
   "which_locality_baskets_gained_usable_data": [
     "Iraq",
     "Afghanistan",
@@ -18,7 +18,7 @@
     "Afghanistan": true,
     "UK": true,
     "Germany": true,
-    "Qatar": false,
+    "Qatar": true,
     "Armenia": false
   },
   "top_sources_contributing_to_each_improved_basket": {
@@ -27,19 +27,19 @@
       "dollariraqi"
     ],
     "Afghanistan": [
-      "bonbast_tehran_harat",
       "doolarharat",
-      "haratdollar"
+      "bonbast_tehran_harat",
+      "akhbrdolar1"
     ],
     "Germany": [
       "hmtransfer",
       "berlin_pay",
-      "hamburg_euro"
+      "eurobazaar"
     ],
     "Qatar": [
-      "gold_mesghal",
       "irancurrency",
-      "arz_tala_online"
+      "gold_mesghal",
+      "hmtransfer"
     ]
   },
   "source_registry": {
@@ -59,14 +59,14 @@
     "sources_by_kind": {
       "aggregator": 22,
       "exchange_shop": 223,
-      "regional_fx_board": 28,
-      "regional_market_channel": 99,
+      "regional_fx_board": 29,
+      "regional_market_channel": 98,
       "settlement_channel": 8,
       "unknown": 18
     },
     "sources_by_signal_family": {
       "direct_shop_expansion": 132,
-      "regional_fx_board": 285,
+      "regional_fx_board": 286,
       "regional_market_signal": 263
     },
     "active_iran_sources": 212
