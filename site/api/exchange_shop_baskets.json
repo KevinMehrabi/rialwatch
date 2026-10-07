@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-06T22:50:35Z",
+  "generated_at": "2026-10-07T13:53:41Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2690000.0,
   "baskets": [
@@ -28,24 +28,24 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2690263.89,
-      "median_rate": 2691100.0,
-      "trimmed_mean_rate": 2690325.0,
-      "spread_vs_benchmark_pct": 0.0098,
-      "usable_record_count": 18,
+      "weighted_rate": 2647744.74,
+      "median_rate": 2647950.0,
+      "trimmed_mean_rate": 2647717.65,
+      "spread_vs_benchmark_pct": -1.5708,
+      "usable_record_count": 19,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 1,
       "fresh_contributing_channels": [
         "istanbulexchange_com"
       ],
-      "basket_confidence": 70.71,
+      "basket_confidence": 71.92,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.000735,
+      "dispersion_cv": 0.000633,
       "top_channel_share": 1.0,
       "outliers_removed": 11,
       "source_category_mix": {
-        "regional_market_channel": 18
+        "regional_market_channel": 19
       },
       "channels": [
         "istanbulexchange_com"
@@ -53,25 +53,25 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1824975.44,
+      "weighted_rate": 1884323.79,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1825757.14,
-      "spread_vs_benchmark_pct": -32.157,
-      "usable_record_count": 7,
+      "trimmed_mean_rate": 1870150.0,
+      "spread_vs_benchmark_pct": -29.9508,
+      "usable_record_count": 15,
       "contributing_channel_count": 2,
       "fresh_contributing_channel_count": 2,
       "fresh_contributing_channels": [
         "uae:hiemarat.com",
         "uae:ir-europe.com"
       ],
-      "basket_confidence": 69.05,
-      "publishable": false,
-      "suppression_reason": "concentrated_single_source",
-      "dispersion_cv": 0.014078,
-      "top_channel_share": 0.8465,
-      "outliers_removed": 5,
+      "basket_confidence": 74.13,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.085609,
+      "top_channel_share": 0.620062,
+      "outliers_removed": 0,
       "source_category_mix": {
-        "direct_shop": 1,
+        "direct_shop": 9,
         "settlement_exchange": 6
       },
       "channels": [
