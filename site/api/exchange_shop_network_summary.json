@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-08T23:37:40Z",
+  "generated_at": "2026-10-09T13:46:02Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2690000.0,
-  "total_usable_records": 106,
+  "total_usable_records": 108,
   "total_contributing_channels": 9,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -39,7 +39,7 @@
     "direct_shop": 48,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 4
+    "settlement_exchange": 6
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 70.7,
+      "basket_confidence": 69.57,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 14,
+      "usable_record_count": 17,
       "contributing_channel_count": 2,
-      "basket_confidence": 72.25,
+      "basket_confidence": 69.75,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -166,8 +166,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 87.22,
+      "average_freshness": 76.67,
       "from_new_p1": true
     },
     {
@@ -220,7 +220,7 @@
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 4,
+      "usable_record_count": 6,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
