@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T13:46:02Z",
+  "generated_at": "2026-10-09T22:56:47Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2690000.0,
   "baskets": [
@@ -28,17 +28,15 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2684657.49,
+      "weighted_rate": 2684730.56,
       "median_rate": 2685000.0,
       "trimmed_mean_rate": 2684881.25,
-      "spread_vs_benchmark_pct": -0.1986,
+      "spread_vs_benchmark_pct": -0.1959,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "fresh_contributing_channel_count": 1,
-      "fresh_contributing_channels": [
-        "istanbulexchange_com"
-      ],
-      "basket_confidence": 69.57,
+      "fresh_contributing_channel_count": 0,
+      "fresh_contributing_channels": [],
+      "basket_confidence": 69.5,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.00084,
@@ -53,26 +51,26 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1980795.76,
+      "weighted_rate": 1942068.12,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1958666.67,
-      "spread_vs_benchmark_pct": -26.3645,
-      "usable_record_count": 17,
+      "trimmed_mean_rate": 1938263.89,
+      "spread_vs_benchmark_pct": -27.8042,
+      "usable_record_count": 9,
       "contributing_channel_count": 2,
       "fresh_contributing_channel_count": 2,
       "fresh_contributing_channels": [
         "uae:hiemarat.com",
         "uae:ir-europe.com"
       ],
-      "basket_confidence": 69.75,
+      "basket_confidence": 66.59,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.125887,
-      "top_channel_share": 0.666075,
+      "dispersion_cv": 0.11976,
+      "top_channel_share": 0.576273,
       "outliers_removed": 0,
       "source_category_mix": {
-        "direct_shop": 11,
-        "settlement_exchange": 6
+        "direct_shop": 5,
+        "settlement_exchange": 4
       },
       "channels": [
         "uae:hiemarat.com",
