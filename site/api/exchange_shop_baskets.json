@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-10T13:03:10Z",
+  "generated_at": "2026-10-10T22:04:06Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2690000.0,
   "baskets": [
@@ -28,24 +28,24 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2657484.21,
+      "weighted_rate": 2656852.78,
       "median_rate": 2657950.0,
-      "trimmed_mean_rate": 2657550.0,
-      "spread_vs_benchmark_pct": -1.2088,
-      "usable_record_count": 19,
+      "trimmed_mean_rate": 2656950.0,
+      "spread_vs_benchmark_pct": -1.2322,
+      "usable_record_count": 18,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 1,
       "fresh_contributing_channels": [
         "istanbulexchange_com"
       ],
-      "basket_confidence": 71.92,
+      "basket_confidence": 70.68,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.000648,
+      "dispersion_cv": 0.000977,
       "top_channel_share": 1.0,
       "outliers_removed": 11,
       "source_category_mix": {
-        "regional_market_channel": 19
+        "regional_market_channel": 18
       },
       "channels": [
         "istanbulexchange_com"
@@ -53,27 +53,30 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1914946.43,
+      "weighted_rate": 1869606.71,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1914946.43,
-      "spread_vs_benchmark_pct": -28.8124,
-      "usable_record_count": 7,
-      "contributing_channel_count": 1,
-      "fresh_contributing_channel_count": 1,
+      "trimmed_mean_rate": 1855836.67,
+      "spread_vs_benchmark_pct": -30.4979,
+      "usable_record_count": 17,
+      "contributing_channel_count": 2,
+      "fresh_contributing_channel_count": 2,
       "fresh_contributing_channels": [
-        "uae:hiemarat.com"
+        "uae:hiemarat.com",
+        "uae:ir-europe.com"
       ],
-      "basket_confidence": 57.21,
-      "publishable": false,
-      "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.124891,
-      "top_channel_share": 1.0,
+      "basket_confidence": 74.7,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.084701,
+      "top_channel_share": 0.666075,
       "outliers_removed": 0,
       "source_category_mix": {
-        "direct_shop": 7
+        "direct_shop": 11,
+        "settlement_exchange": 6
       },
       "channels": [
-        "uae:hiemarat.com"
+        "uae:hiemarat.com",
+        "uae:ir-europe.com"
       ]
     },
     {
