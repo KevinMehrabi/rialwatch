@@ -7103,6 +7103,7 @@ def collect_and_write_intraday_attempt(
     source_configs: List[SourceConfig],
     sampled_at: dt.datetime,
     allow_outside_window: bool,
+    observation_backup_dir: Optional[Path] = None,
 ) -> Tuple[Path, Dict[str, Any], Dict[str, Any]]:
     samples = collect_one_attempt(
         source_configs=source_configs,
@@ -7125,6 +7126,12 @@ def collect_and_write_intraday_attempt(
         "computed": summary.get("computed", {}),
     }
     path = write_intraday_attempt(site_dir, attempt_payload)
+    if observation_backup_dir is not None:
+        # Save the source read before rendering or Git persistence can fail.
+        # This directory is uploaded separately by CI for later recovery.
+        backup_path = observation_backup_dir / path.relative_to(site_dir)
+        backup_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, backup_path)
     publish_intraday_latest(site_dir, day)
     return path, attempt_payload, summary
 
@@ -7926,6 +7933,8 @@ def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: 
 
 def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir: Path, generated_at: str) -> int:
     day = utc_now().date()
+    backup_option = getattr(args, "observation_backup_dir", None)
+    observation_backup_dir = Path(backup_option) if backup_option else None
     missing = missing_secrets()
     if missing:
         publish_status(
@@ -7957,6 +7966,7 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
                 source_configs=source_configs,
                 sampled_at=sampled_at,
                 allow_outside_window=args.allow_outside_window,
+                observation_backup_dir=observation_backup_dir,
             )
             attempt_paths.append(path)
             latest_attempt_payload = attempt_payload
@@ -7974,6 +7984,7 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
                 source_configs=source_configs,
                 sampled_at=sampled_at,
                 allow_outside_window=True,
+                observation_backup_dir=observation_backup_dir,
             )
             attempt_paths.append(path)
     else:
@@ -7984,6 +7995,7 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
             source_configs=source_configs,
             sampled_at=sampled_at,
             allow_outside_window=args.allow_outside_window,
+            observation_backup_dir=observation_backup_dir,
         )
         attempt_paths.append(path)
         latest_attempt_payload = attempt_payload
@@ -8347,6 +8359,10 @@ def parse_args() -> argparse.Namespace:
         help="In collect-intraday mode, wait for and collect each --sample-times-utc checkpoint",
     )
     parser.add_argument(
+        "--observation-backup-dir",
+        help="Copy each raw intraday observation here before publishing, for independent recovery storage",
+    )
+    parser.add_argument(
         "--skip-waits",
         action="store_true",
         help="Skip sleeping between sample/publish checkpoints (for local verification)",
@@ -8354,7 +8370,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--allow-outside-window",
         action="store_true",
-        help="Allow sampling outside 13:45-14:15 UTC (for local verification only)",
+        help="Allow sampling outside 13:45-14:15 UTC for recovery or local verification",
     )
     parser.add_argument(
         "--no-new-reference",

@@ -71,6 +71,7 @@ Public historical series (`/api/series.json`) remains strict and primary-only: i
 - Historical missing or WITHHOLD daily files may be backfilled only from captured same-day intraday source-read artifacts; no prior-day carry-forward rows are emitted.
 - If a scheduled collector starts after all checkpoints, it records one fresh outside-window recovery attempt with the actual collection time instead of silently skipping the day.
 - Scheduled backup publications also create a missing daily reference. A missing current-day fix fails the guardrail even when there are no intraday artifacts, triggering collection and same-day repair.
+- Additional immediate recovery collections are scheduled at `05:37`, `09:37`, `17:37`, and `21:37 UTC`. These keep same-day source reads outside the main window without changing the preferred in-window daily selection. Manual collection also runs immediately.
 - Homepage remains daily-only (no live ticker behavior).
 
 ### Supplementary Source Wiring
@@ -178,12 +179,22 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
   - `/site/fix/YYYY-MM-DD/index.html`
 - Intraday collection starts early and waits inside the job for `13:50`, `14:05`, and `14:14 UTC` checkpoints, then commits `collect:` snapshots to `data/live`. This absorbs GitHub scheduled-run startup delays while keeping official candidates inside the publication window.
 - Official publish snapshots (`publish:` at `14:20 UTC`) and Iran discovery outputs (`discover:`) also commit to `data/live` instead of `main`.
-- Self-heal schedules (`14:30 UTC`, `15:00 UTC`) publish or repair the current-day reference and persist snapshots, including raw recovery observations.
+- Self-heal schedules (`14:30 UTC`, `15:00 UTC`, `17:47 UTC`, `21:47 UTC`) publish or repair the current-day reference and persist snapshots, including raw recovery observations.
 - New daily publication runs supersede obsolete runs, including a run stuck waiting for Pages. Running jobs have a 30-minute timeout.
 - `main` intentionally stays code-only; generated `site/*` and `survey_outputs*` artifacts are ignored on `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
 - Build-only preserves existing `/site/fix/YYYY-MM-DD.json` official fix, `as_of`, and `publication_selection`; it may regenerate pages, archive, series exports, status, and intraday pulse files.
 - Every build writes `/site/api/mapping_audit.json` with the current mapping fingerprint and any stale historical day payloads, so mapping changes can be backfilled explicitly instead of silently drifting.
+
+## Observation Durability And Recovery
+
+Each CI collection copies its raw source observations to a separate recovery directory before generating derived outputs. CI uploads that directory as an `intraday-observations-RUN_ID-RUN_ATTEMPT` artifact (or `recovery-observations-RUN_ID-RUN_ATTEMPT` for publisher auto-heal), retained for 90 days. This backup is independent of Git persistence and Pages deployment; successful observations also remain on `data/live`.
+
+A rejected snapshot push or conflicting rebase now fails the workflow instead of claiming success. The collector still attempts Git persistence if the artifact upload fails. Monitor failed collection/publication runs in GitHub Actions; notification delivery depends on the account's GitHub notification settings.
+
+To recover from a failed data-branch push, download that run's observation artifact with `gh run download RUN_ID --name ARTIFACT_NAME --dir recovery`. Restore its `intraday/` files into the `site/intraday/` directory in a `data/live` checkout, preserving their paths and timestamps. Run the existing build-only pipeline against that checkout and persist the recovered observations and generated daily artifacts using the normal data-branch process. Build-only mode backfills missing days from the original same-day source reads; it does not invent values for days with no valid observation.
+
+The redundant schedules and both storage paths still depend on GitHub. They do not guarantee capture during a GitHub-wide outage or when all upstream sources are unavailable. Protection against a full scheduler outage requires an additional collector hosted outside GitHub.
 
 ## One-Time Backfill (If Early Days Were Lost)
 
