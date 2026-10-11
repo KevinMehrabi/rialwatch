@@ -2,6 +2,7 @@ import argparse
 import copy
 import datetime as dt
 import json
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -575,6 +576,47 @@ class DailyPublicationOutputTests(unittest.TestCase):
                 self.assertEqual(daily["computed"]["fix"], 2_700_000.0)
                 self.assertEqual(daily["publication_selection"]["selection_scope"], "same_day_repair")
                 self.assertEqual(daily["publication_selection"]["selected_collected_at"], "2026-10-11T18:18:00Z")
+
+    def test_backup_recovers_a_missed_day_after_downstream_failure_and_lost_checkout(self) -> None:
+        day = dt.date(2026, 10, 11)
+        sampled_at = utc_ts(day, 17, 37)
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir, backup_dir = Path(tmp) / "site", Path(tmp) / "backup"
+            with (
+                mock.patch("scripts.pipeline.collect_one_attempt", return_value={
+                    "bonbast": [sample_for(sampled_at, 2_646_525.0)]
+                }),
+                mock.patch("scripts.pipeline.publish_intraday_latest", side_effect=RuntimeError("render failed")),
+            ):
+                with self.assertRaisesRegex(RuntimeError, "render failed"):
+                    pipeline.collect_and_write_intraday_attempt(
+                        site_dir, day, SOURCE_CONFIGS, sampled_at, True, backup_dir
+                    )
+            relative = Path("intraday/2026-10-11/17-37-00.json")
+            self.assertEqual((backup_dir / relative).read_bytes(), (site_dir / relative).read_bytes())
+            shutil.rmtree(site_dir)
+            shutil.copytree(backup_dir, site_dir)
+            pipeline.run_build_only(site_dir, TEMPLATES_DIR, "2026-10-12T15:00:00Z", day + dt.timedelta(days=1))
+            recovered = json.loads((site_dir / "fix/2026-10-11.json").read_text())
+            self.assertEqual(recovered["computed"]["fix"], 2_646_525.0)
+            self.assertEqual(recovered["publication_selection"]["selected_collected_at"], "2026-10-11T17:37:00Z")
+            self.assertEqual(recovered["publication_selection"]["selection_scope"], "historical_intraday_backfill")
+
+    def test_backup_retains_failed_source_evidence_without_fabricating_a_value(self) -> None:
+        day = dt.date(2026, 10, 11)
+        sampled_at = utc_ts(day, 17, 37)
+        with tempfile.TemporaryDirectory() as tmp:
+            backup_dir = Path(tmp) / "backup"
+            with mock.patch("scripts.pipeline.collect_one_attempt", return_value={
+                "bonbast": [sample_for(sampled_at, 2_646_525.0, ok=False)]
+            }):
+                pipeline.collect_and_write_intraday_attempt(
+                    Path(tmp) / "site", day, SOURCE_CONFIGS, sampled_at, True, backup_dir
+                )
+            payload = json.loads(next(backup_dir.rglob("*.json")).read_text())
+            self.assertTrue(payload["computed"]["withheld"])
+            self.assertIsNone(payload["computed"]["fix"])
+            self.assertFalse(payload["sources"]["bonbast"]["health"]["fetch_success"])
 
     def test_homepage_withhold_shows_last_valid_official_rate(self) -> None:
         valid_day = dt.date(2026, 5, 18)

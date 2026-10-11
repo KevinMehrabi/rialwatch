@@ -10,6 +10,9 @@ on:
     # daily publisher with zero same-day intraday artifacts.
     - cron: "0 13 * * *"
     - cron: "30 13 * * *"
+    # Independent observations across the UTC day preserve recoverable reads
+    # even when the main publication window or Pages deployment is missed.
+    - cron: "37 5,9,17,21 * * *"
   workflow_dispatch:
 
 permissions:
@@ -22,6 +25,7 @@ concurrency:
 jobs:
   collect_intraday:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,18 +62,35 @@ jobs:
 
       - name: Collect one intraday attempt
         env:
+          COLLECTION_SCHEDULE: ${{ github.event.schedule }}
           ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
           BONBAST_SITE_URL: ${{ vars.BONBAST_SITE_URL }}
           NAVASAN_PUBLIC_URL: ${{ vars.NAVASAN_PUBLIC_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
-          python3 scripts/pipeline.py --mode collect-intraday --site-dir state/site --templates-dir templates --collect-sample-times --sample-times-utc 13:50,14:05,14:14
+          if [ "$COLLECTION_SCHEDULE" = "37 5,9,17,21 * * *" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            collection_args=(--allow-outside-window)
+          else
+            collection_args=(--collect-sample-times --sample-times-utc 13:50,14:05,14:14)
+          fi
+          python3 scripts/pipeline.py --mode collect-intraday --site-dir state/site --templates-dir templates "${collection_args[@]}" --observation-backup-dir "$RUNNER_TEMP/rialwatch-observations"
+
+      - name: Back up raw observations independently of Git persistence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: intraday-observations-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rialwatch-observations/
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Persist intraday snapshots
+        # Attempt Git persistence even if the separate artifact upload fails.
+        if: ${{ !cancelled() }}
         run: |
           data_branch="data/live"
           today="$(date -u +%F)"
-          target_dir="site/intraday/${today}"
+          target_dir="site/intraday"
           targets=()
           if [ -d "state/${target_dir}" ]; then
             targets+=("$target_dir")
@@ -79,8 +100,8 @@ jobs:
           fi
 
           if [ "${#targets[@]}" -eq 0 ]; then
-            echo "No intraday artifacts for ${today}."
-            exit 0
+            echo "::error::No intraday artifacts available to persist."
+            exit 1
           fi
 
           if [ -z "$(git -C state status --porcelain -- "${targets[@]}")" ]; then
@@ -100,10 +121,10 @@ jobs:
             fi
             echo "Push rejected on attempt ${attempt}; rebasing onto origin/${data_branch} and retrying..."
             if ! git -C state pull --rebase --autostash origin "${data_branch}"; then
-              echo "::warning::Rebase failed after push rejection (likely concurrent intraday update). Skipping this snapshot to avoid noisy workflow failures."
-              exit 0
+              echo "::error::Could not persist observations after a concurrent data update. Recover the raw observation artifact from this run."
+              exit 1
             fi
           done
 
-          echo "::warning::Failed to push intraday snapshots to ${data_branch} after 3 attempts. A newer snapshot was likely published by a concurrent run."
-          exit 0
+          echo "::error::Failed to push intraday snapshots to ${data_branch} after 3 attempts. Recover the raw observation artifact from this run."
+          exit 1

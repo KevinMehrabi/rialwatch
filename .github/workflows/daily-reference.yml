@@ -11,6 +11,9 @@ on:
     - cron: "30 14 * * *"
     # Secondary self-heal pass in case collection jobs complete late.
     - cron: "0 15 * * *"
+    # Retry later in the day as well; retained source reads allow later builds
+    # to backfill a missed publication without inventing a historical rate.
+    - cron: "47 17,21 * * *"
   workflow_dispatch:
 
 permissions:
@@ -101,9 +104,18 @@ jobs:
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
           echo "Guardrail pre-check failed; collecting a fresh intraday attempt before self-heal rebuild."
-          python3 scripts/pipeline.py --mode collect-intraday --site-dir state/site --templates-dir templates --allow-outside-window
+          python3 scripts/pipeline.py --mode collect-intraday --site-dir state/site --templates-dir templates --allow-outside-window --observation-backup-dir "$RUNNER_TEMP/rialwatch-observations"
           echo "Publishing the current-day reference from refreshed intraday artifacts."
           python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates --skip-waits
+
+      - name: Back up raw recovery observations independently of publication
+        if: always() && steps.guardrail_pre.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: recovery-observations-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rialwatch-observations/
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Guardrail checks (post-heal)
         if: github.event_name == 'schedule'
@@ -111,7 +123,8 @@ jobs:
           python3 scripts/guardrail_check.py --site-dir state/site
 
       - name: Persist daily snapshots
-        if: github.event_name == 'schedule'
+        # Keep captured reads even when a later guardrail or backup upload fails.
+        if: github.event_name == 'schedule' && !cancelled()
         run: |
           data_branch="data/live"
           targets=()
