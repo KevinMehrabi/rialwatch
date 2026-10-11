@@ -1,0 +1,56 @@
+name: Deploy Latest Site
+
+on:
+  workflow_run:
+    workflows:
+      - Daily USD/IRR Reference
+      - Intraday USD/IRR Collection
+      - Regional Diagnostics Discovery
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Collection and persistence never wait for Pages. Only this workflow deploys,
+# and each replacement rebuilds from the newest committed data/live snapshot.
+concurrency:
+  group: rialwatch-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout current application
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Checkout latest committed data
+        uses: actions/checkout@v4
+        with:
+          ref: data/live
+          path: state
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Rebuild a consistent site from the latest snapshot
+        run: python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: state/site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
