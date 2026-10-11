@@ -19,6 +19,7 @@ import re
 import shutil
 import socket
 import statistics
+import tempfile
 import threading
 import time
 import urllib.error
@@ -325,6 +326,8 @@ def utc_now() -> dt.datetime:
 
 
 def parse_float(value: Any) -> Optional[float]:
+    if isinstance(value, bool):
+        return None
     if isinstance(value, (int, float)):
         v = float(value)
         return v if math.isfinite(v) else None
@@ -1141,7 +1144,16 @@ def write_text(path: Path, content: str) -> None:
 def write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     safe_payload = sanitize_public_json_payload(payload)
-    path.write_text(json.dumps(safe_payload, ensure_ascii=True, indent=2) + "\n", encoding="utf-8")
+    content = json.dumps(safe_payload, ensure_ascii=True, indent=2, allow_nan=False) + "\n"
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent, delete=False) as handle:
+            temporary_path = Path(handle.name)
+            handle.write(content)
+        os.replace(temporary_path, path)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def iso_date(d: dt.date) -> str:
@@ -1635,7 +1647,7 @@ def official_quote_is_fresh(quote_time: Optional[dt.datetime], sampled_at: dt.da
         maximum=24 * 30,
     )
     max_age = dt.timedelta(hours=max_age_hours)
-    return (sampled_at - quote_time) <= max_age
+    return -dt.timedelta(minutes=10) <= (sampled_at - quote_time) <= max_age
 
 
 def official_quote_within_stale_fallback(quote_time: Optional[dt.datetime], sampled_at: dt.datetime) -> bool:
@@ -1648,7 +1660,7 @@ def official_quote_within_stale_fallback(quote_time: Optional[dt.datetime], samp
         maximum=24 * 365,
     )
     max_age = dt.timedelta(hours=max_age_hours)
-    return (sampled_at - quote_time) <= max_age
+    return -dt.timedelta(minutes=10) <= (sampled_at - quote_time) <= max_age
 
 
 def with_query(url: str, extra_params: Dict[str, str]) -> str:
@@ -3853,6 +3865,31 @@ def sample_benchmark_quote_time(sample: Sample, benchmark_key: str) -> Optional[
     return None
 
 
+def sample_value_is_usable(sample: Sample, benchmark_key: str) -> bool:
+    """Window eligibility and source quote age are separate checks.
+
+    Recovery can relax the collection window, never failed validation or quote
+    freshness. Match the existing six-hour intraday policy for market quotes;
+    official quotes retain their separate freshness/fallback policy.
+    """
+    if parse_number(sample.benchmark_values.get(benchmark_key)) is None:
+        return False
+    health = sample.health if isinstance(sample.health, dict) else {}
+    if health.get("fetch_success") is False:
+        return False
+    validation = health.get("validation_result")
+    if isinstance(validation, dict) and validation.get("ok") is False:
+        return False
+    quote_time = sample_benchmark_quote_time(sample, benchmark_key)
+    if quote_time is not None:
+        age = sample.sampled_at - quote_time
+        if age < -dt.timedelta(minutes=10):
+            return False
+        if benchmark_key != "official" and age > INTRADAY_PULSE_MAX_QUOTE_AGE:
+            return False
+    return True
+
+
 def latest_sample_value_for_benchmark(
     entries: List[Sample], benchmark_key: str, allow_stale_official: bool = False
 ) -> Optional[Tuple[float, Optional[dt.datetime], dt.datetime, str]]:
@@ -4000,8 +4037,8 @@ def compute_benchmark_result(
             if primary_allow_stale:
                 values = []
                 for s in entries:
-                    candidate = s.benchmark_values.get(benchmark_key)
-                    if candidate is None:
+                    candidate = parse_number(s.benchmark_values.get(benchmark_key))
+                    if candidate is None or not sample_value_is_usable(s, benchmark_key):
                         continue
                     if isinstance(s.health, dict):
                         fetch_success = s.health.get("fetch_success")
@@ -4018,10 +4055,13 @@ def compute_benchmark_result(
                 values = [
                     s.benchmark_values.get(benchmark_key)
                     for s in entries
-                    if s.ok and not s.stale and s.benchmark_values.get(benchmark_key) is not None
+                    if s.ok and not s.stale and sample_value_is_usable(s, benchmark_key)
                 ]
         else:
-            values = [s.benchmark_values.get(benchmark_key) for s in entries if s.benchmark_values.get(benchmark_key) is not None]
+            values = [
+                parse_number(s.benchmark_values.get(benchmark_key))
+                for s in entries if sample_value_is_usable(s, benchmark_key)
+            ]
 
         if not values:
             if benchmark_key == PRIMARY_BENCHMARK:
@@ -4502,6 +4542,7 @@ def build_normalized_market_snapshot(daily: Dict[str, Any], site_dir: Optional[P
         "street_gold_gap_pct": street_gold_gap,
         "gold_implied_usd_irr": gold_implied_fx,
         "gold_usd_per_oz": gold_usd_per_oz,
+        "gold_price_basis": "fixed_assumption_not_live_quote",
         "official_commercial_trend_7d": official_trend,
         "street_confidence_status": str(status) if status is not None else None,
         "source_unit": source_unit,
@@ -5229,7 +5270,7 @@ def publish_status(
         generated = try_parse_datetime(payload.get("generated_at"))
         if generated is None:
             return None
-        reference = try_parse_datetime(latest.get("as_of")) or try_parse_datetime(generated_at) or utc_now()
+        reference = try_parse_datetime(generated_at) or utc_now()
         return reference - generated
 
     def diagnostics_payload_is_stale(payload: Dict[str, Any]) -> bool:
@@ -5401,7 +5442,11 @@ def publish_status(
     publication_selection = effective_latest.get("publication_selection", {})
     if not isinstance(publication_selection, dict):
         publication_selection = {}
-    valid_candidate_count_raw = publication_selection.get("valid_candidate_count")
+    recovery_selection = publication_selection.get("selection_scope") == "same_day_repair"
+    valid_candidate_count_raw = publication_selection.get(
+        "valid_same_day_candidate_count" if recovery_selection else "valid_candidate_count"
+    )
+    candidate_scope = "same-day recovery" if recovery_selection else "intraday"
     valid_candidate_count: Optional[int] = None
     if isinstance(valid_candidate_count_raw, (int, float)) and math.isfinite(float(valid_candidate_count_raw)):
         valid_candidate_count = int(valid_candidate_count_raw)
@@ -5420,14 +5465,14 @@ def publish_status(
     publication_selection_parts: List[str] = []
     if valid_candidate_count is not None:
         label = "candidate" if valid_candidate_count == 1 else "candidates"
-        publication_selection_parts.append(f"{valid_candidate_count} valid intraday {label}")
+        publication_selection_parts.append(f"{valid_candidate_count} valid {candidate_scope} {label}")
     if street_source_count_used is not None:
         source_label = "source" if street_source_count_used == 1 else "sources"
         publication_selection_parts.append(f"{street_source_count_used} street {source_label} used")
     if publication_state == "Published" and same_as_previous_day:
-        publication_selection_parts.append("Freshly selected, unchanged vs prior day")
+        publication_selection_parts.append("Freshly selected, unchanged vs previous reference")
     elif publication_state == "Published" and delta_pct_vs_previous_day is not None:
-        publication_selection_parts.append(f"Delta vs prior day {delta_pct_vs_previous_day:+.1f}%")
+        publication_selection_parts.append(f"Delta vs previous reference {delta_pct_vs_previous_day:+.1f}%")
     publication_selection_context = (
         " · ".join(publication_selection_parts) if publication_selection_parts else "Selection context unavailable."
     )
@@ -5802,12 +5847,21 @@ def publish_status(
         publication_overview_note = f"Published {effective_latest.get('date', 'latest')} benchmark."
         if valid_candidate_count is not None:
             candidate_label = "candidate" if valid_candidate_count == 1 else "candidates"
-            publication_overview_note += f" {valid_candidate_count} valid intraday {candidate_label}."
+            publication_overview_note += f" {valid_candidate_count} valid {candidate_scope} {candidate_label}."
     elif publication_state == "Withheld":
         publication_overview_state = "Degraded"
         publication_overview_note = publication_reason
 
+    status_time = try_parse_datetime(generated_at) or utc_now()
+    publication_day = parse_iso_date_text(effective_latest.get("date"))
+    expected_day = status_time.date() if status_time.time().replace(tzinfo=None) >= PUBLISH_AT else status_time.date()-dt.timedelta(days=1)
+    publication_overdue = publication_day is not None and publication_day < expected_day
+    if publication_overdue:
+        publication_overview_state = "Degraded"
+        publication_overview_note = f"Latest reference is {publication_day}; expected {expected_day} by this status snapshot."
     pipeline_state = map_pipeline_state(status_title)
+    if publication_overdue and pipeline_state == "Online":
+        pipeline_state = "Degraded"
     deployment_state = "Online"
     pipeline_note = {
         "Online": "Benchmark pipeline is operating normally.",
@@ -5822,7 +5876,7 @@ def publish_status(
         ("Benchmark Pipeline", pipeline_state, pipeline_note),
         ("Latest Publication", publication_overview_state, publication_overview_note),
         ("Source Collection", source_collection_state, source_collection_note),
-        ("Site Deployment", deployment_state, "Dashboard deployment is online."),
+        ("Site Build", deployment_state, "This status snapshot was generated successfully. It is not an independent uptime check."),
     ]
     overview_cards_html = "\n".join(
         "<div class=\"status-overview-card\">"
@@ -6384,7 +6438,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
 
     publication_change_meta = ""
     if publication_state == "Published" and same_as_previous_day:
-        publication_change_meta = "Freshly selected, unchanged vs prior day."
+        publication_change_meta = "Freshly selected, unchanged vs previous reference."
     elif publication_state == "Published" and previous_day_fix is not None:
         publication_change_meta = "Freshly selected from today's intraday samples."
     primary_publication_basis = publication_meta if publication_meta else "N/A"
@@ -6533,7 +6587,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         street_crypto_peer_value=comparison_value_text(crypto),
         street_crypto_gap_sparkline=indicator_gap_sparkline_html("street_crypto_gap_pct"),
         street_gold_gap_value=indicator_value_or_unavailable("street_gold_gap_pct"),
-        street_gold_gap_note="Gold-derived FX signal (indicative)",
+        street_gold_gap_note=f"Assumes gold at ${gold_usd_per_oz:,.0f}/oz; not a live gold quote" if gold_usd_per_oz else "Gold basis unavailable",
         street_gold_street_value=comparison_value_text(street),
         street_gold_peer_value=comparison_value_text(gold_implied_fx),
         street_gold_gap_sparkline=indicator_gap_sparkline_html("street_gold_gap_pct"),
@@ -7084,7 +7138,19 @@ def collect_one_attempt(
     window_end_dt = dt.datetime.combine(day, WINDOW_END, tzinfo=UTC)
     samples: Dict[str, List[Sample]] = {}
     for cfg in source_configs:
-        sample = fetch_one(cfg, sampled_at, window_start_dt, window_end_dt)
+        try:
+            sample = fetch_one(cfg, sampled_at, window_start_dt, window_end_dt)
+        except Exception as exc:
+            # This is the source isolation boundary. Keep the failure visible,
+            # without exposing a provider URL/credential in exception text.
+            error = f"source collection failed ({type(exc).__name__})"
+            sample = Sample(
+                cfg.name, sampled_at, None, blank_benchmark_values(), None,
+                ok=False, stale=False, error=error,
+                health={"fetch_success": False, "failure_reason": error,
+                        "error_type": type(exc).__name__, "validation_result": {"ok": False}},
+                source_unit=cfg.default_unit,
+            )
         if not allow_outside_window and not is_within_window_minute(sampled_at, window_start_dt, window_end_dt):
             sample.ok = False
             sample.stale = True
@@ -7111,7 +7177,6 @@ def collect_and_write_intraday_attempt(
         day=day,
         allow_outside_window=allow_outside_window,
     )
-    summary = summarize_day(samples, source_configs, day)
     attempt_payload = {
         "date": iso_date(day),
         "collected_at": iso_ts(sampled_at),
@@ -7123,8 +7188,9 @@ def collect_and_write_intraday_attempt(
             }
             for source, entries in samples.items()
         },
-        "computed": summary.get("computed", {}),
+        "computed": {},
     }
+    # Commit the captured evidence before derived calculations can fail.
     path = write_intraday_attempt(site_dir, attempt_payload)
     if observation_backup_dir is not None:
         # Save the source read before rendering or Git persistence can fail.
@@ -7132,6 +7198,11 @@ def collect_and_write_intraday_attempt(
         backup_path = observation_backup_dir / path.relative_to(site_dir)
         backup_path.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(path, backup_path)
+    summary = summarize_day(samples, source_configs, day)
+    attempt_payload["computed"] = summary.get("computed", {})
+    write_json(path, attempt_payload)
+    if observation_backup_dir is not None:
+        write_json(backup_path, attempt_payload)
     publish_intraday_latest(site_dir, day)
     return path, attempt_payload, summary
 

@@ -219,3 +219,21 @@ fx.example.com
 ```
 
 4. Re-run workflow and verify HTTPS is enabled.
+
+### Audit safeguards (October 2026)
+
+- Market quote recovery retains the intraday six-hour age limit, rejects future
+  timestamps beyond ten minutes, and excludes failed source validation.
+- Source exceptions are recorded individually; other successful reads survive.
+  Raw observations are backed up before benchmark calculations or rendering.
+- `deploy-pages.yml` is the only Pages publisher. Successful collection, daily,
+  and regional workflows trigger a rebuild from the latest committed `data/live`
+  state; obsolete Pages jobs can be cancelled without cancelling collection.
+- Pull requests and main pushes run the Python regression suite.
+- Gold-implied figures disclose their fixed USD/oz assumption. They are not
+  backed by a live international gold-price feed.
+
+GitHub remains a shared failure domain for schedules, storage, and publication.
+For independent outage coverage, add a second collector on separately hosted
+infrastructure and an external freshness check. Automated recovery cannot invent
+observations for dates with no retained source data.
