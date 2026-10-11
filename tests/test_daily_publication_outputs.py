@@ -542,6 +542,40 @@ class DailyPublicationOutputTests(unittest.TestCase):
             self.assertTrue(intraday_latest["in_publication_window"])
             self.assertEqual(intraday_latest["primary_open_market_value"], 1_400_005.0)
 
+    def test_late_collector_records_one_real_attempt_and_can_publish_same_day_repair(self) -> None:
+        day = dt.date(2026, 10, 11)
+        sampled_at = utc_ts(day, 18, 18)
+        args = argparse.Namespace(
+            allow_outside_window=False,
+            collect_sample_times=True,
+            sample_times_utc="13:50,14:05,14:14",
+            skip_waits=True,
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            site_dir = Path(tmp)
+            with (
+                mock.patch("scripts.pipeline.utc_now", return_value=sampled_at),
+                mock.patch("scripts.pipeline.build_source_configs", return_value=SOURCE_CONFIGS),
+                mock.patch("scripts.pipeline.collect_one_attempt", return_value={
+                    "bonbast": [sample_for(sampled_at, 2_700_000.0)]
+                }) as collect,
+                mock.patch("scripts.pipeline.publish_status"),
+            ):
+                self.assertEqual(pipeline.run_collect_intraday(args, site_dir, TEMPLATES_DIR, pipeline.iso_ts(sampled_at)), 0)
+                attempts = list((site_dir / "intraday" / day.isoformat()).glob("*.json"))
+                self.assertEqual([path.name for path in attempts], ["18-18-00.json"])
+                collect.assert_called_once()
+                self.assertTrue(collect.call_args.kwargs["allow_outside_window"])
+                pulse = json.loads((site_dir / "api" / "intraday" / "latest.json").read_text())
+                self.assertEqual(pulse["collected_at"], "2026-10-11T18:18:00Z")
+                self.assertFalse(pulse["in_publication_window"])
+                self.assertEqual(pipeline.run_publish_daily(args, site_dir, TEMPLATES_DIR, pipeline.iso_ts(sampled_at), day), 0)
+                daily = json.loads((site_dir / "api" / "latest.json").read_text())
+                self.assertEqual(daily["date"], day.isoformat())
+                self.assertEqual(daily["computed"]["fix"], 2_700_000.0)
+                self.assertEqual(daily["publication_selection"]["selection_scope"], "same_day_repair")
+                self.assertEqual(daily["publication_selection"]["selected_collected_at"], "2026-10-11T18:18:00Z")
+
     def test_homepage_withhold_shows_last_valid_official_rate(self) -> None:
         valid_day = dt.date(2026, 5, 18)
         withheld_day = dt.date(2026, 5, 21)

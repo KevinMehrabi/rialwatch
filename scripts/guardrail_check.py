@@ -266,10 +266,11 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
     )
 
     if latest_date != day_s and not current_day_fix_exists:
-        if valid_in_window_attempts:
-            failures.append(
-                "Current-day official fix is missing, but intraday attempts contain valid in-window benchmark data."
-            )
+        failures.append(
+            "Current-day official fix is missing; "
+            f"latest.json still points to {latest_date or 'unknown'}. "
+            "Run daily publication and, if necessary, collect a same-day recovery attempt."
+        )
         return failures, context
 
     if latest_date == day_s and latest_withheld and no_intraday_reason and intraday_count == 0:

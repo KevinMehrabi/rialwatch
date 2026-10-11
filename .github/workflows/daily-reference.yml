@@ -20,11 +20,14 @@ permissions:
 
 concurrency:
   group: daily-usd-irr-reference
-  cancel-in-progress: false
+  # An obsolete run waiting for Pages must not hold up every later daily fix.
+  # Publication is idempotent and reuses an already valid immutable daily fix.
+  cancel-in-progress: true
 
 jobs:
   build_publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -63,12 +66,10 @@ jobs:
           NAVASAN_PUBLIC_URL: ${{ vars.NAVASAN_PUBLIC_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "20 14 * * *" ]; then
-            python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates
-          elif [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "30 14 * * *" ]; then
-            python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
-          elif [ "${{ github.event_name }}" = "schedule" ] && [ "${{ github.event.schedule }}" = "0 15 * * *" ]; then
-            python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            # Backup schedules must also create a missing daily reference.
+            # Build-only mode deliberately preserves the previous day's fix.
+            python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates --skip-waits
           elif [ "${{ github.event_name }}" = "push" ]; then
             # Push-triggered deploys should rebuild from existing artifacts only.
             # Intraday collection remains schedule-driven to avoid over-polling upstream APIs.
@@ -101,8 +102,8 @@ jobs:
         run: |
           echo "Guardrail pre-check failed; collecting a fresh intraday attempt before self-heal rebuild."
           python3 scripts/pipeline.py --mode collect-intraday --site-dir state/site --templates-dir templates --allow-outside-window
-          echo "Running current-day self-heal rebuild from refreshed intraday artifacts."
-          python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
+          echo "Publishing the current-day reference from refreshed intraday artifacts."
+          python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates --skip-waits
 
       - name: Guardrail checks (post-heal)
         if: github.event_name == 'schedule'
@@ -114,7 +115,9 @@ jobs:
         run: |
           data_branch="data/live"
           targets=()
-          for path in site/fix site/api/latest.json site/api/series.json site/api/daily_full.json site/api/revisions.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do
+          # Preserve raw auto-heal observations too, so published fixes remain
+          # auditable and can be rebuilt from the source reads that produced them.
+          for path in site/fix site/intraday site/api/latest.json site/api/series.json site/api/daily_full.json site/api/revisions.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do
             if [ -e "state/$path" ]; then
               targets+=("$path")
             fi
@@ -141,7 +144,7 @@ jobs:
               exit 0
             fi
             echo "Push rejected on attempt ${attempt}; rebasing onto origin/${data_branch} and retrying..."
-            git -C state pull --rebase origin "${data_branch}"
+            git -C state pull --rebase --autostash origin "${data_branch}"
           done
 
           echo "::error::Failed to push daily snapshots to ${data_branch} after 3 attempts."

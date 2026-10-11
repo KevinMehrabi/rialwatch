@@ -7961,6 +7961,21 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
             attempt_paths.append(path)
             latest_attempt_payload = attempt_payload
             latest_summary = summary
+        if not attempt_paths:
+            # GitHub cron can start hours late. Keep the real collection time
+            # and let daily selection record a same_day_repair, rather than
+            # succeeding without collecting anything.
+            sampled_at = utc_now()
+            day = sampled_at.date()
+            print("Publication checkpoints missed; collecting one outside-window recovery attempt.")
+            path, latest_attempt_payload, latest_summary = collect_and_write_intraday_attempt(
+                site_dir=site_dir,
+                day=day,
+                source_configs=source_configs,
+                sampled_at=sampled_at,
+                allow_outside_window=True,
+            )
+            attempt_paths.append(path)
     else:
         sampled_at = utc_now()
         path, attempt_payload, summary = collect_and_write_intraday_attempt(
@@ -7988,7 +8003,7 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
                 "no intraday samples available in publication window",
             ),
         )
-        return 0
+        return 1
 
     if len(attempt_paths) == 1:
         status_detail = (
