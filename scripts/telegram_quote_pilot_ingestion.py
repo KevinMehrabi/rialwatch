@@ -11,6 +11,7 @@ import argparse
 import csv
 import datetime as dt
 import html
+import http.client
 import json
 import re
 import time
@@ -216,12 +217,19 @@ def fetch_url(url: str, timeout: int) -> Tuple[Optional[str], Optional[int], Opt
             body = resp.read().decode("utf-8", errors="replace")
             return body, int(resp.status), None
     except urllib.error.HTTPError as exc:
-        body = exc.read().decode("utf-8", errors="replace")
+        try:
+            body = exc.read().decode("utf-8", errors="replace")
+        except (http.client.HTTPException, OSError):
+            body = None
         return body, int(exc.code), f"http_{exc.code}"
     except urllib.error.URLError as exc:
         return None, None, f"network_error:{exc.reason}"
     except TimeoutError:
         return None, None, "timeout"
+    except (http.client.HTTPException, OSError) as exc:
+        # A truncated board must not abort the entire regional feed or be
+        # parsed as a complete quote page. Other sources can still be used.
+        return None, None, f"network_error:{type(exc).__name__}"
 
 
 def extract_meta_content(page: str, prop: str) -> str:

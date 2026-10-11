@@ -239,7 +239,7 @@ class GuardrailCheckTest(unittest.TestCase):
             failures, _ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
             self.assertEqual(failures, [])
 
-    def test_passes_when_latest_official_is_previous_day_and_intraday_is_outside_window(self) -> None:
+    def test_fails_when_latest_official_is_previous_day_and_intraday_is_outside_window(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             site_dir = Path(temp_dir) / "site"
             previous_day_s = "2026-03-23"
@@ -260,9 +260,20 @@ class GuardrailCheckTest(unittest.TestCase):
             )
 
             failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 3, 24))
-            self.assertEqual(failures, [])
+            self.assertTrue(any("Current-day official fix is missing" in failure for failure in failures))
             self.assertEqual(ctx["latest_date"], previous_day_s)
             self.assertEqual(ctx["valid_in_window_candidate_count"], 0)
+
+    def test_fails_when_latest_official_is_days_old_and_collection_silently_skipped(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            site_dir = Path(temp_dir) / "site"
+            latest = base_latest("2026-10-06")
+            latest["computed"].update(fix=2_690_000.0, withheld=False)
+            write_json(site_dir / "api" / "latest.json", latest)
+            write_json(site_dir / "fix" / "2026-10-06.json", latest)
+            failures, ctx = guardrail_check.evaluate_guardrails(site_dir, dt.date(2026, 10, 11))
+            self.assertEqual(ctx["intraday_count"], 0)
+            self.assertTrue(any("Current-day official fix is missing" in failure for failure in failures))
 
     def test_fails_when_current_fix_missing_but_valid_in_window_attempt_exists(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

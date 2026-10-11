@@ -59,9 +59,9 @@ Public historical series (`/api/series.json`) remains strict and primary-only: i
   - `/site/intraday/YYYY-MM-DD/HH-MM-SS.json`
 - Bonbast is collected via headless browser scrape (Playwright) during intraday runs and stored as normalized source sample data with health metadata.
 - Initial cadence (UTC):
-  - `13:45`
-  - `14:00`
-  - `14:15`
+  - `13:50`
+  - `14:05`
+  - `14:14`
 - Official daily publication runs once at `14:20 UTC` and normally selects from intraday attempts collected inside the publication window (`13:45-14:15 UTC`) using this explicit rule:
   - choose the latest valid in-window intraday attempt
   - if the latest in-window attempt is invalid, fall back to the most recent valid in-window attempt
@@ -69,6 +69,8 @@ Public historical series (`/api/series.json`) remains strict and primary-only: i
   - if no valid same-day read exists, publish a WITHHOLD daily snapshot (no fabricated rate)
 - Later outside-window intraday attempts update `/api/intraday/latest.json`; when they are used to repair an empty daily snapshot, `/fix/YYYY-MM-DD.json` revision metadata records the change.
 - Historical missing or WITHHOLD daily files may be backfilled only from captured same-day intraday source-read artifacts; no prior-day carry-forward rows are emitted.
+- If a scheduled collector starts after all checkpoints, it records one fresh outside-window recovery attempt with the actual collection time instead of silently skipping the day.
+- Scheduled backup publications also create a missing daily reference. A missing current-day fix fails the guardrail even when there are no intraday artifacts, triggering collection and same-day repair.
 - Homepage remains daily-only (no live ticker behavior).
 
 ### Supplementary Source Wiring
@@ -176,7 +178,8 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
   - `/site/fix/YYYY-MM-DD/index.html`
 - Intraday collection starts early and waits inside the job for `13:50`, `14:05`, and `14:14 UTC` checkpoints, then commits `collect:` snapshots to `data/live`. This absorbs GitHub scheduled-run startup delays while keeping official candidates inside the publication window.
 - Official publish snapshots (`publish:` at `14:20 UTC`) and Iran discovery outputs (`discover:`) also commit to `data/live` instead of `main`.
-- Self-heal schedules (`14:30 UTC`, `15:00 UTC`) rebuild/deploy without pushing snapshot commits.
+- Self-heal schedules (`14:30 UTC`, `15:00 UTC`) publish or repair the current-day reference and persist snapshots, including raw recovery observations.
+- New daily publication runs supersede obsolete runs, including a run stuck waiting for Pages. Running jobs have a 30-minute timeout.
 - `main` intentionally stays code-only; generated `site/*` and `survey_outputs*` artifacts are ignored on `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
 - Build-only preserves existing `/site/fix/YYYY-MM-DD.json` official fix, `as_of`, and `publication_selection`; it may regenerate pages, archive, series exports, status, and intraday pulse files.
