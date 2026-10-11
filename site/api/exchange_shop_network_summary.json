@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-11T22:01:16Z",
+  "generated_at": "2026-10-11T22:27:37Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2646525.0,
-  "total_usable_records": 123,
+  "total_usable_records": 121,
   "total_contributing_channels": 10,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -39,7 +39,7 @@
     "direct_shop": 63,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 6
+    "settlement_exchange": 4
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 17,
+      "usable_record_count": 15,
       "contributing_channel_count": 2,
-      "basket_confidence": 74.7,
+      "basket_confidence": 65.96,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -215,17 +215,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "iranbroker_net",
       "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
       "locality": "unknown",
@@ -234,6 +223,17 @@
       "usable_record_count": 5,
       "average_quality": 82.0,
       "average_freshness": 59.6,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
