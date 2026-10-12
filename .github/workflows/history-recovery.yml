@@ -1,0 +1,53 @@
+name: Historical Chart Recovery
+
+on:
+  schedule:
+    - cron: "23 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rialwatch-history-recovery
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/checkout@v4
+        with:
+          ref: data/live
+          path: state
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Recover missing completed dates from a verified public archive
+        run: python3 scripts/history_backfill.py --site-dir state/site --limit 30
+      - name: Persist recovered evidence even if another date failed
+        if: ${{ !cancelled() }}
+        run: |
+          if [ ! -d state/site/history ]; then
+            exit 0
+          fi
+          if [ -z "$(git -C state status --porcelain -- site/history)" ]; then
+            exit 0
+          fi
+          git -C state config user.name "github-actions[bot]"
+          git -C state config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C state add site/history
+          git -C state commit -m "recover: dated historical chart observations [skip ci]"
+          for attempt in 1 2 3; do
+            if git -C state push origin data/live; then
+              exit 0
+            fi
+            git -C state pull --rebase --autostash origin data/live
+          done
+          echo "::error::Could not persist recovered history"
+          exit 1

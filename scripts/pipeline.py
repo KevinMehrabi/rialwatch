@@ -31,6 +31,11 @@ from pathlib import Path
 from string import Template
 from typing import Any, Dict, List, Optional, Set, Tuple
 
+if __package__:
+    from .history_backfill import chart_rows
+else:
+    from history_backfill import chart_rows
+
 UTC = dt.timezone.utc
 IRAN_TZ = dt.timezone(dt.timedelta(hours=3, minutes=30))
 WINDOW_START = dt.time(13, 45)
@@ -6739,6 +6744,9 @@ def publish_series(site_dir: Path) -> None:
     rows = load_series_rows(site_dir)
     public_rows = [row for row in rows if is_public_series_row(row)]
     write_json(site_dir / "api" / "series.json", {"rows": public_rows})
+    # Archive-only observations enrich the chart, never the benchmark series,
+    # latest fix, indicators, or daily publication ledger.
+    write_json(site_dir / "api" / "chart_history.json", {"rows": chart_rows(site_dir, public_rows)})
 
 
 def publish_daily_full(site_dir: Path) -> None:

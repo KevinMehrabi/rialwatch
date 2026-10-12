@@ -105,8 +105,10 @@ const fixtures = {
   // Deterministic fixtures cover calendar gaps, withheld rows, filtering, diagnostics, and short/empty history.
   const fixturePage=await browser.newPage({viewport:{width:390,height:900}});fixturePage.on('pageerror',error=>errors.push(error.message));
   let rows=fixtures.rows, regional={generated_at:new Date().toISOString(),cards:fixtures.cards};
+  let archiveRows=[], archiveUnavailable=false;
   let failFetch=false;
   await fixturePage.route('**/api/series.json',route=>failFetch ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:{rows}}));
+  await fixturePage.route('**/api/chart_history.json',route=>archiveUnavailable ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:{rows:archiveRows}}));
   await fixturePage.route('**/api/regional_market_signals_card.json',route=>failFetch ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:regional}));
   await fixturePage.goto(url);await fixturePage.waitForSelector('.regional-row');
   assert.equal(await fixturePage.locator('.regional-row').count(),2);
@@ -118,7 +120,7 @@ const fixtures = {
   assert.equal(Number(await fixturePage.locator('#historyRangeLeftHandle').getAttribute('aria-valuenow')),11,'presets use calendar days across gaps');
   await fixturePage.getByRole('button',{name:'1D',exact:true}).click();
   assert.equal(Number(await fixturePage.locator('#historyRangeRightHandle').getAttribute('aria-valuenow'))-Number(await fixturePage.locator('#historyRangeLeftHandle').getAttribute('aria-valuenow')),0,'1D must not include a withheld or older reference merely to draw a line');
-  assert.match(await fixturePage.locator('#timeline-message').textContent(),/1 day has no published rate/);
+  assert.equal(await fixturePage.locator('#timeline-message').isVisible(),false,'no permanent missing-days banner');
   await fixturePage.locator('#historyRangeLeftHandle').press('ArrowRight');
   assert.ok(Number(await fixturePage.locator('#historyRangeRightHandle').getAttribute('aria-valuenow'))-Number(await fixturePage.locator('#historyRangeLeftHandle').getAttribute('aria-valuenow'))>=6,'manual range minimum is seven points');
   regional={...regional,generated_at:'2000-01-01T00:00:00Z'};await fixturePage.reload();await fixturePage.waitForSelector('.regional-row');
@@ -136,7 +138,25 @@ const fixtures = {
   const coords=[...gapPath.matchAll(/[ML]([\d.]+),([\d.]+)/g)].map(m=>Number(m[1]));
   assert.equal((gapPath.match(/M/g)||[]).length,2,'missing days break the line');
   assert.ok(Math.abs((coords[1]-coords[0])/(coords[2]-coords[0])-1/6)<.001,'horizontal spacing follows calendar time');
-  assert.match(await fixturePage.locator('#timeline-message').textContent(),/4 days have no published rate/);
+  assert.equal(await fixturePage.locator('#timeline-message').isVisible(),false);
+  archiveRows=['2026-10-07','2026-10-08','2026-10-09','2026-10-10'].map((date,i)=>({date,fix:2600000+i*1000,kind:'historical_archive',p25:null,p75:null}));
+  // An archive cannot override a published reference, even if its endpoint disagrees.
+  archiveRows.push({date:'2026-10-11',fix:9,kind:'historical_archive'});
+  await fixturePage.reload();await fixturePage.waitForSelector('#historyRangePanel:not([hidden])');
+  assert.equal(await fixturePage.locator('.chart-archive-point').count(),4);
+  assert.equal(((await fixturePage.locator('#historyChart .chart-line').getAttribute('d')).match(/M/g)||[]).length,1,'verified archive quotes fill the chart gaps');
+  assert.equal((await fixturePage.locator('#readout-value').textContent()).replace(/,/g,''),'2620000');
+  assert.equal(await fixturePage.locator('.ledger-table tbody tr').count(),3,'archive points never appear as published fixes');
+  await fixturePage.locator('#historyChart').press('End');await fixturePage.locator('#historyChart').press('ArrowLeft');
+  assert.match(await fixturePage.locator('#readout-date').textContent(),/Oct 10, 2026 · Recovered/);
+  assert.match(await fixturePage.locator('#readout-source').textContent(),/not a RialWatch daily fix/);
+  assert.match(await fixturePage.locator('#readout-band').textContent(),/Bonbast archive/);
+  assert.equal(await fixturePage.getByRole('link',{name:'Source record',exact:true}).getAttribute('href'),'/history/backfills/2026-10-10.json');
+  await fixturePage.locator('#historyChart').press('End');
+  assert.equal(await fixturePage.locator('#readout-source').isVisible(),false);
+  archiveUnavailable=true;await fixturePage.reload();await fixturePage.waitForSelector('#historyRangePanel:not([hidden])');
+  assert.equal(await fixturePage.locator('.chart-archive-point').count(),0,'archive outages retain the official timeline');
+  archiveUnavailable=false;archiveRows=[];
   rows=[];regional={cards:[]};await fixturePage.reload();await fixturePage.getByText('Timeline unavailable',{exact:true}).waitFor();
   await fixturePage.getByText('Regional signals unavailable',{exact:true}).waitFor();
   failFetch=true;await fixturePage.reload();await fixturePage.getByText('Timeline unavailable',{exact:true}).waitFor();

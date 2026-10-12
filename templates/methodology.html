@@ -145,7 +145,7 @@
       The official daily fix normally prefers observations collected inside that configured publication window. If the window has no valid read but a same-day intraday read is valid, RialWatch may repair the empty daily snapshot from that read and records the selection scope as <code>same_day_repair</code>.
     </p>
     <p class="mb-2">
-      Historical gaps are backfilled only from captured same-day intraday source-read artifacts. The public series does not carry prior fixes forward into missing dates.
+      Missing daily benchmarks can be recovered from captured same-day intraday source-read artifacts. The benchmark series never carries prior fixes forward into missing dates.
     </p>
     <p class="mb-2">
       The daily benchmark is the median of eligible source medians. It can publish with one usable source under the current policy. A single-source result has no cross-source confirmation, and its zero dispersion does not establish high confidence. The P25–P75 band describes dispersion across source medians; it is not a statistical confidence interval.
@@ -162,6 +162,16 @@
     <p class="mb-0">
       These indicators are interpretive tools and are published separately from the benchmark itself.
     </p>
+  </div>
+</section>
+
+<section class="card mt-3" id="historical-recovery">
+  <div class="card-body">
+    <h2 class="h4 mb-2">Historical chart recovery</h2>
+    <p class="mb-2">When a date has no published benchmark or retained observation, the chart can use a dated quote from Bonbast's public archive. These points have hollow markers and show “Recovered” when selected. They are historical market observations, not retrospectively published RialWatch daily fixes.</p>
+    <p class="mb-2">A recovered rate is the midpoint of that date's archived USD buy and sell prices, converted from toman to rials (×10). The archive does not establish a time within the day or a cross-source P25–P75 band. Its date, units, bid/ask order, spread, and saved source evidence must validate before it can appear.</p>
+    <p class="mb-2">The source response, retrieval time, calculation, and checksum are retained with each recovered point. Existing benchmarks always take precedence. Recovery does not change the primary rate, its comparison with the previous reference, indicators, or the published daily-reference ledger. Dates without verified evidence remain unfilled.</p>
+    <p class="mb-0"><a href="https://www.bonbast.com/archive">Bonbast archive</a> · <a href="/api/chart_history.json">Chart history with provenance</a> · <a href="/api/series.json">Published benchmark history</a></p>
   </div>
 </section>
 
