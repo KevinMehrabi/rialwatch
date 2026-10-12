@@ -28,6 +28,7 @@
       <button type="button" class="pill-button" id="historyRangeReset">Reset</button>
     </div>
     <div class="chart-readout" id="chart-readout" aria-live="off"><div><div class="readout-date" id="readout-date">Latest daily reference</div><div class="readout-value"><span id="readout-value">${fix}</span><span class="readout-unit">IRR per USD</span></div></div><div class="readout-comparison"><div id="readout-change"></div><div id="readout-band">Band ${p25} – ${p75}</div></div></div>
+    <p class="readout-source" id="readout-source" hidden></p>
     <p class="sr-only" id="chart-announcement" aria-live="polite" aria-atomic="true"></p>
     </section>
     <div class="benchmark-details">
@@ -97,4 +98,4 @@
 <section class="dashboard-section" aria-labelledby="regional-heading"><div class="section-heading"><h2 id="regional-heading">Regional Market Signals</h2><p>Best available public locality signals relative to the RialWatch benchmark. Diagnostic only.</p><p class="section-as-of" id="regional-context" hidden></p></div><div id="regional-market-cards" class="regional-layout"><div class="card empty-message">Loading regional market signals…</div></div></section>
 <section class="dashboard-section" aria-labelledby="recent-heading"><div class="section-heading"><h2 id="recent-heading">Recent Daily References</h2><p>Published reference fixes</p></div><div class="card ledger-card"><div id="recent-days" class="ledger-columns"><p class="empty-message">Loading daily references…</p></div><div class="ledger-footer"><span id="recent-days-summary">Daily publication history</span><button type="button" class="pill-button" id="ledger-toggle" aria-expanded="false" aria-controls="recent-days" hidden>Show all 30</button></div></div></section>
 </div>
-<script src="/assets/js/home-dashboard.js?v=20261011-audit" defer></script>
+<script src="/assets/js/home-dashboard.js?v=20261012-history" defer></script>

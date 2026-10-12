@@ -119,6 +119,9 @@ p { margin:0 0 12px; }
 .chart-area { fill:var(--acc-t); }
 .chart-line { fill:none; stroke:var(--acc); stroke-width:2.25; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
 .chart-end { fill:var(--acc); stroke:var(--strong); stroke-width:2; }
+.chart-archive-point { fill:var(--s1); stroke:var(--acc); stroke-width:1.5; }
+.readout-source { margin:0; color:var(--mut); font-size:12px; }
+.readout-source a { color:var(--acc); }
 .chart-pulse { fill:var(--acc); transform-box:fill-box; transform-origin:center; animation:latest-pulse 1.2s linear infinite; }
 @keyframes latest-pulse { from { transform:scale(1); opacity:.5; } to { transform:scale(3); opacity:0; } }
 .chart-crosshair { stroke:var(--mut); stroke-dasharray:3 3; }

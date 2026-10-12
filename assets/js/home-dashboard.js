@@ -203,12 +203,14 @@
       });
       const path = segment => segment.map((index,i) => `${i ? 'L':'M'}${this.x(index).toFixed(2)},${this.y(this.rows[index].fix).toFixed(2)}`).join(' ');
       html += `<path class="chart-area" d="${segments.filter(part=>part.length>1).map(part=>`${path(part)} L${this.x(part.at(-1))},${bottom} L${this.x(part[0])},${bottom} Z`).join(' ')}"/><path class="chart-line" d="${segments.map(path).join(' ')}"/>`;
+      visible.forEach((row,i) => {
+        if (row.kind === 'historical_archive') html += `<circle class="chart-archive-point" cx="${this.x(i+this.start)}" cy="${this.y(row.fix)}" r="3.5"><title>${esc(date(row.date,{year:'numeric'}))}: recovered Bonbast archive quote. Select the chart to inspect.</title></circle>`;
+      });
       segments.filter(part=>part.length===1 && part[0]!==this.end).forEach(part=>{ html += `<circle class="chart-end" cx="${this.x(part[0])}" cy="${this.y(this.rows[part[0]].fix)}" r="3"/>`; });
       const labelTimes = [...new Set(Array.from({length:ticks}, (_,i) => firstTime+Math.round(i/(ticks-1)*(lastTime-firstTime)/86400000)*86400000))];
       for (const [i,time] of labelTimes.entries()) html += `<text x="${xTime(time)}" y="${h-6}" text-anchor="${i===0 ? 'start' : i===labelTimes.length-1 ? 'end' : 'middle'}">${date(new Date(time).toISOString().slice(0,10))}</text>`;
-      const missing = Math.round((lastTime-firstTime)/86400000)+1-visible.length;
-      $('timeline-message').hidden = missing<=0;
-      $('timeline-message').textContent = missing>0 ? `${missing} ${missing===1 ? 'day has' : 'days have'} no published rate in this range. Gaps are not interpolated.` : '';
+      $('timeline-message').hidden = true;
+      $('timeline-message').textContent = '';
       if (this.end === this.rows.length-1) html += `<circle class="chart-pulse" cx="${this.x(this.end)}" cy="${this.y(this.rows[this.end].fix)}" r="5"/>`;
       html += `<circle class="chart-end" cx="${this.x(this.end)}" cy="${this.y(this.rows[this.end].fix)}" r="4.5"/><g id="chart-crosshair" visibility="hidden"><line class="chart-crosshair" y1="${top}" y2="${bottom}"/><circle class="chart-selection" r="5"/></g>`;
       this.svg.innerHTML = html;
@@ -224,12 +226,17 @@
         crosshair.querySelector('line').setAttribute('x1',x); crosshair.querySelector('line').setAttribute('x2',x);
         crosshair.querySelector('circle').setAttribute('cx',x); crosshair.querySelector('circle').setAttribute('cy',y);
       }
-      $('readout-date').textContent = `${show ? 'Selected' : index===this.rows.length-1 ? 'Latest' : 'Range end'} · ${date(row.date, {year:'numeric'})}${row.withheld ? ' · Withheld' : ''}`;
+      const recovered = row.kind === 'historical_archive';
+      $('readout-date').textContent = `${show ? 'Selected' : index===this.rows.length-1 ? 'Latest' : 'Range end'} · ${date(row.date, {year:'numeric'})}${recovered ? ' · Recovered' : ''}`;
       $('readout-value').textContent = fmt(row.fix);
       const delta = prior ? row.fix-prior.fix : null;
       $('readout-change').className = `direction-${direction(delta)}`;
-      $('readout-change').textContent = delta === null ? 'First reference' : `${arrow(delta)} ${signed(delta)}${desktop.matches ? ' vs previous reference' : ''}`;
-      $('readout-band').textContent = numeric(row.p25) !== null && numeric(row.p75) !== null ? `Band ${fmt(row.p25)} – ${fmt(row.p75)}` : 'Band unavailable';
+      const comparison = recovered || prior?.kind === 'historical_archive' ? 'previous chart point' : 'previous reference';
+      $('readout-change').textContent = delta === null ? 'First reference' : `${arrow(delta)} ${signed(delta)}${desktop.matches ? ` vs ${comparison}` : ''}`;
+      $('readout-band').textContent = recovered ? 'Bonbast archive · buy/sell midpoint' : numeric(row.p25) !== null && numeric(row.p75) !== null ? `Band ${fmt(row.p25)} – ${fmt(row.p75)}` : 'Band unavailable';
+      const source = $('readout-source');
+      source.hidden = !recovered;
+      source.innerHTML = recovered ? `Historical market quote recovered after the fact; not a RialWatch daily fix. <a href="/history/backfills/${row.date}.json">Source record</a> · <a href="/methodology/#historical-recovery">Method</a>` : '';
     }
     scrub(event) {
       const rect = this.svg.getBoundingClientRect(), x = event.clientX-rect.left;
@@ -239,7 +246,7 @@
       if (this.selected !== index) { this.selected = index; this.updateSelection(); }
     }
     announce() {
-      $('chart-announcement').textContent = `${$('readout-date').textContent}: ${$('readout-value').textContent} IRR per USD. ${$('readout-change').textContent}. ${$('historyRangeSummary').textContent}.`;
+      $('chart-announcement').textContent = `${$('readout-date').textContent}: ${$('readout-value').textContent} IRR per USD. ${$('readout-change').textContent}. ${$('readout-band').textContent}. ${$('historyRangeSummary').textContent}.`;
     }
     updateNavigator() {
       const max = this.rows.length-1, left = max ? this.fraction(this.start)*100 : 0, right = max ? this.fraction(this.end)*100 : 100;
@@ -409,8 +416,18 @@
     const rows = (Array.isArray(payload) ? payload : Array.isArray(payload?.rows) ? payload.rows : []).filter(row=>row && /^\d{4}-\d{2}-\d{2}$/.test(row.date) && Number.isFinite(Date.parse(`${row.date}T00:00:00Z`))).sort((a,b)=>a.date.localeCompare(b.date));
     if (!rows.length) throw new Error('No daily references');
     const valid = rows.filter(row=>numeric(row.fix)>0 && !row.withheld).map(row=>({...row,fix:Number(row.fix)}));
-    if (valid.length) new Timeline(valid);
-    else { $('timeline-message').textContent='Timeline unavailable'; $('historyChart').hidden=true; }
+    // Archive recovery is optional: a missing endpoint must not hide daily data.
+    fetchJSON('/api/chart_history.json').then(history => {
+      const byDay = new Map(valid.map(row=>[row.date,row]));
+      const first = valid[0]?.date, last = valid.at(-1)?.date;
+      for (const row of history?.rows || []) {
+        if (row?.kind === 'historical_archive' && /^\d{4}-\d{2}-\d{2}$/.test(row.date) && Number.isFinite(dayTime(row.date)) && row.date>first && row.date<last && numeric(row.fix)>0 && !byDay.has(row.date)) byDay.set(row.date,{...row,fix:Number(row.fix)});
+      }
+      return [...byDay.values()].sort((a,b)=>a.date.localeCompare(b.date));
+    }).catch(()=>valid).then(chartRows=> {
+      if (chartRows.length) new Timeline(chartRows);
+      else { $('timeline-message').textContent='Timeline unavailable'; $('historyChart').hidden=true; }
+    });
     renderLedger(rows);
     const primary = $('primary-benchmark');
     const index = rows.findIndex(row=>row.date===primary.dataset.date);

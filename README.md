@@ -284,3 +284,22 @@ GitHub remains a shared failure domain for schedules, storage, and publication.
 For independent outage coverage, add a second collector on separately hosted
 infrastructure and an external freshness check. Automated recovery cannot invent
 observations for dates with no retained source data.
+
+### Historical chart recovery
+
+`Historical Chart Recovery` checks missing completed dates daily at 06:23 UTC
+and can be run manually. It reads Bonbast's date-specific archive, validates
+its displayed date, units, and bid/ask prices, and saves the source response
+and a SHA-256-backed record on `data/live` under `site/history/`. Failed dates
+are retried on the next run; successful records are never silently overwritten.
+The saved HTML response is served as plain text for inspectable evidence.
+
+Every site build merges validated archive observations into
+`/api/chart_history.json`. Published benchmarks take precedence. This separate
+chart history does not change `/api/series.json`, immutable daily fixes,
+primary changes, or indicators. Recovered points use hollow markers and reveal
+their source when selected; no cross-source band or intraday timestamp is invented.
+
+Run `python3 scripts/history_backfill.py --site-dir state/site` to collect, then
+run the usual build-only pipeline to regenerate the chart API. Recovery failure
+does not block normal collection or publication.
