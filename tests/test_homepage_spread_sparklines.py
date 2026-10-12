@@ -56,7 +56,7 @@ class HomepageSpreadSparklineTests(unittest.TestCase):
             )
 
             html = (site_dir / "index.html").read_text(encoding="utf-8")
-            start = html.index("Prior Day")
+            start = html.index('id="primary-change"')
             end = html.index("Observed", start)
             prior_day_block = html[start:end]
 

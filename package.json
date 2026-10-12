@@ -1,0 +1,13 @@
+{
+  "name": "rialwatch",
+  "private": true,
+  "scripts": {
+    "verify:header": "node verify/header-fit.cjs",
+    "verify:redesign": "node verify/redesign.cjs",
+    "verify:accessibility": "node verify/accessibility.cjs"
+  },
+  "devDependencies": {
+    "lighthouse": "13.5.0",
+    "playwright": "1.64.0"
+  }
+}

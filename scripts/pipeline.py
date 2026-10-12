@@ -6188,17 +6188,23 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
                     latest_sample_ts = sample_ts
         if latest_sample_ts is None:
             return ""
-        return f"Updated {latest_sample_ts.strftime('%H:%M UTC')}"
+        return f"Collected {latest_sample_ts.strftime('%b')} {latest_sample_ts.day}, {latest_sample_ts.year} · {latest_sample_ts.strftime('%H:%M UTC')}"
 
     def benchmark_card_meta_text(key: str) -> str:
         entry = benchmark_entry(key)
         value = benchmark_value_number(key)
         if value is not None:
+            selected_quote_time = try_parse_datetime(entry.get("selected_quote_time"))
+            quote_timestamp = (
+                f"{selected_quote_time.strftime('%b')} {selected_quote_time.day}, {selected_quote_time.year} · {selected_quote_time.strftime('%H:%M UTC')}"
+                if selected_quote_time is not None else None
+            )
             if key == "official" and bool(entry.get("using_stale_fallback")):
-                selected_quote_time = try_parse_datetime(entry.get("selected_quote_time"))
-                if selected_quote_time is not None:
-                    return f"Last known quote {selected_quote_time.strftime('%b %d, %Y')}"
+                if quote_timestamp:
+                    return f"Last known quote {quote_timestamp}"
                 return "Last known quote"
+            if quote_timestamp:
+                return f"Quote observed {quote_timestamp}"
             return benchmark_as_of_text(key)
         context = benchmark_unavailable_context(key)
         if context:

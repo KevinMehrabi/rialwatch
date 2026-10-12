@@ -220,6 +220,53 @@ fx.example.com
 
 4. Re-run workflow and verify HTTPS is enabled.
 
+## Dashboard design and verification
+
+The homepage and shared shell use self-hosted Fraunces and IBM Plex Sans fonts,
+plain CSS, and SVG charts. The theme still uses `rw-theme` in local storage and
+starts in dark mode. All benchmark, indicator, and sparkline values retain their
+existing Python template bindings; the timeline, daily ledger, and regional
+signals read the existing public JSON endpoints. No market-data pipeline or API
+schema changes are required.
+
+The header's **Site updated** time describes the site refresh, while **Observed**
+on the primary card describes the benchmark observation. Benchmark snapshots at
+least two full days old show their age explicitly; a newer site or regional
+diagnostics update never makes an older benchmark current.
+Supplementary readings show full quote or collection dates, and regional
+diagnostics identify the displayed benchmark used for matching comparisons.
+
+The chart sits directly below the primary rate, with compact range presets and
+benchmark details below it. The responsive layout changes at 900px. The timeline supports calendar-based
+presets, pointer scrubbing, and a draggable overview. Focus either range handle
+and use arrow keys (Shift moves seven observations); Home/End moves to a bound.
+Manual ranges contain at least seven points, while presets can show shorter
+windows. Focus the chart itself to inspect points with left/right arrows.
+
+Regional signals preserve the existing visibility filter and 30-hour stale-data
+warning. The shared Status link intentionally has no health dot because there is
+no machine-readable pipeline-health endpoint to bind it to. Methodology and
+Status body templates are unchanged.
+
+To validate a generated site locally:
+
+```bash
+npm ci
+npx playwright install chromium
+python3 -m http.server 8000 --bind 127.0.0.1 --directory site
+# In another terminal:
+npm run verify:header -- http://127.0.0.1:8000/
+npm run verify:redesign -- http://127.0.0.1:8000/
+npm run verify:accessibility -- http://127.0.0.1:8000/
+python3 -m unittest discover -s tests
+```
+
+`site/` must contain generated HTML and the existing API artifacts (see the
+build-only workflow above). `PW_CHROMIUM=/path/to/chromium` can reuse an installed
+browser. Lighthouse reports are written to the OS temporary directory, or to
+`RW_AUDIT_OUTPUT` if set. npm dependencies are only for verification; the deployed
+site has no npm runtime or CDN dependency. The font licenses are in `assets/fonts/`.
+
 ### Audit safeguards (October 2026)
 
 - Market quote recovery retains the intraday six-hour age limit, rejects future
