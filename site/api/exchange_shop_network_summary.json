@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-13T15:26:15Z",
+  "generated_at": "2026-10-13T23:31:18Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2648500.0,
-  "total_usable_records": 165,
-  "total_contributing_channels": 15,
+  "benchmark_weighted_rate": 2598000.0,
+  "total_usable_records": 177,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 83,
+    "direct_shop": 94,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 28
+    "settlement_exchange": 29
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 20,
       "contributing_channel_count": 1,
-      "basket_confidence": 79.7,
+      "basket_confidence": 78.85,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 30,
-      "contributing_channel_count": 6,
-      "basket_confidence": 94.65,
+      "usable_record_count": 70,
+      "contributing_channel_count": 10,
+      "basket_confidence": 74.87,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -226,8 +226,19 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 74.33,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ezdex.net",
-      "title": "قیمت درهم امارات امروز سه‌شنبه 21 مهر 1405| نرخ خرید و فروش درهم به تومان",
+      "title": "بهترین صرافی های دبی برای تبدیل ارز و حواله با کمترین کارمزد",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -248,12 +259,12 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:apply.shaahan.com",
-      "title": "قیمت درهم امارات امروز 💰 نرخ لحظه ای 21 مهر 1405",
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 6,
+      "usable_record_count": 7,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -264,31 +275,53 @@
       "locality": "unknown",
       "source_category": "direct_shop",
       "source_priority": "P1",
-      "usable_record_count": 5,
-      "average_quality": 82.0,
-      "average_freshness": 59.6,
+      "usable_record_count": 6,
+      "average_quality": 83.0,
+      "average_freshness": 62.33,
       "from_new_p1": false
     },
     {
       "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار",
+      "title": "تبدیل درهم امارات به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 5,
-      "average_quality": 84.6,
+      "usable_record_count": 2,
+      "average_quality": 74.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:emeraldxe.com",
-      "title": "تبدیل درهم به تومان لحظه‌ای",
+      "handle": "uae:cityexchangeuae.com",
+      "title": "City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
       "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:dxboffplan.com",
+      "title": "چنج پول در دبی 2026",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranrebate.com",
+      "title": "قیمت درهم امارات امروز به تومان",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 70.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
