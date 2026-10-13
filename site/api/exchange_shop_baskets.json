@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T16:56:35Z",
+  "generated_at": "2026-10-13T01:43:23Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2648500.0,
   "baskets": [
@@ -53,32 +53,36 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1722503.28,
-      "median_rate": 1745172.0,
-      "trimmed_mean_rate": 1740623.61,
-      "spread_vs_benchmark_pct": -34.9631,
-      "usable_record_count": 24,
-      "contributing_channel_count": 4,
-      "fresh_contributing_channel_count": 4,
+      "weighted_rate": 2204833.65,
+      "median_rate": 2276950.0,
+      "trimmed_mean_rate": 2232872.27,
+      "spread_vs_benchmark_pct": -16.7516,
+      "usable_record_count": 49,
+      "contributing_channel_count": 6,
+      "fresh_contributing_channel_count": 6,
       "fresh_contributing_channels": [
+        "uae:apply.shaahan.com",
         "uae:arzdigital.com",
         "uae:ciphoenix.com",
+        "uae:ezdex.net",
         "uae:hiemarat.com",
         "uae:ir-europe.com"
       ],
-      "basket_confidence": 86.87,
-      "publishable": true,
-      "suppression_reason": "",
-      "dispersion_cv": 0.064466,
-      "top_channel_share": 0.393907,
-      "outliers_removed": 9,
+      "basket_confidence": 72.59,
+      "publishable": false,
+      "suppression_reason": "high_dispersion",
+      "dispersion_cv": 0.183542,
+      "top_channel_share": 0.273025,
+      "outliers_removed": 0,
       "source_category_mix": {
-        "direct_shop": 12,
-        "settlement_exchange": 12
+        "direct_shop": 25,
+        "settlement_exchange": 24
       },
       "channels": [
+        "uae:apply.shaahan.com",
         "uae:arzdigital.com",
         "uae:ciphoenix.com",
+        "uae:ezdex.net",
         "uae:hiemarat.com",
         "uae:ir-europe.com"
       ]
