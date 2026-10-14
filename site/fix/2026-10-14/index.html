@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Independent daily Iranian rial benchmark, market indicators, and regional diagnostics.">
+<title>Reference 2026-10-14 — RialWatch</title>
+<script>
+(() => {
+  try {
+    const saved = localStorage.getItem('rw-theme');
+    document.documentElement.dataset.theme = saved === 'light' ? 'light' : 'dark';
+  } catch (_) { /* Dark is the existing first-visit default. */ }
+})();
+</script>
+<link rel="icon" href="/assets/rwicon_white.svg" type="image/svg+xml">
+<link rel="preload" href="/assets/fonts/fraunces-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tabler/tabler.min.css">
+<link rel="stylesheet" href="/assets/css/dashboard.css?v=20261012-history">
+<script src="/assets/js/site-shell.js?v=20261012-history" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-brand" href="/">
+      <span class="site-logo-wrap">
+        <img class="site-logo logo-dark" src="/assets/rwicon_white.svg" width="54" height="54" alt="RialWatch logo">
+        <img class="site-logo logo-light" src="/assets/rwicon_dark.svg" width="54" height="54" alt="RialWatch logo">
+      </span>
+      <span class="site-brand-copy"><span class="site-title">RialWatch</span> <span class="site-subtitle">Independent Iranian Rial (IRR) Benchmark</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="/methodology/">Methodology</a>
+      <a href="/status/">Status</a>
+    </nav>
+    <div class="site-updated" id="site-last-update" data-ts="2026-10-14T18:42:29Z" title="Site update time. Individual benchmark observations may be older.">
+      <span class="updated-label">Site updated</span><time datetime="2026-10-14T18:42:29Z">2026-10-14T18:42:29Z</time>
+    </div>
+    <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode">
+      <span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb">
+        <svg class="moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+      </span></span>
+    </button>
+  </div>
+</header>
+<main class="dashboard-container"><div class="mb-3">
+  <h1 class="page-title">Reference Day 2026-10-14</h1>
+  <p class="text-secondary mb-0">Immutable daily snapshot.</p>
+</div>
+
+<div class="terminal-grid">
+  <section class="card span-8">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <div class="text-secondary text-uppercase small">Daily Fix</div>
+          <div class="value-row">
+            <div class="metric-value">2,651,500</div>
+            <div class="unit-label metric-unit">IRR per USD</div>
+          </div>
+          <div class="metric-sub">As of 2026-10-14T18:42:29Z</div>
+        </div>
+        <span class="status-pill status-Green">Green</span>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Band</div>
+          <div class="fw-semibold">2,647,250 - 2,654,000</div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Dispersion</div>
+          <div class="fw-semibold">0.25%</div>
+        </div>
+        <div class="col-md-4">
+          <div class="text-secondary text-uppercase small">Withheld</div>
+          <div class="fw-semibold">No</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card span-4">
+    <div class="card-body">
+      <h3 class="card-title">Daily JSON</h3>
+      <a href="/fix/2026-10-14.json">/fix/2026-10-14.json</a>
+      <div class="mt-3 text-secondary small">Withhold reasons</div>
+      <div class="small"></div>
+    </div>
+  </section>
+
+  <section class="card span-12">
+    <div class="card-body">
+      <h3 class="card-title">Source Summary</h3>
+      <div class="table-responsive">
+        <table class="table table-sm table-vcenter">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>Median</th>
+              <th>Valid Samples</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>bonbast</td><td>2,653,000</td><td>0/1</td><td></td></tr>
+<tr><td>alanchand_street</td><td>2,657,000</td><td>1/1</td><td></td></tr>
+<tr><td>navasan</td><td>2,650,000</td><td>0/1</td><td></td></tr>
+<tr><td>tgju_street</td><td>2,639,000</td><td>0/1</td><td></td></tr>
+<tr><td>commercial_aux_a</td><td>N/A</td><td>0/1</td><td>source excluded from street benchmark universe</td></tr>
+<tr><td>commercial_aux_b</td><td>N/A</td><td>0/1</td><td>source excluded from street benchmark universe</td></tr>
+<tr><td>commercial_aux_c</td><td>N/A</td><td>0/1</td><td>source excluded from street benchmark universe</td></tr>
+<tr><td>commercial_aux</td><td>N/A</td><td>0/1</td><td>source excluded from street benchmark universe</td></tr>
+<tr><td>commercial_profile_transfer</td><td>N/A</td><td>1/1</td><td>source excluded from street benchmark universe</td></tr>
+<tr><td>commercial_profile_sana</td><td>N/A</td><td>1/1</td><td>source excluded from street benchmark universe</td></tr>
+<tr><td>alanchand</td><td>N/A</td><td>0/1</td><td>source excluded from street benchmark universe</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="site-generated-at">Site updated: 2026-10-14T18:42:29Z</div>
+  <div class="site-footer-credit">A Kevin Mehrabi Production</div>
+  <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
+</footer>
+</body>
+</html>
