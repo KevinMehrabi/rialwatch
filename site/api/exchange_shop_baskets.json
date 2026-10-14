@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T23:31:18Z",
+  "generated_at": "2026-10-14T12:55:33Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2598000.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.010739,
       "top_channel_share": 1.0,
-      "outliers_removed": 18,
+      "outliers_removed": 19,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,45 +53,47 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 2239397.26,
-      "median_rate": 2249406.25,
-      "trimmed_mean_rate": 2263936.0,
-      "spread_vs_benchmark_pct": -13.803,
-      "usable_record_count": 70,
-      "contributing_channel_count": 10,
-      "fresh_contributing_channel_count": 9,
+      "weighted_rate": 2182524.28,
+      "median_rate": 2203500.0,
+      "trimmed_mean_rate": 2178197.31,
+      "spread_vs_benchmark_pct": -15.9921,
+      "usable_record_count": 37,
+      "contributing_channel_count": 11,
+      "fresh_contributing_channel_count": 10,
       "fresh_contributing_channels": [
-        "uae:arzdigital.com",
-        "uae:ciphoenix.com",
-        "uae:cityexchangeuae.com",
         "uae:dxboffplan.com",
-        "uae:ezdex.net",
-        "uae:gooyadubai.ae",
-        "uae:hiemarat.com",
-        "uae:ir-europe.com",
-        "uae:iranbroker.com"
-      ],
-      "basket_confidence": 74.87,
-      "publishable": true,
-      "suppression_reason": "",
-      "dispersion_cv": 0.169893,
-      "top_channel_share": 0.195279,
-      "outliers_removed": 0,
-      "source_category_mix": {
-        "direct_shop": 41,
-        "settlement_exchange": 29
-      },
-      "channels": [
-        "uae:arzdigital.com",
-        "uae:ciphoenix.com",
-        "uae:cityexchangeuae.com",
-        "uae:dxboffplan.com",
-        "uae:ezdex.net",
+        "uae:gccexchange.com",
         "uae:gooyadubai.ae",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
         "uae:iranbroker.com",
-        "uae:iranrebate.com"
+        "uae:mpexchange.ir",
+        "uae:residency24.com",
+        "uae:saadatrent.com",
+        "uae:tabdeal.org"
+      ],
+      "basket_confidence": 77.88,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.156832,
+      "top_channel_share": 0.190697,
+      "outliers_removed": 0,
+      "source_category_mix": {
+        "direct_shop": 27,
+        "settlement_exchange": 10
+      },
+      "channels": [
+        "uae:dxboffplan.com",
+        "uae:gccexchange.com",
+        "uae:gooyadubai.ae",
+        "uae:hiemarat.com",
+        "uae:ir-europe.com",
+        "uae:iranbroker.com",
+        "uae:iranrebate.com",
+        "uae:mpexchange.ir",
+        "uae:residency24.com",
+        "uae:saadatrent.com",
+        "uae:tabdeal.org"
       ]
     },
     {
