@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-16T12:28:16Z",
+  "generated_at": "2026-10-16T22:23:11Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2654500.0,
-  "total_usable_records": 155,
-  "total_contributing_channels": 18,
+  "benchmark_weighted_rate": 2662000.0,
+  "total_usable_records": 142,
+  "total_contributing_channels": 19,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -14,7 +14,7 @@
       "error": null,
       "messages_seen": 20,
       "records_extracted": 18,
-      "usable_records": 15,
+      "usable_records": 14,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 84,
+    "direct_shop": 70,
     "market_channel": 36,
-    "regional_market_channel": 15,
-    "settlement_exchange": 20
+    "regional_market_channel": 14,
+    "settlement_exchange": 22
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 20,
+      "usable_record_count": 14,
       "contributing_channel_count": 1,
-      "basket_confidence": 79.62,
+      "basket_confidence": 69.55,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 31,
-      "contributing_channel_count": 6,
-      "basket_confidence": 91.52,
+      "usable_record_count": 45,
+      "contributing_channel_count": 9,
+      "basket_confidence": 79.62,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -149,17 +149,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulim_com",
-      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "locality": "Turkey",
-      "source_category": "direct_shop",
-      "source_priority": "P1",
-      "usable_record_count": 20,
-      "average_quality": 90.8,
-      "average_freshness": 81.4,
-      "from_new_p1": false
-    },
-    {
       "handle": "mazanehnet",
       "title": "مظنه ارز در بازار تهران",
       "locality": "Iran",
@@ -187,9 +176,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 15,
-      "average_quality": 89.4,
-      "average_freshness": 83.2,
+      "usable_record_count": 14,
+      "average_quality": 87.0,
+      "average_freshness": 76.0,
       "from_new_p1": true
     },
     {
@@ -199,8 +188,19 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 76.0,
+      "average_quality": 75.43,
       "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "istanbulim_com",
+      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
+      "locality": "Turkey",
+      "source_category": "direct_shop",
+      "source_priority": "P1",
+      "usable_record_count": 13,
+      "average_quality": 89.62,
+      "average_freshness": 77.85,
       "from_new_p1": false
     },
     {
@@ -209,7 +209,7 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 12,
+      "usable_record_count": 8,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -237,14 +237,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzdigital.com",
-      "title": "قیمت درهم امارات امروز - نرخ لحظه‌ ای بازار آزاد + نمودار",
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 5,
+      "usable_record_count": 6,
       "average_quality": 74.0,
-      "average_freshness": 92.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -253,18 +253,18 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 5,
+      "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
+      "handle": "uae:dxboffplan.com",
+      "title": "چنج پول در دبی 2026",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 4,
+      "usable_record_count": 3,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -275,9 +275,9 @@
       "locality": "unknown",
       "source_category": "direct_shop",
       "source_priority": "P1",
-      "usable_record_count": 3,
-      "average_quality": 79.33,
-      "average_freshness": 52.0,
+      "usable_record_count": 2,
+      "average_quality": 80.5,
+      "average_freshness": 55.5,
       "from_new_p1": false
     },
     {
@@ -292,13 +292,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:dxboffplan.com",
-      "title": "چنج پول در دبی 2026",
+      "handle": "uae:dolarchand.com",
+      "title": "Live UAE Dirham Price in Iran Today",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.0,
+      "average_quality": 87.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -322,6 +322,17 @@
       "usable_record_count": 1,
       "average_quality": 72.0,
       "average_freshness": 88.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:meobserver.news",
+      "title": "UAE Freezes Trade and Financial Dealings With Iran",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 96.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {

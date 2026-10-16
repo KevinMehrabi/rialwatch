@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-10-16T12:28:16Z",
+  "generated_at": "2026-10-16T22:23:11Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2654500.0,
+  "benchmark_weighted_rate": 2662000.0,
   "baskets": [
     {
       "basket_name": "Iran",
       "weighted_rate": 1659046.87,
       "median_rate": 1661875.0,
       "trimmed_mean_rate": 1660553.57,
-      "spread_vs_benchmark_pct": -37.5006,
+      "spread_vs_benchmark_pct": -37.6767,
       "usable_record_count": 16,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -28,62 +28,64 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 1466708.54,
-      "median_rate": 1463500.0,
-      "trimmed_mean_rate": 1465600.0,
-      "spread_vs_benchmark_pct": -44.7463,
-      "usable_record_count": 20,
+      "weighted_rate": 2672478.57,
+      "median_rate": 2672675.0,
+      "trimmed_mean_rate": 2672529.17,
+      "spread_vs_benchmark_pct": 0.3936,
+      "usable_record_count": 14,
       "contributing_channel_count": 1,
-      "fresh_contributing_channel_count": 1,
-      "fresh_contributing_channels": [
-        "istanbulim_com"
-      ],
-      "basket_confidence": 79.62,
+      "fresh_contributing_channel_count": 0,
+      "fresh_contributing_channels": [],
+      "basket_confidence": 69.55,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.004307,
+      "dispersion_cv": 0.000454,
       "top_channel_share": 1.0,
-      "outliers_removed": 15,
+      "outliers_removed": 13,
       "source_category_mix": {
-        "direct_shop": 20
+        "regional_market_channel": 14
       },
       "channels": [
-        "istanbulim_com"
+        "istanbulexchange_com"
       ]
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1796082.62,
+      "weighted_rate": 1853404.57,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1800523.92,
-      "spread_vs_benchmark_pct": -32.3382,
-      "usable_record_count": 31,
-      "contributing_channel_count": 6,
-      "fresh_contributing_channel_count": 6,
+      "trimmed_mean_rate": 1858050.26,
+      "spread_vs_benchmark_pct": -30.3755,
+      "usable_record_count": 45,
+      "contributing_channel_count": 9,
+      "fresh_contributing_channel_count": 7,
       "fresh_contributing_channels": [
         "uae:ciphoenix.com",
+        "uae:cityexchangeuae.com",
         "uae:dxboffplan.com",
         "uae:gooyadubai.ae",
         "uae:hiemarat.com",
-        "uae:ir-europe.com",
+        "uae:meobserver.news",
         "uae:residency24.com"
       ],
-      "basket_confidence": 91.52,
+      "basket_confidence": 79.62,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.031358,
-      "top_channel_share": 0.324702,
-      "outliers_removed": 23,
+      "dispersion_cv": 0.12366,
+      "top_channel_share": 0.317998,
+      "outliers_removed": 5,
       "source_category_mix": {
-        "direct_shop": 18,
-        "settlement_exchange": 13
+        "direct_shop": 23,
+        "settlement_exchange": 22
       },
       "channels": [
         "uae:ciphoenix.com",
+        "uae:cityexchangeuae.com",
         "uae:dxboffplan.com",
         "uae:gooyadubai.ae",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
+        "uae:iranrebate.com",
+        "uae:meobserver.news",
         "uae:residency24.com"
       ]
     },
@@ -118,7 +120,7 @@
       "weighted_rate": 1887207.7,
       "median_rate": 1915000.0,
       "trimmed_mean_rate": 1898333.33,
-      "spread_vs_benchmark_pct": -28.9053,
+      "spread_vs_benchmark_pct": -29.1056,
       "usable_record_count": 6,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -180,7 +182,7 @@
       "weighted_rate": 1598492.49,
       "median_rate": 1596515.0,
       "trimmed_mean_rate": 1597487.07,
-      "spread_vs_benchmark_pct": -39.7818,
+      "spread_vs_benchmark_pct": -39.9514,
       "usable_record_count": 35,
       "contributing_channel_count": 2,
       "fresh_contributing_channel_count": 2,
@@ -193,7 +195,7 @@
       "suppression_reason": "",
       "dispersion_cv": 0.00631,
       "top_channel_share": 0.515379,
-      "outliers_removed": 4,
+      "outliers_removed": 3,
       "source_category_mix": {
         "market_channel": 35
       },
