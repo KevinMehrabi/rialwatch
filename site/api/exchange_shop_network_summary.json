@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-17T11:30:31Z",
+  "generated_at": "2026-10-17T21:27:53Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2662000.0,
-  "total_usable_records": 113,
-  "total_contributing_channels": 12,
+  "benchmark_weighted_rate": 2640000.0,
+  "total_usable_records": 151,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 54,
+    "direct_shop": 76,
     "market_channel": 36,
     "regional_market_channel": 19,
-    "settlement_exchange": 4
+    "settlement_exchange": 20
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 19,
+      "usable_record_count": 20,
       "contributing_channel_count": 1,
-      "basket_confidence": 71.73,
+      "basket_confidence": 79.79,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 16,
-      "contributing_channel_count": 4,
-      "basket_confidence": 79.85,
+      "usable_record_count": 28,
+      "contributing_channel_count": 7,
+      "basket_confidence": 88.83,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -149,6 +149,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulim_com",
+      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
+      "locality": "Turkey",
+      "source_category": "direct_shop",
+      "source_priority": "P1",
+      "usable_record_count": 20,
+      "average_quality": 90.8,
+      "average_freshness": 81.4,
+      "from_new_p1": false
+    },
+    {
       "handle": "mazanehnet",
       "title": "مظنه ارز در بازار تهران",
       "locality": "Iran",
@@ -166,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 19,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -182,14 +193,25 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulim_com",
-      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "locality": "Turkey",
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان",
+      "locality": "UAE",
       "source_category": "direct_shop",
-      "source_priority": "P1",
-      "usable_record_count": 13,
-      "average_quality": 89.62,
-      "average_freshness": 77.85,
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 74.43,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 12,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -204,25 +226,25 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "handle": "uae:residency24.com",
+      "title": "صرافی‌های ایرانی در دبی؛ انتقال پول و نرخ ارز",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 6,
+      "usable_record_count": 7,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:hamrate.com",
-      "title": "قیمت درهم امارات امروز",
-      "locality": "UAE",
+      "handle": "iranbroker_net",
+      "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
+      "locality": "unknown",
       "source_category": "direct_shop",
-      "source_priority": "uae_review",
+      "source_priority": "P1",
       "usable_record_count": 5,
-      "average_quality": 75.8,
-      "average_freshness": 92.0,
+      "average_quality": 82.0,
+      "average_freshness": 59.6,
       "from_new_p1": false
     },
     {
@@ -237,14 +259,25 @@
       "from_new_p1": false
     },
     {
-      "handle": "iranbroker_net",
-      "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
-      "locality": "unknown",
+      "handle": "uae:dxboffplan.com",
+      "title": "چنج پول در دبی 2026",
+      "locality": "UAE",
       "source_category": "direct_shop",
-      "source_priority": "P1",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranrebate.com",
+      "title": "قیمت درهم امارات امروز به تومان",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 80.5,
-      "average_freshness": 55.5,
+      "average_quality": 70.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -256,6 +289,17 @@
       "usable_record_count": 1,
       "average_quality": 72.0,
       "average_freshness": 88.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:t.me",
+      "title": "⛳️درهم نرخ⛳️",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 92.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
