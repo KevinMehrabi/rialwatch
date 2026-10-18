@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-17T21:27:53Z",
+  "generated_at": "2026-10-18T12:18:30Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2640000.0,
-  "total_usable_records": 151,
-  "total_contributing_channels": 16,
+  "total_usable_records": 158,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 76,
+    "direct_shop": 84,
     "market_channel": 36,
     "regional_market_channel": 19,
-    "settlement_exchange": 20
+    "settlement_exchange": 19
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 28,
-      "contributing_channel_count": 7,
-      "basket_confidence": 88.83,
+      "usable_record_count": 51,
+      "contributing_channel_count": 10,
+      "basket_confidence": 77.28,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 19,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
     },
     {
@@ -226,10 +226,10 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:residency24.com",
-      "title": "صرافی‌های ایرانی در دبی؛ انتقال پول و نرخ ارز",
+      "handle": "uae:propsearch.ae",
+      "title": "Propsearch.ae - Dubai Real Estate Research Platform",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 7,
       "average_quality": 74.0,
@@ -245,6 +245,17 @@
       "usable_record_count": 5,
       "average_quality": 82.0,
       "average_freshness": 59.6,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -265,6 +276,28 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 3,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:cityexchangeuae.com",
+      "title": "KARAMA – City Exchange Uae",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -292,24 +325,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:t.me",
-      "title": "⛳️درهم نرخ⛳️",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 92.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:tabdeal.org",
-      "title": "قیمت درهم امارات به تومان ∣ نرخ درهم امارات به ریال و نمودار لحظه‌ای",
+      "handle": "uae:mpexchange.ir",
+      "title": "ماشین حساب ارزی آنلاین",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 96.0,
+      "average_quality": 79.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
