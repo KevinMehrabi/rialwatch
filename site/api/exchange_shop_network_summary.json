@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-18T12:18:30Z",
+  "generated_at": "2026-10-18T21:39:29Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2640000.0,
-  "total_usable_records": 158,
-  "total_contributing_channels": 18,
+  "benchmark_weighted_rate": 2625000.0,
+  "total_usable_records": 148,
+  "total_contributing_channels": 15,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 20,
-      "usable_records": 19,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 84,
+    "direct_shop": 76,
     "market_channel": 36,
-    "regional_market_channel": 19,
-    "settlement_exchange": 19
+    "regional_market_channel": 18,
+    "settlement_exchange": 18
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 20,
       "contributing_channel_count": 1,
-      "basket_confidence": 79.79,
+      "basket_confidence": 79.72,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 51,
-      "contributing_channel_count": 10,
-      "basket_confidence": 77.28,
+      "usable_record_count": 34,
+      "contributing_channel_count": 6,
+      "basket_confidence": 79.06,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -176,9 +176,9 @@
       "locality": "Turkey",
       "source_category": "regional_market_channel",
       "source_priority": "P1",
-      "usable_record_count": 19,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -226,17 +226,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:propsearch.ae",
-      "title": "Propsearch.ae - Dubai Real Estate Research Platform",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "iranbroker_net",
       "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
       "locality": "unknown",
@@ -245,17 +234,6 @@
       "usable_record_count": 5,
       "average_quality": 82.0,
       "average_freshness": 59.6,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:gooyadubai.ae",
-      "title": "قیمت طلا در دبی و امارات امروز",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -270,6 +248,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 73.75,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:dxboffplan.com",
       "title": "چنج پول در دبی 2026",
       "locality": "UAE",
@@ -281,24 +270,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:cityexchangeuae.com",
-      "title": "KARAMA – City Exchange Uae",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranbroker.com",
-      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
+      "usable_record_count": 3,
+      "average_quality": 75.67,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -322,17 +300,6 @@
       "usable_record_count": 1,
       "average_quality": 72.0,
       "average_freshness": 88.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:mpexchange.ir",
-      "title": "ماشین حساب ارزی آنلاین",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 79.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     }
   ]
