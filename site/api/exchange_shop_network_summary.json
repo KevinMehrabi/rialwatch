@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-19T14:29:50Z",
+  "generated_at": "2026-10-19T23:19:31Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2625000.0,
-  "total_usable_records": 160,
-  "total_contributing_channels": 18,
+  "benchmark_weighted_rate": 2637000.0,
+  "total_usable_records": 147,
+  "total_contributing_channels": 15,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 85,
+    "direct_shop": 78,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 21
+    "settlement_exchange": 15
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 20,
       "contributing_channel_count": 1,
-      "basket_confidence": 79.72,
+      "basket_confidence": 79.79,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 31,
-      "contributing_channel_count": 5,
-      "basket_confidence": 90.84,
+      "usable_record_count": 40,
+      "contributing_channel_count": 6,
+      "basket_confidence": 79.46,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,8 +177,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -237,17 +237,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "iranbroker_net",
       "title": "ایران بروکر | اخبار ارز دیجیتال و فارکس",
       "locality": "unknown",
@@ -259,34 +248,23 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:iranbroker.com",
-      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 5,
-      "average_quality": 74.8,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:arzdigital.com",
-      "title": "تبدیل درهم امارات به دلار",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 77.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:dxboffplan.com",
       "title": "چنج پول در دبی 2026",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 3,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -314,24 +292,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:gooyadubai.ae",
-      "title": "قیمت طلا در دبی و امارات امروز",
+      "handle": "uae:iranbroker.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:mpexchange.ir",
-      "title": "ماشین حساب ارزی آنلاین",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 79.0,
+      "average_quality": 73.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
