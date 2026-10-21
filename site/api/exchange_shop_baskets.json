@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T12:57:00Z",
+  "generated_at": "2026-10-21T22:39:49Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2646000.0,
   "baskets": [
@@ -43,7 +43,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.002911,
       "top_channel_share": 1.0,
-      "outliers_removed": 19,
+      "outliers_removed": 18,
       "source_category_mix": {
         "direct_shop": 20
       },
@@ -53,39 +53,31 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1795050.78,
+      "weighted_rate": 1792605.82,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1793446.38,
-      "spread_vs_benchmark_pct": -32.1598,
-      "usable_record_count": 35,
-      "contributing_channel_count": 7,
-      "fresh_contributing_channel_count": 6,
+      "trimmed_mean_rate": 1792879.52,
+      "spread_vs_benchmark_pct": -32.2522,
+      "usable_record_count": 25,
+      "contributing_channel_count": 3,
+      "fresh_contributing_channel_count": 2,
       "fresh_contributing_channels": [
         "uae:ciphoenix.com",
-        "uae:dubaipractical.com",
-        "uae:dxboffplan.com",
-        "uae:hiemarat.com",
-        "uae:residency24.com",
-        "uae:tabdeal.org"
+        "uae:hiemarat.com"
       ],
-      "basket_confidence": 89.47,
+      "basket_confidence": 84.68,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.046487,
-      "top_channel_share": 0.286631,
-      "outliers_removed": 15,
+      "dispersion_cv": 0.040303,
+      "top_channel_share": 0.410941,
+      "outliers_removed": 6,
       "source_category_mix": {
-        "direct_shop": 20,
-        "settlement_exchange": 15
+        "direct_shop": 11,
+        "settlement_exchange": 14
       },
       "channels": [
         "uae:ciphoenix.com",
-        "uae:dubaipractical.com",
-        "uae:dxboffplan.com",
         "uae:hiemarat.com",
-        "uae:ir-europe.com",
-        "uae:residency24.com",
-        "uae:tabdeal.org"
+        "uae:ir-europe.com"
       ]
     },
     {
