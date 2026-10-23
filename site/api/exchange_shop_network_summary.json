@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-22T22:28:46Z",
+  "generated_at": "2026-10-23T12:39:01Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2687000.0,
-  "total_usable_records": 134,
-  "total_contributing_channels": 15,
+  "benchmark_weighted_rate": 2732500.0,
+  "total_usable_records": 112,
+  "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 59,
+    "direct_shop": 39,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 21
+    "settlement_exchange": 19
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 70.69,
+      "basket_confidence": 70.03,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 29,
-      "contributing_channel_count": 5,
-      "basket_confidence": 89.43,
+      "usable_record_count": 20,
+      "contributing_channel_count": 4,
+      "basket_confidence": 87.92,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -154,9 +154,9 @@
       "locality": "Iran",
       "source_category": "direct_shop",
       "source_priority": "P2",
-      "usable_record_count": 20,
-      "average_quality": 68.4,
-      "average_freshness": 54.8,
+      "usable_record_count": 19,
+      "average_quality": 67.79,
+      "average_freshness": 53.05,
       "from_new_p1": false
     },
     {
@@ -166,8 +166,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 88.78,
+      "average_freshness": 81.33,
       "from_new_p1": true
     },
     {
@@ -193,17 +193,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulim_com",
-      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "locality": "Turkey",
-      "source_category": "direct_shop",
-      "source_priority": "P1",
-      "usable_record_count": 11,
-      "average_quality": 89.0,
-      "average_freshness": 76.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -212,28 +201,6 @@
       "usable_record_count": 7,
       "average_quality": 82.86,
       "average_freshness": 58.57,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:residency24.com",
-      "title": "صرافی‌های ایرانی در دبی؛ انتقال پول و نرخ ارز",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -259,6 +226,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:iranbroker.com",
       "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
@@ -281,17 +259,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:tabdeal.org",
-      "title": "قیمت درهم امارات به تومان ∣ نرخ درهم امارات به ریال و نمودار لحظه‌ای",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 76.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -300,6 +267,17 @@
       "usable_record_count": 1,
       "average_quality": 72.0,
       "average_freshness": 88.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     }
   ]
