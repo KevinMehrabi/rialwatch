@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-23T12:39:01Z",
+  "generated_at": "2026-10-23T22:02:43Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2732500.0,
-  "total_usable_records": 112,
+  "total_usable_records": 117,
   "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 39,
+    "direct_shop": 40,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 19
+    "settlement_exchange": 23
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 70.03,
+      "basket_confidence": 69.49,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 20,
-      "contributing_channel_count": 4,
-      "basket_confidence": 87.92,
+      "usable_record_count": 27,
+      "contributing_channel_count": 5,
+      "basket_confidence": 86.78,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -166,8 +166,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 88.78,
-      "average_freshness": 81.33,
+      "average_quality": 87.0,
+      "average_freshness": 76.0,
       "from_new_p1": true
     },
     {
@@ -209,18 +209,7 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 5,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:dxboffplan.com",
-      "title": "چنج پول در دبی 2026",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
+      "usable_record_count": 7,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -231,18 +220,29 @@
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 4,
+      "usable_record_count": 6,
       "average_quality": 74.0,
       "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:iranbroker.com",
-      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "handle": "uae:dxboffplan.com",
+      "title": "How to Safely Exchange Currency in Dubai – Tips, Documents & Best Practices",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 2,
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:economicexchangecentre.com",
+      "title": "Online Money Transfer From UAE - Economic Exchange Centre",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -273,7 +273,7 @@
       "handle": "uae:gooyadubai.ae",
       "title": "قیمت طلا در دبی و امارات امروز",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 74.0,
