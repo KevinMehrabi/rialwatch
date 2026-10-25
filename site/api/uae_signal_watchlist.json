@@ -1,15 +1,31 @@
 {
-  "generated_at": "2026-10-24T21:23:06Z",
+  "generated_at": "2026-10-25T12:10:44Z",
   "diagnostics_only": true,
   "locality": "UAE",
   "status": "watchlist_only",
   "sources": [
+    {
+      "source_name": "واحد پول دبی چیست ؟",
+      "website": "https://lahzeakhar.com/CurrencyContent/4-%D9%88%D8%A7%D8%AD%D8%AF-%D9%BE%D9%88%D9%84-%D8%AF%D8%A8%DB%8C",
+      "signal_type": "remittance_quote",
+      "freshness_status": "stale",
+      "last_seen": "2023-12-22T12:00:00Z",
+      "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: website."
+    },
     {
       "source_name": "قیمت درهم امارات",
       "website": "https://tomanxe.com/aed-remittance",
       "signal_type": "remittance_quote",
       "freshness_status": "stale",
       "last_seen": "2025-03-01T11:02:16+00:00",
+      "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: rate_page."
+    },
+    {
+      "source_name": "تبدیل درهم به تومان لحظه‌ای",
+      "website": "https://emeraldxe.com/service/%D8%AD%D9%88%D8%A7%D9%84%D9%87-%D8%AF%D8%B1%D9%87%D9%85",
+      "signal_type": "numeric_quote_page",
+      "freshness_status": "stale",
+      "last_seen": "2025-12-09T12:00:00Z",
       "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: rate_page."
     }
   ]
