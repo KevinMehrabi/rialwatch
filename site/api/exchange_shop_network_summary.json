@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-27T13:03:35Z",
+  "generated_at": "2026-10-27T23:03:57Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2716000.0,
-  "total_usable_records": 106,
-  "total_contributing_channels": 12,
+  "benchmark_weighted_rate": 2698000.0,
+  "total_usable_records": 132,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 20,
-      "usable_records": 19,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 46,
+    "direct_shop": 57,
     "market_channel": 36,
-    "regional_market_channel": 19,
-    "settlement_exchange": 5
+    "regional_market_channel": 18,
+    "settlement_exchange": 21
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 19,
+      "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 71.78,
+      "basket_confidence": 70.67,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 23,
-      "contributing_channel_count": 5,
-      "basket_confidence": 85.48,
+      "usable_record_count": 29,
+      "contributing_channel_count": 7,
+      "basket_confidence": 87.75,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -149,17 +149,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 19,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
-      "from_new_p1": true
-    },
-    {
       "handle": "mazanehnet",
       "title": "مظنه ارز در بازار تهران",
       "locality": "Iran",
@@ -171,6 +160,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -179,6 +179,28 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 73.43,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "istanbulim_com",
+      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
+      "locality": "Turkey",
+      "source_category": "direct_shop",
+      "source_priority": "P1",
+      "usable_record_count": 9,
+      "average_quality": 89.0,
+      "average_freshness": 76.0,
       "from_new_p1": false
     },
     {
@@ -193,17 +215,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:residency24.com",
       "title": "صرافی‌های ایرانی در دبی؛ انتقال پول و نرخ ارز",
       "locality": "UAE",
@@ -215,8 +226,30 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:arzdigital.com",
+      "title": "قیمت درهم امارات امروز - نرخ لحظه‌ ای بازار آزاد + نمودار",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:dxboffplan.com",
       "title": "چنج پول در دبی 2026",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -237,14 +270,25 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulim_com",
-      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "locality": "Turkey",
-      "source_category": "direct_shop",
-      "source_priority": "P1",
+      "handle": "uae:iranrebate.com",
+      "title": "قیمت درهم امارات امروز به تومان",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 89.0,
-      "average_freshness": 76.0,
+      "average_quality": 70.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:khanesarmaye.com",
+      "title": "قیمت درهم امارات امروز - قیمت لحظه ای و نمودار aed - خانه سرمایه",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
