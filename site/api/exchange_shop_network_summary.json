@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-30T13:56:12Z",
+  "generated_at": "2026-10-30T23:06:32Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2712000.0,
-  "total_usable_records": 132,
-  "total_contributing_channels": 16,
+  "benchmark_weighted_rate": 2748000.0,
+  "total_usable_records": 138,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,7 +36,7 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 53,
+    "direct_shop": 59,
     "market_channel": 36,
     "regional_market_channel": 15,
     "settlement_exchange": 28
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 39,
-      "contributing_channel_count": 7,
-      "basket_confidence": 86.32,
+      "usable_record_count": 51,
+      "contributing_channel_count": 10,
+      "basket_confidence": 83.86,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -259,6 +259,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 75.25,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:ir-europe.com",
       "title": "حواله درهم دبی امارات",
       "locality": "UAE",
@@ -270,14 +281,25 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulim_com",
-      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "locality": "Turkey",
+      "handle": "uae:iran2dubai.com",
+      "title": "بوی ادویه دیرة و غرش کانتینرهای جبل‌علی: اعترافات یک تاجر قدیمی از جنگ پنهان توزیع کالای ایرانی در دبی - مجله تجارت و صادرات به دبی",
+      "locality": "UAE",
       "source_category": "direct_shop",
-      "source_priority": "P1",
+      "source_priority": "uae_review",
       "usable_record_count": 3,
-      "average_quality": 89.0,
-      "average_freshness": 76.0,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:coinlandexchange.com",
+      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -303,13 +325,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ezrate.me",
-      "title": "قیمت دلار دبی امروز",
+      "handle": "uae:tftc.io",
+      "title": "Dubai Exchange Shelbit Moved $4B for Iran's IRGC-Linked Sanctions Network",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 74.0,
+      "average_quality": 98.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
