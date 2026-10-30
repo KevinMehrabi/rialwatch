@@ -77,8 +77,7 @@ p { margin:0 0 12px; }
 .primary-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
 .primary-heading h2 { font-size:14px; font-weight:600; margin-top:3px; }
 .publication-chip { flex:none; border-radius:999px; padding:4px 9px; font-size:11px; font-weight:700; color:var(--warn); background:var(--warn-t); }
-.publication-chip.Published { color:var(--ok); background:var(--ok-t); }
-.publication-chip.Published::before { content:'✓ '; }
+.publication-chip.Published { display:none; }
 .primary-value-row { display:flex; flex-direction:column; gap:4px; }
 .primary-rate-value { font:600 clamp(38px,12vw,48px)/1.02 Fraunces,Georgia,serif; color:var(--strong); white-space:nowrap; }
 .primary-rate-value-candidate { font-size:34px; }
