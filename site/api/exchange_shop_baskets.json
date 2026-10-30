@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T23:21:10Z",
+  "generated_at": "2026-10-30T13:56:12Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2712000.0,
   "baskets": [
@@ -28,24 +28,22 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2718627.78,
-      "median_rate": 2718300.0,
-      "trimmed_mean_rate": 2718668.75,
-      "spread_vs_benchmark_pct": 0.2444,
-      "usable_record_count": 18,
+      "weighted_rate": 2719426.67,
+      "median_rate": 2718350.0,
+      "trimmed_mean_rate": 2719369.23,
+      "spread_vs_benchmark_pct": 0.2738,
+      "usable_record_count": 15,
       "contributing_channel_count": 1,
-      "fresh_contributing_channel_count": 1,
-      "fresh_contributing_channels": [
-        "istanbulexchange_com"
-      ],
-      "basket_confidence": 70.69,
+      "fresh_contributing_channel_count": 0,
+      "fresh_contributing_channels": [],
+      "basket_confidence": 69.51,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.000937,
+      "dispersion_cv": 0.000715,
       "top_channel_share": 1.0,
       "outliers_removed": 3,
       "source_category_mix": {
-        "regional_market_channel": 18
+        "regional_market_channel": 15
       },
       "channels": [
         "istanbulexchange_com"
@@ -53,38 +51,40 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1998272.44,
+      "weighted_rate": 1850568.66,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1968646.6,
-      "spread_vs_benchmark_pct": -26.3174,
-      "usable_record_count": 45,
-      "contributing_channel_count": 6,
-      "fresh_contributing_channel_count": 6,
+      "trimmed_mean_rate": 1850672.91,
+      "spread_vs_benchmark_pct": -31.7637,
+      "usable_record_count": 39,
+      "contributing_channel_count": 7,
+      "fresh_contributing_channel_count": 7,
       "fresh_contributing_channels": [
         "uae:angelindubai.com",
-        "uae:arzdigital.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
         "uae:hiemarat.com",
-        "uae:ir-europe.com"
+        "uae:ir-europe.com",
+        "uae:khanesarmaye.com",
+        "uae:residency24.com"
       ],
-      "basket_confidence": 77.59,
+      "basket_confidence": 86.32,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.132602,
-      "top_channel_share": 0.315771,
-      "outliers_removed": 0,
+      "dispersion_cv": 0.058484,
+      "top_channel_share": 0.263314,
+      "outliers_removed": 13,
       "source_category_mix": {
-        "direct_shop": 18,
-        "settlement_exchange": 27
+        "direct_shop": 15,
+        "settlement_exchange": 24
       },
       "channels": [
         "uae:angelindubai.com",
-        "uae:arzdigital.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
         "uae:hiemarat.com",
-        "uae:ir-europe.com"
+        "uae:ir-europe.com",
+        "uae:khanesarmaye.com",
+        "uae:residency24.com"
       ]
     },
     {
