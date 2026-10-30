@@ -215,6 +215,8 @@ p { margin:0 0 12px; }
 .diagnostic-warning { font-size:11px; color:var(--warn); margin:14px 0 0; }
 .ledger-card { padding:0 14px; }
 .ledger-columns { display:grid; grid-template-columns:minmax(0,1fr); }
+.ledger-batch { display:grid; grid-template-columns:minmax(0,1fr); }
+.ledger-batch + .ledger-batch { margin-top:16px; }
 .ledger-table { width:100%; border-collapse:collapse; }
 .ledger-table th { font-size:10px; font-weight:600; letter-spacing:.08em; color:var(--mut); text-align:left; padding:12px 0; border-bottom:1px solid var(--dv); }
 .ledger-table th:last-child { text-align:right; }
@@ -225,9 +227,8 @@ p { margin:0 0 12px; }
 .ledger-change { text-align:right; font-size:11px; }
 .ledger-change-track { height:4px; background:var(--s2); width:80px; max-width:100%; margin:5px 0 0 auto; border-radius:2px; }
 .ledger-change-track span { height:100%; display:block; margin-left:auto; background:currentColor; }
-.ledger-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--mut); font-size:11px; padding:12px 0; }
-.ledger-table:nth-child(2),.ledger-extra { display:none; }
-.ledger-expanded .ledger-table:nth-child(2) { display:table; }.ledger-expanded .ledger-extra { display:table-row; }
+.ledger-footer { display:flex; align-items:center; justify-content:space-between; gap:10px; color:var(--mut); font-size:12px; padding:12px 0; }
+#ledger-more { flex:none; }
 /* Existing supporting pages retain their content and table/grid structure. */
 .page-title { margin:0 0 6px; font-size:26px; }
 .h4 { font-size:18px; }.h5 { font-size:16px; }.fw-bold { font-weight:700; }
@@ -276,7 +277,7 @@ p { margin:0 0 12px; }
   .regional-name { font-size:13px; }.regional-signal { display:block; }.regional-rate { font-size:12px; text-align:right; }.regional-chevron { display:none; }.regional-spread { font-size:12px; }
   .alignment-badge { padding:3px 7px; font-size:10px; }.spread-bar { height:16px; }.spread-fill { height:12px; }
   .regional-mobile-detail { display:none; }.regional-detail { display:block; padding:24px; align-self:stretch; }.regional-detail-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:20px; }.regional-detail h3 { font:600 28px Fraunces,Georgia,serif; }.diagnostic-value { font-size:20px; }
-  .ledger-card { padding:0 24px; }.ledger-columns { grid-template-columns:1fr 1fr; gap:36px; }.ledger-table:nth-child(2) { display:table; }.ledger-extra { display:table-row; }.ledger-table td { font-size:14px; padding:8px 0; }.ledger-table td:nth-child(2) { font-size:16px; }.ledger-change { font-size:12px; }.ledger-change-track { width:120px; }#ledger-toggle { display:none; }.ledger-footer { padding:16px 0; }
+  .ledger-card { padding:0 24px; }.ledger-batch { grid-template-columns:1fr 1fr; gap:36px; }.ledger-table td { font-size:14px; padding:8px 0; }.ledger-table td:nth-child(2) { font-size:16px; }.ledger-change { font-size:12px; }.ledger-change-track { width:120px; }.ledger-footer { padding:16px 0; }
   .status-overview-grid { grid-template-columns:repeat(4,minmax(0,1fr)); }.col-md-3 { width:25%; }.span-8 { grid-column:span 8; }.span-4 { grid-column:span 4; }.span-6 { grid-column:span 6; }
 }
 @media (min-width:1200px) {

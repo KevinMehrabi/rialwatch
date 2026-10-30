@@ -36,9 +36,10 @@ const fixtures = {
   });
   assert.match(await page.locator('#regional-context').textContent(),/Diagnostics updated/);
   assert.equal(await page.locator('.ledger-table tbody tr:visible').count(),10);
-  await page.getByRole('button',{name:'Show all 30'}).click();
-  assert.equal(await page.locator('.ledger-table tbody tr:visible').count(),30);
-  await page.getByRole('button',{name:'Show fewer'}).click();
+  assert.match(await page.locator('#recent-days-summary').textContent(),/^Showing 10 of \d+ daily references/);
+  await page.getByRole('button',{name:'View 30 more'}).click();
+  assert.equal(await page.locator('.ledger-table tbody tr:visible').count(),40);
+  assert.match(await page.locator('#recent-days-summary').textContent(),/^Showing 40 of \d+ daily references/);
   const fullEnd=Number(await page.locator('#historyRangeRightHandle').getAttribute('aria-valuenow'));
   await page.getByRole('button',{name:'7D',exact:true}).click();
   assert.equal(await page.getByRole('button',{name:'7D',exact:true}).getAttribute('aria-pressed'),'true');
@@ -74,11 +75,12 @@ const fixtures = {
   assert.equal(await page.locator('.regional-row').nth(1).getAttribute('aria-pressed'),'true');
   await page.locator('.regional-row').nth(1).focus();await page.keyboard.press('ArrowDown');
   assert.equal(await page.locator('.regional-row').nth(2).getAttribute('aria-pressed'),'true');
-  assert.equal(await page.locator('.ledger-table tbody tr:visible').count(),30);
+  assert.equal(await page.locator('.ledger-table tbody tr:visible').count(),40,'expanded history survives the desktop breakpoint');
   await page.getByRole('button',{name:'Switch to light mode'}).click();await page.reload();
   assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
   await page.emulateMedia({reducedMotion:'reduce'});
-  assert.equal(await page.locator('.chart-pulse').evaluate(el=>getComputedStyle(el).display),'none');
+  // The resize observer replaces SVG children; read the current pulse from its stable root.
+  assert.equal(await page.locator('#historyChart').evaluate(el=>getComputedStyle(el.querySelector('.chart-pulse')).display),'none');
   // Check all requested widths on all shared pages, in both themes.
   for(const path of ['', 'methodology/', 'status/']) {
    for(const theme of ['dark','light']) {
@@ -128,6 +130,9 @@ const fixtures = {
   assert.match(await fixturePage.locator('.regional-mobile-detail').first().textContent(),/stale diagnostics artifact/);
   for(const count of [1,2,6]) {
    rows=fixtures.rows.slice(0,count);await fixturePage.reload();await fixturePage.waitForSelector('#historyRangePanel:not([hidden])');
+   assert.equal(await fixturePage.locator('.ledger-table tbody tr:visible').count(),count);
+   assert.equal(await fixturePage.locator('#recent-days-summary').textContent(),`Showing ${count} of ${count} daily references · Full history`);
+   assert.equal(await fixturePage.locator('#ledger-more').isVisible(),false);
    await fixturePage.getByRole('button',{name:'7D',exact:true}).click();
    await fixturePage.locator('#historyRangeRightHandle').press('ArrowLeft');
    assert.equal(await fixturePage.locator('#historyChart').evaluate(el=>/NaN|Infinity/.test(el.innerHTML)),false);
@@ -201,11 +206,46 @@ const fixtures = {
   await touchPage.getByRole('button',{name:'7D',exact:true}).tap();
   assert.equal(await touchPage.getByRole('tooltip').isVisible(),false,'changing the range clears the tooltip');
   await touchPage.close();
+  // Progressively reach every reference, including a partial final batch and a year boundary.
+  const ledgerPage=await browser.newPage();ledgerPage.on('pageerror',error=>errors.push(error.message));
+  const ledgerRows=Array.from({length:97},(_,i)=>({date:new Date(Date.UTC(2025,10,i+1)).toISOString().slice(0,10),fix:1000000+i*2000+(i>=70 ? 8000 : 0),withheld:i===90}));
+  await ledgerPage.route('**/api/series.json',route=>route.fulfill({json:{rows:ledgerRows}}));
+  await ledgerPage.route('**/api/chart_history.json',route=>route.fulfill({json:{rows:[]}}));
+  const dates=ledgerRows.map(row=>row.date).reverse();
+  for (const width of [390,1280]) {
+   await ledgerPage.setViewportSize({width,height:900});await ledgerPage.goto(url);
+   await ledgerPage.waitForSelector('.ledger-date');
+   let shown=width<900 ? 10 : 30;
+   assert.equal(await ledgerPage.locator('#recent-days-summary').textContent(),`Showing ${shown} of 97 daily references`);
+   while(shown<97) {
+    const previous=shown;
+    await ledgerPage.getByRole('button',{name:`View ${Math.min(30,97-shown)} more`,exact:true}).click();
+    shown=Math.min(97,shown+30);
+    assert.equal(await ledgerPage.locator('.ledger-table tbody tr:visible').count(),shown);
+    assert.equal(await ledgerPage.locator('#recent-days-summary').textContent(),`Showing ${shown} of 97 daily references${shown===97 ? ' · Full history' : ''}`);
+    assert.deepEqual(await ledgerPage.locator('.ledger-date time').evaluateAll(nodes=>nodes.map(node=>node.dateTime)),dates.slice(0,shown),'no duplicates, missing rows, or reordering between batches');
+    assert.equal(await ledgerPage.evaluate(()=>document.activeElement.getAttribute('href')),`/fix/${dates[previous]}/`,'focus begins at the newly revealed references');
+    if(previous===(width<900 ? 10 : 30)) {
+     await ledgerPage.setViewportSize({width:width<900 ? 1280 : 390,height:900});
+     assert.equal(await ledgerPage.locator('.ledger-table tbody tr:visible').count(),shown,'resize keeps the revealed count');
+     await ledgerPage.setViewportSize({width,height:900});
+    }
+   }
+   assert.equal(await ledgerPage.locator('#ledger-more').isVisible(),false);
+   assert.equal(await ledgerPage.locator('.ledger-publication.withheld').count(),1,'withheld entries retain their label and are counted as references');
+   assert.match(await ledgerPage.locator('.ledger-date').last().textContent(),/2025/,'older years are explicit');
+   assert.match(await ledgerPage.locator('.ledger-table tbody tr').last().textContent(),/1,000,000/);
+   assert.match(await ledgerPage.locator('.ledger-table tbody tr').nth(30).textContent(),/\+2,000/,'change at a batch boundary uses the true preceding date');
+   assert.equal(await ledgerPage.locator('.ledger-change-track span').first().getAttribute('style'),await ledgerPage.locator('.ledger-change-track span').nth(30).getAttribute('style'),'equal changes use the same bar scale across batches');
+  }
+  await ledgerPage.close();
   archiveUnavailable=true;await fixturePage.reload();await fixturePage.waitForSelector('#historyRangePanel:not([hidden])');
   assert.equal(await fixturePage.locator('.chart-archive-point').count(),0,'archive outages retain the official timeline');
   archiveUnavailable=false;archiveRows=[];
   rows=[];regional={cards:[]};await fixturePage.reload();await fixturePage.getByText('Timeline unavailable',{exact:true}).waitFor();
   await fixturePage.getByText('Regional signals unavailable',{exact:true}).waitFor();
+  assert.equal(await fixturePage.locator('#recent-days-summary').textContent(),'History is temporarily unavailable');
+  assert.equal(await fixturePage.locator('#ledger-more').isVisible(),false);
   failFetch=true;await fixturePage.reload();await fixturePage.getByText('Timeline unavailable',{exact:true}).waitFor();
   await fixturePage.getByText('Regional signals unavailable',{exact:true}).waitFor();
   // Site refresh time must not conceal the age of the benchmark snapshot.
@@ -218,6 +258,6 @@ const fixtures = {
   }
   assert.equal(await fixturePage.locator('.updated-label').textContent(),'Site updated');
   assert.deepEqual(errors,[]);
-  console.log('PASS: content, presets, drag/pan, keyboard, scrub, hover/touch tooltips, themes, reduced motion, shared pages, stale/withheld/missing data, and short series');
+  console.log('PASS: full-history pagination and counts, content, presets, drag/pan, keyboard, scrub, hover/touch tooltips, themes, reduced motion, shared pages, stale/withheld/missing data, and short series');
  } finally { await browser.close(); }
 })().catch(error=>{console.error(error);process.exitCode=1});

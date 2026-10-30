@@ -246,6 +246,12 @@ in a tooltip beside the point. Recovered quotes identify their archive source th
 Focus the chart itself to inspect points with left/right arrows; Escape dismisses
 the tooltip. The readout below the chart remains available for source links.
 
+Daily references start with 30 rows on desktop and 10 on mobile. “View more” adds
+up to 30 older records per click until the complete reference history is visible.
+The footer reports the displayed count and total; withheld records remain labelled,
+and archive-only chart observations are excluded. Expanded history stays visible
+when switching between mobile and desktop layouts.
+
 Regional signals preserve the existing visibility filter and 30-hour stale-data
 warning. The shared Status link intentionally has no health dot because there is
 no machine-readable pipeline-health endpoint to bind it to. Methodology and
