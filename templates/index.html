@@ -6,7 +6,15 @@
     <div>${primary_value_html}${primary_reason_html}</div>
     <section class="chart-card" aria-label="Street rate timeline">
       <h2 class="sr-only">Street rate timeline</h2>
-    <div class="history-chart-wrap"><svg id="historyChart" role="img" aria-label="Street rate history" tabindex="0"></svg></div><p id="timeline-message" class="empty-message">Loading timeline…</p>
+    <div class="history-chart-wrap">
+      <svg id="historyChart" role="img" aria-label="Street rate history" aria-describedby="history-chart-tooltip" tabindex="0"></svg>
+      <div class="chart-tooltip" id="history-chart-tooltip" role="tooltip" hidden>
+        <div class="chart-tooltip-date" id="tooltip-date"></div>
+        <div class="chart-tooltip-value"><strong id="tooltip-value"></strong><span>IRR per USD</span></div>
+        <div id="tooltip-change"></div>
+        <div class="chart-tooltip-detail" id="tooltip-detail"></div>
+      </div>
+    </div><p id="timeline-message" class="empty-message">Loading timeline…</p>
     <div class="history-range-presets" role="group" aria-label="Timeline range presets">
       <button type="button" data-history-window="1" aria-pressed="false" disabled>1D</button>
       <button type="button" data-history-window="7" aria-pressed="false" disabled>7D</button>
@@ -98,4 +106,4 @@
 <section class="dashboard-section" aria-labelledby="regional-heading"><div class="section-heading"><h2 id="regional-heading">Regional Market Signals</h2><p>Best available public locality signals relative to the RialWatch benchmark. Diagnostic only.</p><p class="section-as-of" id="regional-context" hidden></p></div><div id="regional-market-cards" class="regional-layout"><div class="card empty-message">Loading regional market signals…</div></div></section>
 <section class="dashboard-section" aria-labelledby="recent-heading"><div class="section-heading"><h2 id="recent-heading">Recent Daily References</h2><p>Published reference fixes</p></div><div class="card ledger-card"><div id="recent-days" class="ledger-columns"><p class="empty-message">Loading daily references…</p></div><div class="ledger-footer"><span id="recent-days-summary">Daily publication history</span><button type="button" class="pill-button" id="ledger-toggle" aria-expanded="false" aria-controls="recent-days" hidden>Show all 30</button></div></div></section>
 </div>
-<script src="/assets/js/home-dashboard.js?v=20261012-history" defer></script>
+<script src="/assets/js/home-dashboard.js?v=20261030-hover" defer></script>
