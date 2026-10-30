@@ -126,7 +126,7 @@
   class Timeline {
     constructor(rows) {
       this.rows = rows; this.times = rows.map(row => dayTime(row.date)); this.start = 0; this.end = rows.length-1; this.preset = 'all'; this.selected = null;
-      this.svg = $('historyChart'); this.track = $('historyRangeBrushTrack'); this.minPoints = Math.min(7, rows.length);
+      this.svg = $('historyChart'); this.tooltip = $('history-chart-tooltip'); this.track = $('historyRangeBrushTrack'); this.minPoints = Math.min(7, rows.length);
       $('timeline-message').hidden = true; $('historyRangePanel').hidden = false;
       document.querySelectorAll('[data-history-window]').forEach(button => {
         button.disabled = false;
@@ -135,13 +135,25 @@
       $('historyRangeReset').addEventListener('click', () => this.setPreset('all'));
       this.svg.addEventListener('pointermove', event => this.scrub(event));
       this.svg.addEventListener('pointerdown', event => this.scrub(event));
-      this.svg.addEventListener('pointerleave', event => { if (event.pointerType === 'mouse') { this.selected = null; this.updateSelection(); } });
+      // Keep the tooltip open when the pointer moves from the plot onto its text.
+      this.svg.parentElement.addEventListener('pointerleave', event => {
+        if (event.pointerType === 'mouse' && this.selectionMode !== 'keyboard') { this.selected = null; this.updateSelection(); }
+      });
       this.svg.addEventListener('pointerup', () => this.announce());
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && this.selected !== null) {
+          this.selected = null; this.updateSelection();
+          if (document.activeElement === this.svg) this.announce();
+        }
+      });
+      this.svg.addEventListener('blur', () => {
+        if (this.selectionMode === 'keyboard') { this.selected = null; this.updateSelection(); }
+      });
       this.svg.addEventListener('keydown', event => {
-        if (!['ArrowLeft','ArrowRight','Home','End','Escape'].includes(event.key)) return;
+        if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
         event.preventDefault();
-        if (event.key === 'Escape') this.selected = null;
-        else if (event.key === 'Home') this.selected = this.start;
+        this.selectionMode = 'keyboard';
+        if (event.key === 'Home') this.selected = this.start;
         else if (event.key === 'End') this.selected = this.end;
         else this.selected = clamp((this.selected ?? this.end) + (event.key === 'ArrowRight' ? 1 : -1), this.start, this.end);
         this.updateSelection(); this.announce();
@@ -204,7 +216,7 @@
       const path = segment => segment.map((index,i) => `${i ? 'L':'M'}${this.x(index).toFixed(2)},${this.y(this.rows[index].fix).toFixed(2)}`).join(' ');
       html += `<path class="chart-area" d="${segments.filter(part=>part.length>1).map(part=>`${path(part)} L${this.x(part.at(-1))},${bottom} L${this.x(part[0])},${bottom} Z`).join(' ')}"/><path class="chart-line" d="${segments.map(path).join(' ')}"/>`;
       visible.forEach((row,i) => {
-        if (row.kind === 'historical_archive') html += `<circle class="chart-archive-point" cx="${this.x(i+this.start)}" cy="${this.y(row.fix)}" r="3.5"><title>${esc(date(row.date,{year:'numeric'}))}: recovered Bonbast archive quote. Select the chart to inspect.</title></circle>`;
+        if (row.kind === 'historical_archive') html += `<circle class="chart-archive-point" cx="${this.x(i+this.start)}" cy="${this.y(row.fix)}" r="3.5"/>`;
       });
       segments.filter(part=>part.length===1 && part[0]!==this.end).forEach(part=>{ html += `<circle class="chart-end" cx="${this.x(part[0])}" cy="${this.y(this.rows[part[0]].fix)}" r="3"/>`; });
       const labelTimes = [...new Set(Array.from({length:ticks}, (_,i) => firstTime+Math.round(i/(ticks-1)*(lastTime-firstTime)/86400000)*86400000))];
@@ -237,12 +249,26 @@
       const source = $('readout-source');
       source.hidden = !recovered;
       source.innerHTML = recovered ? `Historical market quote recovered after the fact; not a RialWatch daily fix. <a href="/history/backfills/${row.date}.json">Source record</a> · <a href="/methodology/#historical-recovery">Method</a>` : '';
+      this.tooltip.hidden = !show;
+      if (show) {
+        $('tooltip-date').textContent = `${date(row.date, {year:'numeric'})} · ${recovered ? 'Recovered quote' : 'Published reference'}`;
+        $('tooltip-value').textContent = fmt(row.fix);
+        $('tooltip-change').className = `direction-${direction(delta)}`;
+        $('tooltip-change').textContent = delta === null ? 'First reference' : `${arrow(delta)} ${signed(delta)} vs ${comparison}`;
+        $('tooltip-detail').textContent = $('readout-band').textContent;
+        // Anchor to the selected point and flip at the plot edges, including after resize.
+        const x = this.x(index), y = this.y(row.fix), {w,h} = this.geometry;
+        const width = this.tooltip.offsetWidth, height = this.tooltip.offsetHeight;
+        this.tooltip.style.left = `${clamp(x+width+12 <= w-8 ? x+12 : x-width-12,8,Math.max(8,w-width-8))}px`;
+        this.tooltip.style.top = `${clamp(y-height-12 >= 8 ? y-height-12 : y+12,8,Math.max(8,h-height-8))}px`;
+      }
     }
     scrub(event) {
       const rect = this.svg.getBoundingClientRect(), x = event.clientX-rect.left;
       if (x < this.geometry.left || x > this.geometry.right) return;
       const time = this.domain.firstTime+(x-this.geometry.left)/(this.geometry.right-this.geometry.left)*(this.domain.lastTime-this.domain.firstTime);
       const index = this.nearest(time,this.start,this.end);
+      this.selectionMode = event.pointerType;
       if (this.selected !== index) { this.selected = index; this.updateSelection(); }
     }
     announce() {

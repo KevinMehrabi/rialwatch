@@ -154,6 +154,53 @@ const fixtures = {
   assert.equal(await fixturePage.getByRole('link',{name:'Source record',exact:true}).getAttribute('href'),'/history/backfills/2026-10-10.json');
   await fixturePage.locator('#historyChart').press('End');
   assert.equal(await fixturePage.locator('#readout-source').isVisible(),false);
+  // Hover details must be visible beside the point, not only in the distant readout.
+  // Check both ends and an archive point at narrow/mobile/desktop sizes in both themes.
+  for (const width of [320,390,1280]) {
+   await fixturePage.setViewportSize({width,height:900});
+   for (const theme of ['dark','light']) {
+    await fixturePage.evaluate(theme=>document.documentElement.dataset.theme=theme,theme);
+    await fixturePage.getByRole('button',{name:'All',exact:true}).click();
+    await fixturePage.locator('#historyChart').scrollIntoViewIfNeeded();
+    const plot=await fixturePage.locator('#historyChart').boundingBox();
+    const points=[...(await fixturePage.locator('#historyChart .chart-line').getAttribute('d')).matchAll(/[ML]([\d.]+),([\d.]+)/g)].map(m=>({x:Number(m[1]),y:Number(m[2])}));
+    for (const [index,date,value,recovered] of [[0,'Oct 5, 2026','2,600,000',false],[2,'Oct 7, 2026','2,600,000',true],[6,'Oct 11, 2026','2,620,000',false]]) {
+     await fixturePage.mouse.move(0,0);
+     await fixturePage.mouse.move(plot.x+points[index].x,plot.y+points[index].y);
+     const tooltip=fixturePage.getByRole('tooltip');
+     assert.equal(await tooltip.isVisible(),true,`${width} ${theme}: hover tooltip must appear`);
+     assert.match(await fixturePage.locator('#tooltip-date').textContent(),new RegExp(date));
+     assert.equal(await fixturePage.locator('#tooltip-value').textContent(),value);
+     assert.match(await tooltip.textContent(),recovered ? /Recovered quote[\s\S]*Bonbast archive/ : /Published reference/);
+     assert.equal(await fixturePage.locator('#tooltip-value').textContent(),await fixturePage.locator('#readout-value').textContent());
+     const box=await tooltip.boundingBox();
+     assert.ok(box.x>=plot.x && box.x+box.width<=plot.x+plot.width+1 && box.y>=plot.y && box.y+box.height<=plot.y+plot.height+1,'tooltip stays inside the chart');
+     await tooltip.hover();
+     assert.equal(await tooltip.isVisible(),true,'tooltip remains available when hovered');
+     assert.equal(await fixturePage.locator('#tooltip-value').textContent(),value,'hovering the tooltip preserves the selected point');
+     await fixturePage.keyboard.press('Escape');
+     assert.equal(await tooltip.isVisible(),false,'Escape dismisses pointer tooltip without focusing the plot');
+    }
+    await fixturePage.locator('#historyChart').press('Home');
+    assert.equal(await fixturePage.getByRole('tooltip').isVisible(),true,'keyboard inspection shows the same tooltip');
+    await fixturePage.keyboard.press('Tab');
+    assert.equal(await fixturePage.getByRole('tooltip').isVisible(),false,'keyboard blur dismisses tooltip');
+    await fixturePage.mouse.move(0,0);
+    await fixturePage.mouse.move(plot.x+points[2].x,plot.y+points[2].y);
+    await fixturePage.mouse.move(0,0);
+    assert.equal(await fixturePage.getByRole('tooltip').isVisible(),false,'leaving the chart dismisses pointer tooltip');
+   }
+  }
+  const touchPage=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
+  touchPage.on('pageerror',error=>errors.push(error.message));
+  await touchPage.goto(url);await touchPage.waitForSelector('#historyRangePanel:not([hidden])');
+  await touchPage.locator('#historyChart').scrollIntoViewIfNeeded();
+  const touchPlot=await touchPage.locator('#historyChart').boundingBox();
+  await touchPage.touchscreen.tap(touchPlot.x+touchPlot.width/2,touchPlot.y+touchPlot.height/2);
+  assert.equal(await touchPage.getByRole('tooltip').isVisible(),true,'touch tap opens point details');
+  await touchPage.getByRole('button',{name:'7D',exact:true}).tap();
+  assert.equal(await touchPage.getByRole('tooltip').isVisible(),false,'changing the range clears the tooltip');
+  await touchPage.close();
   archiveUnavailable=true;await fixturePage.reload();await fixturePage.waitForSelector('#historyRangePanel:not([hidden])');
   assert.equal(await fixturePage.locator('.chart-archive-point').count(),0,'archive outages retain the official timeline');
   archiveUnavailable=false;archiveRows=[];
@@ -171,6 +218,6 @@ const fixtures = {
   }
   assert.equal(await fixturePage.locator('.updated-label').textContent(),'Site updated');
   assert.deepEqual(errors,[]);
-  console.log('PASS: content, presets, drag/pan, keyboard, scrub, themes, reduced motion, shared pages, stale/withheld/missing data, and short series');
+  console.log('PASS: content, presets, drag/pan, keyboard, scrub, hover/touch tooltips, themes, reduced motion, shared pages, stale/withheld/missing data, and short series');
  } finally { await browser.close(); }
 })().catch(error=>{console.error(error);process.exitCode=1});

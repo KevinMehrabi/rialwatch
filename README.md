@@ -241,7 +241,10 @@ benchmark details below it. The responsive layout changes at 900px. The timeline
 presets, pointer scrubbing, and a draggable overview. Focus either range handle
 and use arrow keys (Shift moves seven observations); Home/End moves to a bound.
 Manual ranges contain at least seven points, while presets can show shorter
-windows. Focus the chart itself to inspect points with left/right arrows.
+windows. Hover over the plot or tap a point to see its date, rate, change, and band
+in a tooltip beside the point. Recovered quotes identify their archive source there.
+Focus the chart itself to inspect points with left/right arrows; Escape dismisses
+the tooltip. The readout below the chart remains available for source links.
 
 Regional signals preserve the existing visibility filter and 30-hour stale-data
 warning. The shared Status link intentionally has no health dot because there is
