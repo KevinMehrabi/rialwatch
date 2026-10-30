@@ -335,21 +335,39 @@
   }
 
   function renderLedger(rows) {
-    const recent = rows.slice(-30).map((row,i) => {
-      const index = Math.max(0,rows.length-30)+i;
-      return {...row, delta: index && numeric(row.fix)!==null && numeric(rows[index-1].fix)!==null ? row.fix-rows[index-1].fix : null};
-    }).reverse();
-    const max = Math.max(1,...recent.map(row=>Math.abs(row.delta || 0)));
+    const history = rows.map((row,index) => ({...row, delta: index && numeric(row.fix)!==null && numeric(rows[index-1].fix)!==null ? row.fix-rows[index-1].fix : null})).reverse();
+    const holder = $('recent-days'), summary = $('recent-days-summary'), more = $('ledger-more');
+    const batchSize = 30;
+    const max = Math.max(1,...history.map(row=>Math.abs(row.delta || 0)));
+    let shown = Math.min(history.length, desktop.matches ? batchSize : 10), expanded = false;
     const header = '<thead><tr><th scope="col">DATE</th><th scope="col">FIX</th><th scope="col">CHANGE</th></tr></thead>';
-    const renderRow = (row,index) => `<tr${index>=10 ? ' class="ledger-extra"' : ''}><td><a class="ledger-date" href="/fix/${esc(row.date)}/">${date(row.date,{weekday:'short'})}<span class="ledger-publication${row.withheld ? ' withheld' : ''}">${row.withheld ? 'Withheld' : '✓ Published'}</span></a></td><td>${fmt(row.fix)}</td><td><div class="ledger-change direction-${direction(row.delta)}">${row.delta===null ? '–' : `${arrow(row.delta)} ${signed(row.delta)}`}<div class="ledger-change-track"><span style="width:${Math.abs(row.delta || 0)/max*100}%"></span></div></div></td></tr>`;
-    $('recent-days').innerHTML = [recent.slice(0,15),recent.slice(15)].filter(group=>group.length).map((group,i)=>`<table class="ledger-table" aria-label="${i ? 'Older' : 'Recent'} daily references">${header}<tbody>${group.map((row,j)=>renderRow(row,j+i*15)).join('')}</tbody></table>`).join('');
-    $('recent-days-summary').textContent = `${rows.filter(row=>!row.withheld).length} published days`;
-    const toggle = $('ledger-toggle'); toggle.hidden = recent.length<=10;
-    toggle.textContent = `Show all ${recent.length}`;
-    toggle.addEventListener('click',()=> {
-      const expanded = $('recent-days').classList.toggle('ledger-expanded');
-      toggle.setAttribute('aria-expanded',String(expanded)); toggle.textContent = expanded ? 'Show fewer' : `Show all ${recent.length}`;
+    const renderRow = (row,max) => `<tr><td><a class="ledger-date" href="/fix/${esc(row.date)}/"><time datetime="${esc(row.date)}">${date(row.date,{year:'numeric'})}</time><span class="ledger-publication${row.withheld ? ' withheld' : ''}">${row.withheld ? 'Withheld' : '✓ Published'}</span></a></td><td>${fmt(row.fix)}</td><td><div class="ledger-change direction-${direction(row.delta)}">${row.delta===null ? '–' : `${arrow(row.delta)} ${signed(row.delta)}`}<div class="ledger-change-track"><span style="width:${Math.abs(row.delta || 0)/max*100}%"></span></div></div></td></tr>`;
+    const render = () => {
+      const batches = [];
+      // Fixed batches keep earlier desktop columns in place as older rows are revealed.
+      for (let start=0; start<shown; start+=batchSize) {
+        const batch = history.slice(start,Math.min(start+batchSize,shown));
+        const columns = desktop.matches ? [batch.slice(0,15),batch.slice(15)] : [batch];
+        batches.push(`<div class="ledger-batch">${columns.filter(group=>group.length).map((group,i)=>`<table class="ledger-table" aria-label="Daily references ${start+i*15+1}–${start+i*15+group.length}">${header}<tbody>${group.map(row=>renderRow(row,max)).join('')}</tbody></table>`).join('')}</div>`);
+      }
+      holder.innerHTML = batches.join('') || '<p class="empty-message">No daily references yet</p>';
+      summary.textContent = `Showing ${fmt(shown)} of ${fmt(history.length)} daily references${shown===history.length && shown ? ' · Full history' : ''}`;
+      more.hidden = shown>=history.length;
+      more.textContent = `View ${Math.min(batchSize,history.length-shown)} more`;
+    };
+    more.addEventListener('click',()=> {
+      const firstNew = shown;
+      shown = Math.min(history.length,shown+batchSize); expanded = true;
+      render();
+      // Start reading at the new rows instead of following the button to the new bottom.
+      const next = holder.querySelectorAll('.ledger-date')[firstNew];
+      if (next) { next.focus({preventScroll:true}); next.scrollIntoView({block:'nearest'}); }
     });
+    desktop.addEventListener('change',()=> {
+      if (!expanded) shown = Math.min(history.length,desktop.matches ? batchSize : 10);
+      render();
+    });
+    render();
   }
 
   const alignmentClass = label => ({'aligned':'alignment-aligned','mild divergence':'alignment-mild','divergent':'alignment-divergent'})[String(label).toLowerCase()] || '';
