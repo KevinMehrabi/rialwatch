@@ -119,6 +119,7 @@ p { margin:0 0 12px; }
 .chart-tooltip-value span,.chart-tooltip-detail { color:var(--mut); }
 .chart-tooltip-detail { margin-top:5px; }
 #historyChart { display:block; width:100%; height:100%; touch-action:pan-y; cursor:crosshair; }
+#historyChart:focus:not(:focus-visible) { outline:none; }
 #historyChart text { fill:var(--mut); font:11px 'IBM Plex Sans',sans-serif; }
 .chart-grid { stroke:var(--grid); stroke-width:1; }
 .chart-area { fill:var(--acc-t); }
