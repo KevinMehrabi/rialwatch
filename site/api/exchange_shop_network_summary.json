@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-30T23:06:32Z",
+  "generated_at": "2026-10-31T13:25:19Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2748000.0,
-  "total_usable_records": 138,
-  "total_contributing_channels": 18,
+  "benchmark_weighted_rate": 2755000.0,
+  "total_usable_records": 137,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 18,
-      "usable_records": 15,
+      "records_extracted": 20,
+      "usable_records": 19,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 59,
+    "direct_shop": 51,
     "market_channel": 36,
-    "regional_market_channel": 15,
-    "settlement_exchange": 28
+    "regional_market_channel": 19,
+    "settlement_exchange": 31
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 15,
+      "usable_record_count": 19,
       "contributing_channel_count": 1,
-      "basket_confidence": 69.51,
+      "basket_confidence": 71.83,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 51,
-      "contributing_channel_count": 10,
-      "basket_confidence": 83.86,
+      "usable_record_count": 45,
+      "contributing_channel_count": 9,
+      "basket_confidence": 86.82,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -149,6 +149,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 19,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "mazanehnet",
       "title": "مظنه ارز در بازار تهران",
       "locality": "Iran",
@@ -171,17 +182,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 15,
-      "average_quality": 87.0,
-      "average_freshness": 76.0,
-      "from_new_p1": true
-    },
-    {
       "handle": "uae:ciphoenix.com",
       "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان",
       "locality": "UAE",
@@ -197,6 +197,17 @@
       "title": "Best Way to Send Money from UAE: Remittance Rates (2026)",
       "locality": "UAE",
       "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 9,
       "average_quality": 74.0,
@@ -226,23 +237,12 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:arzdigital.com",
-      "title": "قیمت درهم امارات امروز - نرخ لحظه‌ ای بازار آزاد + نمودار",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 5,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -259,40 +259,18 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:gooyadubai.ae",
-      "title": "قیمت طلا در دبی و امارات امروز",
+      "handle": "uae:carpetfloor.ae",
+      "title": "Buy Persian Carpets Dubai",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 4,
-      "average_quality": 75.25,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
+      "usable_record_count": 2,
       "average_quality": 74.0,
-      "average_freshness": 92.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:iran2dubai.com",
-      "title": "بوی ادویه دیرة و غرش کانتینرهای جبل‌علی: اعترافات یک تاجر قدیمی از جنگ پنهان توزیع کالای ایرانی در دبی - مجله تجارت و صادرات به دبی",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:coinlandexchange.com",
+      "handle": "uae:iranbroker.com",
       "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
       "locality": "UAE",
       "source_category": "direct_shop",
@@ -325,13 +303,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:tftc.io",
-      "title": "Dubai Exchange Shelbit Moved $4B for Iran's IRGC-Linked Sanctions Network",
+      "handle": "uae:meobserver.news",
+      "title": "UAE Freezes Trade and Financial Dealings With Iran",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 98.0,
+      "average_quality": 93.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
