@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-10-31T13:25:19Z",
+  "generated_at": "2026-10-31T22:32:27Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2755000.0,
-  "total_usable_records": 137,
-  "total_contributing_channels": 16,
+  "total_usable_records": 131,
+  "total_contributing_channels": 15,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 20,
-      "usable_records": 19,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 51,
+    "direct_shop": 47,
     "market_channel": 36,
-    "regional_market_channel": 19,
-    "settlement_exchange": 31
+    "regional_market_channel": 18,
+    "settlement_exchange": 30
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 19,
+      "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 71.83,
+      "basket_confidence": 70.63,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 45,
-      "contributing_channel_count": 9,
-      "basket_confidence": 86.82,
+      "usable_record_count": 39,
+      "contributing_channel_count": 7,
+      "basket_confidence": 86.56,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -149,17 +149,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 19,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
-      "from_new_p1": true
-    },
-    {
       "handle": "mazanehnet",
       "title": "مظنه ارز در بازار تهران",
       "locality": "Iran",
@@ -169,6 +158,17 @@
       "average_quality": 67.79,
       "average_freshness": 53.05,
       "from_new_p1": false
+    },
+    {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
+      "from_new_p1": true
     },
     {
       "handle": "irancurrency",
@@ -188,7 +188,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 76.0,
+      "average_quality": 75.43,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -209,7 +209,7 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 9,
+      "usable_record_count": 8,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -242,42 +242,31 @@
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:dxboffplan.com",
-      "title": "چنج پول در دبی 2026",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
       "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:carpetfloor.ae",
-      "title": "Buy Persian Carpets Dubai",
+      "handle": "uae:iran2dubai.com",
+      "title": "روایت حجره‌های دیره و کانتینرهای جبل‌علی: چگونه بار ایرانی را در بازار دبی به پول نقد تبدیل کنیم؟ - مجله تجارت و صادرات به دبی",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 2,
+      "usable_record_count": 3,
       "average_quality": 74.0,
-      "average_freshness": 70.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:iranbroker.com",
-      "title": "قیمت درهم، قیمت درهم امروز، نرخ درهم به تومان",
+      "handle": "uae:iranrebate.com",
+      "title": "قیمت درهم امارات امروز به تومان",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
+      "average_quality": 70.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -285,6 +274,17 @@
       "title": "قیمت درهم امارات امروز - قیمت لحظه ای و نمودار aed - خانه سرمایه",
       "locality": "UAE",
       "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sarafi-havale.com",
+      "title": "حواله درهم به دبی با صرافی",
+      "locality": "UAE",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
@@ -300,17 +300,6 @@
       "usable_record_count": 1,
       "average_quality": 72.0,
       "average_freshness": 88.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:meobserver.news",
-      "title": "UAE Freezes Trade and Financial Dealings With Iran",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 93.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     }
   ]
