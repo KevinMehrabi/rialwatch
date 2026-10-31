@@ -148,7 +148,7 @@ const fixtures = {
   // An archive cannot override a published reference, even if its endpoint disagrees.
   archiveRows.push({date:'2026-10-11',fix:9,kind:'historical_archive'});
   await fixturePage.reload();await fixturePage.waitForSelector('#historyRangePanel:not([hidden])');
-  assert.equal(await fixturePage.locator('.chart-archive-point').count(),4);
+  assert.equal(await fixturePage.locator('.chart-archive-point').count(),0,'archive observations use the same line without separate markers');
   assert.equal(((await fixturePage.locator('#historyChart .chart-line').getAttribute('d')).match(/M/g)||[]).length,1,'verified archive quotes fill the chart gaps');
   assert.equal((await fixturePage.locator('#readout-value').textContent()).replace(/,/g,''),'2620000');
   assert.equal(await fixturePage.locator('.ledger-table tbody tr').count(),3,'archive points never appear as published fixes');
@@ -240,7 +240,7 @@ const fixtures = {
   }
   await ledgerPage.close();
   archiveUnavailable=true;await fixturePage.reload();await fixturePage.waitForSelector('#historyRangePanel:not([hidden])');
-  assert.equal(await fixturePage.locator('.chart-archive-point').count(),0,'archive outages retain the official timeline');
+  assert.equal(((await fixturePage.locator('#historyChart .chart-line').getAttribute('d')).match(/M/g)||[]).length,2,'archive outages retain the official timeline and its real gaps');
   archiveUnavailable=false;archiveRows=[];
   rows=[];regional={cards:[]};await fixturePage.reload();await fixturePage.getByText('Timeline unavailable',{exact:true}).waitFor();
   await fixturePage.getByText('Regional signals unavailable',{exact:true}).waitFor();

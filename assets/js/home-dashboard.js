@@ -215,9 +215,6 @@
       });
       const path = segment => segment.map((index,i) => `${i ? 'L':'M'}${this.x(index).toFixed(2)},${this.y(this.rows[index].fix).toFixed(2)}`).join(' ');
       html += `<path class="chart-area" d="${segments.filter(part=>part.length>1).map(part=>`${path(part)} L${this.x(part.at(-1))},${bottom} L${this.x(part[0])},${bottom} Z`).join(' ')}"/><path class="chart-line" d="${segments.map(path).join(' ')}"/>`;
-      visible.forEach((row,i) => {
-        if (row.kind === 'historical_archive') html += `<circle class="chart-archive-point" cx="${this.x(i+this.start)}" cy="${this.y(row.fix)}" r="3.5"/>`;
-      });
       segments.filter(part=>part.length===1 && part[0]!==this.end).forEach(part=>{ html += `<circle class="chart-end" cx="${this.x(part[0])}" cy="${this.y(this.rows[part[0]].fix)}" r="3"/>`; });
       const labelTimes = [...new Set(Array.from({length:ticks}, (_,i) => firstTime+Math.round(i/(ticks-1)*(lastTime-firstTime)/86400000)*86400000))];
       for (const [i,time] of labelTimes.entries()) html += `<text x="${xTime(time)}" y="${h-6}" text-anchor="${i===0 ? 'start' : i===labelTimes.length-1 ? 'end' : 'middle'}">${date(new Date(time).toISOString().slice(0,10))}</text>`;
