@@ -12,6 +12,7 @@ import argparse
 import datetime as dt
 import json
 import math
+import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -153,15 +154,33 @@ def latest_fix_payload_for_day(site_dir: Path, day: dt.date) -> Optional[Dict[st
     return None
 
 
-def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[str, Any]]:
+def evaluate_guardrails(
+    site_dir: Path, day: dt.date, now: Optional[dt.datetime] = None,
+) -> Tuple[List[str], Dict[str, Any]]:
     day_s = day.isoformat()
     latest_path = site_dir / "api" / "latest.json"
     latest = load_json(latest_path)
     failures: List[str] = []
-    context: Dict[str, Any] = {"day": day_s}
+    publication_due = daily_pipeline.daily_publication_due(day, now)
+    context: Dict[str, Any] = {"day": day_s, "publication_due": publication_due, "warnings": []}
 
     if latest is None:
+        if not publication_due:
+            return failures, context
         failures.append("site/api/latest.json is missing or unreadable after pipeline run.")
+        return failures, context
+
+    quality = daily_pipeline.publication_quality(latest)
+    context["publication_quality"] = quality
+    for finding in quality["findings"]:
+        if finding["severity"] == "error":
+            failures.append(finding["message"])
+        else:
+            context["warnings"].append(finding["message"])
+    if not publication_due:
+        # The previous daily reference is expected before today's cutoff. Do
+        # not trigger auto-heal that would turn an overnight read into a fix.
+        context["latest_date"] = str(latest.get("date") or "")
         return failures, context
 
     latest_date = str(latest.get("date") or "")
@@ -224,6 +243,11 @@ def evaluate_guardrails(site_dir: Path, day: dt.date) -> Tuple[List[str], Dict[s
         for attempt in attempts
         if attempt["collected_at"] is not None and in_publication_window(attempt["collected_at"], day)
     ]
+    if not in_window_attempts:
+        context["warnings"].append(
+            f"No retained observations from the publication window for {day_s}. "
+            "A later collection cannot recreate that evidence; any permitted same-day repair must remain disclosed."
+        )
     valid_in_window_attempts = [
         attempt for attempt in in_window_attempts if (attempt["fix"] is not None) and (attempt["withheld"] is False)
     ]
@@ -338,6 +362,21 @@ def main() -> int:
         day = dt.datetime.now(UTC).date()
 
     failures, context = evaluate_guardrails(Path(args.site_dir), day)
+    # A fresh collection can repair an empty fix, but it cannot revise a
+    # non-WITHHOLD immutable publication or restore a missed time window.
+    auto_heal_required = bool(
+        failures and context.get("publication_due")
+        and (context.get("latest_date") != day.isoformat() or context.get("latest_withheld"))
+    )
+    if os.environ.get("GITHUB_OUTPUT"):
+        with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
+            output.write(f"auto_heal_required={str(auto_heal_required).lower()}\n")
+    if os.environ.get("GITHUB_STEP_SUMMARY"):
+        with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as summary:
+            summary.write(f"\nPublication guardrail for {day.isoformat()}\n\n")
+            for severity, messages in (("Error", failures), ("Warning", context.get("warnings", []))):
+                for message in messages:
+                    summary.write(f"- {severity}: {message}\n")
     print(
         "Guardrail context: "
         f"day={context.get('day')} "
@@ -350,12 +389,22 @@ def main() -> int:
         f"valid_in_window_candidate_count={context.get('valid_in_window_candidate_count')}"
     )
 
+    for warning in context.get("warnings", []):
+        print(f"::warning::{warning}")
+
     if failures:
+        if not auto_heal_required:
+            print("Immutable publication requires review; automatic replacement is not permitted.")
         for failure in failures:
             print(f"::error::{failure}")
         return 1
 
-    print("Guardrails passed.")
+    if not context.get("publication_due"):
+        print("Daily publication is not due yet; missing current-day evidence is deferred.")
+    elif context.get("warnings"):
+        print("Guardrails passed with publication-quality warnings; window coverage is not certified.")
+    else:
+        print("Guardrails passed.")
     return 0
 
 

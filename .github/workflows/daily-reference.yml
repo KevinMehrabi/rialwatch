@@ -59,12 +59,14 @@ jobs:
 
       - name: Run pipeline
         env:
+          PUBLICATION_SCHEDULE: ${{ github.event.schedule }}
           ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
           BONBAST_SITE_URL: ${{ vars.BONBAST_SITE_URL }}
           NAVASAN_PUBLIC_URL: ${{ vars.NAVASAN_PUBLIC_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
+            echo "Publication schedule: $PUBLICATION_SCHEDULE; actual start: $(date -u +%FT%TZ)"
             # Backup schedules must also create a missing daily reference.
             # Build-only mode deliberately preserves the previous day's fix.
             python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates --skip-waits
@@ -84,14 +86,14 @@ jobs:
           python3 scripts/guardrail_check.py --site-dir state/site
 
       - name: Install Playwright for auto-heal collection
-        if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure'
+        if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure' && steps.guardrail_pre.outputs.auto_heal_required == 'true'
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install playwright
           python3 -m playwright install --with-deps chromium
 
       - name: Auto-heal if guardrails fail
-        if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure'
+        if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure' && steps.guardrail_pre.outputs.auto_heal_required == 'true'
         env:
           ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
           BONBAST_SITE_URL: ${{ vars.BONBAST_SITE_URL }}
@@ -104,7 +106,7 @@ jobs:
           python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates --skip-waits
 
       - name: Back up raw recovery observations independently of publication
-        if: always() && steps.guardrail_pre.outcome == 'failure'
+        if: always() && steps.guardrail_pre.outputs.auto_heal_required == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: recovery-observations-${{ github.run_id }}-${{ github.run_attempt }}
@@ -125,7 +127,7 @@ jobs:
           targets=()
           # Preserve raw auto-heal observations too, so published fixes remain
           # auditable and can be rebuilt from the source reads that produced them.
-          for path in site/fix site/intraday site/api/latest.json site/api/series.json site/api/daily_full.json site/api/revisions.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do
+          for path in site/fix site/intraday site/api/latest.json site/api/publication-quality.json site/api/series.json site/api/daily_full.json site/api/revisions.json site/api/benchmarks site/api/indicators site/api/intraday/latest.json site/archive/index.html; do
             if [ -e "state/$path" ]; then
               targets+=("$path")
             fi

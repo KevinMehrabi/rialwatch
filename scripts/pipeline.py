@@ -5857,6 +5857,11 @@ def publish_status(
         publication_overview_state = "Degraded"
         publication_overview_note = publication_reason
 
+    quality_findings = publication_quality(effective_latest)["findings"]
+    if quality_findings:
+        publication_overview_state = "Degraded"
+        publication_overview_note += " " + " ".join(item["message"] for item in quality_findings)
+
     status_time = try_parse_datetime(generated_at) or utc_now()
     publication_day = parse_iso_date_text(effective_latest.get("date"))
     expected_day = status_time.date() if status_time.time().replace(tzinfo=None) >= PUBLISH_AT else status_time.date()-dt.timedelta(days=1)
@@ -6401,7 +6406,9 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         delta_vs_previous_day = parse_float(publication_selection.get("delta_vs_previous_day"))
         delta_pct_vs_previous_day = parse_float(publication_selection.get("delta_pct_vs_previous_day"))
         if selected_sample:
-            if used_fallback:
+            if publication_selection.get("selection_scope") == "same_day_repair":
+                publication_meta = f"Observed sample: {selected_sample} (same-day recovery outside publication window)"
+            elif used_fallback:
                 publication_meta = f"Observed sample: {selected_sample} (fallback from intraday window)"
             else:
                 publication_meta = f"Observed sample: {selected_sample} (intraday window)"
@@ -6550,6 +6557,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         fix=fmt_rate(fix),
         primary_value_html=primary_value_html,
         primary_reason_html=primary_reason_html,
+        publication_quality_html=publication_quality_html(latest),
         p25=fmt_rate(p25),
         p75=fmt_rate(p75),
         status=status,
@@ -6652,6 +6660,7 @@ def publish_daily_fix_page(site_dir: Path, templates_dir: Path, generated_at: st
         withheld="Yes" if c.get("withheld") else "No",
         reasons=reasons_html,
         source_rows=render_source_table(daily_out),
+        publication_quality_html=publication_quality_html(daily_out),
     )
 
     write_text(site_dir / "fix" / day / "index.html", html)
@@ -6738,6 +6747,7 @@ def publish_latest(site_dir: Path, daily: Dict[str, Any]) -> None:
 
     ensure_revision_metadata(payload)
     write_json(site_dir / "api" / "latest.json", payload)
+    write_json(site_dir / "api" / "publication-quality.json", publication_quality(payload))
 
 
 def publish_series(site_dir: Path) -> None:
@@ -7520,6 +7530,64 @@ def in_publication_window(ts: dt.datetime, day: dt.date) -> bool:
     return is_within_window_minute(ts, start, end)
 
 
+def daily_publication_due(day: dt.date, now: Optional[dt.datetime] = None) -> bool:
+    """A delayed cron crossing midnight must not finalize the new day early."""
+    return (now or utc_now()) >= dt.datetime.combine(day, PUBLISH_AT, tzinfo=UTC)
+
+
+def publication_quality(daily: Dict[str, Any]) -> Dict[str, Any]:
+    """Derived disclosure only; never revise an immutable fix or its status."""
+    computed = daily.get("computed") or {}
+    selection = daily.get("publication_selection") or {}
+    day = parse_iso_date_text(daily.get("date"))
+    selected_at = try_parse_datetime(selection.get("selected_collected_at"))
+    published_at = try_parse_datetime(daily.get("as_of"))
+    source_count = source_count_from_medians(computed.get("source_medians"))
+    findings: List[Dict[str, str]] = []
+
+    def add(code: str, severity: str, message: str) -> None:
+        findings.append({"code": code, "severity": severity, "message": message})
+
+    if is_daily_valid(daily):
+        if day and published_at and not daily_publication_due(day, published_at):
+            add("premature_publication", "error",
+                "Published before the 14:20 UTC cutoff. The stored reference is preserved and requires review.")
+        if source_count == 1:
+            add("single_street_source", "warning",
+                "One usable street source; no cross-source confirmation. Zero dispersion does not establish high confidence.")
+        if selection.get("candidate_count") == 0:
+            add("missing_publication_window", "warning",
+                "No observations from the 13:45-14:15 UTC publication window were available at selection.")
+        if day and selected_at and not in_publication_window(selected_at, day):
+            add("outside_publication_window", "warning",
+                f"Same-day recovery observation at {iso_ts(selected_at)}; outside the publication window.")
+            scope = selection.get("backfill_from_selection_scope") or selection.get("selection_scope")
+            if scope != "same_day_repair" or selected_at.date() != day:
+                add("invalid_selection_scope", "error",
+                    "Selected observation does not match its declared publication scope or UTC day.")
+
+    return {
+        "date": daily.get("date"),
+        "as_of": daily.get("as_of"),
+        "revision": daily.get("revision", 0),
+        "selected_collected_at": selection.get("selected_collected_at"),
+        "selection_scope": selection.get("selection_scope"),
+        "street_source_count_used": source_count,
+        "cross_source_confirmation": source_count > 1,
+        "dispersion_status": computed.get("status"),
+        "findings": findings,
+    }
+
+
+def publication_quality_html(daily: Dict[str, Any]) -> str:
+    findings = publication_quality(daily)["findings"]
+    if not findings:
+        return ""
+    return '<p class="text-secondary small publication-quality">' + html_lib.escape(
+        " ".join(item["message"] for item in findings)
+    ) + '</p>'
+
+
 def filter_samples_to_publication_window(
     samples: Dict[str, List[Sample]],
     day: dt.date,
@@ -7743,6 +7811,8 @@ def select_daily_from_intraday(
     day: dt.date,
     source_configs: List[SourceConfig],
 ) -> Optional[Dict[str, Any]]:
+    if not daily_publication_due(day):
+        return None
     attempts = load_intraday_attempts(site_dir, day)
     if not attempts:
         return None
@@ -7750,7 +7820,7 @@ def select_daily_from_intraday(
     all_attempts: List[Dict[str, Any]] = []
     for attempt in attempts:
         collected_at = try_parse_datetime(attempt.get("collected_at"))
-        if collected_at is None:
+        if collected_at is None or collected_at.date() != day:
             continue
         samples = attempt_to_samples(attempt)
         if not samples:
@@ -8062,7 +8132,8 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
             # succeeding without collecting anything.
             sampled_at = utc_now()
             day = sampled_at.date()
-            print("Publication checkpoints missed; collecting one outside-window recovery attempt.")
+            print("::warning::Publication checkpoints missed; collecting one outside-window recovery attempt. "
+                  "This cannot restore evidence from the missed publication window.")
             path, latest_attempt_payload, latest_summary = collect_and_write_intraday_attempt(
                 site_dir=site_dir,
                 day=day,
@@ -8125,6 +8196,10 @@ def run_collect_intraday(args: argparse.Namespace, site_dir: Path, templates_dir
 
 
 def run_publish_daily(args: argparse.Namespace, site_dir: Path, templates_dir: Path, generated_at: str, day: dt.date) -> int:
+    if not daily_publication_due(day):
+        print(f"Publication for {iso_date(day)} deferred until {PUBLISH_AT.strftime('%H:%M')} UTC; "
+              "rebuilding existing records only.")
+        return run_build_only(site_dir, templates_dir, generated_at, day)
     day_s = iso_date(day)
     source_configs = build_source_configs()
     backfilled_days = repair_historical_intraday_backfills(

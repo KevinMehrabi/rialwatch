@@ -24,6 +24,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/api/series.json` ordered public historical rows (only actual valid daily fixes: numeric, non-withheld, Green/Amber/Red)
 - `/api/daily_full.json` richer historical export generated from `/fix/*.json`
 - `/api/revisions.json` revision metadata generated from `/fix/*.json`
+- `/api/publication-quality.json` derived timing, source-count, and recovery disclosures for the latest official fix; does not revise its recorded rate or dispersion status
 - `/api/mapping_audit.json` mapping-version audit for historical backfill/rebuild targeting
 - `/intraday/YYYY-MM-DD/HH-MM-SS.json` timestamped intraday collection attempts
 - `/archive/`, `/status/`, `/methodology/`, `/governance/`
@@ -67,7 +68,11 @@ Public historical series (`/api/series.json`) remains strict and primary-only: i
   - if the latest in-window attempt is invalid, fall back to the most recent valid in-window attempt
   - if no in-window attempt is valid, repair from the latest valid same-day intraday read and record `publication_selection.selection_scope` as `same_day_repair`
   - if no valid same-day read exists, publish a WITHHOLD daily snapshot (no fabricated rate)
+- Publication and repair of the current UTC day are deferred until `14:20 UTC`, including delayed overnight schedules using `--skip-waits`. Before that cutoff, builds retain the prior reference; the absence of today's fix does not trigger auto-heal.
+- Missing publication-window evidence is explicitly reported through guardrail warnings and publication-quality disclosures. A permitted same-day repair does not certify window coverage. A previously published fix dated before its publication cutoff fails the guardrail and is retained for review, not automatically replaced.
+- Green/Amber/Red are dispersion labels, not confidence grades. Single-source publication remains permitted by the existing policy, with an explicit warning that it has no cross-source confirmation. The homepage, daily reference page, and status page disclose these quality limitations separately from immutable publication data.
 - Later outside-window intraday attempts update `/api/intraday/latest.json`; when they are used to repair an empty daily snapshot, `/fix/YYYY-MM-DD.json` revision metadata records the change.
+- Non-WITHHOLD published fixes remain immutable even if a later observation is preferable. Automated revisions remain limited to missing or WITHHOLD daily records. The November 1, 2026 investigation is documented in [the incident analysis](docs/incidents/2026-11-01-publication-window.md).
 - Historical missing or WITHHOLD daily files may be backfilled only from captured same-day intraday source-read artifacts; no prior-day carry-forward rows are emitted.
 - If a scheduled collector starts after all checkpoints, it records one fresh outside-window recovery attempt with the actual collection time instead of silently skipping the day.
 - Scheduled backup publications also create a missing daily reference. A missing current-day fix fails the guardrail even when there are no intraday artifacts, triggering collection and same-day repair.
