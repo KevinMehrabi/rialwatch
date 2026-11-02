@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-01T23:15:09Z",
+  "generated_at": "2026-11-02T17:05:32Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2708000.0,
-  "total_usable_records": 116,
+  "benchmark_weighted_rate": 2725000.0,
+  "total_usable_records": 97,
   "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 43,
+    "direct_shop": 36,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 19
+    "settlement_exchange": 7
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 70.73,
+      "basket_confidence": 71.85,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 26,
+      "usable_record_count": 15,
       "contributing_channel_count": 5,
-      "basket_confidence": 85.22,
+      "basket_confidence": 83.37,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -166,8 +166,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 95.72,
+      "average_freshness": 99.33,
       "from_new_p1": true
     },
     {
@@ -179,28 +179,6 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 74.43,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -216,7 +194,18 @@
     },
     {
       "handle": "uae:dxboffplan.com",
-      "title": "چنج پول در دبی 2026",
+      "title": "How to Safely Exchange Currency in Dubai – Tips, Documents & Best Practices",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -237,17 +226,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulim_com",
-      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "locality": "Turkey",
-      "source_category": "direct_shop",
-      "source_priority": "P1",
-      "usable_record_count": 3,
-      "average_quality": 89.0,
-      "average_freshness": 76.0,
-      "from_new_p1": false
-    },
-    {
       "handle": "uae:economicexchangecentre.com",
       "title": "Online Money Transfer From UAE - Economic Exchange Centre",
       "locality": "UAE",
@@ -259,6 +237,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulim_com",
+      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
+      "locality": "Turkey",
+      "source_category": "direct_shop",
+      "source_priority": "P1",
+      "usable_record_count": 1,
+      "average_quality": 89.0,
+      "average_freshness": 76.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -267,6 +256,17 @@
       "usable_record_count": 1,
       "average_quality": 72.0,
       "average_freshness": 88.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:tomanxe.com",
+      "title": "حواله درهم به امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     }
   ]
