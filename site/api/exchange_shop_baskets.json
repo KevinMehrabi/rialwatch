@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T00:03:30Z",
+  "generated_at": "2026-11-04T15:38:51Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2722500.0,
   "baskets": [
@@ -28,20 +28,20 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2738927.78,
-      "median_rate": 2739850.0,
-      "trimmed_mean_rate": 2739593.75,
-      "spread_vs_benchmark_pct": 0.6034,
+      "weighted_rate": 2705405.56,
+      "median_rate": 2706800.0,
+      "trimmed_mean_rate": 2705575.0,
+      "spread_vs_benchmark_pct": -0.6279,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 1,
       "fresh_contributing_channels": [
         "istanbulexchange_com"
       ],
-      "basket_confidence": 70.66,
+      "basket_confidence": 71.83,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.001186,
+      "dispersion_cv": 0.001443,
       "top_channel_share": 1.0,
       "outliers_removed": 1,
       "source_category_mix": {
@@ -53,13 +53,13 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1929887.99,
+      "weighted_rate": 1807337.4,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1927364.73,
-      "spread_vs_benchmark_pct": -29.1134,
-      "usable_record_count": 34,
+      "trimmed_mean_rate": 1802768.55,
+      "spread_vs_benchmark_pct": -33.6148,
+      "usable_record_count": 29,
       "contributing_channel_count": 9,
-      "fresh_contributing_channel_count": 8,
+      "fresh_contributing_channel_count": 9,
       "fresh_contributing_channels": [
         "uae:arzbin.com",
         "uae:ciphoenix.com",
@@ -68,17 +68,18 @@
         "uae:hiemarat.com",
         "uae:ir-europe.com",
         "uae:khanesarmaye.com",
+        "uae:meobserver.news",
         "uae:tomanxe.com"
       ],
-      "basket_confidence": 81.17,
+      "basket_confidence": 85.22,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.103543,
-      "top_channel_share": 0.42223,
-      "outliers_removed": 6,
+      "dispersion_cv": 0.073868,
+      "top_channel_share": 0.344521,
+      "outliers_removed": 12,
       "source_category_mix": {
-        "direct_shop": 14,
-        "settlement_exchange": 20
+        "direct_shop": 13,
+        "settlement_exchange": 16
       },
       "channels": [
         "uae:arzbin.com",
@@ -87,8 +88,8 @@
         "uae:gooyadubai.ae",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
-        "uae:iranrebate.com",
         "uae:khanesarmaye.com",
+        "uae:meobserver.news",
         "uae:tomanxe.com"
       ]
     },
