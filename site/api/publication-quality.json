@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-06",
+  "as_of": "2026-11-06T20:28:08Z",
+  "revision": 0,
+  "selected_collected_at": "2026-11-06T20:04:04Z",
+  "selection_scope": "same_day_repair",
+  "street_source_count_used": 3,
+  "cross_source_confirmation": true,
+  "dispersion_status": "Green",
+  "findings": [
+    {
+      "code": "missing_publication_window",
+      "severity": "warning",
+      "message": "No observations from the 13:45-14:15 UTC publication window were available at selection."
+    },
+    {
+      "code": "outside_publication_window",
+      "severity": "warning",
+      "message": "Same-day recovery observation at 2026-11-06T20:04:04Z; outside the publication window."
+    }
+  ]
+}
