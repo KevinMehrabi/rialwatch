@@ -145,10 +145,16 @@
       The official daily fix normally prefers observations collected inside that configured publication window. If the window has no valid read but a same-day intraday read is valid, RialWatch may repair the empty daily snapshot from that read and records the selection scope as <code>same_day_repair</code>.
     </p>
     <p class="mb-2">
+      The current day's reference cannot be finalized before 14:20 UTC, including recovery runs delayed past midnight. Missing window evidence is disclosed separately from the rate. A later read cannot restore evidence from a missed collection window, and an already published, non-WITHHOLD reference is preserved for review rather than automatically replaced.
+    </p>
+    <p class="mb-2">
       Missing daily benchmarks can be recovered from captured same-day intraday source-read artifacts. The benchmark series never carries prior fixes forward into missing dates.
     </p>
     <p class="mb-2">
       The daily benchmark is the median of eligible source medians. It can publish with one usable source under the current policy. A single-source result has no cross-source confirmation, and its zero dispersion does not establish high confidence. The P25–P75 band describes dispersion across source medians; it is not a statistical confidence interval.
+    </p>
+    <p class="mb-2">
+      Green, Amber, and Red describe dispersion, not overall confidence. Publication-quality notices identify missing window evidence, recovery observations, and single-source results without rewriting the recorded rate or its historical status. The latest assessment is available at <a href="/api/publication-quality.json">/api/publication-quality.json</a>.
     </p>
     <p class="mb-2">
       RialWatch also derives supplementary indicators from the relationship between the primary benchmark and the other monitored market layers, including:
