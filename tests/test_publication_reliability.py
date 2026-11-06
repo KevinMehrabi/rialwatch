@@ -155,6 +155,24 @@ class PublicationReliabilityTests(unittest.TestCase):
         self.assertEqual(quality["findings"], [])
         self.assertTrue(quality["cross_source_confirmation"])
 
+    def test_next_day_rebuild_refreshes_daily_page_and_preserves_overdue_quality_warnings(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            site = Path(tmp)
+            fix_path = site / "fix/2026-11-01.json"
+            pipeline.write_json(fix_path, stored_fix(timestamp(21, 23)))
+            original = fix_path.read_bytes()
+            pipeline.write_text(site / "fix/2026-11-01/index.html", "Previous page without quality disclosures")
+            now = timestamp(15) + dt.timedelta(days=1)
+            with mock.patch.object(pipeline, "utc_now", return_value=now):
+                pipeline.run_build_only(site, ROOT / "templates", pipeline.iso_ts(now), now.date())
+            for page in ("index.html", "fix/2026-11-01/index.html", "status/index.html"):
+                html = (site / page).read_text()
+                self.assertIn("No observations from the 13:45-14:15 UTC publication window", html)
+                self.assertIn("outside the publication window", html)
+            self.assertIn("expected 2026-11-02", (site / "status/index.html").read_text())
+            self.assertEqual(fix_path.read_bytes(), original)
+            self.assertFalse((site / "fix/2026-11-02.json").exists())
+
     def test_wrong_window_label_or_wrong_day_is_an_error(self):
         payload = stored_fix(timestamp(14, 20))
         payload["publication_selection"]["selection_scope"] = "publication_window"

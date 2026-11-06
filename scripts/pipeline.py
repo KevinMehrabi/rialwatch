@@ -5857,11 +5857,6 @@ def publish_status(
         publication_overview_state = "Degraded"
         publication_overview_note = publication_reason
 
-    quality_findings = publication_quality(effective_latest)["findings"]
-    if quality_findings:
-        publication_overview_state = "Degraded"
-        publication_overview_note += " " + " ".join(item["message"] for item in quality_findings)
-
     status_time = try_parse_datetime(generated_at) or utc_now()
     publication_day = parse_iso_date_text(effective_latest.get("date"))
     expected_day = status_time.date() if status_time.time().replace(tzinfo=None) >= PUBLISH_AT else status_time.date()-dt.timedelta(days=1)
@@ -5869,6 +5864,10 @@ def publish_status(
     if publication_overdue:
         publication_overview_state = "Degraded"
         publication_overview_note = f"Latest reference is {publication_day}; expected {expected_day} by this status snapshot."
+    quality_findings = publication_quality(effective_latest)["findings"]
+    if quality_findings:
+        publication_overview_state = "Degraded"
+        publication_overview_note += " " + " ".join(item["message"] for item in quality_findings)
     pipeline_state = map_pipeline_state(status_title)
     if publication_overdue and pipeline_state == "Online":
         pipeline_state = "Degraded"
@@ -8050,6 +8049,7 @@ def run_build_only(site_dir: Path, templates_dir: Path, generated_at: str, day: 
         latest_official = load_latest_official_daily_payload(site_dir)
         if latest_official is not None:
             latest = latest_official
+            publish_daily_fix_page(site_dir, templates_dir, generated_at, latest)
             status_title = "OK"
             status_detail = (
                 "Build-only mode: reused latest official daily fix and did not create a new daily reference."
