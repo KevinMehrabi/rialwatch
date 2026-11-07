@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-11-06T15:45:12Z",
+  "generated_at": "2026-11-07T00:35:39Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2682000.0,
+  "benchmark_weighted_rate": 2675000.0,
   "baskets": [
     {
       "basket_name": "Iran",
       "weighted_rate": 1659046.87,
       "median_rate": 1661875.0,
       "trimmed_mean_rate": 1660553.57,
-      "spread_vs_benchmark_pct": -38.1414,
+      "spread_vs_benchmark_pct": -37.9796,
       "usable_record_count": 16,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -31,7 +31,7 @@
       "weighted_rate": 2680107.14,
       "median_rate": 2680000.0,
       "trimmed_mean_rate": 2680104.17,
-      "spread_vs_benchmark_pct": -0.0706,
+      "spread_vs_benchmark_pct": 0.1909,
       "usable_record_count": 14,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -41,7 +41,7 @@
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.000418,
       "top_channel_share": 1.0,
-      "outliers_removed": 11,
+      "outliers_removed": 12,
       "source_category_mix": {
         "regional_market_channel": 14
       },
@@ -51,38 +51,37 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1955660.69,
+      "weighted_rate": 1929254.8,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1955439.32,
-      "spread_vs_benchmark_pct": -27.082,
-      "usable_record_count": 39,
-      "contributing_channel_count": 7,
+      "trimmed_mean_rate": 1927277.34,
+      "spread_vs_benchmark_pct": -27.8783,
+      "usable_record_count": 35,
+      "contributing_channel_count": 6,
       "fresh_contributing_channel_count": 6,
       "fresh_contributing_channels": [
-        "uae:bookmyforex.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
         "uae:economicexchangecentre.com",
         "uae:hiemarat.com",
+        "uae:realestateclubdubai.com",
         "uae:tomanxe.com"
       ],
-      "basket_confidence": 78.49,
+      "basket_confidence": 80.85,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.1292,
-      "top_channel_share": 0.355935,
-      "outliers_removed": 0,
+      "dispersion_cv": 0.107687,
+      "top_channel_share": 0.387725,
+      "outliers_removed": 3,
       "source_category_mix": {
-        "direct_shop": 18,
-        "settlement_exchange": 21
+        "direct_shop": 15,
+        "settlement_exchange": 20
       },
       "channels": [
-        "uae:bookmyforex.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
         "uae:economicexchangecentre.com",
         "uae:hiemarat.com",
-        "uae:iranrebate.com",
+        "uae:realestateclubdubai.com",
         "uae:tomanxe.com"
       ]
     },
@@ -117,7 +116,7 @@
       "weighted_rate": 1887207.7,
       "median_rate": 1915000.0,
       "trimmed_mean_rate": 1898333.33,
-      "spread_vs_benchmark_pct": -29.6343,
+      "spread_vs_benchmark_pct": -29.4502,
       "usable_record_count": 6,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -179,7 +178,7 @@
       "weighted_rate": 1598492.49,
       "median_rate": 1596515.0,
       "trimmed_mean_rate": 1597487.07,
-      "spread_vs_benchmark_pct": -40.3992,
+      "spread_vs_benchmark_pct": -40.2433,
       "usable_record_count": 35,
       "contributing_channel_count": 2,
       "fresh_contributing_channel_count": 2,
@@ -192,7 +191,7 @@
       "suppression_reason": "",
       "dispersion_cv": 0.00631,
       "top_channel_share": 0.515379,
-      "outliers_removed": 1,
+      "outliers_removed": 2,
       "source_category_mix": {
         "market_channel": 35
       },

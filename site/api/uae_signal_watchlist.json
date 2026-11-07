@@ -1,9 +1,17 @@
 {
-  "generated_at": "2026-11-06T14:52:21Z",
+  "generated_at": "2026-11-06T23:51:03Z",
   "diagnostics_only": true,
   "locality": "UAE",
   "status": "watchlist_only",
   "sources": [
+    {
+      "source_name": "خرید درهم در صرافی های دبی",
+      "website": "https://mail.dubaifarda.com/buying-dirhams-in-dubai-exchanges",
+      "signal_type": "website_rate_board",
+      "freshness_status": "stale",
+      "last_seen": "2024-10-30T12:00:00Z",
+      "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: rate_page."
+    },
     {
       "source_name": "واحد پول دبی چیست ؟",
       "website": "https://lahzeakhar.com/CurrencyContent/4-%D9%88%D8%A7%D8%AD%D8%AF-%D9%BE%D9%88%D9%84-%D8%AF%D8%A8%DB%8C",
@@ -19,22 +27,6 @@
       "freshness_status": "stale",
       "last_seen": "2026-02-16T10:17:38+00:00",
       "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: website."
-    },
-    {
-      "source_name": "انتقال پول به امارات",
-      "website": "https://farakonesh.org/currency-remittance/transfer-money-abroad/uae",
-      "signal_type": "remittance_quote",
-      "freshness_status": "stale",
-      "last_seen": "2025-01-19T09:50:19+00:00",
-      "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: website."
-    },
-    {
-      "source_name": "تبدیل درهم به تومان لحظه‌ای",
-      "website": "https://emeraldxe.com/service/%D8%AD%D9%88%D8%A7%D9%84%D9%87-%D8%AF%D8%B1%D9%87%D9%85",
-      "signal_type": "numeric_quote_page",
-      "freshness_status": "stale",
-      "last_seen": "2025-12-09T12:00:00Z",
-      "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: rate_page."
     }
   ]
 }
