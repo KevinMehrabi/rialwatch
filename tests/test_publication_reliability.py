@@ -108,7 +108,10 @@ class PublicationReliabilityTests(unittest.TestCase):
             failures, context = guardrail_check.evaluate_guardrails(site, DAY, now=timestamp(21, 23))
             self.assertEqual(failures, [])
             self.assertTrue(any("No retained observations" in warning for warning in context["warnings"]))
-            for page in ("index.html", "fix/2026-11-01/index.html", "status/index.html"):
+            homepage = (site / "index.html").read_text()
+            self.assertNotIn("no cross-source confirmation", homepage)
+            self.assertNotIn("outside the publication window", homepage)
+            for page in ("fix/2026-11-01/index.html", "status/index.html"):
                 html = (site / page).read_text()
                 self.assertIn("no cross-source confirmation", html)
                 self.assertIn("outside the publication window", html)
@@ -165,7 +168,10 @@ class PublicationReliabilityTests(unittest.TestCase):
             now = timestamp(15) + dt.timedelta(days=1)
             with mock.patch.object(pipeline, "utc_now", return_value=now):
                 pipeline.run_build_only(site, ROOT / "templates", pipeline.iso_ts(now), now.date())
-            for page in ("index.html", "fix/2026-11-01/index.html", "status/index.html"):
+            homepage = (site / "index.html").read_text()
+            self.assertNotIn("No observations from the 13:45-14:15 UTC publication window", homepage)
+            self.assertNotIn("outside the publication window", homepage)
+            for page in ("fix/2026-11-01/index.html", "status/index.html"):
                 html = (site / page).read_text()
                 self.assertIn("No observations from the 13:45-14:15 UTC publication window", html)
                 self.assertIn("outside the publication window", html)
