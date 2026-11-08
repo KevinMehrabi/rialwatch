@@ -6556,7 +6556,6 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         fix=fmt_rate(fix),
         primary_value_html=primary_value_html,
         primary_reason_html=primary_reason_html,
-        publication_quality_html=publication_quality_html(latest),
         p25=fmt_rate(p25),
         p75=fmt_rate(p75),
         status=status,
