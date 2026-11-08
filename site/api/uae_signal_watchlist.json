@@ -1,16 +1,24 @@
 {
-  "generated_at": "2026-11-07T22:30:33Z",
+  "generated_at": "2026-11-08T14:06:31Z",
   "diagnostics_only": true,
   "locality": "UAE",
   "status": "watchlist_only",
   "sources": [
     {
-      "source_name": "انتقال پول از دبی به ایران",
-      "website": "https://farakonesh.org/currency-remittance/transfer-money-iran/dubai",
+      "source_name": "برای سفر به دبی چه پولی ببریم؛ دلار ببریم یا درهم؟",
+      "website": "https://berimdubai.com/dubai-money-currency",
       "signal_type": "remittance_quote",
       "freshness_status": "stale",
-      "last_seen": "2025-11-12T07:30:47+00:00",
+      "last_seen": "2026-02-16T10:17:38+00:00",
       "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: website."
+    },
+    {
+      "source_name": "تبدیل درهم به تومان لحظه‌ای",
+      "website": "https://emeraldxe.com/service/%D8%AD%D9%88%D8%A7%D9%84%D9%87-%D8%AF%D8%B1%D9%87%D9%85",
+      "signal_type": "numeric_quote_page",
+      "freshness_status": "stale",
+      "last_seen": "2025-12-09T12:00:00Z",
+      "notes": "Stale numeric public signal; keep tracked but do not render UAE locality card until fresh public quotes reappear. Latest sampled surface: rate_page."
     }
   ]
 }
