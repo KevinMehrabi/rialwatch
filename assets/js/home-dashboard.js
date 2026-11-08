@@ -135,19 +135,23 @@
       $('historyRangeReset').addEventListener('click', () => this.setPreset('all'));
       this.svg.addEventListener('pointermove', event => this.scrub(event));
       this.svg.addEventListener('pointerdown', event => this.scrub(event));
+      document.addEventListener('pointerdown', event => {
+        if (!this.svg.contains(event.target)) this.clearSelection();
+      }, true);
       // Keep the tooltip open when the pointer moves from the plot onto its text.
       this.svg.parentElement.addEventListener('pointerleave', event => {
-        if (event.pointerType === 'mouse' && this.selectionMode !== 'keyboard') { this.selected = null; this.updateSelection(); }
+        if (event.pointerType === 'mouse' && this.selectionMode !== 'keyboard') this.clearSelection();
       });
+      this.svg.addEventListener('pointercancel', () => this.clearSelection());
       this.svg.addEventListener('pointerup', () => this.announce());
       document.addEventListener('keydown', event => {
         if (event.key === 'Escape' && this.selected !== null) {
-          this.selected = null; this.updateSelection();
+          this.clearSelection();
           if (document.activeElement === this.svg) this.announce();
         }
       });
       this.svg.addEventListener('blur', () => {
-        if (this.selectionMode === 'keyboard') { this.selected = null; this.updateSelection(); }
+        if (this.selectionMode === 'keyboard') this.clearSelection();
       });
       this.svg.addEventListener('keydown', event => {
         if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
@@ -260,11 +264,25 @@
         this.tooltip.style.top = `${clamp(y-height-12 >= 8 ? y-height-12 : y+12,8,Math.max(8,h-height-8))}px`;
       }
     }
+    clearSelection() {
+      if (this.selected === null) return;
+      this.selected = null; this.selectionMode = null; this.updateSelection();
+    }
     scrub(event) {
-      const rect = this.svg.getBoundingClientRect(), x = event.clientX-rect.left;
-      if (x < this.geometry.left || x > this.geometry.right) return;
-      const time = this.domain.firstTime+(x-this.geometry.left)/(this.geometry.right-this.geometry.left)*(this.domain.lastTime-this.domain.firstTime);
-      const index = this.nearest(time,this.start,this.end);
+      if (event.type === 'pointerdown' && event.button !== 0) return;
+      const rect = this.svg.getBoundingClientRect();
+      let index = null, distance = event.pointerType === 'touch' ? 24 : 12;
+      // Only a nearby observation is selectable; empty plot space dismisses on click.
+      for (let i=this.start; i<=this.end; i++) {
+        const x = rect.left + this.x(i)*rect.width/this.geometry.w;
+        const y = rect.top + this.y(this.rows[i].fix)*rect.height/this.geometry.h;
+        const candidate = Math.hypot(event.clientX-x,event.clientY-y);
+        if (candidate <= distance) { index = i; distance = candidate; }
+      }
+      if (index === null) {
+        if (event.type === 'pointerdown') this.clearSelection();
+        return;
+      }
       this.selectionMode = event.pointerType;
       if (this.selected !== index) { this.selected = index; this.updateSelection(); }
     }
