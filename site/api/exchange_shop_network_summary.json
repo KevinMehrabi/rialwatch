@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-10T02:22:21Z",
+  "generated_at": "2026-11-10T15:45:26Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2639325.0,
-  "total_usable_records": 136,
-  "total_contributing_channels": 17,
+  "total_usable_records": 208,
+  "total_contributing_channels": 21,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 69,
+    "direct_shop": 112,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 13
+    "settlement_exchange": 42
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 30,
-      "contributing_channel_count": 9,
-      "basket_confidence": 77.23,
+      "usable_record_count": 56,
+      "contributing_channel_count": 7,
+      "basket_confidence": 95.84,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,9 +177,20 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
+    },
+    {
+      "handle": "uae:arzbin.com",
+      "title": "قیمت درهم امارات امروز",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 18,
+      "average_quality": 81.44,
+      "average_freshness": 92.0,
+      "from_new_p1": false
     },
     {
       "handle": "irancurrency",
@@ -190,6 +201,72 @@
       "usable_record_count": 15,
       "average_quality": 81.07,
       "average_freshness": 79.47,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 75.43,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ezrate.me",
+      "title": "قیمت دلار دبی امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 12,
+      "average_quality": 87.17,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت درهم امارات امروز به تومان",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 12,
+      "average_quality": 75.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 10,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:angelindubai.com",
+      "title": "Best Way to Send Money from UAE: Remittance Rates (2026)",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:hiemarat.com",
+      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
@@ -204,35 +281,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "handle": "uae:ezdex.net",
+      "title": "بهترین صرافی های دبی برای تبدیل ارز و حواله با کمترین کارمزد",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 6,
       "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 74.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:mortgagecompare.ae",
-      "title": "Early settlement fee UAE: what banks can charge",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 6,
-      "average_quality": 76.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -259,36 +314,25 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:cityexchangeuae.com",
-      "title": "BUR DUBAI – City Exchange Uae",
+      "handle": "uae:t.me",
+      "title": "قیمت درهم امارات امروز",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
+      "usable_record_count": 4,
+      "average_quality": 95.5,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:ezrate.me",
-      "title": "قیمت دلار دبی امروز",
+      "handle": "uae:arzdigital.com",
+      "title": "قیمت درهم امارات امروز - نرخ لحظه‌ ای بازار آزاد + نمودار",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.0,
+      "average_quality": 77.0,
       "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iranrebate.com",
-      "title": "قیمت درهم امارات امروز به تومان",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 70.0,
-      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -303,10 +347,10 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:arzbin.com",
-      "title": "قیمت درهم امارات امروز",
+      "handle": "uae:donya-e-eqtesad.com",
+      "title": "قیمت دلار، یورو و درهم امروز سه‌شنبه ۱۹ آبان ۱۴۰۵/ افزایش قیمت دلار",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 74.0,
