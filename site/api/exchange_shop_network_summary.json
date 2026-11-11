@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-11T01:11:17Z",
+  "generated_at": "2026-11-11T15:05:37Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2604000.0,
-  "total_usable_records": 184,
-  "total_contributing_channels": 17,
+  "total_usable_records": 159,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 96,
+    "direct_shop": 82,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 34
+    "settlement_exchange": 23
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 47,
-      "contributing_channel_count": 5,
-      "basket_confidence": 95.61,
+      "usable_record_count": 52,
+      "contributing_channel_count": 10,
+      "basket_confidence": 74.41,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -177,20 +177,9 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
-    },
-    {
-      "handle": "uae:arzbin.com",
-      "title": "قیمت درهم امارات امروز",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 17,
-      "average_quality": 81.88,
-      "average_freshness": 92.0,
-      "from_new_p1": false
     },
     {
       "handle": "irancurrency",
@@ -210,29 +199,7 @@
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 14,
-      "average_quality": 75.43,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 10,
-      "average_quality": 74.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:t.me",
-      "title": "قیمت درهم امارات امروز",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 10,
-      "average_quality": 91.7,
+      "average_quality": 74.43,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -242,19 +209,8 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 9,
-      "average_quality": 78.44,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ezdex.net",
-      "title": "قیمت درهم امارات امروز سه‌شنبه 19 آبان 1405| نرخ خرید و فروش درهم به تومان",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 74.0,
+      "usable_record_count": 11,
+      "average_quality": 77.64,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -292,6 +248,61 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:dxboffplan.com",
+      "title": "چنج پول در دبی 2026",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ezrate.me",
+      "title": "قیمت دلار دبی امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 88.33,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iran2dubai.com",
+      "title": "انتقال پول و تسویه ارزی بین ایران و امارات از مسیرهای قانونی - مجله تجارت و صادرات به دبی",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:khanesarmaye.com",
+      "title": "قیمت درهم امارات امروز ۲۰ آبان ۱۴۰۵",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:cityexchangeuae.com",
       "title": "BUR DUBAI – City Exchange Uae",
       "locality": "UAE",
@@ -303,6 +314,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:iranrebate.com",
+      "title": "قیمت درهم امارات امروز به تومان",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 70.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "navasanchannel",
       "title": "نوسان - اعلان لحظه ای نرخ ارز و سکه",
       "locality": "unknown",
@@ -311,17 +333,6 @@
       "usable_record_count": 1,
       "average_quality": 72.0,
       "average_freshness": 88.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:bookmyforex.com",
-      "title": "Send Money from India to United Arab Emirates (International Transfer Online)",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 77.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     }
   ]
