@@ -1,22 +1,11 @@
 {
-  "date": "2026-11-11",
-  "as_of": "2026-11-11T21:27:24Z",
+  "date": "2026-11-12",
+  "as_of": "2026-11-12T21:29:33Z",
   "revision": 0,
-  "selected_collected_at": "2026-11-11T20:17:51Z",
-  "selection_scope": "same_day_repair",
-  "street_source_count_used": 4,
+  "selected_collected_at": "2026-11-12T13:57:46Z",
+  "selection_scope": "publication_window",
+  "street_source_count_used": 3,
   "cross_source_confirmation": true,
   "dispersion_status": "Green",
-  "findings": [
-    {
-      "code": "missing_publication_window",
-      "severity": "warning",
-      "message": "No observations from the 13:45-14:15 UTC publication window were available at selection."
-    },
-    {
-      "code": "outside_publication_window",
-      "severity": "warning",
-      "message": "Same-day recovery observation at 2026-11-11T20:17:51Z; outside the publication window."
-    }
-  ]
+  "findings": []
 }
