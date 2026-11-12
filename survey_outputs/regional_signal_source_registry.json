@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T16:24:18Z",
+  "generated_at": "2026-11-12T16:50:51Z",
   "schema_version": 1,
   "sources": [
     {
@@ -7944,8 +7944,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -7961,7 +7961,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت لحظه‌ای و ربات هوشمند دلار، ارز، سکه، طلا، تتر و بیت کوین",
-      "top_sample": "#نرخ_ارز #سکه #طلا #دلار #بیتکوین ☸️ دلار آمریکا: 262,550 تومان ☸️ یورو: 292,400 تومان ☸️ پوند انگلیس: 346,300 تومان ☸️ لیر ترکیه: 5,310 تومان ☸️ فرانک سوئیس: 316,900 تومان ☸️ یوان چین: 39,480 تومان ✴️ سکه بهار آزادی: 247,000,000 تومان ✴️ نیم سکه: 134,500,000"
+      "top_sample": "#نرخ_ارز #سکه #طلا #دلار #بیتکوین ☸️ دلار آمریکا: 264,900 تومان ☸️ یورو: 293,400 تومان ☸️ پوند انگلیس: 347,600 تومان ☸️ لیر ترکیه: 5,350 تومان ☸️ فرانک سوئیس: 318,000 تومان ☸️ یوان چین: 39,820 تومان ✴️ سکه بهار آزادی: 248,000,000 تومان ✴️ نیم سکه: 134,500,000"
     },
     {
       "best_board_message_count": 0,
@@ -8400,11 +8400,11 @@
       "handle_or_url": "dhsusdt",
       "key": "telegram:dhsusdt",
       "last_board_message_count": 0,
-      "last_buy_sell_pair_count": 0,
+      "last_buy_sell_pair_count": 6,
       "last_parseability_score": 86.0,
       "last_quote_message_count": 6,
-      "last_seen_at": "2026-11-12T16:24:18Z",
-      "last_success_at": "2026-11-12T16:24:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "channel_survey_rescore",
@@ -8457,6 +8457,7 @@
     {
       "best_board_message_count": 0,
       "best_buy_sell_pair_count": 0,
+      "best_parseability_score": 20.0,
       "best_quote_message_count": 1,
       "best_usable_record_count": 0,
       "city_guess": "Tehran",
@@ -8469,26 +8470,31 @@
       "key": "telegram:dinarevaluation",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
-      "last_quote_message_count": 1,
-      "last_seen_at": "2026-11-12T16:24:18Z",
+      "last_parseability_score": 20.0,
+      "last_quote_message_count": 0,
+      "last_seen_at": "2026-11-12T16:50:51Z",
       "last_success_at": "2026-11-12T16:24:18Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Tehran"
       ],
       "origins": [
+        "channel_survey_rescore",
         "existing_registry",
         "previous_candidate_registry",
-        "source_registry"
+        "source_registry",
+        "source_registry_rescore"
       ],
       "platform": "telegram",
       "public_url": "https://t.me/s/dinarevaluation",
       "signal_families": [
+        "direct_shop_expansion",
         "regional_market_signal"
       ],
-      "source_kind": "unknown",
+      "source_kind": "exchange_shop",
       "status": "ok",
-      "title": "DINAR REVALUATION"
+      "title": "DINAR REVALUATION",
+      "top_sample": "🇮🇶 🔥 INTERNATIONAL TRADE CENTRE: IRAQ IS QUALIFIED TO BECOME A REGIONAL HUB FOR TRADE AND INVESTMENT! 🌍 💰 🇮🇶 🌍 Iraq targets WTO membership by 2028, opening doors to global investment, trade expansion and economic diversification beyond oil! 🚀 💼 https://dinarev"
     },
     {
       "best_board_message_count": 7,
@@ -8885,10 +8891,10 @@
       "key": "telegram:dollar_sulaymaniyah",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
-      "last_parseability_score": 63.0,
-      "last_quote_message_count": 15,
-      "last_seen_at": "2026-11-12T16:24:18Z",
-      "last_success_at": "2026-11-12T16:24:18Z",
+      "last_parseability_score": 65.0,
+      "last_quote_message_count": 11,
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -8915,7 +8921,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت لحظه ای دلار سلیمانیه",
-      "top_sample": "سلێمانی شەمە 💰 262,800 فروش 🔴"
+      "top_sample": "کف مشهد دینارعراق 153 _ 155"
     },
     {
       "best_board_message_count": 20,
@@ -10094,8 +10100,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 10,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -10625,8 +10631,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 17,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -11134,8 +11140,8 @@
       "last_buy_sell_pair_count": 19,
       "last_parseability_score": 100.0,
       "last_quote_message_count": 19,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -11436,8 +11442,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -11453,7 +11459,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "صرافی ایران اروپا | IRX",
-      "top_sample": "🗓 نرخ حواله ارزی ۱ آبان ۱۴۰۵ (بازار آزاد) 🇺🇸 حواله دلار آمریکا = (272,500) تومان 🇪🇺 حواله یورو = (305,200) تومان 🇨🇦 حواله دلار کانادا = (194,450) تومان 🇬🇧 حواله پوند = (364,550) تومان 🇦🇺 حواله دلار استرالیا = (191,350) تومان 🇦🇪 حواله درهم = (74,200) تومان 🇨🇳 ح"
+      "top_sample": "🗓 نرخ حواله ارزی ۲ آبان ۱۴۰۵ (بازار آزاد) 🇺🇸 حواله دلار آمریکا = (267,600) تومان 🇪🇺 حواله یورو = (299,750) تومان 🇨🇦 حواله دلار کانادا = (191,100) تومان 🇬🇧 حواله پوند = (357,900) تومان 🇦🇺 حواله دلار استرالیا = (186,700) تومان 🇦🇪 حواله درهم = (72,850) تومان 🇨🇳 ح"
     },
     {
       "best_board_message_count": 0,
@@ -11582,8 +11588,8 @@
       "last_buy_sell_pair_count": 19,
       "last_parseability_score": 99.0,
       "last_quote_message_count": 19,
-      "last_seen_at": "2026-11-11T06:15:47Z",
-      "last_success_at": "2026-11-11T06:15:47Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Istanbul",
@@ -11600,7 +11606,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "top_sample": "نرخ ارز در بازار استانبول با تومان 🇮🇷 سه شنبه ۱۹ آبان ۱۴۰۵ ساعت ۱۴:۰۰ ترکیه نام ارز فروش خرید دلار 262,600 260,500 یورو 294,410 291,500 لیر 5,238 5,149 درهم 71,560 71,140 پوند 351,650 346,970 یوان 39,810 39,070 دلار کانادا 185,930 182,320 دلار استرالیا 181,050"
+      "top_sample": "نرخ ارز در بازار استانبول با تومان 🇮🇷 پنجشنبه ۲۱ آبان ۱۴۰۵ ساعت ۱۴:۰۱ ترکیه نام ارز فروش خرید دلار 267,100 264,900 یورو 296,450 293,250 لیر 5,316 5,225 درهم 72,770 72,340 پوند 353,420 348,760 یوان 40,480 39,730 دلار کانادا 187,500 183,910 دلار استرالیا 181,660"
     },
     {
       "best_board_message_count": 0,
@@ -11664,8 +11670,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 63.0,
       "last_quote_message_count": 8,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -11797,8 +11803,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -11813,7 +11819,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "LiveData.IR | سایت لایودیتا",
-      "top_sample": "📈 انس طلا = 4103.78 ( 33.47 ) 📈 نقره = 52.808 ( 0.8545 ) 📉 شاخص دلار = 101.705 ( -0.47 ) 📉 نفت برنت = 93.52 ( -4.45 ) 📉 نفت سبک آمریکا = 87.56 ( -2.78 ) 📉 بنزین = 2.6709 ( -0.0991 ) 📉 گازوئیل = 1334.88 ( -30.87 ) 📈 آلومینیوم = 3073.65 ( 8.05 ) 📉 نیکل = 16290 ("
+      "top_sample": "📉 سکه طرح جدید = ۲۵۴,۰۰۰,۰۰۰ ( -۵,۰۰۰,۰۰۰ ) 📉 مظنه دلار = ۲۶۳,۲۰۰ ( -۱,۰۰۰ ) 📉 یورو = ۲۹۳,۰۰۰ ( -۳,۰۰۰ ) 📉 درهم امارات = ۷۱,۰۵۰ ( -۹۰۰ ) 📉 نیم سکه = ۱۳۳,۵۰۰,۰۰۰ ( -۳,۰۰۰,۰۰۰ ) 📉 ربع سکه = ۷۲,۰۰۰,۰۰۰ ( -۱,۰۰۰,۰۰۰ ) ▫ سکه گرمی = ۳۷,۰۰۰,۰۰۰ ( ۰ ) 📉 انس طلا = ۴,۰۵"
     },
     {
       "best_board_message_count": 1,
@@ -11957,8 +11963,8 @@
       "last_buy_sell_pair_count": 4,
       "last_parseability_score": 85.0,
       "last_quote_message_count": 7,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -12072,8 +12078,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 10,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -12157,8 +12163,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -12542,8 +12548,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 14,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -12576,10 +12582,10 @@
       "key": "telegram:nimatala900",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
-      "last_parseability_score": 51.0,
-      "last_quote_message_count": 4,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_parseability_score": 58.0,
+      "last_quote_message_count": 12,
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -12601,7 +12607,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "گالری طلای نیما (کوچکیان )",
-      "top_sample": "🔴 شمش آبشده 🔴 شماره شناسنامه ✅️ ثبت شده در سامانه‌ ✅️ عیار : 749 وزن : 3.620 گرم قیمت : 92,200 تومان قیمت گرم طلا در لحظه : 25,160 اجرت هر گرم : 330 ( 1.2 % )"
+      "top_sample": "گوشواره وزن 3.290 اجرت 3 % قیمت 85,400"
     },
     {
       "best_board_message_count": 0,
@@ -12618,8 +12624,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 52.0,
       "last_quote_message_count": 6,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -12762,8 +12768,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -12780,7 +12786,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "نرخ لحظه‌ای دلار | طلا | سکه",
-      "top_sample": "▫️ دلار: ۲۶۴،۰۷۰ تومان ▫️ یورو: ۲۹۳،۶۳۰ تومان ▫️ پوند: ۳۵۰،۹۱۰ تومان ▫️ یوان چین: ۳۹،۶۰۰ تومان ▫️ درهم امارات: ۷۲،۲۶۳ تومان ▫️ لیر ترکیه: ۵،۲۶۰ تومان ▫️ تتر: ۲۶۴،۴۷۹ تومان 🔹 بیت‌کوین: ۷۴،۶۵۴ دلار 🔹 انس طلا: ۳،۹۸۷.۸۷ دلار ▫️ طلای ۱۸ عیار: ۲۵،۱۷۸،۷۰۰ تومان ▫️ سک"
+      "top_sample": "▫️ دلار: ۲۶۴،۰۷۰ تومان ▫️ یورو: ۲۹۳،۶۳۰ تومان ▫️ پوند: ۳۵۰،۹۱۰ تومان ▫️ یوان چین: ۳۹،۶۰۰ تومان ▫️ درهم امارات: ۷۲،۲۶۳ تومان ▫️ لیر ترکیه: ۵،۲۶۰ تومان 🔻 بیت‌کوین: ۷۳،۴۱۶ دلار 🔻 انس طلا: ۳،۹۷۴.۱۴ دلار ▫️ سکه امامی: ۲۵۴،۳۶۵،۰۰۰ تومان ▫️ سکه بهار آزادی: ۲۴۷،۲۷۵،۰۰"
     },
     {
       "best_board_message_count": 1,
@@ -12928,8 +12934,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 58.0,
       "last_quote_message_count": 8,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -13045,8 +13051,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -13081,8 +13087,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -13102,7 +13108,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "\" قیمت لحظه ای ابشده \"",
-      "top_sample": "💰 #آبشده_غیررسمی 108,800,000 فروش ♦️ ✨ #طلا_گرمی 25,116,580"
+      "top_sample": "💰 #آبشده_نقدی 108,530,000 خرید 🔹 ✨ #طلا_گرمی 25,054,250"
     },
     {
       "best_board_message_count": 0,
@@ -13448,8 +13454,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 64.0,
       "last_quote_message_count": 15,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -13458,6 +13464,7 @@
       "origins": [
         "previous_candidate_rescore",
         "previous_scored_rescore",
+        "site:t.me/s قیمت دلار سبزه میدان",
         "source_registry_rescore"
       ],
       "platform": "telegram",
@@ -13607,8 +13614,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 56.0,
       "last_quote_message_count": 10,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -13640,8 +13647,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 18,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -13824,8 +13831,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 16,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -14509,8 +14516,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 53.0,
       "last_quote_message_count": 6,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -14616,8 +14623,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 18,
-      "last_seen_at": "2026-11-12T16:24:18Z",
-      "last_success_at": "2026-11-12T16:24:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Sulaymaniyah"
@@ -14883,8 +14890,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 64.0,
       "last_quote_message_count": 13,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -14922,8 +14929,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 13,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -14958,8 +14965,8 @@
       "last_buy_sell_pair_count": 18,
       "last_parseability_score": 99.0,
       "last_quote_message_count": 18,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -15030,8 +15037,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "previous_candidate_rescore",
@@ -15046,7 +15053,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت خرید تتر | تتر روم",
-      "top_sample": "💵 قیمت تتر: 265369 تومان ⏰ تاریخ: 1405/8/21 00:30 📊 روند: ثبات 🔼 بالاترین قیمت: 265375 تومان 🔽 کمترین قیمت: 265269 تومان 💶 دلار سبزه فردایی: 264,000 تومان تتر روم - لحظه‌ای،سریع،دقیق 🆔 t.me/TetherRoom"
+      "top_sample": "💵 قیمت تتر: 265009 تومان ⏰ تاریخ: 1405/8/21 10:30 📊 روند: ثبات 🔼 بالاترین قیمت: 265145 تومان 🔽 کمترین قیمت: 264401 تومان 💶 دلار سبزه فردایی: 264,000 تومان تتر روم - لحظه‌ای،سریع،دقیق 🆔 t.me/TetherRoom"
     },
     {
       "best_board_message_count": 0,
@@ -15462,8 +15469,8 @@
       "last_buy_sell_pair_count": 0,
       "last_parseability_score": 65.0,
       "last_quote_message_count": 20,
-      "last_seen_at": "2026-11-12T16:01:42Z",
-      "last_success_at": "2026-11-12T16:01:42Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "origins": [
         "channel_survey_rescore",
@@ -15483,7 +15490,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "زر اسکن | قیمت لحظه ای طلا و دلار",
-      "top_sample": "طلای ۱۸: ۲۵,۱۳۵,۷۰۰ تومان طلای ۱۸ (غیر رسمی): ۲۵,۲۲۶,۲۶۵ تومان طلای ۱۸ (بر اساس انس): ۲۵,۴۳۶,۲۹۳ تومان سکه امامی: ۲۵۴,۲۱۵,۰۰۰ تومان سکه بهار آزادی: ۲۴۷,۲۶۵,۰۰۰ تومان نیم سکه: ۱۳۳,۴۲۰,۰۰۰ تومان ربع سکه: ۷۲,۲۴۰,۰۰۰ تومان دلار بازار آزاد: ۲۶۳,۳۹۰ تومان تتر: ۲۶۱,۳"
+      "top_sample": "طلای ۱۸: ۲۵,۰۳۸,۸۰۰ تومان طلای ۱۸ (غیر رسمی): ۲۵,۱۹۴,۴۴۱ تومان طلای ۱۸ (بر اساس انس): ۲۴,۹۵۱,۴۸۴ تومان سکه امامی: ۲۵۳,۹۶۵,۰۰۰ تومان سکه بهار آزادی: ۲۴۷,۰۴۵,۰۰۰ تومان نیم سکه: ۱۳۳,۱۹۰,۰۰۰ تومان ربع سکه: ۷۲,۴۹۰,۰۰۰ تومان دلار بازار آزاد: ۲۶۶,۹۰۰ تومان تتر: ۲۶۹,۸"
     },
     {
       "best_board_message_count": 0,
@@ -15501,10 +15508,10 @@
       "key": "telegram:zendeir",
       "last_board_message_count": 0,
       "last_buy_sell_pair_count": 0,
-      "last_parseability_score": 52.0,
-      "last_quote_message_count": 7,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_parseability_score": 57.0,
+      "last_quote_message_count": 12,
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -15524,7 +15531,7 @@
       "source_kind": "regional_market_channel",
       "status": "ok",
       "title": "قیمت لحظه‌ای دلار طلا خودرو سکه نقره تتر یورو ماشین",
-      "top_sample": "📊 گزارش زنده بازار ارز و طلا 📅 به‌روزرسانی: ساعت ۰۳:۳۰ ┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄ 💵 دلار آمریکا: 264,070 تومان 💶 یورو: 293,630 تومان ✨ طلای ۱۸ عیار: 25,178,700 تومان 🪙 سکه امامی: 254,365,000 تومان 💿 نقره (گرمی): 467,450 تومان 🇺🇸 تتر: 264,479 تومان 🏆 اونس جهانی طلا: 3,9"
+      "top_sample": "نرخ فروش #دلار ، #ارز ، #سکه و #طلا در بازار تغییر نسبت به دیروز - درصد 💵 دلار: 264,070 تومان 258,900 🔼 +%0 . 💶 یورو: 293,630 تومان 289,900 🔼 +%0 . 💷 پوند: 350,910 تومان 345,900 🔼 +%0 . 🇨🇦 دلار کانادا: 185,510 تومان 182,580 🔼 +%0 . 🇦🇺 دلار استرالیا: 181,020 تو"
     },
     {
       "best_board_message_count": 0,
@@ -15544,8 +15551,8 @@
       "last_buy_sell_pair_count": 17,
       "last_parseability_score": 100.0,
       "last_quote_message_count": 17,
-      "last_seen_at": "2026-11-12T07:09:18Z",
-      "last_success_at": "2026-11-12T07:09:18Z",
+      "last_seen_at": "2026-11-12T16:50:51Z",
+      "last_success_at": "2026-11-12T16:50:51Z",
       "last_usable_record_count": 0,
       "locality_hints": [
         "Iran",
@@ -15584,14 +15591,14 @@
     },
     "sources_by_kind": {
       "aggregator": 22,
-      "exchange_shop": 184,
+      "exchange_shop": 185,
       "regional_fx_board": 29,
       "regional_market_channel": 125,
       "settlement_channel": 8,
-      "unknown": 26
+      "unknown": 25
     },
     "sources_by_signal_family": {
-      "direct_shop_expansion": 100,
+      "direct_shop_expansion": 101,
       "regional_fx_board": 255,
       "regional_market_signal": 238
     },
