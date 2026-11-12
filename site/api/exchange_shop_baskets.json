@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-12T01:30:20Z",
+  "generated_at": "2026-11-12T16:01:45Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2642000.0,
   "baskets": [
@@ -53,38 +53,43 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1816188.7,
-      "median_rate": 1790711.0,
-      "trimmed_mean_rate": 1810054.58,
-      "spread_vs_benchmark_pct": -31.2571,
-      "usable_record_count": 34,
-      "contributing_channel_count": 7,
-      "fresh_contributing_channel_count": 6,
+      "weighted_rate": 1812862.81,
+      "median_rate": 1799525.0,
+      "trimmed_mean_rate": 1797659.37,
+      "spread_vs_benchmark_pct": -31.3829,
+      "usable_record_count": 31,
+      "contributing_channel_count": 9,
+      "fresh_contributing_channel_count": 9,
       "fresh_contributing_channels": [
+        "uae:arzbin.com",
         "uae:ciphoenix.com",
-        "uae:cityexchangeuae.com",
-        "uae:dxboffplan.com",
-        "uae:ezrate.me",
-        "uae:hiemarat.com",
-        "uae:tomanxe.com"
-      ],
-      "basket_confidence": 78.52,
-      "publishable": true,
-      "suppression_reason": "",
-      "dispersion_cv": 0.126087,
-      "top_channel_share": 0.42046,
-      "outliers_removed": 6,
-      "source_category_mix": {
-        "direct_shop": 15,
-        "settlement_exchange": 19
-      },
-      "channels": [
-        "uae:ciphoenix.com",
-        "uae:cityexchangeuae.com",
         "uae:dxboffplan.com",
         "uae:ezrate.me",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:khanesarmaye.com",
+        "uae:tomanxe.com"
+      ],
+      "basket_confidence": 88.91,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.047341,
+      "top_channel_share": 0.316594,
+      "outliers_removed": 17,
+      "source_category_mix": {
+        "direct_shop": 16,
+        "settlement_exchange": 15
+      },
+      "channels": [
+        "uae:arzbin.com",
+        "uae:ciphoenix.com",
+        "uae:dxboffplan.com",
+        "uae:ezrate.me",
+        "uae:hiemarat.com",
+        "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:khanesarmaye.com",
         "uae:tomanxe.com"
       ]
     },
