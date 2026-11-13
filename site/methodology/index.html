@@ -34,8 +34,8 @@
       <a href="/methodology/">Methodology</a>
       <a href="/status/">Status</a>
     </nav>
-    <div class="site-updated" id="site-last-update" data-ts="2026-11-06T16:04:55Z" title="Site update time. Individual benchmark observations may be older.">
-      <span class="updated-label">Site updated</span><time datetime="2026-11-06T16:04:55Z">2026-11-06T16:04:55Z</time>
+    <div class="site-updated" id="site-last-update" data-ts="2026-11-13T01:22:38Z" title="Site update time. Individual benchmark observations may be older.">
+      <span class="updated-label">Site updated</span><time datetime="2026-11-13T01:22:38Z">2026-11-13T01:22:38Z</time>
     </div>
     <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch to light mode">
       <span class="theme-toggle-track" aria-hidden="true"><span class="theme-toggle-thumb">
@@ -192,10 +192,16 @@
       The official daily fix normally prefers observations collected inside that configured publication window. If the window has no valid read but a same-day intraday read is valid, RialWatch may repair the empty daily snapshot from that read and records the selection scope as <code>same_day_repair</code>.
     </p>
     <p class="mb-2">
+      The current day's reference cannot be finalized before 14:20 UTC, including recovery runs delayed past midnight. Missing window evidence is disclosed separately from the rate. A later read cannot restore evidence from a missed collection window, and an already published, non-WITHHOLD reference is preserved for review rather than automatically replaced.
+    </p>
+    <p class="mb-2">
       Missing daily benchmarks can be recovered from captured same-day intraday source-read artifacts. The benchmark series never carries prior fixes forward into missing dates.
     </p>
     <p class="mb-2">
       The daily benchmark is the median of eligible source medians. It can publish with one usable source under the current policy. A single-source result has no cross-source confirmation, and its zero dispersion does not establish high confidence. The P25–P75 band describes dispersion across source medians; it is not a statistical confidence interval.
+    </p>
+    <p class="mb-2">
+      Green, Amber, and Red describe dispersion, not overall confidence. Publication-quality notices identify missing window evidence, recovery observations, and single-source results without rewriting the recorded rate or its historical status. The latest assessment is available at <a href="/api/publication-quality.json">/api/publication-quality.json</a>.
     </p>
     <p class="mb-2">
       RialWatch also derives supplementary indicators from the relationship between the primary benchmark and the other monitored market layers, including:
@@ -297,7 +303,7 @@
 </section>
 </main>
 <footer class="site-footer">
-  <div class="site-generated-at">Site updated: 2026-11-06T16:04:55Z</div>
+  <div class="site-generated-at">Site updated: 2026-11-13T01:22:38Z</div>
   <div class="site-footer-credit">A Kevin Mehrabi Production</div>
   <div class="site-footer-contact">Contact: <a href="https://linktr.ee/kmehrabi" target="_blank" rel="noopener noreferrer">@KMehrabi</a></div>
 </footer>
