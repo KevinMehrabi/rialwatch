@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-13T01:03:30Z",
+  "generated_at": "2026-11-13T15:33:07Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2690000.0,
   "baskets": [
@@ -28,24 +28,22 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2664288.89,
+      "weighted_rate": 2664775.0,
       "median_rate": 2663950.0,
-      "trimmed_mean_rate": 2664206.25,
-      "spread_vs_benchmark_pct": -0.9558,
-      "usable_record_count": 18,
+      "trimmed_mean_rate": 2664562.5,
+      "spread_vs_benchmark_pct": -0.9377,
+      "usable_record_count": 14,
       "contributing_channel_count": 1,
-      "fresh_contributing_channel_count": 1,
-      "fresh_contributing_channels": [
-        "istanbulexchange_com"
-      ],
-      "basket_confidence": 70.7,
+      "fresh_contributing_channel_count": 0,
+      "fresh_contributing_channels": [],
+      "basket_confidence": 69.51,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.000834,
+      "dispersion_cv": 0.000714,
       "top_channel_share": 1.0,
       "outliers_removed": 11,
       "source_category_mix": {
-        "regional_market_channel": 18
+        "regional_market_channel": 14
       },
       "channels": [
         "istanbulexchange_com"
@@ -53,35 +51,41 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1991335.94,
-      "median_rate": 2027513.8,
-      "trimmed_mean_rate": 1980386.1,
-      "spread_vs_benchmark_pct": -25.9726,
-      "usable_record_count": 33,
-      "contributing_channel_count": 5,
-      "fresh_contributing_channel_count": 5,
+      "weighted_rate": 1820029.24,
+      "median_rate": 1814031.38,
+      "trimmed_mean_rate": 1803050.03,
+      "spread_vs_benchmark_pct": -32.3409,
+      "usable_record_count": 32,
+      "contributing_channel_count": 8,
+      "fresh_contributing_channel_count": 8,
       "fresh_contributing_channels": [
-        "uae:bookmyforex.com",
         "uae:ciphoenix.com",
+        "uae:dxboffplan.com",
+        "uae:etcurrency.com",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:khanesarmaye.com",
         "uae:tomanxe.com"
       ],
-      "basket_confidence": 79.33,
+      "basket_confidence": 89.13,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.11692,
-      "top_channel_share": 0.416597,
-      "outliers_removed": 0,
+      "dispersion_cv": 0.052524,
+      "top_channel_share": 0.298071,
+      "outliers_removed": 12,
       "source_category_mix": {
-        "direct_shop": 13,
-        "settlement_exchange": 20
+        "direct_shop": 19,
+        "settlement_exchange": 13
       },
       "channels": [
-        "uae:bookmyforex.com",
         "uae:ciphoenix.com",
+        "uae:dxboffplan.com",
+        "uae:etcurrency.com",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:khanesarmaye.com",
         "uae:tomanxe.com"
       ]
     },
