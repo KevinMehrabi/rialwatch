@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-14T01:18:35Z",
+  "generated_at": "2026-11-14T14:27:07Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2718000.0,
-  "total_usable_records": 129,
-  "total_contributing_channels": 15,
+  "total_usable_records": 125,
+  "total_contributing_channels": 16,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -13,8 +13,8 @@
       "status_code": 200,
       "error": null,
       "messages_seen": 20,
-      "records_extracted": 18,
-      "usable_records": 14,
+      "records_extracted": 19,
+      "usable_records": 18,
       "dedup_stats": {
         "exact_duplicates_removed": 0,
         "near_duplicates_removed": 0
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 46,
+    "direct_shop": 51,
     "market_channel": 36,
-    "regional_market_channel": 14,
-    "settlement_exchange": 33
+    "regional_market_channel": 18,
+    "settlement_exchange": 20
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -57,18 +57,18 @@
     {
       "basket_name": "Turkey",
       "publishable": false,
-      "usable_record_count": 14,
+      "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 69.51,
+      "basket_confidence": 71.9,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 41,
-      "contributing_channel_count": 7,
-      "basket_confidence": 83.98,
+      "usable_record_count": 32,
+      "contributing_channel_count": 9,
+      "basket_confidence": 91.62,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -160,6 +160,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "istanbulexchange_com",
+      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
+      "locality": "Turkey",
+      "source_category": "regional_market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 18,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
+      "from_new_p1": true
+    },
+    {
       "handle": "irancurrency",
       "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
       "locality": "unknown",
@@ -171,17 +182,6 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulexchange_com",
-      "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
-      "locality": "Turkey",
-      "source_category": "regional_market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 14,
-      "average_quality": 87.0,
-      "average_freshness": 76.0,
-      "from_new_p1": true
-    },
-    {
       "handle": "uae:ciphoenix.com",
       "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان",
       "locality": "UAE",
@@ -189,28 +189,6 @@
       "source_priority": "uae_review",
       "usable_record_count": 14,
       "average_quality": 74.43,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:angelindubai.com",
-      "title": "Best Way to Send Money from UAE: Remittance Rates (2026)",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 9,
-      "average_quality": 74.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 8,
-      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -226,8 +204,8 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:tomanxe.com",
-      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
+      "handle": "uae:hiemarat.com",
+      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -237,12 +215,12 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:aktrealestate.ae",
-      "title": "محله‌های ایرانی‌نشین دبی",
+      "handle": "uae:tomanxe.com",
+      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 4,
+      "usable_record_count": 6,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -270,6 +248,28 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iran2dubai.com",
+      "title": "روایت حجره‌های دیره و کانتینرهای جبل‌علی: چگونه بار ایرانی را در بازار دبی به پول نقد تبدیل کنیم؟ - مجله تجارت و صادرات به دبی",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "istanbulim_com",
       "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
       "locality": "Turkey",
@@ -292,13 +292,24 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:bookmyforex.com",
-      "title": "Send Money from India to United Arab Emirates (International Transfer Online)",
+      "handle": "uae:arzbin.com",
+      "title": "قیمت درهم امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 1,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:khanesarmaye.com",
+      "title": "قیمت درهم امارات امروز ۲۳ آبان ۱۴۰۵",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 77.0,
+      "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
