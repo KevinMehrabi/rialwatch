@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-11-13T15:33:07Z",
+  "generated_at": "2026-11-14T01:18:35Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2690000.0,
-  "total_usable_records": 131,
+  "benchmark_weighted_rate": 2718000.0,
+  "total_usable_records": 129,
   "total_contributing_channels": 15,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 61,
+    "direct_shop": 46,
     "market_channel": 36,
     "regional_market_channel": 14,
-    "settlement_exchange": 20
+    "settlement_exchange": 33
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -66,9 +66,9 @@
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 32,
-      "contributing_channel_count": 8,
-      "basket_confidence": 89.13,
+      "usable_record_count": 41,
+      "contributing_channel_count": 7,
+      "basket_confidence": 83.98,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -193,14 +193,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "istanbulim_com",
-      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
-      "locality": "Turkey",
-      "source_category": "direct_shop",
-      "source_priority": "P1",
-      "usable_record_count": 11,
-      "average_quality": 89.0,
-      "average_freshness": 76.0,
+      "handle": "uae:angelindubai.com",
+      "title": "Best Way to Send Money from UAE: Remittance Rates (2026)",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -209,7 +209,7 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 9,
+      "usable_record_count": 8,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -229,9 +229,20 @@
       "handle": "uae:tomanxe.com",
       "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
       "locality": "UAE",
-      "source_category": "settlement_exchange",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 7,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:aktrealestate.ae",
+      "title": "محله‌های ایرانی‌نشین دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -259,25 +270,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:iran2dubai.com",
-      "title": "انتقال پول و تسویه ارزی بین ایران و امارات از مسیرهای قانونی - مجله تجارت و صادرات به دبی",
-      "locality": "UAE",
+      "handle": "istanbulim_com",
+      "title": "قیمت لحظه‌ای لیر، دلار، یورو صرافی استانبول",
+      "locality": "Turkey",
       "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:etcurrency.com",
-      "title": "Send Money to UAE 2026 — Best Rates & What Your Recipient Gets in AED",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
+      "source_priority": "P1",
       "usable_record_count": 2,
-      "average_quality": 91.5,
-      "average_freshness": 92.0,
+      "average_quality": 89.0,
+      "average_freshness": 76.0,
       "from_new_p1": false
     },
     {
@@ -292,13 +292,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:khanesarmaye.com",
-      "title": "قیمت درهم امارات امروز ۲۲ آبان ۱۴۰۵",
+      "handle": "uae:bookmyforex.com",
+      "title": "Send Money from India to United Arab Emirates (International Transfer Online)",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
-      "average_quality": 74.0,
+      "average_quality": 77.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     }
