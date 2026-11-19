@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-18T16:54:48Z",
+  "generated_at": "2026-11-19T01:48:27Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2667000.0,
-  "total_usable_records": 127,
-  "total_contributing_channels": 16,
+  "benchmark_weighted_rate": 2663000.0,
+  "total_usable_records": 131,
+  "total_contributing_channels": 18,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 57,
+    "direct_shop": 59,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 16
+    "settlement_exchange": 18
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 71.98,
+      "basket_confidence": 70.78,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 31,
-      "contributing_channel_count": 8,
-      "basket_confidence": 79.15,
+      "usable_record_count": 28,
+      "contributing_channel_count": 9,
+      "basket_confidence": 80.06,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -166,8 +166,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 96.0,
-      "average_freshness": 100.0,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -220,29 +220,29 @@
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 6,
+      "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:economicexchangecentre.com",
-      "title": "Online Money Transfer From UAE - Economic Exchange Centre",
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 3,
+      "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
     {
-      "handle": "uae:iran2dubai.com",
-      "title": "انتقال پول و تسویه ارزی بین ایران و امارات از مسیرهای قانونی - مجله تجارت و صادرات به دبی",
+      "handle": "uae:tomanxe.com",
+      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 3,
+      "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -263,6 +263,28 @@
       "title": "BUR DUBAI – City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ezrate.me",
+      "title": "قیمت دلار دبی امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 2,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
@@ -303,10 +325,10 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:tomanxe.com",
-      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
+      "handle": "uae:donya-e-eqtesad.com",
+      "title": "قیمت دلار، یورو و درهم امروز چهارشنبه ۲۷ آبان ۱۴۰۵ / دلار گران شد",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 74.0,
