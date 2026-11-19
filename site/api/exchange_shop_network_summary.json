@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-19T01:48:27Z",
+  "generated_at": "2026-11-19T16:51:55Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2663000.0,
-  "total_usable_records": 131,
-  "total_contributing_channels": 18,
+  "total_usable_records": 154,
+  "total_contributing_channels": 20,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 59,
+    "direct_shop": 71,
     "market_channel": 36,
     "regional_market_channel": 18,
-    "settlement_exchange": 18
+    "settlement_exchange": 29
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 70.78,
+      "basket_confidence": 71.92,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 28,
-      "contributing_channel_count": 9,
-      "basket_confidence": 80.06,
+      "usable_record_count": 57,
+      "contributing_channel_count": 12,
+      "basket_confidence": 78.39,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -166,8 +166,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 96.0,
+      "average_freshness": 100.0,
       "from_new_p1": true
     },
     {
@@ -204,6 +204,17 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:angelindubai.com",
+      "title": "Best Way to Send Money from UAE: Remittance Rates (2026)",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 9,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "sarafionline7groupuk",
       "title": "Nerkh Sarafi Online 7 Group Uk",
       "locality": "UK",
@@ -215,8 +226,41 @@
       "from_new_p1": false
     },
     {
+      "handle": "uae:gooyadubai.ae",
+      "title": "قیمت طلا در دبی و امارات امروز",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 73.83,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:hiemarat.com",
-      "title": "صرافی ایرانی در دبی، نرخ لحظه ای درهم طلا و نقره، های امارات",
+      "title": "نرخ لحظه ای درهم طلا و نقره در دبی به تومان، های امارات",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 6,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:dxboffplan.com",
+      "title": "چنج پول در دبی 2026",
+      "locality": "UAE",
+      "source_category": "direct_shop",
+      "source_priority": "uae_review",
+      "usable_record_count": 5,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:bitpin.ir",
+      "title": "تبدیل درهم به تومان آنلاین",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -237,12 +281,23 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:tomanxe.com",
-      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
+      "handle": "uae:economicexchangecentre.com",
+      "title": "Online Money Transfer From UAE - Economic Exchange Centre",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 3,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:iran2dubai.com",
+      "title": "انتقال پول و تسویه ارزی بین ایران و امارات از مسیرهای قانونی - مجله تجارت و صادرات به دبی",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 4,
+      "usable_record_count": 3,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -263,28 +318,6 @@
       "title": "BUR DUBAI – City Exchange Uae",
       "locality": "UAE",
       "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ezrate.me",
-      "title": "قیمت دلار دبی امروز",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 2,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:gooyadubai.ae",
-      "title": "قیمت طلا در دبی و امارات امروز",
-      "locality": "UAE",
-      "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 2,
       "average_quality": 74.0,
@@ -314,21 +347,10 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:bitpin.ir",
-      "title": "تبدیل درهم به تومان آنلاین",
+      "handle": "uae:tomanxe.com",
+      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:donya-e-eqtesad.com",
-      "title": "قیمت دلار، یورو و درهم امروز چهارشنبه ۲۷ آبان ۱۴۰۵ / دلار گران شد",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 1,
       "average_quality": 74.0,
