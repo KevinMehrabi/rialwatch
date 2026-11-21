@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T00:40:11Z",
+  "generated_at": "2026-11-21T15:28:05Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2729000.0,
   "baskets": [
@@ -28,22 +28,24 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2688534.37,
-      "median_rate": 2688400.0,
-      "trimmed_mean_rate": 2688482.14,
-      "spread_vs_benchmark_pct": -1.4828,
-      "usable_record_count": 16,
+      "weighted_rate": 2680533.33,
+      "median_rate": 2680550.0,
+      "trimmed_mean_rate": 2680512.5,
+      "spread_vs_benchmark_pct": -1.776,
+      "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "fresh_contributing_channel_count": 0,
-      "fresh_contributing_channels": [],
-      "basket_confidence": 69.54,
+      "fresh_contributing_channel_count": 1,
+      "fresh_contributing_channels": [
+        "istanbulexchange_com"
+      ],
+      "basket_confidence": 71.92,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.000526,
+      "dispersion_cv": 0.000676,
       "top_channel_share": 1.0,
       "outliers_removed": 0,
       "source_category_mix": {
-        "regional_market_channel": 16
+        "regional_market_channel": 18
       },
       "channels": [
         "istanbulexchange_com"
@@ -51,44 +53,42 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 2038979.33,
-      "median_rate": 2019875.0,
-      "trimmed_mean_rate": 2010751.04,
-      "spread_vs_benchmark_pct": -25.2847,
-      "usable_record_count": 55,
-      "contributing_channel_count": 10,
-      "fresh_contributing_channel_count": 9,
+      "weighted_rate": 1838855.78,
+      "median_rate": 1836250.0,
+      "trimmed_mean_rate": 1847221.59,
+      "spread_vs_benchmark_pct": -32.618,
+      "usable_record_count": 48,
+      "contributing_channel_count": 9,
+      "fresh_contributing_channel_count": 8,
       "fresh_contributing_channels": [
+        "uae:arzbin.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
-        "uae:economicexchangecentre.com",
-        "uae:ezrate.me",
-        "uae:gooyadubai.ae",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
         "uae:iran2dubai.com",
+        "uae:residency24.com",
         "uae:tomanxe.com"
       ],
-      "basket_confidence": 76.79,
+      "basket_confidence": 87.16,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.139846,
-      "top_channel_share": 0.255766,
-      "outliers_removed": 0,
+      "dispersion_cv": 0.058839,
+      "top_channel_share": 0.209539,
+      "outliers_removed": 13,
       "source_category_mix": {
         "direct_shop": 24,
-        "settlement_exchange": 31
+        "settlement_exchange": 24
       },
       "channels": [
         "uae:angelindubai.com",
+        "uae:arzbin.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
-        "uae:economicexchangecentre.com",
-        "uae:ezrate.me",
-        "uae:gooyadubai.ae",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
         "uae:iran2dubai.com",
+        "uae:residency24.com",
         "uae:tomanxe.com"
       ]
     },
