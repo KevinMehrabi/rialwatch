@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-21T23:39:59Z",
+  "generated_at": "2026-11-22T15:26:47Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2697000.0,
   "baskets": [
@@ -28,20 +28,20 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2680533.33,
-      "median_rate": 2680550.0,
-      "trimmed_mean_rate": 2680512.5,
-      "spread_vs_benchmark_pct": -0.6106,
+      "weighted_rate": 2671663.89,
+      "median_rate": 2671275.0,
+      "trimmed_mean_rate": 2671540.62,
+      "spread_vs_benchmark_pct": -0.9394,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 1,
       "fresh_contributing_channels": [
         "istanbulexchange_com"
       ],
-      "basket_confidence": 70.72,
+      "basket_confidence": 71.95,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.000676,
+      "dispersion_cv": 0.000453,
       "top_channel_share": 1.0,
       "outliers_removed": 9,
       "source_category_mix": {
@@ -53,31 +53,42 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 2019092.19,
-      "median_rate": 1836250.0,
-      "trimmed_mean_rate": 2006562.19,
-      "spread_vs_benchmark_pct": -25.1356,
-      "usable_record_count": 18,
-      "contributing_channel_count": 3,
-      "fresh_contributing_channel_count": 3,
+      "weighted_rate": 1762607.94,
+      "median_rate": 1814031.38,
+      "trimmed_mean_rate": 1780972.39,
+      "spread_vs_benchmark_pct": -34.6456,
+      "usable_record_count": 42,
+      "contributing_channel_count": 10,
+      "fresh_contributing_channel_count": 7,
       "fresh_contributing_channels": [
+        "uae:bitpin.ir",
+        "uae:gooyadubai.ae",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:residency24.com",
         "uae:tomanxe.com"
       ],
-      "basket_confidence": 72.82,
+      "basket_confidence": 86.44,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.16024,
-      "top_channel_share": 0.45676,
-      "outliers_removed": 0,
+      "dispersion_cv": 0.070807,
+      "top_channel_share": 0.194105,
+      "outliers_removed": 23,
       "source_category_mix": {
-        "direct_shop": 12,
-        "settlement_exchange": 6
+        "direct_shop": 27,
+        "settlement_exchange": 15
       },
       "channels": [
+        "uae:bitpin.ir",
+        "uae:ciphoenix.com",
+        "uae:gooyadubai.ae",
         "uae:hiemarat.com",
         "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:iranrebate.com",
+        "uae:residency24.com",
+        "uae:startzoneuae.com",
         "uae:tomanxe.com"
       ]
     },
