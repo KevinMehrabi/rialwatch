@@ -121,8 +121,12 @@ class AuditRegressionTests(unittest.TestCase):
         deploy = (workflows/'deploy-pages.yml').read_text()
         self.assertIn('ref: data/live', deploy)
         self.assertIn('--no-new-reference', deploy)
-        self.assertIn('Intraday USD/IRR Collection', deploy)
-        self.assertIn('cancel-in-progress: true', deploy)
+        # Collection now completes publication before Pages rebuilds the site.
+        self.assertIn('Daily USD/IRR Reference', deploy)
+        self.assertIn('Intraday USD/IRR Collection', (workflows/'daily-reference.yml').read_text())
+        # Let an active deployment finish its bounded retries and public check;
+        # the queued deployment still checks out the latest data/live snapshot.
+        self.assertIn('cancel-in-progress: false', deploy)
         for name in ('daily-reference.yml', 'intraday-collection.yml', 'regional-diagnostics-discovery.yml'):
             self.assertNotIn('name: github-pages', (workflows/name).read_text())
 
