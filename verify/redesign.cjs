@@ -109,9 +109,9 @@ const fixtures = {
   let rows=fixtures.rows, regional={generated_at:new Date().toISOString(),cards:fixtures.cards};
   let archiveRows=[], archiveUnavailable=false;
   let failFetch=false;
-  await fixturePage.route('**/api/series.json',route=>failFetch ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:{rows}}));
-  await fixturePage.route('**/api/chart_history.json',route=>archiveUnavailable ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:{rows:archiveRows}}));
-  await fixturePage.route('**/api/regional_market_signals_card.json',route=>failFetch ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:regional}));
+  await fixturePage.route('**/api/series.json*',route=>failFetch ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:{rows}}));
+  await fixturePage.route('**/api/chart_history.json*',route=>archiveUnavailable ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:{rows:archiveRows}}));
+  await fixturePage.route('**/api/regional_market_signals_card.json*',route=>failFetch ? route.fulfill({status:503,body:'unavailable'}) : route.fulfill({json:regional}));
   await fixturePage.goto(url);await fixturePage.waitForSelector('.regional-row');
   assert.equal(await fixturePage.locator('.regional-row').count(),2);
   assert.match(await fixturePage.locator('.regional-row').first().textContent(),/First/);
@@ -214,8 +214,8 @@ const fixtures = {
   }
   const touchPage=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   touchPage.on('pageerror',error=>errors.push(error.message));
-  await touchPage.route('**/api/series.json',route=>route.fulfill({json:{rows}}));
-  await touchPage.route('**/api/chart_history.json',route=>route.fulfill({json:{rows:archiveRows}}));
+  await touchPage.route('**/api/series.json*',route=>route.fulfill({json:{rows}}));
+  await touchPage.route('**/api/chart_history.json*',route=>route.fulfill({json:{rows:archiveRows}}));
   await touchPage.goto(url);await touchPage.waitForSelector('#historyRangePanel:not([hidden])');
   await touchPage.locator('#historyChart').scrollIntoViewIfNeeded();
   const touchPlot=await touchPage.locator('#historyChart').boundingBox();
@@ -242,8 +242,8 @@ const fixtures = {
   // Progressively reach every reference, including a partial final batch and a year boundary.
   const ledgerPage=await browser.newPage();ledgerPage.on('pageerror',error=>errors.push(error.message));
   const ledgerRows=Array.from({length:97},(_,i)=>({date:new Date(Date.UTC(2025,10,i+1)).toISOString().slice(0,10),fix:1000000+i*2000+(i>=70 ? 8000 : 0),withheld:i===90}));
-  await ledgerPage.route('**/api/series.json',route=>route.fulfill({json:{rows:ledgerRows}}));
-  await ledgerPage.route('**/api/chart_history.json',route=>route.fulfill({json:{rows:[]}}));
+  await ledgerPage.route('**/api/series.json*',route=>route.fulfill({json:{rows:ledgerRows}}));
+  await ledgerPage.route('**/api/chart_history.json*',route=>route.fulfill({json:{rows:[]}}));
   const dates=ledgerRows.map(row=>row.date).reverse();
   for (const width of [390,1280]) {
    await ledgerPage.setViewportSize({width,height:900});await ledgerPage.goto(url);

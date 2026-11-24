@@ -70,3 +70,26 @@ from the designated window was available. Recovery cannot manufacture that
 missing evidence. GitHub scheduling and service availability remain external
 dependencies; passing deployment checks is not proof that a future collection
 window will be met. Every actual release now has its own public-content check.
+
+## Live validation and browser-cache follow-up
+
+After PR #15 merged, [collection](https://github.com/KevinMehrabi/rialwatch/actions/runs/45472311651)
+succeeded and automatically triggered [publication](https://github.com/KevinMehrabi/rialwatch/actions/runs/45472513979).
+Both guardrail passes succeeded with the expected missing-window warnings. The
+November 24 reference was published at 2,842,000 IRR/USD from the 19:38:53 UTC
+observation. All 1,120 pre-existing immutable observation/publication records
+retained identical Git blob hashes; one observation and one daily fix were added.
+
+The resulting [deployment](https://github.com/KevinMehrabi/rialwatch/actions/runs/45472604020)
+encountered the same zero-artifact lookup failure. Its automatic retry found the
+artifact 15 seconds later, deployed successfully, and verified eight public files.
+This exercised the recovery in production, beyond the successful local tests.
+
+A returning-browser check then exposed a separate cache inconsistency: the new
+homepage showed November 24 while cached, unversioned API responses still showed
+November 23 in the chart and ledger. Browser Resource Timing reported those API
+responses as cache deliveries. The follow-up versions dashboard JavaScript and
+all dashboard data requests with the homepage build timestamp, and requests API
+revalidation. Deployment verification now includes chart-history data as well.
+`verify/dashboard-cache.cjs` exercises two releases in the same browser against
+real HTTP caching; it does not use route interception, which disables that cache.

@@ -18,6 +18,7 @@ MANIFEST = "api/deployment.json"
 REQUIRED_FILES = ("index.html", "api/latest.json", "api/series.json")
 OPTIONAL_FILES = (
     "status/index.html",
+    "api/chart_history.json",
     "api/intraday/latest.json",
     "api/regional_market_signals_card.json",
     "assets/js/home-dashboard.js",
