@@ -23,7 +23,11 @@
   const textNumber = value => numeric(String(value).trim().replace(/,/g, '').replace(/−/g, '-'));
   const rateNumber = element => element ? textNumber(element.firstChild?.textContent || '') : null;
   const fetchJSON = async url => {
-    const response = await fetch(url);
+    // A new homepage must not reuse the previous release's cached chart/data.
+    const endpoint = new URL(url, document.baseURI);
+    const release = document.querySelector('.home-dashboard')?.dataset.release;
+    if (release) endpoint.searchParams.set('release', release);
+    const response = await fetch(endpoint, {cache:'no-cache'});
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return response.json();
   };

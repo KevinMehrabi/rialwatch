@@ -6551,6 +6551,7 @@ def publish_home(site_dir: Path, templates_dir: Path, generated_at: str, latest:
         "index.html",
         title="USD/IRR Dashboard",
         generated_at=generated_at,
+        dashboard_release=generated_at,
         date=latest.get("date", "N/A"),
         as_of=latest.get("as_of", "N/A"),
         fix=fmt_rate(fix),
