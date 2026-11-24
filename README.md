@@ -25,6 +25,7 @@ Static daily USD/IRR reference site with an institutional dashboard UI and deter
 - `/api/daily_full.json` richer historical export generated from `/fix/*.json`
 - `/api/revisions.json` revision metadata generated from `/fix/*.json`
 - `/api/publication-quality.json` derived timing, source-count, and recovery disclosures for the latest official fix; does not revise its recorded rate or dispersion status
+- `/api/deployment.json` identifies the released application/data revisions and public-file hashes, checked against rialwatch.com after every deployment
 - `/api/mapping_audit.json` mapping-version audit for historical backfill/rebuild targeting
 - `/intraday/YYYY-MM-DD/HH-MM-SS.json` timestamped intraday collection attempts
 - `/archive/`, `/status/`, `/methodology/`, `/governance/`
@@ -76,6 +77,7 @@ Public historical series (`/api/series.json`) remains strict and primary-only: i
 - Historical missing or WITHHOLD daily files may be backfilled only from captured same-day intraday source-read artifacts; no prior-day carry-forward rows are emitted.
 - If a scheduled collector starts after all checkpoints, it records one fresh outside-window recovery attempt with the actual collection time instead of silently skipping the day.
 - Scheduled backup publications also create a missing daily reference. A missing current-day fix fails the guardrail even when there are no intraday artifacts, triggering collection and same-day repair.
+- Successful intraday collection triggers the daily publisher directly. Near the cutoff (14:05–14:19 UTC), that publisher waits until 14:20; earlier runs rebuild without publishing prematurely, and later runs publish from retained evidence. Manual daily-reference runs also publish subject to the same cutoff and revision rules.
 - Additional immediate recovery collections are scheduled at `05:37`, `09:37`, `17:37`, and `21:37 UTC`. These keep same-day source reads outside the main window without changing the preferred in-window daily selection. Manual collection also runs immediately.
 - Homepage remains daily-only (no live ticker behavior).
 
@@ -185,7 +187,7 @@ This can be expanded to hourly / every 30 minutes / every 15 minutes without par
 - Intraday collection starts early and waits inside the job for `13:50`, `14:05`, and `14:14 UTC` checkpoints, then commits `collect:` snapshots to `data/live`. This absorbs GitHub scheduled-run startup delays while keeping official candidates inside the publication window.
 - Official publish snapshots (`publish:` at `14:20 UTC`) and Iran discovery outputs (`discover:`) also commit to `data/live` instead of `main`.
 - Self-heal schedules (`14:30 UTC`, `15:00 UTC`, `17:47 UTC`, `21:47 UTC`) publish or repair the current-day reference and persist snapshots, including raw recovery observations.
-- New daily publication runs supersede obsolete runs, including a run stuck waiting for Pages. Running jobs have a 30-minute timeout.
+- Daily publication jobs finish persistence before the next queued run; Pages runs separately and cannot block collection or publication. Publication jobs have a 30-minute timeout.
 - `main` intentionally stays code-only; generated `site/*` and `survey_outputs*` artifacts are ignored on `main`.
 - Push/manual runs use build-only mode (`--no-new-reference`) to redeploy UI/template changes without creating a new day record.
 - Build-only preserves existing `/site/fix/YYYY-MM-DD.json` official fix, `as_of`, and `publication_selection`; it may regenerate pages, archive, series exports, status, and intraday pulse files.
@@ -287,9 +289,19 @@ site has no npm runtime or CDN dependency. The font licenses are in `assets/font
   timestamps beyond ten minutes, and excludes failed source validation.
 - Source exceptions are recorded individually; other successful reads survive.
   Raw observations are backed up before benchmark calculations or rendering.
-- `deploy-pages.yml` is the only Pages publisher. Successful collection, daily,
-  and regional workflows trigger a rebuild from the latest committed `data/live`
-  state; obsolete Pages jobs can be cancelled without cancelling collection.
+- `deploy-pages.yml` is the only Pages publisher. Successful collection first
+  triggers the daily publisher; daily, regional, and history-recovery completions
+  then trigger a rebuild from the latest committed `data/live` state. An active
+  Pages job finishes before the next queued deployment starts.
+- Pages deployment retries transient artifact-discovery failures with 15- and
+  30-second backoffs. Exhausted retries still fail. The release manifest, homepage,
+  status page, rate/history APIs and dashboard assets are checked on rialwatch.com
+  before the deployment can report success; old or partially propagated content
+  fails that check if it remains after the bounded propagation wait.
+- A window-collection trigger starting outside 12:30–14:15 UTC collects an
+  immediate, honestly timestamped recovery observation. In particular, a trigger
+  delayed past midnight cannot sleep until the following afternoon and exhaust
+  its two-hour job limit without saving a sample.
 - Pull requests and main pushes run the Python regression suite.
 - Gold-implied figures disclose their fixed USD/oz assumption. They are not
   backed by a live international gold-price feed.

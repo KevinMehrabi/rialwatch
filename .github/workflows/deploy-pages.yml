@@ -4,7 +4,6 @@ on:
   workflow_run:
     workflows:
       - Daily USD/IRR Reference
-      - Intraday USD/IRR Collection
       - Regional Diagnostics Discovery
       - Historical Chart Recovery
     types: [completed]
@@ -16,20 +15,26 @@ permissions:
   pages: write
   id-token: write
 
+# Collection triggers daily publication first, so Pages does not race the
+# publisher and briefly redeploy yesterday's reference after a fresh collection.
 # Collection and persistence never wait for Pages. Only this workflow deploys,
-# and each replacement rebuilds from the newest committed data/live snapshot.
+# and each queued run rebuilds from the newest committed data/live snapshot.
+# Finish an active deployment instead of interrupting it during artifact discovery.
 concurrency:
   group: rialwatch-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      # Re-running a failed job must not collide with its earlier upload.
+      PAGES_ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url || steps.deployment_final.outputs.page_url }}
     steps:
       - name: Checkout current application
         uses: actions/checkout@v4
@@ -46,12 +51,47 @@ jobs:
           python-version: "3.11"
       - name: Rebuild a consistent site from the latest snapshot
         run: python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
+      - name: Record the exact release to verify on the public site
+        run: |
+          python3 scripts/verify_deployment.py prepare --site-dir state/site \
+            --application-sha "$(git rev-parse HEAD)" --data-sha "$(git -C state rev-parse HEAD)" \
+            --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT"
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          name: ${{ env.PAGES_ARTIFACT_NAME }}
           path: state/site
       - name: Deploy to GitHub Pages
         id: deployment
+        continue-on-error: true
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
+          timeout: 300000
+      # Artifact upload can succeed before deploy-pages can list it. The action
+      # does not retry that lookup, so retry the official action with backoff.
+      - name: Allow the uploaded artifact to become visible
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 15
+      - name: Retry Pages deployment
+        if: steps.deployment.outcome == 'failure'
+        id: deployment_retry
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
+          timeout: 300000
+      - name: Back off before the final Pages attempt
+        if: steps.deployment_retry.outcome == 'failure'
+        run: sleep 30
+      - name: Final Pages deployment attempt
+        if: steps.deployment_retry.outcome == 'failure'
+        id: deployment_final
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
+          timeout: 300000
+      - name: Verify the released pages and data on rialwatch.com
+        run: python3 scripts/verify_deployment.py check --site-dir state/site --base-url https://rialwatch.com --wait-seconds 180

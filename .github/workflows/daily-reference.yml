@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - main
+  # Publish retained observations as soon as collection finishes; delayed cron
+  # runs must not leave today's data waiting for another delayed publisher.
+  workflow_run:
+    workflows: [Intraday USD/IRR Collection]
+    types: [completed]
+    branches: [main]
   schedule:
     # Publish official daily benchmark at 14:20 UTC from intraday history.
     - cron: "20 14 * * *"
@@ -21,12 +27,13 @@ permissions:
 
 concurrency:
   group: daily-usd-irr-reference
-  # An obsolete run waiting for Pages must not hold up every later daily fix.
-  # Publication is idempotent and reuses an already valid immutable daily fix.
-  cancel-in-progress: true
+  # Finish persistence before processing the next request. Each run reads the
+  # latest data and preserves already-published immutable daily fixes.
+  cancel-in-progress: false
 
 jobs:
   build_publish:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -65,35 +72,41 @@ jobs:
           NAVASAN_PUBLIC_URL: ${{ vars.NAVASAN_PUBLIC_URL }}
           ALANCHAND_API_URL: ${{ secrets.ALANCHAND_API_URL }}
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
+          if [ "${{ github.event_name }}" != "push" ]; then
             echo "Publication schedule: $PUBLICATION_SCHEDULE; actual start: $(date -u +%FT%TZ)"
+            publish_args=(--skip-waits)
+            now_hhmm="$(date -u +%H%M)"
+            # The final window collection normally finishes just before 14:20.
+            # Wait at most 15 minutes for the cutoff instead of deferring to a
+            # potentially delayed cron. Overnight recovery runs never wait.
+            if [ "${{ github.event_name }}" = "workflow_run" ] && (( 10#$now_hhmm >= 1405 && 10#$now_hhmm < 1420 )); then
+              publish_args=()
+            fi
             # Backup schedules must also create a missing daily reference.
             # Build-only mode deliberately preserves the previous day's fix.
-            python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates --skip-waits
+            python3 scripts/pipeline.py --mode publish-daily --site-dir state/site --templates-dir templates "${publish_args[@]}"
           elif [ "${{ github.event_name }}" = "push" ]; then
             # Push-triggered deploys should rebuild from existing artifacts only.
             # Intraday collection remains schedule-driven to avoid over-polling upstream APIs.
             python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
-          else
-            python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
           fi
 
       - name: Guardrail checks (pre-heal)
-        if: github.event_name == 'schedule'
+        if: github.event_name != 'push'
         id: guardrail_pre
         continue-on-error: true
         run: |
           python3 scripts/guardrail_check.py --site-dir state/site
 
       - name: Install Playwright for auto-heal collection
-        if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure' && steps.guardrail_pre.outputs.auto_heal_required == 'true'
+        if: github.event_name != 'push' && steps.guardrail_pre.outcome == 'failure' && steps.guardrail_pre.outputs.auto_heal_required == 'true'
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install playwright
           python3 -m playwright install --with-deps chromium
 
       - name: Auto-heal if guardrails fail
-        if: github.event_name == 'schedule' && steps.guardrail_pre.outcome == 'failure' && steps.guardrail_pre.outputs.auto_heal_required == 'true'
+        if: github.event_name != 'push' && steps.guardrail_pre.outcome == 'failure' && steps.guardrail_pre.outputs.auto_heal_required == 'true'
         env:
           ALANCHAND_API_KEY: ${{ secrets.ALANCHAND_API_KEY }}
           BONBAST_SITE_URL: ${{ vars.BONBAST_SITE_URL }}
@@ -115,13 +128,13 @@ jobs:
           retention-days: 90
 
       - name: Guardrail checks (post-heal)
-        if: github.event_name == 'schedule'
+        if: github.event_name != 'push'
         run: |
           python3 scripts/guardrail_check.py --site-dir state/site
 
       - name: Persist daily snapshots
         # Keep captured reads even when a later guardrail or backup upload fails.
-        if: github.event_name == 'schedule' && !cancelled()
+        if: github.event_name != 'push' && !cancelled()
         run: |
           data_branch="data/live"
           targets=()
