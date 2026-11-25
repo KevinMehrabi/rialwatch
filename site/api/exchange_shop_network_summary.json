@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-25T04:22:39Z",
+  "generated_at": "2026-11-25T18:03:13Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2842000.0,
-  "total_usable_records": 112,
-  "total_contributing_channels": 15,
+  "benchmark_weighted_rate": 2922000.0,
+  "total_usable_records": 81,
+  "total_contributing_channels": 12,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 49,
-    "market_channel": 36,
+    "direct_shop": 42,
+    "market_channel": 8,
     "regional_market_channel": 18,
-    "settlement_exchange": 9
+    "settlement_exchange": 13
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 70.53,
+      "basket_confidence": 71.19,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 29,
-      "contributing_channel_count": 8,
-      "basket_confidence": 85.07,
+      "usable_record_count": 23,
+      "contributing_channel_count": 5,
+      "basket_confidence": 88.87,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -129,36 +129,14 @@
     {
       "basket_name": "unknown",
       "publishable": true,
-      "usable_record_count": 35,
+      "usable_record_count": 7,
       "contributing_channel_count": 2,
-      "basket_confidence": 76.4,
+      "basket_confidence": 66.95,
       "suppression_reason": "",
       "internal_status": ""
     }
   ],
   "channels": [
-    {
-      "handle": "irancrypto",
-      "title": "IranCrypto",
-      "locality": "unknown",
-      "source_category": "market_channel",
-      "source_priority": "P2",
-      "usable_record_count": 20,
-      "average_quality": 70.4,
-      "average_freshness": 83.2,
-      "from_new_p1": false
-    },
-    {
-      "handle": "mazanehnet",
-      "title": "مظنه ارز در بازار تهران",
-      "locality": "Iran",
-      "source_category": "direct_shop",
-      "source_priority": "P2",
-      "usable_record_count": 19,
-      "average_quality": 67.79,
-      "average_freshness": 53.05,
-      "from_new_p1": false
-    },
     {
       "handle": "istanbulexchange_com",
       "title": "نرخ لحظه‌ای دلار، لیر، یورو کاپالی چارشی استانبول",
@@ -166,19 +144,30 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 94.06,
+      "average_freshness": 95.33,
       "from_new_p1": true
     },
     {
-      "handle": "irancurrency",
-      "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
-      "locality": "unknown",
-      "source_category": "market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 15,
-      "average_quality": 81.07,
-      "average_freshness": 79.47,
+      "handle": "mazanehnet",
+      "title": "مظنه ارز در بازار تهران",
+      "locality": "Iran",
+      "source_category": "direct_shop",
+      "source_priority": "P2",
+      "usable_record_count": 16,
+      "average_quality": 65.0,
+      "average_freshness": 45.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ciphoenix.com",
+      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 14,
+      "average_quality": 73.43,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -193,12 +182,12 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:tomanxe.com",
-      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
+      "handle": "uae:residency24.com",
+      "title": "صرافی‌های ایرانی در دبی؛ انتقال پول و نرخ ارز",
       "locality": "UAE",
-      "source_category": "direct_shop",
+      "source_category": "settlement_exchange",
       "source_priority": "uae_review",
-      "usable_record_count": 6,
+      "usable_record_count": 7,
       "average_quality": 74.0,
       "average_freshness": 92.0,
       "from_new_p1": false
@@ -215,57 +204,35 @@
       "from_new_p1": false
     },
     {
+      "handle": "irancurrency",
+      "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
+      "locality": "unknown",
+      "source_category": "market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 4,
+      "average_quality": 78.0,
+      "average_freshness": 71.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "irancrypto",
+      "title": "IranCrypto",
+      "locality": "unknown",
+      "source_category": "market_channel",
+      "source_priority": "P2",
+      "usable_record_count": 3,
+      "average_quality": 68.0,
+      "average_freshness": 76.0,
+      "from_new_p1": false
+    },
+    {
       "handle": "uae:hiemarat.com",
       "title": "نرخ لحظه ای درهم طلا و نقره در دبی به تومان، های امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
-      "usable_record_count": 5,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:economicexchangecentre.com",
-      "title": "Online Money Transfer From UAE - Economic Exchange Centre",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
       "usable_record_count": 3,
       "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:iran2dubai.com",
-      "title": "بوی هل و غبار لنج‌های دیره؛ فوت‌وفن‌های ناگفته‌ای که بار ایرانی را در بازارهای دبی به طلا تبدیل می‌کند - مجله تجارت و صادرات به دبی",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:kazanexchange.com",
-      "title": "حواله درهم به امارات؛ ارسال پول به امارات با نرخ امروز",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 3,
-      "average_quality": 81.67,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
