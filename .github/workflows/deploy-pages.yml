@@ -28,27 +28,35 @@ jobs:
   deploy:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # 75-minute shared outage budget + four bounded deployment attempts,
+    # backoff, build, and public verification. Collection uses separate jobs.
+    timeout-minutes: 110
     env:
       # Re-running a failed job must not collide with its earlier upload.
       PAGES_ARTIFACT_NAME: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url || steps.deployment_final.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url || steps.deployment_retry.outputs.page_url || steps.deployment_late.outputs.page_url || steps.deployment_final.outputs.page_url }}
     steps:
       - name: Checkout current application
         uses: actions/checkout@v4
         with:
           ref: main
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Set a shared recovery deadline
+        run: echo "PAGES_RECOVERY_DEADLINE=$(( $(date +%s) + 75 * 60 ))" >> "$GITHUB_ENV"
+      - name: Wait for a declared GitHub outage to clear
+        run: python3 scripts/wait_for_pages.py --deadline "$PAGES_RECOVERY_DEADLINE"
+      # Read data after the outage wait, so a waiting job does not publish an
+      # unnecessarily old snapshot when GitHub recovers.
       - name: Checkout latest committed data
         uses: actions/checkout@v4
         with:
           ref: data/live
           path: state
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
       - name: Rebuild a consistent site from the latest snapshot
         run: python3 scripts/pipeline.py --site-dir state/site --templates-dir templates --no-new-reference
       - name: Record the exact release to verify on the public site
@@ -70,11 +78,14 @@ jobs:
         with:
           artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
           timeout: 300000
-      # Artifact upload can succeed before deploy-pages can list it. The action
-      # does not retry that lookup, so retry the official action with backoff.
-      - name: Allow the uploaded artifact to become visible
+      # Keep the official action. Its initial artifact lookup and deployment
+      # creation are not retried internally. A declared outage can start after
+      # preflight, so each retry checks status against the SAME deadline.
+      - name: Recover before the second deployment attempt
         if: steps.deployment.outcome == 'failure'
-        run: sleep 15
+        run: |
+          sleep 15
+          python3 scripts/wait_for_pages.py --deadline "$PAGES_RECOVERY_DEADLINE"
       - name: Retry Pages deployment
         if: steps.deployment.outcome == 'failure'
         id: deployment_retry
@@ -83,11 +94,26 @@ jobs:
         with:
           artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
           timeout: 300000
-      - name: Back off before the final Pages attempt
+      - name: Recover before the third deployment attempt
         if: steps.deployment_retry.outcome == 'failure'
-        run: sleep 30
+        run: |
+          sleep 60
+          python3 scripts/wait_for_pages.py --deadline "$PAGES_RECOVERY_DEADLINE"
+      - name: Retry Pages after a longer service interruption
+        if: steps.deployment_retry.outcome == 'failure'
+        id: deployment_late
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+        with:
+          artifact_name: ${{ env.PAGES_ARTIFACT_NAME }}
+          timeout: 300000
+      - name: Recover before the final deployment attempt
+        if: steps.deployment_late.outcome == 'failure'
+        run: |
+          sleep 180
+          python3 scripts/wait_for_pages.py --deadline "$PAGES_RECOVERY_DEADLINE"
       - name: Final Pages deployment attempt
-        if: steps.deployment_retry.outcome == 'failure'
+        if: steps.deployment_late.outcome == 'failure'
         id: deployment_final
         uses: actions/deploy-pages@v4
         with:

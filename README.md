@@ -293,8 +293,13 @@ site has no npm runtime or CDN dependency. The font licenses are in `assets/font
   triggers the daily publisher; daily, regional, and history-recovery completions
   then trigger a rebuild from the latest committed `data/live` state. An active
   Pages job finishes before the next queued deployment starts.
-- Pages deployment retries transient artifact-discovery failures with 15- and
-  30-second backoffs. Exhausted retries still fail. The release manifest, homepage,
+- Pages deployment checks GitHub's declared Pages/API health before reading the
+  latest data and again before retrying a failed deployment. All checks share a
+  75-minute recovery deadline, with 60-second status polling. Four official
+  deployment attempts use 15-, 60-, and 180-second backoffs. A status-feed failure
+  alone does not prevent a real deployment attempt, but cannot clear a previously
+  confirmed outage. The independent collector/publisher never waits for Pages.
+  Expired recovery and exhausted retries still fail. The release manifest, homepage,
   status page, rate/history APIs and dashboard assets are checked on rialwatch.com
   before the deployment can report success; old or partially propagated content
   fails that check if it remains after the bounded propagation wait.
