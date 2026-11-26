@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-26T02:22:01Z",
+  "generated_at": "2026-11-26T17:22:18Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2922000.0,
-  "total_usable_records": 75,
-  "total_contributing_channels": 13,
+  "benchmark_weighted_rate": 2945000.0,
+  "total_usable_records": 53,
+  "total_contributing_channels": 8,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 40,
-    "market_channel": 8,
+    "direct_shop": 29,
+    "market_channel": 5,
     "regional_market_channel": 18,
-    "settlement_exchange": 9
+    "settlement_exchange": 1
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 70.46,
+      "basket_confidence": 71.72,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 26,
-      "contributing_channel_count": 7,
-      "basket_confidence": 82.03,
+      "usable_record_count": 7,
+      "contributing_channel_count": 2,
+      "basket_confidence": 63.96,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -129,9 +129,9 @@
     {
       "basket_name": "unknown",
       "publishable": true,
-      "usable_record_count": 7,
+      "usable_record_count": 4,
       "contributing_channel_count": 2,
-      "basket_confidence": 66.95,
+      "basket_confidence": 58.28,
       "suppression_reason": "",
       "internal_status": ""
     }
@@ -144,8 +144,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 91.0,
-      "average_freshness": 88.0,
+      "average_quality": 95.17,
+      "average_freshness": 98.0,
       "from_new_p1": true
     },
     {
@@ -171,69 +171,14 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:residency24.com",
-      "title": "صرافی‌های ایرانی در دبی؛ انتقال پول و نرخ ارز",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 7,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:dxboffplan.com",
-      "title": "How to Safely Exchange Currency in Dubai – Tips, Documents & Best Practices",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 5,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "irancurrency",
-      "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
-      "locality": "unknown",
-      "source_category": "market_channel",
-      "source_priority": "P1",
-      "usable_record_count": 4,
-      "average_quality": 78.0,
-      "average_freshness": 71.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ir-europe.com",
-      "title": "حواله درهم دبی امارات",
+      "handle": "uae:tomanxe.com",
+      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
       "locality": "UAE",
       "source_category": "settlement_exchange",
       "source_priority": "uae_review",
       "usable_record_count": 4,
       "average_quality": 74.0,
       "average_freshness": 92.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:sarafi-havale.com",
-      "title": "انتقال پول به دبی",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 4,
-      "average_quality": 74.0,
-      "average_freshness": 70.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "irancrypto",
-      "title": "IranCrypto",
-      "locality": "unknown",
-      "source_category": "market_channel",
-      "source_priority": "P2",
-      "usable_record_count": 3,
-      "average_quality": 68.0,
-      "average_freshness": 76.0,
       "from_new_p1": false
     },
     {
@@ -248,14 +193,25 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:yekrial.com",
-      "title": "قیمت درهم امارات در دبی - صرافی های ایرانی در دبی",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
+      "handle": "irancrypto",
+      "title": "IranCrypto",
+      "locality": "unknown",
+      "source_category": "market_channel",
+      "source_priority": "P2",
       "usable_record_count": 2,
-      "average_quality": 84.0,
-      "average_freshness": 92.0,
+      "average_quality": 68.0,
+      "average_freshness": 76.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "irancurrency",
+      "title": "قیمت لحظه ای دلار ، ارز ، سکه و طلا",
+      "locality": "unknown",
+      "source_category": "market_channel",
+      "source_priority": "P1",
+      "usable_record_count": 2,
+      "average_quality": 78.0,
+      "average_freshness": 71.0,
       "from_new_p1": false
     },
     {
@@ -267,17 +223,6 @@
       "usable_record_count": 1,
       "average_quality": 72.0,
       "average_freshness": 88.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:tomanxe.com",
-      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
-      "locality": "UAE",
-      "source_category": "direct_shop",
-      "source_priority": "uae_review",
-      "usable_record_count": 1,
-      "average_quality": 74.0,
-      "average_freshness": 92.0,
       "from_new_p1": false
     }
   ]
