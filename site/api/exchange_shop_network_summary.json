@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-11-25T18:03:13Z",
+  "generated_at": "2026-11-26T02:22:01Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2922000.0,
-  "total_usable_records": 81,
-  "total_contributing_channels": 12,
+  "total_usable_records": 75,
+  "total_contributing_channels": 13,
   "publishable_basket_count": 1,
   "added_p1_candidates": [
     {
@@ -36,10 +36,10 @@
     }
   ],
   "source_category_mix": {
-    "direct_shop": 42,
+    "direct_shop": 40,
     "market_channel": 8,
     "regional_market_channel": 18,
-    "settlement_exchange": 13
+    "settlement_exchange": 9
   },
   "locality_internal_status": {
     "UAE": "active"
@@ -59,16 +59,16 @@
       "publishable": false,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "basket_confidence": 71.19,
+      "basket_confidence": 70.46,
       "suppression_reason": "single_channel_concentration",
       "internal_status": ""
     },
     {
       "basket_name": "UAE",
       "publishable": true,
-      "usable_record_count": 23,
-      "contributing_channel_count": 5,
-      "basket_confidence": 88.87,
+      "usable_record_count": 26,
+      "contributing_channel_count": 7,
+      "basket_confidence": 82.03,
       "suppression_reason": "",
       "internal_status": "active"
     },
@@ -144,8 +144,8 @@
       "source_category": "regional_market_channel",
       "source_priority": "P1",
       "usable_record_count": 18,
-      "average_quality": 94.06,
-      "average_freshness": 95.33,
+      "average_quality": 91.0,
+      "average_freshness": 88.0,
       "from_new_p1": true
     },
     {
@@ -157,17 +157,6 @@
       "usable_record_count": 16,
       "average_quality": 65.0,
       "average_freshness": 45.0,
-      "from_new_p1": false
-    },
-    {
-      "handle": "uae:ciphoenix.com",
-      "title": "قیمت روز درهم امارات به تومان|تبدیل انلاین درهم به تومان",
-      "locality": "UAE",
-      "source_category": "settlement_exchange",
-      "source_priority": "uae_review",
-      "usable_record_count": 14,
-      "average_quality": 73.43,
-      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -194,7 +183,7 @@
     },
     {
       "handle": "uae:dxboffplan.com",
-      "title": "چنج پول در دبی 2026",
+      "title": "How to Safely Exchange Currency in Dubai – Tips, Documents & Best Practices",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
@@ -212,6 +201,28 @@
       "usable_record_count": 4,
       "average_quality": 78.0,
       "average_freshness": 71.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:ir-europe.com",
+      "title": "حواله درهم دبی امارات",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 92.0,
+      "from_new_p1": false
+    },
+    {
+      "handle": "uae:sarafi-havale.com",
+      "title": "انتقال پول به دبی",
+      "locality": "UAE",
+      "source_category": "settlement_exchange",
+      "source_priority": "uae_review",
+      "usable_record_count": 4,
+      "average_quality": 74.0,
+      "average_freshness": 70.0,
       "from_new_p1": false
     },
     {
@@ -237,13 +248,13 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:gooyadubai.ae",
-      "title": "قیمت طلا در دبی و امارات امروز",
+      "handle": "uae:yekrial.com",
+      "title": "قیمت درهم امارات در دبی - صرافی های ایرانی در دبی",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
       "usable_record_count": 2,
-      "average_quality": 74.0,
+      "average_quality": 84.0,
       "average_freshness": 92.0,
       "from_new_p1": false
     },
@@ -259,8 +270,8 @@
       "from_new_p1": false
     },
     {
-      "handle": "uae:ezrate.me",
-      "title": "قیمت دلار دبی امروز",
+      "handle": "uae:tomanxe.com",
+      "title": "قیمت درهم امارات امروز و حواله درهم به امارات",
       "locality": "UAE",
       "source_category": "direct_shop",
       "source_priority": "uae_review",
