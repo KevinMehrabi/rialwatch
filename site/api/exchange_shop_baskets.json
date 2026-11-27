@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-26T17:22:18Z",
+  "generated_at": "2026-11-27T02:20:13Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2945000.0,
   "baskets": [
@@ -28,17 +28,17 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2930775.57,
+      "weighted_rate": 2930716.67,
       "median_rate": 2930500.0,
       "trimmed_mean_rate": 2930506.25,
-      "spread_vs_benchmark_pct": -0.483,
+      "spread_vs_benchmark_pct": -0.485,
       "usable_record_count": 18,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 1,
       "fresh_contributing_channels": [
         "istanbulexchange_com"
       ],
-      "basket_confidence": 71.72,
+      "basket_confidence": 70.72,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
       "dispersion_cv": 0.000629,
@@ -53,30 +53,43 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1937097.49,
+      "weighted_rate": 1843009.45,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1935932.14,
-      "spread_vs_benchmark_pct": -34.2242,
-      "usable_record_count": 7,
-      "contributing_channel_count": 2,
-      "fresh_contributing_channel_count": 2,
+      "trimmed_mean_rate": 1839877.71,
+      "spread_vs_benchmark_pct": -37.419,
+      "usable_record_count": 49,
+      "contributing_channel_count": 10,
+      "fresh_contributing_channel_count": 7,
       "fresh_contributing_channels": [
+        "uae:arzbin.com",
+        "uae:dxboffplan.com",
+        "uae:gooyadubai.ae",
         "uae:hiemarat.com",
-        "uae:tomanxe.com"
+        "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:residency24.com"
       ],
-      "basket_confidence": 63.96,
+      "basket_confidence": 86.66,
       "publishable": true,
       "suppression_reason": "",
-      "dispersion_cv": 0.115931,
-      "top_channel_share": 0.566418,
-      "outliers_removed": 0,
+      "dispersion_cv": 0.059626,
+      "top_channel_share": 0.165076,
+      "outliers_removed": 9,
       "source_category_mix": {
-        "direct_shop": 6,
-        "settlement_exchange": 1
+        "direct_shop": 24,
+        "settlement_exchange": 25
       },
       "channels": [
+        "uae:angelindubai.com",
+        "uae:arzbin.com",
+        "uae:ciphoenix.com",
+        "uae:dxboffplan.com",
+        "uae:gooyadubai.ae",
         "uae:hiemarat.com",
-        "uae:tomanxe.com"
+        "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:iranrebate.com",
+        "uae:residency24.com"
       ]
     },
     {
