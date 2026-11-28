@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-27T17:01:49Z",
+  "generated_at": "2026-11-28T02:17:31Z",
   "diagnostics_only": true,
   "benchmark_weighted_rate": 2938000.0,
   "baskets": [
@@ -51,27 +51,43 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 2068841.67,
-      "median_rate": 2276950.0,
-      "trimmed_mean_rate": 2068841.67,
-      "spread_vs_benchmark_pct": -29.5833,
-      "usable_record_count": 3,
-      "contributing_channel_count": 1,
-      "fresh_contributing_channel_count": 1,
+      "weighted_rate": 1816006.16,
+      "median_rate": 1836250.0,
+      "trimmed_mean_rate": 1822634.47,
+      "spread_vs_benchmark_pct": -38.189,
+      "usable_record_count": 43,
+      "contributing_channel_count": 10,
+      "fresh_contributing_channel_count": 7,
       "fresh_contributing_channels": [
-        "uae:hiemarat.com"
+        "uae:dxboffplan.com",
+        "uae:ezdex.net",
+        "uae:gooyadubai.ae",
+        "uae:hiemarat.com",
+        "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:residency24.com"
       ],
-      "basket_confidence": 43.13,
-      "publishable": false,
-      "suppression_reason": "insufficient_usable_records",
-      "dispersion_cv": 0.142258,
-      "top_channel_share": 1.0,
-      "outliers_removed": 0,
+      "basket_confidence": 85.58,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.065838,
+      "top_channel_share": 0.191607,
+      "outliers_removed": 12,
       "source_category_mix": {
-        "direct_shop": 3
+        "direct_shop": 20,
+        "settlement_exchange": 23
       },
       "channels": [
-        "uae:hiemarat.com"
+        "uae:angelindubai.com",
+        "uae:ciphoenix.com",
+        "uae:dxboffplan.com",
+        "uae:ezdex.net",
+        "uae:gooyadubai.ae",
+        "uae:hiemarat.com",
+        "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:iranrebate.com",
+        "uae:residency24.com"
       ]
     },
     {
