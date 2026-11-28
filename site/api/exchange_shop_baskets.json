@@ -1,26 +1,26 @@
 {
-  "generated_at": "2026-11-28T02:17:31Z",
+  "generated_at": "2026-11-28T16:28:05Z",
   "diagnostics_only": true,
-  "benchmark_weighted_rate": 2938000.0,
+  "benchmark_weighted_rate": 2987000.0,
   "baskets": [
     {
       "basket_name": "Iran",
-      "weighted_rate": 1659046.87,
-      "median_rate": 1661875.0,
-      "trimmed_mean_rate": 1660553.57,
-      "spread_vs_benchmark_pct": -43.5314,
-      "usable_record_count": 16,
+      "weighted_rate": 1660866.67,
+      "median_rate": 1662250.0,
+      "trimmed_mean_rate": 1661096.15,
+      "spread_vs_benchmark_pct": -44.3968,
+      "usable_record_count": 15,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
       "fresh_contributing_channels": [],
-      "basket_confidence": 75.92,
+      "basket_confidence": 76.22,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.004823,
+      "dispersion_cv": 0.002356,
       "top_channel_share": 1.0,
       "outliers_removed": 0,
       "source_category_mix": {
-        "direct_shop": 16
+        "direct_shop": 15
       },
       "channels": [
         "mazanehnet"
@@ -28,22 +28,24 @@
     },
     {
       "basket_name": "Turkey",
-      "weighted_rate": 2931100.0,
-      "median_rate": 2930500.0,
-      "trimmed_mean_rate": 2930850.0,
-      "spread_vs_benchmark_pct": -0.2349,
-      "usable_record_count": 13,
+      "weighted_rate": 2968052.78,
+      "median_rate": 2969875.0,
+      "trimmed_mean_rate": 2968493.75,
+      "spread_vs_benchmark_pct": -0.6343,
+      "usable_record_count": 18,
       "contributing_channel_count": 1,
-      "fresh_contributing_channel_count": 0,
-      "fresh_contributing_channels": [],
-      "basket_confidence": 69.52,
+      "fresh_contributing_channel_count": 1,
+      "fresh_contributing_channels": [
+        "istanbulexchange_com"
+      ],
+      "basket_confidence": 71.85,
       "publishable": false,
       "suppression_reason": "single_channel_concentration",
-      "dispersion_cv": 0.000651,
+      "dispersion_cv": 0.001249,
       "top_channel_share": 1.0,
       "outliers_removed": 0,
       "source_category_mix": {
-        "regional_market_channel": 13
+        "regional_market_channel": 18
       },
       "channels": [
         "istanbulexchange_com"
@@ -51,43 +53,45 @@
     },
     {
       "basket_name": "UAE",
-      "weighted_rate": 1816006.16,
+      "weighted_rate": 1950940.24,
       "median_rate": 1836250.0,
-      "trimmed_mean_rate": 1822634.47,
-      "spread_vs_benchmark_pct": -38.189,
+      "trimmed_mean_rate": 1912208.0,
+      "spread_vs_benchmark_pct": -34.6856,
       "usable_record_count": 43,
       "contributing_channel_count": 10,
-      "fresh_contributing_channel_count": 7,
+      "fresh_contributing_channel_count": 9,
       "fresh_contributing_channels": [
-        "uae:dxboffplan.com",
-        "uae:ezdex.net",
-        "uae:gooyadubai.ae",
-        "uae:hiemarat.com",
-        "uae:ir-europe.com",
-        "uae:iran2dubai.com",
-        "uae:residency24.com"
-      ],
-      "basket_confidence": 85.58,
-      "publishable": true,
-      "suppression_reason": "",
-      "dispersion_cv": 0.065838,
-      "top_channel_share": 0.191607,
-      "outliers_removed": 12,
-      "source_category_mix": {
-        "direct_shop": 20,
-        "settlement_exchange": 23
-      },
-      "channels": [
-        "uae:angelindubai.com",
         "uae:ciphoenix.com",
         "uae:dxboffplan.com",
-        "uae:ezdex.net",
+        "uae:ezrate.me",
         "uae:gooyadubai.ae",
         "uae:hiemarat.com",
-        "uae:ir-europe.com",
+        "uae:iran2dubai.com",
+        "uae:residency24.com",
+        "uae:tomanxe.com",
+        "uae:yekrial.com"
+      ],
+      "basket_confidence": 83.6,
+      "publishable": true,
+      "suppression_reason": "",
+      "dispersion_cv": 0.115555,
+      "top_channel_share": 0.271388,
+      "outliers_removed": 0,
+      "source_category_mix": {
+        "direct_shop": 35,
+        "settlement_exchange": 8
+      },
+      "channels": [
+        "uae:ciphoenix.com",
+        "uae:dxboffplan.com",
+        "uae:ezrate.me",
+        "uae:gooyadubai.ae",
+        "uae:hiemarat.com",
         "uae:iran2dubai.com",
         "uae:iranrebate.com",
-        "uae:residency24.com"
+        "uae:residency24.com",
+        "uae:tomanxe.com",
+        "uae:yekrial.com"
       ]
     },
     {
@@ -121,7 +125,7 @@
       "weighted_rate": 1887207.7,
       "median_rate": 1915000.0,
       "trimmed_mean_rate": 1898333.33,
-      "spread_vs_benchmark_pct": -35.7656,
+      "spread_vs_benchmark_pct": -36.8193,
       "usable_record_count": 6,
       "contributing_channel_count": 1,
       "fresh_contributing_channel_count": 0,
@@ -180,26 +184,27 @@
     },
     {
       "basket_name": "unknown",
-      "weighted_rate": 1620741.49,
-      "median_rate": 1620985.0,
-      "trimmed_mean_rate": 1620671.0,
-      "spread_vs_benchmark_pct": -44.8352,
-      "usable_record_count": 5,
-      "contributing_channel_count": 2,
-      "fresh_contributing_channel_count": 0,
-      "fresh_contributing_channels": [],
-      "basket_confidence": 61.04,
-      "publishable": true,
-      "suppression_reason": "",
-      "dispersion_cv": 0.001292,
-      "top_channel_share": 0.639981,
-      "outliers_removed": 1,
+      "weighted_rate": 1813050.0,
+      "median_rate": 1813050.0,
+      "trimmed_mean_rate": 1813050.0,
+      "spread_vs_benchmark_pct": -39.302,
+      "usable_record_count": 1,
+      "contributing_channel_count": 1,
+      "fresh_contributing_channel_count": 1,
+      "fresh_contributing_channels": [
+        "navasanchannel"
+      ],
+      "basket_confidence": 43.8,
+      "publishable": false,
+      "suppression_reason": "insufficient_usable_records",
+      "dispersion_cv": 0.0,
+      "top_channel_share": 1.0,
+      "outliers_removed": 0,
       "source_category_mix": {
-        "market_channel": 5
+        "market_channel": 1
       },
       "channels": [
-        "irancrypto",
-        "irancurrency"
+        "navasanchannel"
       ]
     }
   ]
